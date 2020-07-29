@@ -1,2 +1,3 @@
-# build-tools
-Building tools provided by OpenTelemetry
+# Build Tools
+
+Build tools provided by OpenTelemetry

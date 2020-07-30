@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+c_out=""
+csharp_out=""
+includes=()
+outs=()
+args=()
+
+for arg in $@; do
+    case $arg in
+        --c_out=*)
+            c_out=${arg}
+            shift
+            ;;
+        --csharp_out=*)
+            csharp_out=${arg}
+            shift
+            ;;
+        --grpc-csharp_out=*)
+            csharp_out=${arg}
+            shift
+            ;;
+        --*_out=*)
+            outs+=(${arg})
+            shift
+            ;;
+        -I*|--proto_path=*)
+            includes+=(${arg})
+            shift
+            ;;
+        *)
+            args+=(${arg})
+            ;;
+    esac
+done
+
+if [ ${#includes[@]} -eq 0 ]; then
+    # replicate protoc behavior
+    includes+=("-I.")
+fi
+
+protoc_cmd="protoc ${includes[@]} ${outs[@]} ${args[@]}"
+protoc_c_cmd="protoc-c ${includes[@]} ${c_out} ${args[@]}"
+protoc_csharp_cmd="protoc-csharp ${includes[@]} ${csharp_out} ${args[@]}"
+
+if [ ${c_out} ]; then
+    ${protoc_c_cmd} || exit 1
+fi
+if [ ${csharp_out} ]; then
+    ${protoc_csharp_cmd} || exit 1
+fi
+if [ ${#outs[@]} -gt 0 ]; then
+    exec ${protoc_cmd}
+fi

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-#   Copyright 2020 Dynatrace LLC
+#   Copyright The OpenTelemetry Authors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,18 +17,19 @@
 import argparse
 import glob
 import sys
+from typing import List
 
-from dynatrace.semconv.model.semantic_convention import SemanticConventionSet
-from dynatrace.semconv.templating.code import CodeRenderer
+from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
+from opentelemetry.semconv.templating.code import CodeRenderer
 
-from dynatrace.semconv.templating.markdown import MarkdownRenderer
+from opentelemetry.semconv.templating.markdown import MarkdownRenderer
 
 
 def parse_semconv(args, parser) -> SemanticConventionSet:
     semconv = SemanticConventionSet(args.debug)
     find_yaml(args)
     for file in sorted(args.files):
-        if not file.endswith(".yaml"):
+        if not file.endswith(".yaml") and not file.endswith(".yml"):
             parser.error("{} is not a yaml file.".format(file))
         semconv.parse(file)
     semconv.finish()
@@ -37,7 +38,7 @@ def parse_semconv(args, parser) -> SemanticConventionSet:
     return semconv
 
 
-def exclude_file_list(folder: str, pattern: str) -> list:
+def exclude_file_list(folder: str, pattern: str) -> List[str]:
     if not pattern:
         return []
     sep = "/"
@@ -73,11 +74,11 @@ def find_yaml(args):
         exclude = set(
             exclude_file_list(args.yaml_root if args.yaml_root else "", args.exclude)
         )
-        file_names = (
-            set(glob.glob("{}/**/*.yaml".format(args.yaml_root), recursive=True))
-            - exclude
-        )
-        args.files.extend(sorted(file_names))
+        yaml_files = set(
+            glob.glob("{}/**/*.yaml".format(args.yaml_root), recursive=True)
+        ).union(set(glob.glob("{}/**/*.yml".format(args.yaml_root), recursive=True)))
+        file_names = yaml_files - exclude
+        args.files.extend(file_names)
 
 
 def check_args(arguments, parser):

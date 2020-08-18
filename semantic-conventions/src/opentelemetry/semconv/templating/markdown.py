@@ -1,4 +1,4 @@
-#   Copyright 2020 Dynatrace LLC
+#   Copyright The OpenTelemetry Authors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,18 +20,18 @@ import sys
 import typing
 from pathlib import PurePath
 
-from dynatrace.semconv.model.constraints import AnyOf, Include
-from dynatrace.semconv.model.semantic_attribute import (
+from opentelemetry.semconv.model.constraints import AnyOf, Include
+from opentelemetry.semconv.model.semantic_attribute import (
     SemanticAttribute,
     EnumAttributeType,
     Required,
     EnumMember,
 )
-from dynatrace.semconv.model.semantic_convention import (
+from opentelemetry.semconv.model.semantic_convention import (
     SemanticConventionSet,
     SemanticConvention,
 )
-from dynatrace.semconv.model.utils import ID_RE
+from opentelemetry.semconv.model.utils import ID_RE
 
 
 class RenderContext:
@@ -41,7 +41,6 @@ class RenderContext:
     break_counter: int
     enums: list
     notes: list
-    note_index: int
     current_md: str
     current_semconv: SemanticConvention
 
@@ -52,17 +51,14 @@ class RenderContext:
         self.break_count = break_count
         self.enums = []
         self.notes = []
-        self.note_index = 1
         self.current_md = ""
         self.current_semconv = None
 
     def clear_table_generation(self):
         self.notes = []
         self.enums = []
-        self.note_index = 1
 
     def add_note(self, msg: str):
-        self.note_index += 1
         self.notes.append(msg)
 
     def add_enum(self, attr: SemanticAttribute):
@@ -101,13 +97,12 @@ class MarkdownRenderer:
         self.filename_for_attr_fqn = self._create_attribute_location_dict()
         self.check_only = check_only
 
-    """
-    This method renders attributes as markdown table entry
-    """
-
     def to_markdown_attr(
         self, attribute: SemanticAttribute, output: io.StringIO,
     ):
+        """
+        This method renders attributes as markdown table entry
+        """
         name = self.render_attribute_id(attribute.fqn)
         attr_type = (
             "enum"
@@ -122,8 +117,8 @@ class MarkdownRenderer:
                 description = "**Deprecated: {}**<br>".format(attribute.deprecated)
         description += attribute.brief
         if attribute.note:
-            description += " [{}]".format(self.render_ctx.note_index)
             self.render_ctx.add_note(attribute.note)
+            description += " [{}]".format(len(self.render_ctx.notes))
         examples = ""
         if isinstance(attribute.attr_type, EnumAttributeType):
             if attribute.is_local and not attribute.ref:
@@ -149,8 +144,8 @@ class MarkdownRenderer:
                 required = "Conditional<br>{}".format(attribute.required_msg)
             else:
                 # We put the condition in the notes after the table
-                required = "Conditional [{}]".format(self.render_ctx.note_index)
                 self.render_ctx.add_note(attribute.required_msg)
+                required = "Conditional [{}]".format(len(self.render_ctx.notes))
         else:
             # check if they are required by some constraint
             if (
@@ -166,11 +161,10 @@ class MarkdownRenderer:
             )
         )
 
-    """
-    This method renders anyof constraints into markdown lists
-    """
-
     def to_markdown_anyof(self, anyof: AnyOf, output: io.StringIO):
+        """
+        This method renders anyof constraints into markdown lists
+        """
         if anyof.inherited and not self.render_ctx.is_full:
             return ""
         output.write("\nAt least one of the following is required:\n\n")
@@ -225,12 +219,11 @@ class MarkdownRenderer:
             if notes:
                 output.write("\n")
 
-    """
-    Method to render in markdown an attribute id. If the id points to an attribute in another rendered table, a markdown
-    link is introduced.
-    """
-
     def render_attribute_id(self, attribute_id):
+        """
+        Method to render in markdown an attribute id. If the id points to an attribute in another rendered table, a
+        markdown link is introduced.
+        """
         md_file = self.filename_for_attr_fqn.get(attribute_id)
         if md_file:
             path = PurePath(self.render_ctx.current_md)
@@ -240,13 +233,12 @@ class MarkdownRenderer:
                     return "[{}]({})".format(attribute_id, diff)
         return "`{}`".format(attribute_id)
 
-    """
-    Entry method to translate attributes and constraints of a semantic convention into Markdown
-    """
-
     def to_markdown_constraint(
         self, obj: typing.Union[AnyOf, Include], output: io.StringIO,
     ):
+        """
+        Entry method to translate attributes and constraints of a semantic convention into Markdown
+        """
         if isinstance(obj, AnyOf):
             self.to_markdown_anyof(obj, output)
             return
@@ -275,12 +267,11 @@ class MarkdownRenderer:
         if self.check_only:
             print("{} files left unchanged.".format(len(self.file_names)))
 
-    """
-    This method creates a dictionary that associates each attribute with the latest table in which it is rendered.
-    This is required by the ref attributes to point to the correct file
-    """
-
     def _create_attribute_location_dict(self):
+        """
+       This method creates a dictionary that associates each attribute with the latest table in which it is rendered.
+       This is required by the ref attributes to point to the correct file
+       """
         m = {}
         for md in self.file_names:
             with open(md, "r", encoding="utf-8") as markdown:

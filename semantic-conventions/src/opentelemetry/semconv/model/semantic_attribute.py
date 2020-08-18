@@ -1,4 +1,4 @@
-#   Copyright 2020 Dynatrace LLC
+#   Copyright The OpenTelemetry Authors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ from typing import List, Union
 
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
-from dynatrace.semconv.model.exceptions import ValidationError
-from dynatrace.semconv.model.utils import (
+from opentelemetry.semconv.model.exceptions import ValidationError
+from opentelemetry.semconv.model.utils import (
     validate_values,
     validate_id,
     check_no_missing_keys,
@@ -235,12 +235,9 @@ class SemanticAttribute:
 class AttributeType:
 
     # https://yaml.org/type/bool.html
-    bool_type = re.compile(
-        "y|Y|yes|Yes|YES|n|N|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF"
-    )
-
     bool_type_true = re.compile("y|Y|yes|Yes|YES|true|True|TRUE|on|On|ON")
     bool_type_false = re.compile("n|N|no|No|NO|false|False|FALSE|off|Off|OFF")
+    bool_type = re.compile(bool_type_true.pattern + "|" + bool_type_false.pattern)
 
     @staticmethod
     def get_type(t):

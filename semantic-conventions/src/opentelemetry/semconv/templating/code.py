@@ -1,4 +1,4 @@
-#   Copyright 2020 Dynatrace LLC
+#   Copyright The OpenTelemetry Authors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ import typing
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from dynatrace.semconv.model.semantic_convention import (
+from opentelemetry.semconv.model.semantic_convention import (
     SemanticConventionSet,
     SemanticConvention,
 )
-from dynatrace.semconv.model.utils import ID_RE
+from opentelemetry.semconv.model.utils import ID_RE
 
 
-def to_doc_brief(doc_string: str) -> str:
+def to_doc_brief(doc_string: typing.Optional[str]) -> str:
     if doc_string is None:
         return ""
     doc_string = doc_string.strip()
@@ -57,20 +57,24 @@ class CodeRenderer:
     parameters: typing.Dict[str, str]
 
     @staticmethod
-    def from_commandline_params(parameters: str = ""):
+    def from_commandline_params(parameters=None):
+        if parameters is None:
+            parameters = []
         params = {}
         if parameters:
             for elm in parameters:
                 pairs = elm.split(",")
                 for pair in pairs:
                     (k, v) = pair.split("=")
-                    params.update({k: v})
+                    params[k] = v
         return CodeRenderer(params)
 
     def __init__(self, parameters: typing.Dict[str, str]):
         self.parameters = parameters
 
-    def get_data_single_file(self, semconvset, template_path: str) -> dict:
+    def get_data_single_file(
+        self, semconvset: SemanticConventionSet, template_path: str
+    ) -> dict:
         """Returns a dictionary that contains all SemanticConventions to fill the template."""
         data = {
             "template": template_path,
@@ -80,25 +84,27 @@ class CodeRenderer:
         data.update(self.parameters)
         return data
 
-    def get_data_multiple_files(self, semconv, template_path: str) -> dict:
+    def get_data_multiple_files(
+        self, semconv: SemanticConvention, template_path: str
+    ) -> dict:
         """Returns a dictionary with the data from a single SemanticConvention to fill the template."""
         data = {"template": template_path, "semconv": semconv}
         data.update(self.parameters)
         return data
 
-    def setup_environment(self, env: Environment):
+    @staticmethod
+    def setup_environment(env: Environment):
         env.filters["to_doc_brief"] = to_doc_brief
         env.filters["to_const_name"] = to_const_name
         env.filters["merge"] = merge
         env.filters["to_camelcase"] = to_camelcase
 
-    def prefix_output_file(
-        self, file_name: str, pattern: str, semconv: SemanticConvention
-    ):
+    @staticmethod
+    def prefix_output_file(file_name: str, pattern: str, semconv: SemanticConvention):
         base = os.path.basename(file_name)
         dir = os.path.dirname(file_name)
         value = getattr(semconv, pattern)
-        return dir + "/" + to_camelcase(value, True) + base
+        return os.path.join(dir, to_camelcase(value, True), base)
 
     def render(
         self,

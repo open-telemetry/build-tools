@@ -1,4 +1,4 @@
-#   Copyright 2020 Dynatrace LLC
+#   Copyright The OpenTelemetry Authors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ import typing
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedSeq
 
-from dynatrace.semconv.model.constraints import Include, AnyOf
-from dynatrace.semconv.model.exceptions import ValidationError
-from dynatrace.semconv.model.semantic_attribute import SemanticAttribute, Required
-from dynatrace.semconv.model.utils import validate_values, validate_id
+from opentelemetry.semconv.model.constraints import Include, AnyOf
+from opentelemetry.semconv.model.exceptions import ValidationError
+from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute, Required
+from opentelemetry.semconv.model.utils import validate_values, validate_id
 
 
 class SpanKind(Enum):
@@ -238,7 +238,7 @@ class SemanticConventionSet:
         for model in self.models.values():
             for attr in model.attributes:
                 if not attr.ref:
-                    if group_by_fqn.get(attr.fqn):
+                    if attr.fqn in group_by_fqn:
                         self.errors = True
                         print(
                             "Attribute {} of Semantic convention '{}' is already defined in {}.".format(

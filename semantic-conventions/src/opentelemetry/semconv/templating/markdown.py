@@ -167,7 +167,8 @@ class MarkdownRenderer:
         """
         if anyof.inherited and not self.render_ctx.is_full:
             return ""
-        output.write("\nAt least one of the following is required:\n\n")
+        output.write("\n**Additional attribute requirements:** At least one of the following sets of attributes is "
+                     "required:\n\n")
         for choice in anyof.choice_list_ids:
             output.write("* ")
             list_of_choice = ", ".join(self.render_attribute_id(c) for c in choice)
@@ -230,7 +231,7 @@ class MarkdownRenderer:
             if path.as_posix() != PurePath(md_file).as_posix():
                 diff = PurePath(os.path.relpath(md_file, start=path.parent)).as_posix()
                 if diff != ".":
-                    return "[{}]({})".format(attribute_id, diff)
+                    return "[`{}`]({})".format(attribute_id, diff)
         return "`{}`".format(attribute_id)
 
     def to_markdown_constraint(

@@ -1,4 +1,4 @@
-name: Protobuf Docker Image
+name: Semantic Convention Generator Docker Image
 on:
   push:
     tags: [ '**' ]
@@ -6,9 +6,8 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-      - .github/workflows/protobuf-dockerimage.yml
-      - protobuf/Dockerfile
-      - protobuf/protoc-wrapper
+      - .github/workflows/semconvgen-dockerimage.yml
+      - 'semantic-conventions/**'
 
 jobs:
   build:
@@ -16,13 +15,13 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build the Docker image
-      run: docker build protobuf/. -t build-protobuf
+      run: docker build semantic-conventions/. -t semconvgen
     - name: Push the Docker image
       if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
       run: |
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
         function tag_and_push {
-          docker tag build-protobuf "otel/build-protobuf:${1}" && docker push "otel/build-protobuf:${1}"
+          docker tag semconvgen "otel/semconvgen:${1}" && docker push "otel/semconvgen:${1}"
         }
         if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
           tag_and_push "latest"

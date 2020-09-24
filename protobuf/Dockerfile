@@ -61,8 +61,14 @@ ARG PROTOC_GEN_GOGO_VERSION
 RUN mkdir -p ${GOPATH}/src/github.com/gogo/protobuf && \
     curl -sSL https://api.github.com/repos/gogo/protobuf/tarball/${PROTOC_GEN_GOGO_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/gogo/protobuf &&\
     cd ${GOPATH}/src/github.com/gogo/protobuf && \
+    go build -ldflags '-w -s' -o /gogo-protobuf-out/protoc-gen-gofast ./protoc-gen-gofast && \
+    install -Ds /gogo-protobuf-out/protoc-gen-gofast /out/usr/bin/protoc-gen-gofast && \
     go build -ldflags '-w -s' -o /gogo-protobuf-out/protoc-gen-gogo ./protoc-gen-gogo && \
     install -Ds /gogo-protobuf-out/protoc-gen-gogo /out/usr/bin/protoc-gen-gogo && \
+    go build -ldflags '-w -s' -o /gogo-protobuf-out/protoc-gen-gogofast ./protoc-gen-gogofast && \
+    install -Ds /gogo-protobuf-out/protoc-gen-gogofast /out/usr/bin/protoc-gen-gogofast && \
+    go build -ldflags '-w -s' -o /gogo-protobuf-out/protoc-gen-gogofaster ./protoc-gen-gogofaster && \
+    install -Ds /gogo-protobuf-out/protoc-gen-gogofaster /out/usr/bin/protoc-gen-gogofaster && \
     mkdir -p /out/usr/include/github.com/gogo/protobuf/protobuf/google/protobuf && \
     install -D $(find ./protobuf/google/protobuf -name '*.proto') -t /out/usr/include/github.com/gogo/protobuf/protobuf/google/protobuf && \
     install -D ./gogoproto/gogo.proto /out/usr/include/github.com/gogo/protobuf/gogoproto/gogo.proto

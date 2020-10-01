@@ -2,8 +2,7 @@
 
 A docker image to process Semantic Convention YAML models.
 
-
-# Usage
+## Usage
 
 The image can be used to generate Markdown tables or code.
 
@@ -69,8 +68,8 @@ semantic conventions that have the tag `network`.
 
 The image supports [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates to generate code from the models.
 
-For example, the following template is used by the [opentelemetry-java-instrumentation](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/master/instrumentation-api/src/main/java/io/opentelemetry/instrumentation/api/typedspan) to generate Java classes.
-[Template Link.](https://gist.github.com/thisthat/7e34742f4a7f1b5df57118f859a19c3b)
+For example, the following template is used by the [opentelemetry-java-instrumentation](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/master/instrumentation-api/src/main/java/io/opentelemetry/instrumentation/api/typedspan)
+to generate Java classes. [Template Link.](https://gist.github.com/thisthat/7e34742f4a7f1b5df57118f859a19c3b)
 
 The image can generate code with the following command:
 
@@ -84,6 +83,7 @@ This is helpful to generate constants for the semantic attributes, [example from
 If the parameter `--file-per-group {pattern}` is set, a single yaml model is fed into the template
 and the value of `pattern` is resolved from the model and attached as prefix to the output argument.
 This way, multiple files are generated. The value of `pattern` can be one of the following:
+
 - `semconv_id`: The id of the semantic convention.
 - `prefix`: The prefix with which all attributes starts with.
 - `extends`: The id of the parent semantic convention.

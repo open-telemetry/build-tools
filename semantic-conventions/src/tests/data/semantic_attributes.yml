@@ -1,0 +1,21 @@
+attributes:
+  - id: attribute_one
+    tag: tag-one
+    type: string
+    brief: >
+      this is the description of
+      the first attribute
+    examples: 'This is a good example of the first attribute'
+  - id: attribute_two
+    tag: tag-two
+    type: number
+    brief: >
+      this is the description of
+      the second attribute. It's a number.
+    examples: [1000, 10, 1]
+  - id: attribute_three
+    tag: tag-three
+    type: boolean
+    brief: >
+      this is the description of
+      the second attribute. It's a boolean.

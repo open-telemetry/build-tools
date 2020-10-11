@@ -34,6 +34,6 @@ def test_parse_basic(open_test_file):
     assert second.semconv_id == "second_group_id"
     assert second.brief == "second description"
     assert second.note == "longer description"
-    assert second.prefix == ""
+    assert second.prefix == "second"
     assert second.span_kind == SpanKind.CLIENT
     assert second.extends == "first_group_id"

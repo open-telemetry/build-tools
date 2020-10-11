@@ -8,10 +8,16 @@ _TEST_DIR = os.path.dirname(__file__)
 
 
 @pytest.fixture
-def open_test_file():
+def test_file_path():
     def loader(filename):
-        full_path = os.path.join(_TEST_DIR, "data", filename)
-        return open(full_path, "r", encoding="utf-8")
+        return os.path.join(_TEST_DIR, "data", filename)
+
+    return loader
+
+@pytest.fixture
+def open_test_file(test_file_path):
+    def loader(filename):
+        return open(test_file_path(filename), "r", encoding="utf-8")
 
     return loader
 

@@ -11,5 +11,11 @@ groups:
   - id: second_group_id
     brief: second description
     note: longer description
+    prefix: second
     span_kind: client
     extends: first_group_id
+    attributes:
+      - id: attr_two
+        type: string
+        brief: short description
+        examples: ['example_one', 'example_two']

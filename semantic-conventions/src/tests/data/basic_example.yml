@@ -1,0 +1,15 @@
+groups:
+  - id: first_group_id
+    brief: first description
+    note: longer description
+    prefix: first
+    span_kind: server
+    attributes:
+      - id: attr_one
+        type: boolean
+        brief: short description
+  - id: second_group_id
+    brief: second description
+    note: longer description
+    span_kind: client
+    extends: first_group_id

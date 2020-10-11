@@ -1,0 +1,6 @@
+attributes:
+  - id: deprecated_attribute
+    tag: tag-one
+    deprecated: don't use this one anymore
+    type: boolean
+    brief: this is a description

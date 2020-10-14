@@ -33,7 +33,7 @@ def validate_id(semconv_id, position):
 def validate_values(yaml, keys, mandatory=()):
     """ This method checks only valid keywords and value types are used
     """
-    unwanted = list(set(yaml) - set(keys))
+    unwanted = [k for k in yaml.keys() if k not in keys]
     if unwanted:
         position = yaml.lc.data[unwanted[0]]
         msg = "Invalid keys: {}".format(unwanted)

@@ -12,37 +12,371 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from opentelemetry.semconv.templating.markdown import MarkdownRenderer
+import io
+import os
+import unittest
+import difflib
+
 from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
-
-import shutil
-
-_EXPECTED = """# Heading
-
-<!-- semconv first_group_id -->
-| Attribute  | Type | Description  | Example  | Required |
-|---|---|---|---|---|
-| `first.attr_one` | boolean | short description |  | No |
-<!-- endsemconv -->
-
-## Subheading
-
-<!-- semconv second_group_id -->
-| Attribute  | Type | Description  | Example  | Required |
-|---|---|---|---|---|
-| `second.attr_two` | string | short description | `example_one`<br>`example_two` | No |
-<!-- endsemconv -->"""
+from opentelemetry.semconv.templating.markdown import MarkdownRenderer
 
 
-# def test_markdown_renderer_to_markdown_attr(tmp_path_factory, test_file_path):
-#     tmp_dir = tmp_path_factory.mktemp('markdown')
-#     markdown_path = shutil.copy(test_file_path('basic_example.md'), tmp_dir)
-#
-#     semantic_conventions = SemanticConventionSet(debug = True)
-#     semantic_conventions.parse(test_file_path('basic_example.yml'))
-#
-#     renderer = MarkdownRenderer(tmp_dir, semantic_conventions)
-#     renderer.render_md()
-#
-#     result = open(markdown_path).read()
-#     assert result == _EXPECTED
+class TestCorrectMarkdown(unittest.TestCase):
+    def testRef(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/ref/general.yaml"))
+        semconv.parse(self.load_file("markdown/ref/rpc.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 5)
+        md = self.load_file("markdown/ref/input/input_rpc.md")
+        with open(md, "r") as markdown:
+            content = markdown.read()
+        renderer = MarkdownRenderer(self.load_file("markdown/ref/input"), semconv)
+        output = io.StringIO()
+        renderer._render_single_file(content, md, output)
+        with open(self.load_file("markdown/ref/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.assertEqualWithDiff(expected, output.getvalue())
+
+    def testInclude(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/include/faas.yaml"))
+        semconv.parse(self.load_file("markdown/include/http.yaml"))
+        semconv.parse(self.load_file("markdown/include/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 7)
+        md = self.load_file("markdown/include/input/input_faas.md")
+        with open(md, "r") as markdown:
+            content = markdown.read()
+        renderer = MarkdownRenderer(self.load_file("markdown/include/input"), semconv)
+        output = io.StringIO()
+        renderer._render_single_file(content, md, output)
+        with open(self.load_file("markdown/include/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        result = output.getvalue()
+        self.assertEqualWithDiff(expected, result)
+
+    def testDeprecated(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/deprecated/http.yaml"))
+        semconv.parse(self.load_file("markdown/deprecated/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 5)
+        with open(self.load_file("markdown/deprecated/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/deprecated/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/deprecated/",
+            "markdown/deprecated/input.md",
+            content,
+            expected,
+        )
+
+    def testSingle(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/single/http.yaml"))
+        semconv.parse(self.load_file("markdown/single/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 5)
+        with open(self.load_file("markdown/single/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/single/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/single/",
+            "markdown/single/input.md",
+            content,
+            expected,
+        )
+
+    def testEmpty(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/empty/http.yaml"))
+        semconv.parse(self.load_file("markdown/empty/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 5)
+        with open(self.load_file("markdown/empty/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/empty/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv, "markdown/empty/", "markdown/empty/input.md", content, expected
+        )
+
+    def testMultiple(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/multiple/http.yaml"))
+        semconv.parse(self.load_file("markdown/multiple/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 5)
+        with open(self.load_file("markdown/multiple/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/multiple/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/multiple/",
+            "markdown/multiple/input.md",
+            content,
+            expected,
+        )
+
+    def testExtendConstraint(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/extend_constraint/database.yaml"))
+        semconv.parse(self.load_file("markdown/extend_constraint/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 7)
+        with open(self.load_file("markdown/extend_constraint/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/extend_constraint/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/extend_constraint/",
+            "markdown/extend_constraint/input.md",
+            content,
+            expected,
+        )
+
+    def test_error_missing_end(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/missing_end_tag/http.yaml"))
+        semconv.parse(self.load_file("markdown/missing_end_tag/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 5)
+        with open(self.load_file("markdown/missing_end_tag/input.md"), "r") as markdown:
+            content = markdown.read()
+        with self.assertRaises(Exception) as ex:
+            renderer = MarkdownRenderer(self.load_file("markdown/missing_end_tag/"), semconv)
+            renderer._render_single_file(
+                content, "markdown/missing_end_tag/input.md", io.StringIO()
+            )
+        self.assertEqual("Missing ending <!-- endsemconv --> tag", ex.exception.args[0])
+
+    def test_error_wrong_id(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/wrong_semconv_id/http.yaml"))
+        semconv.parse(self.load_file("markdown/wrong_semconv_id/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 5)
+        with open(self.load_file("markdown/wrong_semconv_id/input.md"), "r") as markdown:
+            content = markdown.read()
+        with self.assertRaises(Exception) as ex:
+            renderer = MarkdownRenderer(self.load_file("markdown/wrong_semconv_id/"), semconv)
+            renderer._render_single_file(
+                content, "markdown/wrong_semconv_id/input.md", io.StringIO()
+            )
+        self.assertEqual("Semantic Convention ID db not found", ex.exception.args[0])
+
+    def test_empty_table(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/empty_table/http.yaml"))
+        semconv.parse(self.load_file("markdown/empty_table/faas.yaml"))
+        semconv.parse(self.load_file("markdown/empty_table/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 7)
+        with open(self.load_file("markdown/empty_table/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/empty_table/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/empty_table/",
+            "markdown/empty_table/input.md",
+            content,
+            expected,
+        )
+
+    def test_parameter_full(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/parameter_full/http.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_full/faas.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_full/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 7)
+        with open(self.load_file("markdown/parameter_full/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/parameter_full/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/parameter_full/",
+            "markdown/parameter_full/input.md",
+            content,
+            expected,
+        )
+
+    def test_parameter_tag(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/parameter_tag/database.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_tag/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 6)
+        with open(self.load_file("markdown/parameter_tag/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/parameter_tag/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/parameter_tag/",
+            "markdown/parameter_tag/input.md",
+            content,
+            expected,
+        )
+
+    def test_parameter_tag_empty(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/parameter_tag_empty/database.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_tag_empty/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 6)
+        with open(self.load_file("markdown/parameter_tag_empty/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/parameter_tag_empty/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/parameter_tag_empty/",
+            "markdown/parameter_tag_empty/input.md",
+            content,
+            expected,
+        )
+
+    def test_parameter_remove_constraint(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/parameter_remove_constraint/database.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_remove_constraint/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 6)
+        with open(self.load_file("markdown/parameter_remove_constraint/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(
+            self.load_file("markdown/parameter_remove_constraint/expected.md"), "r"
+        ) as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/parameter_remove_constraint/",
+            "markdown/parameter_remove_constraint/input.md",
+            content,
+            expected,
+        )
+
+    def test_parameter_empty(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/parameter_empty/http.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_empty/faas.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_empty/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 7)
+        with open(self.load_file("markdown/parameter_empty/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/parameter_empty/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/parameter_empty/",
+            "markdown/parameter_empty/input.md",
+            content,
+            expected,
+        )
+
+    def test_wrong_parameter(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/parameter_wrong/http.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_wrong/faas.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_wrong/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 7)
+        with open(self.load_file("markdown/parameter_wrong/input.md"), "r") as markdown:
+            content = markdown.read()
+        expected = ""
+        with self.assertRaises(ValueError) as ex:
+            self.check_render(
+                semconv,
+                "markdown/parameter_wrong/",
+                "markdown/parameter_wrong/input.md",
+                content,
+                expected,
+            )
+            self.fail()
+        e = ex.exception
+        msg = e.args[0]
+        self.assertIn("Unexpected parameter", msg)
+        self.assertIn("`invalid`", msg)
+
+    def test_wrong_syntax(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/parameter_wrong_syntax/http.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_wrong_syntax/faas.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_wrong_syntax/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 7)
+        with open(self.load_file("markdown/parameter_wrong_syntax/input.md"), "r") as markdown:
+            content = markdown.read()
+        expected = ""
+        with self.assertRaises(ValueError) as ex:
+            self.check_render(
+                semconv,
+                "markdown/parameter_wrong_syntax/",
+                "markdown/parameter_wrong_syntax/input.md",
+                content,
+                expected,
+            )
+            self.fail()
+        e = ex.exception
+        msg = e.args[0]
+        self.assertIn("Wrong syntax", msg)
+
+    def test_wrong_duplicate(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/parameter_wrong_duplicate/http.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_wrong_duplicate/faas.yaml"))
+        semconv.parse(self.load_file("markdown/parameter_wrong_duplicate/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 7)
+        with open(self.load_file("markdown/parameter_wrong_duplicate/input.md"), "r") as markdown:
+            content = markdown.read()
+        expected = ""
+        with self.assertRaises(ValueError) as ex:
+            self.check_render(
+                semconv,
+                "markdown/parameter_wrong_duplicate/",
+                "markdown/parameter_wrong_duplicate/input.md",
+                content,
+                expected,
+            )
+            self.fail()
+        e = ex.exception
+        msg = e.args[0]
+        self.assertIn("Parameter", msg)
+        self.assertIn("already defined", msg)
+
+    def check_render(self, semconv, folder, file_name, content: str, expected: str):
+        renderer = MarkdownRenderer(self.load_file(folder), semconv)
+        output = io.StringIO()
+        renderer._render_single_file(content, self.load_file(file_name), output)
+        result = output.getvalue()
+        self.assertEqualWithDiff(expected, result)
+
+    def assertEqualWithDiff(self, left, right, msg=None):
+        try:
+            self._baseAssertEqual(left, right)
+        except self.failureException:
+            diff = difflib.unified_diff(
+                left.splitlines(True), right.splitlines(True), n=0
+            )
+            diff = "".join(diff)
+            raise self.failureException("\n" + diff)
+
+    _TEST_DIR = os.path.dirname(__file__)
+
+    def load_file(self, filename):
+        return os.path.join(self._TEST_DIR, "..", "..", "data", filename)
+
+if __name__ == "__main__":
+    unittest.main()

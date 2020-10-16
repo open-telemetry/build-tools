@@ -108,7 +108,7 @@ class SemanticConvention:
             validate_id(group["id"], group.lc.data["id"])
             type = group.get("type")
             if type is None:
-                line = group.lc.data["id"][1]+1
+                line = group.lc.data["id"][1] + 1
                 print(
                     "Using default SPAN type for semantic convention '{}' in {} @ line {}\n".format(
                         group["id"], yaml_file.name, line

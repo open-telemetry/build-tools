@@ -49,12 +49,31 @@ class SpanKind(Enum):
         return kind_map.get(span_kind_value)
 
 
+class SemanticConventionType(Enum):
+    SPAN = 1
+    RESOURCE = 2
+    METRIC = 3
+
+    @staticmethod
+    def parse(type_value):
+        # Gracefully transition to the new types
+        if type_value is None:
+            return SemanticConventionType.SPAN
+        enum_map = {
+            "span": SemanticConventionType.SPAN,
+            "resource": SemanticConventionType.RESOURCE,
+            "metric": SemanticConventionType.METRIC,
+        }
+        return enum_map.get(type_value)
+
+
 @dataclass
 class SemanticConvention:
     """ Contains the model extracted from a yaml file
     """
 
     semconv_id: str
+    type: SemanticConventionType
     brief: str
     note: str
     prefix: str
@@ -74,6 +93,7 @@ class SemanticConvention:
         models = []
         available_keys = (
             "id",
+            "type",
             "brief",
             "note",
             "prefix",
@@ -86,6 +106,24 @@ class SemanticConvention:
         for group in yaml["groups"]:
             validate_values(group, available_keys, mandatory_keys)
             validate_id(group["id"], group.lc.data["id"])
+            type = group.get("type")
+            if type is None:
+                line = group.lc.data["id"][1]+1
+                print(
+                    "Using default SPAN type for semantic convention '{}' in {} @ line {}\n".format(
+                        group["id"], yaml_file.name, line
+                    ),
+                    file=sys.stderr,
+                )
+            convention_type = SemanticConventionType.parse(type)
+            if convention_type is None:
+                position = (
+                    group.lc.data["type"] if "type" in group else group.lc.data["id"]
+                )
+                msg = "Invalid value for semantic convention type: {}".format(
+                    group.get("type")
+                )
+                raise ValidationError.from_yaml_pos(position, msg)
             span_kind = SpanKind.parse(group.get("span_kind"))
             if span_kind is None:
                 position = group.lc.data["span_kind"]
@@ -95,8 +133,24 @@ class SemanticConvention:
             if prefix != "":
                 validate_id(prefix, group.lc.data["prefix"])
             position = group.lc.data["id"]
+            # Fields validation based on the type
+            if convention_type == SemanticConventionType.SPAN:
+                # TODO
+                pass
+            elif convention_type == SemanticConventionType.RESOURCE:
+                if span_kind != SpanKind.EMPTY:
+                    position = group.lc.data["span_kind"]
+                    msg = "Resources cannot have span_kind: {}".format(
+                        group.get("span_kind")
+                    )
+                    raise ValidationError.from_yaml_pos(position, msg)
+                # TODO
+            else:  # metric
+                # TODO
+                pass
             model = SemanticConvention(
                 semconv_id=group["id"].strip(),
+                type=convention_type,
                 brief=str(group["brief"]).strip(),
                 note=group.get("note", "").strip(),
                 prefix=prefix.strip(),
@@ -139,7 +193,9 @@ class SemanticConvention:
                     else:
                         inner_id_list += (constraint_list,)
                     choice_sets += (inner_id_list,)
-                constraints += (AnyOf(choice_sets),)
+                any_of = AnyOf(choice_sets)
+                any_of._yaml_src_position = constraint.get("any_of").lc.data
+                constraints += (any_of,)
         return constraints
 
     def contains_attribute(self, attr: "SemanticAttribute"):
@@ -360,12 +416,20 @@ class SemanticConventionSet:
         for semconv in self.models.values():
             for any_of in semconv.constraints:
                 if isinstance(any_of, AnyOf):
+                    index = -1
                     for attr_ids in any_of.choice_list_ids:
                         constraint_attrs = []
+                        index += 1
                         for attr_id in attr_ids:
                             ref_attr = self._lookup_attribute(attr_id)
-                            if ref_attr is not None:
-                                constraint_attrs.append(ref_attr)
+                            if ref_attr is None:
+                                raise ValidationError.from_yaml_pos(
+                                    any_of._yaml_src_position[index],
+                                    "Any_of attribute '{}' of semantic convention {} does not exists!".format(
+                                        attr_id, semconv.semconv_id
+                                    ),
+                                )
+                            constraint_attrs.append(ref_attr)
                         if constraint_attrs:
                             any_of.add_attributes(constraint_attrs)
 

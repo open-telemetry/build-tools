@@ -1,0 +1,92 @@
+groups:
+
+  - id: rpc
+    type: span
+    prefix: rpc
+    brief: 'Base'
+    attributes:
+      - id: service
+        type: string
+        required: always
+        brief: 'The service name, must be equal to the $service part in the span name.'
+        examples: "EchoService"
+    constraints:
+      - any_of:
+        - net.peer.ip
+        - net.peer.name
+      - include: network
+
+  - id: network
+    type: span
+    prefix: net
+    brief: 'imported'
+    attributes:
+      - id: peer.ip
+        type: string
+        brief: >
+          Remote
+        examples: '127.0.0.1'
+      - id: peer.port
+        type: number
+        brief: 'Remote port number.'
+        note: 'not override'
+        examples: [80, 8080, 443]
+      - id: peer.name
+        type: string
+        brief: 'Remote hostname or similar, see note below.'
+        examples: 'example.com'
+
+  - id: rpc.client
+    type: span
+    prefix: rpc.client
+    extends: rpc
+    span_kind: client
+    brief: 'Extends.'
+    attributes:
+      - ref: net.peer.port
+        required: always
+        brief: 'override'
+      - id: name
+        type: string
+        required: always
+        brief: 'Name'
+        examples: 'name'
+    constraints:
+      - include: http
+
+  - id: http
+    type: span
+    prefix: http
+    brief: 'Imported'
+    attributes:
+      - id: method
+        type: string
+        brief: 'HTTP Method'
+        examples: 'example.com'
+      - ref: net.peer.port
+        brief: 'It describes the port the client is connecting from'
+
+  - id: zother
+    type: span
+    prefix: zother
+    brief: 'Imported extends'
+    attributes:
+      - id: hostname
+        type: string
+        brief: 'hostname'
+        examples: 'example.com'
+
+  - id: zz.rpc.client
+    type: span
+    prefix: rpc.client
+    extends: rpc.client
+    span_kind: client
+    brief: 'Extends extends.'
+    attributes:
+      - id: zz.attr
+        type: string
+        required: always
+        brief: 'zz attr'
+        examples: 'name'
+    constraints:
+      - include: zother

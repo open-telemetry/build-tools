@@ -1,0 +1,36 @@
+groups:
+  - id: test
+    type: span
+    prefix: test
+    brief: 'This document defines semantic conventions for test.'
+    span_kind: client
+    attributes:
+      - id: convention_version
+        type: number
+        required: always
+        brief: 'test'
+        examples: [1,asd]
+      - id: convention_version
+        type: number[]
+        required: always
+        brief: 'test'
+        examples: [1,3]
+      - id: url
+        type: string
+        required: always
+        brief: 'test'
+        examples: ['http://1.2.3.4:5678/']
+      - id: value
+        type:
+          allow_custom_values: false
+          members:
+            - id: VAL
+              value: 'val'
+              note: 'val'
+        required: always
+        brief: 'test.'
+      - id: flag
+        required: conditional
+        type: boolean
+        brief: 'test'
+        examples: [true]

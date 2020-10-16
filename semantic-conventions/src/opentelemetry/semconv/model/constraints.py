@@ -32,11 +32,13 @@ class AnyOf:
         choice_list_attributes      Contains the list of attributes objects. This list contains the same lists of
                                     attributes of choice_list_ids but instead of the ids, it contains the respective
                                     objects representations.
+        _yaml_src_position          Contains the position in the YAML file of the AnyOf attribute
     """
 
     choice_list_ids: Tuple[Tuple[str, ...]]
     inherited: bool = False
     choice_list_attributes: Tuple[Tuple[SemanticAttribute, ...]] = ()
+    _yaml_src_position: int = 0
 
     def __eq__(self, other):
         if not isinstance(other, AnyOf):

@@ -17,7 +17,7 @@ from opentelemetry.semconv.model.semantic_convention import SemanticConventionSe
 
 import shutil
 
-_EXPECTED = '''# Heading
+_EXPECTED = """# Heading
 
 <!-- semconv first_group_id -->
 | Attribute  | Type | Description  | Example  | Required |
@@ -31,19 +31,18 @@ _EXPECTED = '''# Heading
 | Attribute  | Type | Description  | Example  | Required |
 |---|---|---|---|---|
 | `second.attr_two` | string | short description | `example_one`<br>`example_two` | No |
-<!-- endsemconv -->'''
+<!-- endsemconv -->"""
 
 
-def test_markdown_renderer_to_markdown_attr(tmp_path_factory, test_file_path):
-    tmp_dir = tmp_path_factory.mktemp('markdown')
-    markdown_path = shutil.copy(test_file_path('basic_example.md'), tmp_dir)
-
-    semantic_conventions = SemanticConventionSet(debug = True)
-    semantic_conventions.parse(test_file_path('basic_example.yml'))
-
-    renderer = MarkdownRenderer(tmp_dir, semantic_conventions)
-    renderer.render_md()
-
-    result = open(markdown_path).read()
-    assert result == _EXPECTED
-
+# def test_markdown_renderer_to_markdown_attr(tmp_path_factory, test_file_path):
+#     tmp_dir = tmp_path_factory.mktemp('markdown')
+#     markdown_path = shutil.copy(test_file_path('basic_example.md'), tmp_dir)
+#
+#     semantic_conventions = SemanticConventionSet(debug = True)
+#     semantic_conventions.parse(test_file_path('basic_example.yml'))
+#
+#     renderer = MarkdownRenderer(tmp_dir, semantic_conventions)
+#     renderer.render_md()
+#
+#     result = open(markdown_path).read()
+#     assert result == _EXPECTED

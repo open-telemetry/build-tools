@@ -1,0 +1,9 @@
+groups:
+  - id: abc
+    prefix: test
+    brief: 'This document defines semantic conventions for test.'
+    span_kind: client
+    attributes:
+      - id: test
+        required: always
+        brief: 'test.'

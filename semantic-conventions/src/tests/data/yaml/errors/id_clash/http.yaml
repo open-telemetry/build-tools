@@ -1,0 +1,23 @@
+groups:
+  - id: http
+    type: span
+    prefix: http
+    brief: 'This document defines semantic conventions for HTTP client and server Spans.'
+    note: n
+    attributes:
+      - id: request_content_length
+        type: number
+        brief: t
+        examples: 3495
+      - id: request_content_length_uncompressed
+        type: number
+        brief: t
+        examples: 3495
+      - id: request_content_length
+        type: number
+        brief: t
+        examples: 3495
+      - id: response_content_length_uncompressed
+        type: number
+        brief: t
+        examples: 3495

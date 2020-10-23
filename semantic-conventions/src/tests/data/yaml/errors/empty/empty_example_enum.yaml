@@ -1,0 +1,16 @@
+groups:
+  - id: test
+    prefix: test
+    type: span
+    brief: 'This document defines semantic conventions for test.'
+    span_kind: client
+    attributes:
+      - id: type
+        type:
+          allow_custom_values: false
+          members:
+            - id: first
+              value: 'first'
+              note: 'first'
+        required: always
+        brief: 'test'

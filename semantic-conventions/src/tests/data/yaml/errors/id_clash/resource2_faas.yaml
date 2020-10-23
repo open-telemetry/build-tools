@@ -1,0 +1,29 @@
+groups:
+  - id: faas2
+    type: resource
+    prefix: faas
+    brief: >
+        Attributes for a serverless instance.
+    attributes:
+      - id: name
+        type: string
+        required: always
+        brief: >
+           	The name of the function being executed.
+        examples: ['my-function']
+      - id: id
+        type: string
+        required: always
+        brief: >
+           	The unique name of the function being executed.
+        examples: ['arn:aws:lambda:us-west-2:123456789012:function:my-function']
+      - id: version
+        type: string
+        brief: >
+           	The version
+        examples: ['semver:2.0.0']
+      - id: instance
+        type: string
+        brief: >
+           	The execution environment ID as a string.
+        examples: ['my-function:instance-0001']

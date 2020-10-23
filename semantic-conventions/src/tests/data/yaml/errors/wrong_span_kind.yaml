@@ -1,0 +1,5 @@
+groups:
+  - id: messaging
+    type: span
+    brief: error
+    span_kind: ambarabacci

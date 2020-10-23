@@ -1,0 +1,21 @@
+groups:
+  - id: http
+    type: span
+    brief: 'This document defines semantic conventions for HTTP client and server Spans.'
+    prefix: http
+    note: >
+        These conventions can be used for http and https schemes
+        and various HTTP versions like 1.1, 2 and SPDY.
+    attributes:
+      - id: method
+        type: string
+        required: always
+        sampling_relevant: false
+        brief: 'HTTP request method.'
+        examples: ["GET", "POST", "HEAD"]
+  - id: http.server
+    type: span
+    prefix: http
+    extends: http
+    span_kind: server
+    brief: 'Semantic Convention for HTTP Server'

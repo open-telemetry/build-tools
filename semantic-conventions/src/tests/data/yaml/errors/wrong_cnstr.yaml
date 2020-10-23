@@ -1,0 +1,11 @@
+groups:
+  - id: faas.http
+    type: span
+    extends: faas
+    brief: >
+      Semantic Convention for FaaS triggered as a response to some data
+      source operation such as a database or filesystem read/write.
+    constraints:
+      - include: http.server
+      - myNewCnst: ['asd']
+      - any_of: ['asd','asd']

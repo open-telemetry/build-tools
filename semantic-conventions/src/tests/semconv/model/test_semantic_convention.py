@@ -12,11 +12,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+import os
 from opentelemetry.semconv.model.semantic_convention import SemanticConvention, SpanKind
 
 
 def test_parse_basic(open_test_file):
-    with open_test_file("basic_example.yml") as yaml_file:
+    with open_test_file(os.path.join("yaml", "basic_example.yml")) as yaml_file:
         conventions = SemanticConvention.parse(yaml_file)
 
     assert conventions is not None

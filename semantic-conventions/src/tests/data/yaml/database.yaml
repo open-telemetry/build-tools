@@ -1,0 +1,44 @@
+groups:
+  - id: database
+    prefix: db
+    brief: >
+        This document defines the attributes used to
+        perform database client calls.
+    span_kind: client
+    attributes:
+      - id: type
+        type: string
+        required: always
+        brief: >
+          Database type. For any SQL database, "sql".
+          For others, the lower-case database category.
+        examples: ['cassandra', 'hbase', 'redis']
+      - id: instance
+        type: string
+        required: always
+        brief: >
+          Database instance name. In java, if the
+          jdbc.url="jdbc:mysql://db.example.com:3306/customers",
+          the instance name is "customers"
+        examples: ['customers']
+      - id: statement
+        type: string
+        required: always
+        brief: >
+          A database statement for the given database type.
+          Note, that the value may be sanitized to exclude
+          sensitive information.
+        examples: ['SELECT * FROM wuser_table', "SET mykey 'WuValue'"]
+      - id: url
+        type: string
+        required: always
+        brief: 'JDBC substring'
+        examples: ['mysql://db.example.com:3306']
+      - id: user
+        type: string
+        brief: 'Username for accessing database.'
+        examples: ['readonly_user','reporting_user']
+    constraints:
+      - any_of:
+        - 'net.peer.name'
+        - 'net.peer.ip'

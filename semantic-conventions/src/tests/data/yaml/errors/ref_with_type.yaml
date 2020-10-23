@@ -1,0 +1,10 @@
+groups:
+  - id: abc
+    type: span
+    prefix: test
+    brief: 'This document defines semantic conventions for test.'
+    span_kind: client
+    attributes:
+      - ref: test
+        type: number
+        brief: 'test'

@@ -62,7 +62,6 @@ class SemanticConventionType(Enum):
         enum_map = {
             "span": SemanticConventionType.SPAN,
             "resource": SemanticConventionType.RESOURCE,
-            "metric": SemanticConventionType.METRIC,
         }
         return enum_map.get(type_value)
 
@@ -134,20 +133,13 @@ class SemanticConvention:
                 validate_id(prefix, group.lc.data["prefix"])
             position = group.lc.data["id"]
             # Fields validation based on the type
-            if convention_type == SemanticConventionType.SPAN:
-                # TODO
-                pass
-            elif convention_type == SemanticConventionType.RESOURCE:
+            if convention_type == SemanticConventionType.RESOURCE:
                 if span_kind != SpanKind.EMPTY:
                     position = group.lc.data["span_kind"]
                     msg = "Resources cannot have span_kind: {}".format(
                         group.get("span_kind")
                     )
                     raise ValidationError.from_yaml_pos(position, msg)
-                # TODO
-            else:  # metric
-                # TODO
-                pass
             model = SemanticConvention(
                 semconv_id=group["id"].strip(),
                 type=convention_type,

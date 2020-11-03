@@ -49,21 +49,17 @@ class SpanKind(Enum):
         return kind_map.get(span_kind_value)
 
 
-class SemanticConventionType(Enum):
-    SPAN = 1
-    RESOURCE = 2
-    METRIC = 3
-
-    @staticmethod
-    def parse(type_value):
-        # Gracefully transition to the new types
-        if type_value is None:
-            return SemanticConventionType.SPAN
-        enum_map = {
-            "span": SemanticConventionType.SPAN,
-            "resource": SemanticConventionType.RESOURCE,
-        }
-        return enum_map.get(type_value)
+def parse_semantic_convention_type(type_value):
+    # Gracefully transition to the new types
+    if type_value is None:
+        return SpanSemanticConvention
+    enum_map = {
+        "span": SpanSemanticConvention,
+        "resource": ResourceSemanticConvention,
+        "metric": MetricSemanticConvention,
+        "units": UnitSemanticConvention,
+    }
+    return enum_map.get(type_value)
 
 
 @dataclass
@@ -71,16 +67,19 @@ class SemanticConvention:
     """ Contains the model extracted from a yaml file
     """
 
-    semconv_id: str
-    type: SemanticConventionType
-    brief: str
-    note: str
-    prefix: str
-    extends: str
-    span_kind: SpanKind
-    attrs_by_name: "Dict[str, SemanticAttribute]"
-    constraints: "Set[Union[Include, AnyOf]]"
-    _position: List[int]
+    mandatory_keys = ("id", "brief")
+
+    def __init__(self, group):
+        self.semconv_id = group["id"].strip()
+        # self.type = group['type']
+        self.brief = str(group["brief"]).strip()
+        self.note = group.get("note", "").strip()
+        self.prefix = group.get("prefix", "")
+        self.extends = group.get("extends", "").strip()
+        self.constraints = SemanticConvention.parse_constraint(
+            group.get("constraints", ())
+        )
+        self._position = [group.lc.line, group.lc.col]
 
     @property
     def attributes(self):
@@ -90,23 +89,9 @@ class SemanticConvention:
     def parse(yaml_file):
         yaml = YAML().load(yaml_file)
         models = []
-        available_keys = (
-            "id",
-            "type",
-            "brief",
-            "note",
-            "prefix",
-            "extends",
-            "span_kind",
-            "attributes",
-            "constraints",
-        )
-        mandatory_keys = ("id", "brief")
         for group in yaml["groups"]:
-            validate_values(group, available_keys, mandatory_keys)
-            validate_id(group["id"], group.lc.data["id"])
-            type = group.get("type")
-            if type is None:
+            type_value = group.get("type")
+            if type_value is None:
                 line = group.lc.data["id"][1] + 1
                 print(
                     "Using default SPAN type for semantic convention '{}' in {} @ line {}\n".format(
@@ -114,7 +99,7 @@ class SemanticConvention:
                     ),
                     file=sys.stderr,
                 )
-            convention_type = SemanticConventionType.parse(type)
+            convention_type = parse_semantic_convention_type(type_value)
             if convention_type is None:
                 position = (
                     group.lc.data["type"] if "type" in group else group.lc.data["id"]
@@ -131,31 +116,14 @@ class SemanticConvention:
             prefix = group.get("prefix", "")
             if prefix != "":
                 validate_id(prefix, group.lc.data["prefix"])
-            position = group.lc.data["id"]
-            # Fields validation based on the type
-            if convention_type == SemanticConventionType.RESOURCE:
-                if span_kind != SpanKind.EMPTY:
-                    position = group.lc.data["span_kind"]
-                    msg = "Resources cannot have span_kind: {}".format(
-                        group.get("span_kind")
-                    )
-                    raise ValidationError.from_yaml_pos(position, msg)
-            model = SemanticConvention(
-                semconv_id=group["id"].strip(),
-                type=convention_type,
-                brief=str(group["brief"]).strip(),
-                note=group.get("note", "").strip(),
-                prefix=prefix.strip(),
-                extends=group.get("extends", "").strip(),
-                span_kind=span_kind,
-                attrs_by_name=SemanticAttribute.parse(prefix, group.get("attributes"))
-                if "attributes" in group
-                else {},
-                constraints=SemanticConvention.parse_constraint(
-                    group.get("constraints", ())
-                ),
-                _position=position,
+
+            # First, validate that the correct fields are available in the yaml
+            validate_values(
+                group, convention_type.allowed_keys, convention_type.mandatory_keys
             )
+            model = convention_type(group)
+            # Also, validate that the value of the fields is acceptable
+            model.validate()
             models.append(model)
         return models
 
@@ -223,6 +191,14 @@ class SemanticConvention:
             [attr for attr in self.attributes if attr.required == Required.CONDITIONAL]
         )
 
+    def validate(self):
+        """
+        Subclasses may provide additional validation. 
+        This method should raise an exception with a descriptive
+        message if the semantic convention is not valid.
+        """
+        validate_id(self.semconv_id, self._position)
+
     @staticmethod
     def unique_attr(l: list) -> list:
         output = []
@@ -246,6 +222,60 @@ class SemanticConvention:
             for attr_list in constraint.choice_list_attributes
             for attribute in attr_list
         )
+
+
+class ResourceSemanticConvention(SemanticConvention):
+
+    allowed_keys = [
+        "id",
+        "type",
+        "brief",
+        "note",
+        "prefix",
+        "extends",
+        "attributes",
+        "constraints",
+    ]
+
+    def __init__(self, group):
+        super(ResourceSemanticConvention, self).__init__(group)
+        self.attrs_by_name = SemanticAttribute.parse(
+            self.prefix, group.get("attributes")
+        )
+
+
+class SpanSemanticConvention(SemanticConvention):
+    allowed_keys = [
+        "id",
+        "type",
+        "brief",
+        "note",
+        "prefix",
+        "extends",
+        "span_kind",
+        "attributes",
+        "constraints",
+    ]
+
+    def __init__(self, group):
+        super(SpanSemanticConvention, self).__init__(group)
+        self.attrs_by_name = SemanticAttribute.parse(
+            self.prefix, group.get("attributes")
+        )
+        self.span_kind = SpanKind.parse(group.get("span_kind"))
+
+
+class UnitSemanticConvention(SemanticConvention):
+    allowed_keys = [
+        "id",
+        "type",
+        "brief",
+        "fields",
+    ]
+
+
+class MetricSemanticConvention(SemanticConvention):
+    allowed_keys = []
 
 
 @dataclass

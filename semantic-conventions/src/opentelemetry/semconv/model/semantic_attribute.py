@@ -85,6 +85,9 @@ class SemanticAttribute:
             "sampling_relevant",
             "note",
         )
+        if not yaml_attributes:
+            return attributes
+
         for attribute in yaml_attributes:
             validate_values(attribute, allowed_keys)
             attr_id = attribute.get("id")

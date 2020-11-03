@@ -19,10 +19,7 @@ import glob
 import sys
 from typing import List
 
-from opentelemetry.semconv.model.semantic_convention import (
-    SemanticConventionSet,
-    SemanticConventionType,
-)
+from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
 from opentelemetry.semconv.templating.code import CodeRenderer
 
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
@@ -58,11 +55,11 @@ def filter_semconv(
         output = {}
         for semconv_id in semconv.models:
             model = semconv.models[semconv_id]
-            if span and model.type == SemanticConventionType.SPAN:
+            if span and model.type == "span":
                 output[semconv_id] = model
-            if resource and model.type == SemanticConventionType.RESOURCE:
+            if resource and model.type == "resource":
                 output[semconv_id] = model
-            if metric and model.type == SemanticConventionType.METRIC:
+            if metric and model.type == "metric":
                 output[semconv_id] = model
         semconv.models = output
 

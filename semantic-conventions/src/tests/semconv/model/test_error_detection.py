@@ -48,7 +48,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
             self.fail()
         e = ex.exception
         msg = e.message.lower()
-        self.assertIn("resources cannot have span_kind", msg)
+        self.assertIn("invalid keys: ['span_kind']", msg)
         self.assertEqual(e.line, 4)
 
     def test_invalid_id(self):

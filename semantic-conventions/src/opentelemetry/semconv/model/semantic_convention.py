@@ -24,7 +24,12 @@ from ruamel.yaml.comments import CommentedSeq
 from opentelemetry.semconv.model.constraints import Include, AnyOf
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute, Required
-from opentelemetry.semconv.model.utils import validate_values, validate_id
+from opentelemetry.semconv.model.unit_member import UnitMember
+from opentelemetry.semconv.model.utils import (
+    ValidatableYamlNode,
+    validate_values,
+    validate_id,
+)
 
 
 class SpanKind(Enum):
@@ -62,24 +67,20 @@ def parse_semantic_convention_type(type_value):
     return enum_map.get(type_value)
 
 
-@dataclass
-class SemanticConvention:
+class SemanticConvention(ValidatableYamlNode):
     """ Contains the model extracted from a yaml file
     """
 
-    mandatory_keys = ("id", "brief")
-
     def __init__(self, group):
-        self.semconv_id = group["id"].strip()
-        # self.type = group['type']
-        self.brief = str(group["brief"]).strip()
+        super(SemanticConvention, self).__init__(group)
+
+        self.semconv_id = self.id
         self.note = group.get("note", "").strip()
         self.prefix = group.get("prefix", "")
         self.extends = group.get("extends", "").strip()
         self.constraints = SemanticConvention.parse_constraint(
             group.get("constraints", ())
         )
-        self._position = [group.lc.line, group.lc.col]
 
     @property
     def attributes(self):
@@ -118,12 +119,10 @@ class SemanticConvention:
                 validate_id(prefix, group.lc.data["prefix"])
 
             # First, validate that the correct fields are available in the yaml
-            validate_values(
-                group, convention_type.allowed_keys, convention_type.mandatory_keys
-            )
+            convention_type.validate_keys(group)
             model = convention_type(group)
             # Also, validate that the value of the fields is acceptable
-            model.validate()
+            model.validate_values()
             models.append(model)
         return models
 
@@ -190,14 +189,6 @@ class SemanticConvention:
         return SemanticConvention.unique_attr(
             [attr for attr in self.attributes if attr.required == Required.CONDITIONAL]
         )
-
-    def validate(self):
-        """
-        Subclasses may provide additional validation. 
-        This method should raise an exception with a descriptive
-        message if the semantic convention is not valid.
-        """
-        validate_id(self.semconv_id, self._position)
 
     @staticmethod
     def unique_attr(l: list) -> list:

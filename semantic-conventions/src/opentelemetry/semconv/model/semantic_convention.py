@@ -261,8 +261,13 @@ class UnitSemanticConvention(SemanticConvention):
         "id",
         "type",
         "brief",
-        "fields",
+        "members",
     ]
+
+    def __init__(self, group):
+        super(UnitSemanticConvention, self).__init__(group)
+        self.members = UnitMember.parse(group.get("members"))
+
 
 
 class MetricSemanticConvention(SemanticConvention):

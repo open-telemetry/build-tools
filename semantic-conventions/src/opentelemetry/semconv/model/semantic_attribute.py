@@ -35,6 +35,18 @@ class Required(Enum):
     NO = 3
 
 
+class HasAttributes:
+    def _set_attributes(self, prefix, node):
+        self.attrs_by_name = SemanticAttribute.parse(prefix, node.get("attributes"))
+
+    @property
+    def attributes(self):
+        if not hasattr(self, "attrs_by_name"):
+            return []
+
+        return list(self.attrs_by_name.values())
+
+
 @dataclass
 class SemanticAttribute:
     fqn: str

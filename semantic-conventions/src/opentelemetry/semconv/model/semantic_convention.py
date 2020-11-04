@@ -23,7 +23,11 @@ from ruamel.yaml.comments import CommentedSeq
 
 from opentelemetry.semconv.model.constraints import Include, AnyOf
 from opentelemetry.semconv.model.exceptions import ValidationError
-from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute, Required
+from opentelemetry.semconv.model.semantic_attribute import (
+    HasAttributes,
+    SemanticAttribute,
+    Required,
+)
 from opentelemetry.semconv.model.unit_member import UnitMember
 from opentelemetry.semconv.model.utils import (
     ValidatableYamlNode,
@@ -84,7 +88,7 @@ class SemanticConvention(ValidatableYamlNode):
 
     @property
     def attributes(self):
-        return list(self.attrs_by_name.values())
+        return []
 
     @staticmethod
     def parse(yaml_file):
@@ -215,7 +219,7 @@ class SemanticConvention(ValidatableYamlNode):
         )
 
 
-class ResourceSemanticConvention(SemanticConvention):
+class ResourceSemanticConvention(HasAttributes, SemanticConvention):
 
     allowed_keys = [
         "id",
@@ -230,12 +234,10 @@ class ResourceSemanticConvention(SemanticConvention):
 
     def __init__(self, group):
         super(ResourceSemanticConvention, self).__init__(group)
-        self.attrs_by_name = SemanticAttribute.parse(
-            self.prefix, group.get("attributes")
-        )
+        self._set_attributes(self.prefix, group)
 
 
-class SpanSemanticConvention(SemanticConvention):
+class SpanSemanticConvention(HasAttributes, SemanticConvention):
     allowed_keys = [
         "id",
         "type",
@@ -250,9 +252,7 @@ class SpanSemanticConvention(SemanticConvention):
 
     def __init__(self, group):
         super(SpanSemanticConvention, self).__init__(group)
-        self.attrs_by_name = SemanticAttribute.parse(
-            self.prefix, group.get("attributes")
-        )
+        self._set_attributes(self.prefix, group)
         self.span_kind = SpanKind.parse(group.get("span_kind"))
 
 
@@ -267,7 +267,6 @@ class UnitSemanticConvention(SemanticConvention):
     def __init__(self, group):
         super(UnitSemanticConvention, self).__init__(group)
         self.members = UnitMember.parse(group.get("members"))
-
 
 
 class MetricSemanticConvention(SemanticConvention):
@@ -402,14 +401,15 @@ class SemanticConventionSet:
                     semconv.constraints += (constraint.inherit_anyof(),)
             # Attributes
             parent_attributes = {}
-            for ext_attr in extended.attrs_by_name.values():
+            for ext_attr in extended.attributes:
                 parent_attributes[ext_attr.fqn] = ext_attr.inherit_attribute()
             # By induction, parent semconv is already correctly sorted
             parent_attributes.update(
                 SemanticConventionSet._sort_attributes_dict(semconv.attrs_by_name)
             )
-            semconv.attrs_by_name = parent_attributes
-        else:  # No parent, sort of current attributes
+            if parent_attributes or semconv.attributes:
+                semconv.attrs_by_name = parent_attributes
+        elif semconv.attributes:  # No parent, sort of current attributes
             semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(
                 semconv.attrs_by_name
             )

@@ -3,11 +3,11 @@ from opentelemetry.semconv.model.utils import ValidatableYamlNode
 
 class UnitMember(ValidatableYamlNode):
 
-    allowed_keys = ["id", "brief", "value"]
+    allowed_keys = ("id", "brief", "value")
     mandatory_keys = allowed_keys
 
     def __init__(self, node):
-        super(UnitMember, self).__init__(node)
+        super().__init__(node)
         self.value = node.get("value")
 
     @staticmethod

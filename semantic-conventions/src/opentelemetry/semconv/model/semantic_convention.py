@@ -220,8 +220,7 @@ class SemanticConvention(ValidatableYamlNode):
 
 
 class ResourceSemanticConvention(HasAttributes, SemanticConvention):
-
-    allowed_keys = [
+    allowed_keys = (
         "id",
         "type",
         "brief",
@@ -230,15 +229,15 @@ class ResourceSemanticConvention(HasAttributes, SemanticConvention):
         "extends",
         "attributes",
         "constraints",
-    ]
+    )
 
     def __init__(self, group):
-        super(ResourceSemanticConvention, self).__init__(group)
+        super().__init__(group)
         self._set_attributes(self.prefix, group)
 
 
 class SpanSemanticConvention(HasAttributes, SemanticConvention):
-    allowed_keys = [
+    allowed_keys = (
         "id",
         "type",
         "brief",
@@ -248,24 +247,24 @@ class SpanSemanticConvention(HasAttributes, SemanticConvention):
         "span_kind",
         "attributes",
         "constraints",
-    ]
+    )
 
     def __init__(self, group):
-        super(SpanSemanticConvention, self).__init__(group)
+        super().__init__(group)
         self._set_attributes(self.prefix, group)
         self.span_kind = SpanKind.parse(group.get("span_kind"))
 
 
 class UnitSemanticConvention(SemanticConvention):
-    allowed_keys = [
+    allowed_keys = (
         "id",
         "type",
         "brief",
         "members",
-    ]
+    )
 
     def __init__(self, group):
-        super(UnitSemanticConvention, self).__init__(group)
+        super().__init__(group)
         self.members = UnitMember.parse(group.get("members"))
 
 

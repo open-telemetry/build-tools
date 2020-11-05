@@ -80,7 +80,7 @@ class SemanticConvention(ValidatableYamlNode):
 
         self.semconv_id = self.id
         self.note = group.get("note", "").strip()
-        self.prefix = group.get("prefix", "")
+        self.prefix = group.get("prefix", "").strip()
         self.extends = group.get("extends", "").strip()
         self.constraints = SemanticConvention.parse_constraint(
             group.get("constraints", ())

@@ -1,0 +1,23 @@
+name: Semantic Convention Generator Run Tests
+on:
+  push:
+    tags: [ '**' ]
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+    paths:
+      - .github/workflows/semconvgen-tests.yml
+      - 'semantic-conventions/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+    - name: install dependencies
+      run: |
+        pip install -U pip
+        pip install -r semantic-conventions/requirements.txt
+    - name: run tests
+      run: pytest -v

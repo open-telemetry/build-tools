@@ -15,7 +15,6 @@
 import io
 import os
 import unittest
-import difflib
 
 from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
@@ -36,7 +35,8 @@ class TestCorrectMarkdown(unittest.TestCase):
         renderer._render_single_file(content, md, output)
         with open(self.load_file("markdown/ref/expected.md"), "r") as markdown:
             expected = markdown.read()
-        self.assertEqualWithDiff(expected, output.getvalue())
+
+        assert output.getvalue() == expected
 
     def testInclude(self):
         semconv = SemanticConventionSet(debug=False)
@@ -53,8 +53,8 @@ class TestCorrectMarkdown(unittest.TestCase):
         renderer._render_single_file(content, md, output)
         with open(self.load_file("markdown/include/expected.md"), "r") as markdown:
             expected = markdown.read()
-        result = output.getvalue()
-        self.assertEqualWithDiff(expected, result)
+
+        assert output.getvalue() == expected
 
     def testDeprecated(self):
         semconv = SemanticConventionSet(debug=False)
@@ -356,27 +356,37 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.assertIn("Parameter", msg)
         self.assertIn("already defined", msg)
 
+    def test_units(self):
+        semconv = SemanticConventionSet(debug=True)
+        semconv.parse(self.load_file("yaml/metrics/units.yaml"))
+        semconv.finish()
+
+        assert len(semconv.models) == 1
+
+        content = self.read_file("markdown/metrics/units_input.md")
+        expected = self.read_file("markdown/metrics/units_output.md")
+        self.check_render(
+            semconv,
+            "markdown/metrics/",
+            "markdown/metrics/units_input.md",
+            content,
+            expected
+            )
+
+
     def check_render(self, semconv, folder, file_name, content: str, expected: str):
         renderer = MarkdownRenderer(self.load_file(folder), semconv)
         output = io.StringIO()
         renderer._render_single_file(content, self.load_file(file_name), output)
         result = output.getvalue()
-        self.assertEqualWithDiff(expected, result)
 
-    def assertEqualWithDiff(self, left, right, msg=None):
-        try:
-            self._baseAssertEqual(left, right)
-        except self.failureException:
-            diff = difflib.unified_diff(
-                left.splitlines(True), right.splitlines(True), n=0
-            )
-            diff = "".join(diff)
-            raise self.failureException("\n" + diff)
+        assert result == expected
 
     _TEST_DIR = os.path.dirname(__file__)
 
+    def read_file(self, filename):
+        with open(self.load_file(filename), 'r') as test_file:
+            return test_file.read()
+
     def load_file(self, filename):
         return os.path.join(self._TEST_DIR, "..", "..", "data", filename)
-
-if __name__ == "__main__":
-    unittest.main()

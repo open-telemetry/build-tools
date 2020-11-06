@@ -13,12 +13,15 @@
 #   limitations under the License.
 
 import os
-from opentelemetry.semconv.model.semantic_convention import SemanticConvention, SpanKind
+from opentelemetry.semconv.model.semantic_convention import (
+    parse_semantic_convention_groups,
+    SpanKind,
+)
 
 
 def test_parse_basic(open_test_file):
     with open_test_file(os.path.join("yaml", "basic_example.yml")) as yaml_file:
-        conventions = SemanticConvention.parse(yaml_file)
+        conventions = parse_semantic_convention_groups(yaml_file)
 
     assert conventions is not None
     assert len(conventions) == 2

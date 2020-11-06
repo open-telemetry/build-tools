@@ -19,19 +19,18 @@ from typing import List, Union, Iterable, Tuple
 
 import typing
 from ruamel.yaml import YAML
-from ruamel.yaml.comments import CommentedSeq
 
-from opentelemetry.semconv.model.constraints import Include, AnyOf
+from opentelemetry.semconv.model.constraints import Include, AnyOf, parse_constraints
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
     HasAttributes,
     SemanticAttribute,
     Required,
+    unique_attributes,
 )
 from opentelemetry.semconv.model.unit_member import UnitMember
 from opentelemetry.semconv.model.utils import (
     ValidatableYamlNode,
-    validate_values,
     validate_id,
 )
 
@@ -71,95 +70,55 @@ def parse_semantic_convention_type(type_value):
     return enum_map.get(type_value)
 
 
-class SemanticConvention(ValidatableYamlNode):
+def parse_semantic_convention_groups(yaml_file):
+    yaml = YAML().load(yaml_file)
+    models = []
+    for group in yaml["groups"]:
+        models.append(SemanticConvention(group))
+    return models
+
+
+def SemanticConvention(group):
+    type_value = group.get("type")
+    if type_value is None:
+        line = group.lc.data["id"][1] + 1
+        print(
+            "Using default SPAN type for semantic convention '{}' @ line {}".format(
+                group["id"], line
+            ),
+            file=sys.stderr,
+        )
+
+    convention_type = parse_semantic_convention_type(type_value)
+    if convention_type is None:
+        position = group.lc.data["type"] if "type" in group else group.lc.data["id"]
+        msg = "Invalid value for semantic convention type: {}".format(group.get("type"))
+        raise ValidationError.from_yaml_pos(position, msg)
+
+    # First, validate that the correct fields are available in the yaml
+    convention_type.validate_keys(group)
+    model = convention_type(group)
+    # Also, validate that the value of the fields is acceptable
+    model.validate_values()
+    return model
+
+
+class BaseSemanticConvention(ValidatableYamlNode):
     """ Contains the model extracted from a yaml file
     """
 
     def __init__(self, group):
-        super(SemanticConvention, self).__init__(group)
+        super().__init__(group)
 
         self.semconv_id = self.id
         self.note = group.get("note", "").strip()
         self.prefix = group.get("prefix", "").strip()
         self.extends = group.get("extends", "").strip()
-        self.constraints = SemanticConvention.parse_constraint(
-            group.get("constraints", ())
-        )
+        self.constraints = parse_constraints(group.get("constraints", ()))
 
     @property
     def attributes(self):
         return []
-
-    @staticmethod
-    def parse(yaml_file):
-        yaml = YAML().load(yaml_file)
-        models = []
-        for group in yaml["groups"]:
-            type_value = group.get("type")
-            if type_value is None:
-                line = group.lc.data["id"][1] + 1
-                print(
-                    "Using default SPAN type for semantic convention '{}' in {} @ line {}\n".format(
-                        group["id"], yaml_file.name, line
-                    ),
-                    file=sys.stderr,
-                )
-            convention_type = parse_semantic_convention_type(type_value)
-            if convention_type is None:
-                position = (
-                    group.lc.data["type"] if "type" in group else group.lc.data["id"]
-                )
-                msg = "Invalid value for semantic convention type: {}".format(
-                    group.get("type")
-                )
-                raise ValidationError.from_yaml_pos(position, msg)
-            span_kind = SpanKind.parse(group.get("span_kind"))
-            if span_kind is None:
-                position = group.lc.data["span_kind"]
-                msg = "Invalid value for span_kind: {}".format(group.get("span_kind"))
-                raise ValidationError.from_yaml_pos(position, msg)
-            prefix = group.get("prefix", "")
-            if prefix != "":
-                validate_id(prefix, group.lc.data["prefix"])
-
-            # First, validate that the correct fields are available in the yaml
-            convention_type.validate_keys(group)
-            model = convention_type(group)
-            # Also, validate that the value of the fields is acceptable
-            model.validate_values()
-            models.append(model)
-        return models
-
-    @staticmethod
-    def parse_constraint(yaml_constraints):
-        """ This method parses the yaml representation for semantic convention attributes
-            creating a list of Constraint objects.
-        """
-        constraints = ()
-        allowed_keys = ("include", "any_of")
-        for constraint in yaml_constraints:
-            validate_values(constraint, allowed_keys)
-            if len(constraint.keys()) > 1:
-                position = constraint.lc.data[list(constraint)[1]]
-                msg = "Invalid entry in constraint array - multiple top-level keys in entry."
-                raise ValidationError.from_yaml_pos(position, msg)
-            if "include" in constraint:
-                constraints += (Include(constraint.get("include")),)
-            elif "any_of" in constraint:
-                choice_sets = ()
-                for constraint_list in constraint.get("any_of"):
-                    inner_id_list = ()
-                    if isinstance(constraint_list, CommentedSeq):
-                        inner_id_list = tuple(
-                            attr_constraint for attr_constraint in constraint_list
-                        )
-                    else:
-                        inner_id_list += (constraint_list,)
-                    choice_sets += (inner_id_list,)
-                any_of = AnyOf(choice_sets)
-                any_of._yaml_src_position = constraint.get("any_of").lc.data
-                constraints += (any_of,)
-        return constraints
 
     def contains_attribute(self, attr: "SemanticAttribute"):
         for local_attr in self.attributes:
@@ -172,35 +131,27 @@ class SemanticConvention(ValidatableYamlNode):
 
     def all_attributes(self):
         attr: SemanticAttribute
-        return SemanticConvention.unique_attr(
+        return unique_attributes(
             [attr for attr in self.attributes] + self.conditional_attributes()
         )
 
     def sampling_attributes(self):
         attr: SemanticAttribute
-        return SemanticConvention.unique_attr(
+        return unique_attributes(
             [attr for attr in self.attributes if attr.sampling_relevant]
         )
 
     def required_attributes(self):
         attr: SemanticAttribute
-        return SemanticConvention.unique_attr(
+        return unique_attributes(
             [attr for attr in self.attributes if attr.required == Required.ALWAYS]
         )
 
     def conditional_attributes(self):
         attr: SemanticAttribute
-        return SemanticConvention.unique_attr(
+        return unique_attributes(
             [attr for attr in self.attributes if attr.required == Required.CONDITIONAL]
         )
-
-    @staticmethod
-    def unique_attr(l: list) -> list:
-        output = []
-        for x in l:
-            if x.fqn not in [attr.fqn for attr in output]:
-                output.append(x)
-        return output
 
     def any_of(self):
         result = []
@@ -218,8 +169,13 @@ class SemanticConvention(ValidatableYamlNode):
             for attribute in attr_list
         )
 
+    def validate_values(self):
+        super().validate_values()
+        if self.prefix:
+            validate_id(self.prefix, self._position)
 
-class ResourceSemanticConvention(HasAttributes, SemanticConvention):
+
+class ResourceSemanticConvention(HasAttributes, BaseSemanticConvention):
     allowed_keys = (
         "id",
         "type",
@@ -236,7 +192,7 @@ class ResourceSemanticConvention(HasAttributes, SemanticConvention):
         self._set_attributes(self.prefix, group)
 
 
-class SpanSemanticConvention(HasAttributes, SemanticConvention):
+class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
     allowed_keys = (
         "id",
         "type",
@@ -253,9 +209,13 @@ class SpanSemanticConvention(HasAttributes, SemanticConvention):
         super().__init__(group)
         self._set_attributes(self.prefix, group)
         self.span_kind = SpanKind.parse(group.get("span_kind"))
+        if self.span_kind is None:
+            position = group.lc.data["span_kind"]
+            msg = "Invalid value for span_kind: {}".format(group.get("span_kind"))
+            raise ValidationError.from_yaml_pos(position, msg)
 
 
-class UnitSemanticConvention(SemanticConvention):
+class UnitSemanticConvention(BaseSemanticConvention):
     allowed_keys = (
         "id",
         "type",
@@ -268,7 +228,7 @@ class UnitSemanticConvention(SemanticConvention):
         self.members = UnitMember.parse(group.get("members"))
 
 
-class MetricSemanticConvention(SemanticConvention):
+class MetricSemanticConvention(BaseSemanticConvention):
     allowed_keys = []
 
 
@@ -279,13 +239,13 @@ class SemanticConventionSet:
     """
 
     debug: bool
-    models: typing.Dict[str, SemanticConvention] = field(default_factory=dict)
+    models: typing.Dict[str, BaseSemanticConvention] = field(default_factory=dict)
     errors: bool = False
 
     def parse(self, file):
         with open(file, "r", encoding="utf-8") as yaml_file:
             try:
-                semconv_models = SemanticConvention.parse(yaml_file)
+                semconv_models = parse_semantic_convention_groups(yaml_file)
                 for model in semconv_models:
                     if model.semconv_id in self.models:
                         self.errors = True
@@ -324,7 +284,6 @@ class SemanticConventionSet:
         """ Resolves values referenced from other models using `ref` and `extends` attributes AFTER all models were parsed.
             Here, sanity checks for `ref/extends` attributes are performed.
         """
-        semconv: SemanticConvention
         # Before resolving attributes, we verify that no duplicate exists.
         self.check_unique_fqns()
         fixpoint = False
@@ -352,18 +311,13 @@ class SemanticConventionSet:
         This internal method goes through every semantic convention to resolve parent/child relationships.
         :return: None
         """
-        unprocessed: typing.Dict[str, SemanticConvention]
         unprocessed = self.models.copy()
         # Iterate through the list and remove the semantic conventions that have been processed.
         while len(unprocessed) > 0:
             semconv = next(iter(unprocessed.values()))
             self._populate_extends_single(semconv, unprocessed)
 
-    def _populate_extends_single(
-        self,
-        semconv: SemanticConvention,
-        unprocessed: typing.Dict[str, SemanticConvention],
-    ):
+    def _populate_extends_single(self, semconv, unprocessed):
         """
         Resolves the parent/child relationship for a single Semantic Convention. If the parent **p** of the input
         semantic convention **i** has in turn a parent **pp**, it recursively resolves **pp** before processing **p**.
@@ -450,7 +404,7 @@ class SemanticConventionSet:
                         if constraint_attrs:
                             any_of.add_attributes(constraint_attrs)
 
-    def resolve_ref(self, semconv: SemanticConvention):
+    def resolve_ref(self, semconv):
         fixpoint_ref = True
         attr: SemanticAttribute
         for attr in semconv.attributes:
@@ -475,11 +429,10 @@ class SemanticConventionSet:
                 attr.attr_id = attr.ref
         return fixpoint_ref
 
-    def resolve_include(self, semconv: SemanticConvention):
+    def resolve_include(self, semconv):
         fixpoint_inc = True
         for constraint in semconv.constraints:
             if isinstance(constraint, Include):
-                include_semconv: SemanticConvention
                 include_semconv = self.models.get(constraint.semconv_id)
                 # include required attributes and constraints
                 if include_semconv is None:

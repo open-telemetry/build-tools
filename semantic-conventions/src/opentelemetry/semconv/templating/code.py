@@ -19,10 +19,7 @@ import typing
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from opentelemetry.semconv.model.semantic_convention import (
-    SemanticConventionSet,
-    SemanticConvention,
-)
+from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
 from opentelemetry.semconv.model.utils import ID_RE
 
 
@@ -84,9 +81,7 @@ class CodeRenderer:
         data.update(self.parameters)
         return data
 
-    def get_data_multiple_files(
-        self, semconv: SemanticConvention, template_path: str
-    ) -> dict:
+    def get_data_multiple_files(self, semconv, template_path) -> dict:
         """Returns a dictionary with the data from a single SemanticConvention to fill the template."""
         data = {"template": template_path, "semconv": semconv}
         data.update(self.parameters)
@@ -100,7 +95,7 @@ class CodeRenderer:
         env.filters["to_camelcase"] = to_camelcase
 
     @staticmethod
-    def prefix_output_file(file_name: str, pattern: str, semconv: SemanticConvention):
+    def prefix_output_file(file_name, pattern, semconv):
         base = os.path.basename(file_name)
         dir = os.path.dirname(file_name)
         value = getattr(semconv, pattern)
@@ -121,7 +116,6 @@ class CodeRenderer:
         )
         self.setup_environment(env)
         if pattern:
-            semconv: SemanticConvention
             for semconv in semconvset.models.values():
                 output_name = self.prefix_output_file(output_file, pattern, semconv)
                 data = self.get_data_multiple_files(semconv, template_path)

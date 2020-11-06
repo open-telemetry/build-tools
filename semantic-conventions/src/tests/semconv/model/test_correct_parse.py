@@ -18,7 +18,7 @@ import unittest
 from opentelemetry.semconv.model.constraints import Include
 from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute
 from opentelemetry.semconv.model.semantic_convention import (
-    SemanticConvention,
+    parse_semantic_convention_groups,
     SemanticConventionSet,
 )
 
@@ -544,7 +544,7 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[7].inherited, False)
         self.assertEqual(attrs[7].ref, None)
 
-    def semantic_convention_check(self, s: SemanticConvention, expected: dict):
+    def semantic_convention_check(self, s, expected):
         self.assertEqual(expected["prefix"], s.prefix)
         self.assertEqual(expected["extends"], s.extends)
         self.assertEqual(expected["id"], s.semconv_id)

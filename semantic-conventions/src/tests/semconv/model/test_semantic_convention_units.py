@@ -1,13 +1,13 @@
 import os
 from opentelemetry.semconv.model.semantic_convention import (
-    SemanticConvention,
+    parse_semantic_convention_groups,
     UnitSemanticConvention,
 )
 
 
 def test_build_units(open_test_file):
     with open_test_file(os.path.join("yaml", "metrics", "units.yaml")) as yaml_file:
-        conventions = SemanticConvention.parse(yaml_file)
+        conventions = parse_semantic_convention_groups(yaml_file)
 
     assert len(conventions) == 1
     convention = conventions[0]

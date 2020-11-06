@@ -47,6 +47,14 @@ class HasAttributes:
         return list(self.attrs_by_name.values())
 
 
+def unique_attributes(attributes):
+    output = []
+    for x in l:
+        if x.fqn not in [attr.fqn for attr in output]:
+            output.append(x)
+    return output
+
+
 @dataclass
 class SemanticAttribute:
     fqn: str

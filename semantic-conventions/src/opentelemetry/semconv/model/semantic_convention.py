@@ -62,7 +62,7 @@ def parse_semantic_convention_type(type_value):
     if type_value is None:
         return SpanSemanticConvention
     enum_map = {
-        cls.TYPE_VALUE: cls
+        cls.GROUP_TYPE_NAME: cls
         for cls in [
             SpanSemanticConvention,
             ResourceSemanticConvention,
@@ -101,7 +101,7 @@ def SemanticConvention(group):
     # First, validate that the correct fields are available in the yaml
     convention_type.validate_keys(group)
     model = convention_type(group)
-    # Also, va`lidate that the value of the fields is acceptable
+    # Also, validate that the value of the fields is acceptable
     model.validate_values()
     return model
 
@@ -179,7 +179,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
 
 
 class ResourceSemanticConvention(HasAttributes, BaseSemanticConvention):
-    TYPE_VALUE = "resource"
+    GROUP_TYPE_NAME = "resource"
 
     allowed_keys = (
         "id",
@@ -198,7 +198,7 @@ class ResourceSemanticConvention(HasAttributes, BaseSemanticConvention):
 
 
 class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
-    TYPE_VALUE = "span"
+    GROUP_TYPE_NAME = "span"
 
     allowed_keys = (
         "id",
@@ -223,7 +223,7 @@ class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
 
 
 class UnitSemanticConvention(BaseSemanticConvention):
-    TYPE_VALUE = "units"
+    GROUP_TYPE_NAME = "units"
 
     allowed_keys = (
         "id",
@@ -238,7 +238,7 @@ class UnitSemanticConvention(BaseSemanticConvention):
 
 
 class MetricSemanticConvention(BaseSemanticConvention):
-    TYPE_VALUE = "metric"
+    GROUP_TYPE_NAME = "metric"
 
     allowed_keys = []
 

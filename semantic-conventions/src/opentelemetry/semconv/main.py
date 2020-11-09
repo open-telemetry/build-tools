@@ -53,7 +53,7 @@ def filter_semconv(semconv, type_filter):
         semconv.models = {
             id: model
             for id, model in semconv.models.items()
-            if model.TYPE_VALUE == type_filter
+            if model.GROUP_TYPE_NAME == type_filter
         }
 
 

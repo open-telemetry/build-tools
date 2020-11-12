@@ -22,7 +22,7 @@ jobs:
     - name: run tests
       run: pytest -v
 
-  build:
+  build-and-publish-docker:
     runs-on: ubuntu-latest
     needs: tests
     steps:

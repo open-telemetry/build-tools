@@ -52,8 +52,8 @@ def check_no_missing_keys(yaml, mandatory):
 
 class ValidatableYamlNode:
 
-    allowed_keys = []
-    mandatory_keys = ["id", "brief"]
+    allowed_keys = ()
+    mandatory_keys = ("id", "brief")
 
     def __init__(self, yaml_node):
         self.id = yaml_node.get("id").strip()

@@ -240,7 +240,7 @@ class UnitSemanticConvention(BaseSemanticConvention):
 class MetricSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "metric"
 
-    allowed_keys = []
+    allowed_keys = ()
 
 
 @dataclass

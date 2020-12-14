@@ -29,7 +29,7 @@ from opentelemetry.semconv.model.semantic_attribute import (
 )
 from opentelemetry.semconv.model.semantic_convention import (
     SemanticConventionSet,
-    SemanticConvention,
+    UnitSemanticConvention,
 )
 from opentelemetry.semconv.model.utils import ID_RE
 
@@ -42,7 +42,6 @@ class RenderContext:
     enums: list
     notes: list
     current_md: str
-    current_semconv: SemanticConvention
 
     def __init__(self, break_count):
         self.is_full = False
@@ -51,6 +50,7 @@ class RenderContext:
         self.break_count = break_count
         self.enums = []
         self.notes = []
+        self.units = []
         self.current_md = ""
         self.current_semconv = None
 
@@ -185,6 +185,18 @@ class MarkdownRenderer:
         for note in self.render_ctx.notes:
             output.write("\n**[{}]:** {}\n".format(counter, note))
             counter += 1
+
+    def to_markdown_unit_table(self, members, output):
+        output.write("\n")
+        output.write(
+            "| Name        | Kind of Quantity         | Unit String   |\n"
+            "| ------------| ----------------         | -----------   |"
+        )
+        for member in members.values():
+            output.write(
+                "\n| {} | {} | `{}` |".format(member.id, member.brief, member.value)
+            )
+        output.write("\n")
 
     def to_markdown_enum(self, output: io.StringIO):
         """ Renders enum types after a Semantic Convention Table
@@ -357,9 +369,7 @@ class MarkdownRenderer:
             last_match = end_match.end()
         output.write(content[last_match:])
 
-    def _render_table(
-        self, semconv: SemanticConvention, parameters, output: io.StringIO
-    ):
+    def _render_table(self, semconv, parameters, output):
         header: str
         header = semconv.semconv_id
         if parameters:
@@ -394,5 +404,8 @@ class MarkdownRenderer:
             for cnst in semconv.constraints:
                 self.to_markdown_constraint(cnst, output)
         self.to_markdown_enum(output)
+
+        if isinstance(semconv, UnitSemanticConvention):
+            self.to_markdown_unit_table(semconv.members, output)
 
         output.write("<!-- endsemconv -->")

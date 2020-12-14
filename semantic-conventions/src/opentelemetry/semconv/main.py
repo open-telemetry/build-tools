@@ -19,10 +19,7 @@ import glob
 import sys
 from typing import List
 
-from opentelemetry.semconv.model.semantic_convention import (
-    SemanticConventionSet,
-    SemanticConventionType,
-)
+from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
 from opentelemetry.semconv.templating.code import CodeRenderer
 
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
@@ -51,20 +48,13 @@ def exclude_file_list(folder: str, pattern: str) -> List[str]:
     return file_names
 
 
-def filter_semconv(
-    semconv: SemanticConventionSet, span: bool, resource: bool, metric: bool
-):
-    if span or resource or metric:
-        output = {}
-        for semconv_id in semconv.models:
-            model = semconv.models[semconv_id]
-            if span and model.type == SemanticConventionType.SPAN:
-                output[semconv_id] = model
-            if resource and model.type == SemanticConventionType.RESOURCE:
-                output[semconv_id] = model
-            if metric and model.type == SemanticConventionType.METRIC:
-                output[semconv_id] = model
-        semconv.models = output
+def filter_semconv(semconv, type_filter):
+    if type_filter:
+        semconv.models = {
+            id: model
+            for id, model in semconv.models.items()
+            if model.GROUP_TYPE_NAME == type_filter
+        }
 
 
 def main():
@@ -72,7 +62,7 @@ def main():
     args = parser.parse_args()
     check_args(args, parser)
     semconv = parse_semconv(args, parser)
-    filter_semconv(semconv, args.span, args.resource, args.metric)
+    filter_semconv(semconv, args.only)
     if len(semconv.models) == 0:
         parser.error("No semantic convention model found!")
     if args.flavor == "code":
@@ -175,22 +165,9 @@ def setup_parser():
         "--debug", "-d", help="Enable debug output", action="store_true"
     )
     parser.add_argument(
-        "--span",
-        "-s",
-        help="Process only Span semantic conventions",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--resource",
-        "-r",
-        help="Process only Resource semantic conventions",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--metric",
-        "-m",
-        help="Process only Metric semantic conventions",
-        action="store_true",
+        "--only",
+        choices=["span", "resource", "metric", "units"],
+        help="Process only semantic conventions of the specified type.",
     )
     parser.add_argument(
         "--yaml-root",

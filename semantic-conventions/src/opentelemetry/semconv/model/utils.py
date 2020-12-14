@@ -48,3 +48,34 @@ def check_no_missing_keys(yaml, mandatory):
         position = yaml.lc.data[list(yaml)[0]]
         msg = "Missing keys: {}".format(missing)
         raise ValidationError.from_yaml_pos(position, msg)
+
+
+class ValidatableYamlNode:
+
+    allowed_keys = ()
+    mandatory_keys = ("id", "brief")
+
+    def __init__(self, yaml_node):
+        self.id = yaml_node.get("id").strip()
+        self.brief = str(yaml_node.get("brief")).strip()
+
+        self._position = [yaml_node.lc.line, yaml_node.lc.col]
+
+    @classmethod
+    def validate_keys(cls, node):
+        unwanted = [key for key in node.keys() if key not in cls.allowed_keys]
+        if unwanted:
+            position = node.lc.data[unwanted[0]]
+            msg = "Invalid keys: {}".format(unwanted)
+            raise ValidationError.from_yaml_pos(position, msg)
+
+        if cls.mandatory_keys:
+            check_no_missing_keys(node, cls.mandatory_keys)
+
+    def validate_values(self):
+        """
+        Subclasses may provide additional validation. 
+        This method should raise an exception with a descriptive
+        message if the semantic convention is not valid.
+        """
+        validate_id(self.id, self._position)

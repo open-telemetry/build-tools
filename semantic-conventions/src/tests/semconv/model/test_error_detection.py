@@ -17,7 +17,7 @@ import unittest
 
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_convention import (
-    SemanticConvention,
+    parse_semantic_convention_groups,
     SemanticConventionSet,
 )
 
@@ -48,7 +48,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
             self.fail()
         e = ex.exception
         msg = e.message.lower()
-        self.assertIn("resources cannot have span_kind", msg)
+        self.assertIn("invalid keys: ['span_kind']", msg)
         self.assertEqual(e.line, 4)
 
     def test_invalid_id(self):
@@ -360,7 +360,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
 
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:
-            return SemanticConvention.parse(file)
+            return parse_semantic_convention_groups(file)
 
     _TEST_DIR = os.path.dirname(__file__)
 

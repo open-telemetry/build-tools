@@ -35,6 +35,26 @@ class Required(Enum):
     NO = 3
 
 
+class HasAttributes:
+    def _set_attributes(self, prefix, node):
+        self.attrs_by_name = SemanticAttribute.parse(prefix, node.get("attributes"))
+
+    @property
+    def attributes(self):
+        if not hasattr(self, "attrs_by_name"):
+            return []
+
+        return list(self.attrs_by_name.values())
+
+
+def unique_attributes(attributes):
+    output = []
+    for x in l:
+        if x.fqn not in [attr.fqn for attr in output]:
+            output.append(x)
+    return output
+
+
 @dataclass
 class SemanticAttribute:
     fqn: str
@@ -85,6 +105,9 @@ class SemanticAttribute:
             "sampling_relevant",
             "note",
         )
+        if not yaml_attributes:
+            return attributes
+
         for attribute in yaml_attributes:
             validate_values(attribute, allowed_keys)
             attr_id = attribute.get("id")

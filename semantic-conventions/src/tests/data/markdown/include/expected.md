@@ -3,7 +3,7 @@
 <!-- semconv faas.http(full) -->
 | Attribute  | Type | Description  | Example  | Required |
 |---|---|---|---|---|
-| `faas.trigger` | string enum | Type of the trigger on which the function is executed. | `datasource` | Yes |
+| `faas.trigger` | string | Type of the trigger on which the function is executed. | `datasource` | Yes |
 | `faas.execution` | string | The execution id of the current function execution. | `af9d5aa4-a685-4c5f-a22b-444f80b3cc28` | No |
 | `http.method` | string | HTTP request method. | `GET` or `POST` or `HEAD` | Yes |
 | `http.url` | string | Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`. Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless. | `https://www.foo.bar/search?q=OpenTelemetry#SemConv` | See below |

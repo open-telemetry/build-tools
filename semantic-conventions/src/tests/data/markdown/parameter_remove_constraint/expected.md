@@ -9,7 +9,7 @@
 | `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | No |
 | `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | No |
 | `net.peer.port` | number | Remote port number. | `80` or `8080` or `443` | No |
-| `net.transport` | string enum | Transport protocol used. See note below. | `IP.TCP` | No |
+| `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | No |
 
 **[1]:** It is recommended to remove embedded credentials.
 

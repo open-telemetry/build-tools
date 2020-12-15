@@ -42,7 +42,7 @@ Some database systems may allow a connection to switch to a different `db.user`,
 | `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | Conditional<br>See below. |
 | `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | Conditional<br>See below. |
 | `net.peer.port` | number | Remote port number. | `80` or `8080` or `443` | Conditional [2] |
-| `net.transport` | string enum | Transport protocol used. See note below. | `IP.TCP` | Conditional [3] |
+| `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | Conditional [3] |
 
 **[1]:** It is recommended to remove embedded credentials.
 

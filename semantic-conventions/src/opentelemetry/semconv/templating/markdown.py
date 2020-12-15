@@ -133,7 +133,7 @@ class MarkdownRenderer:
             if attribute.attr_type.custom_values:
                 attr_type = attribute.attr_type.enum_type
             else:
-                attr_type = "{} enum".format(attribute.attr_type.enum_type)
+                attr_type = attribute.attr_type.enum_type
         elif attribute.attr_type:
             example_list = attribute.examples if attribute.examples else []
             # check for array types

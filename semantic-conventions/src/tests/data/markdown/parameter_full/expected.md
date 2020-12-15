@@ -5,11 +5,11 @@
 |---|---|---|---|---|
 | `faas.trigger` | string enum | Type of the trigger on which the function is executed. | `datasource` | Yes |
 | `faas.execution` | string | The execution id of the current function execution. | `af9d5aa4-a685-4c5f-a22b-444f80b3cc28` | No |
-| `http.method` | string | HTTP request method. | `GET`<br>`POST`<br>`HEAD` | Yes |
+| `http.method` | string | HTTP request method. | `GET` or `POST` or `HEAD` | Yes |
 | `http.url` | string | Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`. Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless. | `https://www.foo.bar/search?q=OpenTelemetry#SemConv` | See below |
 | `http.target` | string | The full request target as passed in a HTTP request line or equivalent. | `/path/12314/?q=ddds#123` | See below |
 | `http.host` | string | The value of the [HTTP host header](https://tools.ietf.org/html/rfc7230#section-5.4). When the header is empty or not present, this attribute should be the same. | `www.example.org` | Conditional<br>You should always have this. |
-| `http.scheme` | string | The URI scheme identifying the used protocol. | `http`<br>`https` | See below |
+| `http.scheme` | string | The URI scheme identifying the used protocol. | `http` or `https` | See below |
 | `http.status_code` | number | [HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6). | `200` | Conditional<br>If and only if one was received/sent. |
 | `http.status_text` | string | [HTTP reason phrase](https://tools.ietf.org/html/rfc7230#section-3.1.2). | `OK` | No |
 | `http.flavor` | string | Kind of HTTP protocol used [1] | `1.0` | No |

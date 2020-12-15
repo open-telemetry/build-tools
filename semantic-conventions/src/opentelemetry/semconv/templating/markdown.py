@@ -140,7 +140,7 @@ class MarkdownRenderer:
             if attribute.attr_type.endswith("[]"):
                 examples = "`[" + ", ".join("{}".format(ex) for ex in example_list) + "]`"
             else:
-                examples = "<br>".join("`{}`".format(ex) for ex in example_list)
+                examples = " or ".join("`{}`".format(ex) for ex in example_list)
         if attribute.required == Required.ALWAYS:
             required = "Yes"
         elif attribute.required == Required.CONDITIONAL:

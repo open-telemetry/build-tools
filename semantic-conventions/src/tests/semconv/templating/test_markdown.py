@@ -106,6 +106,19 @@ class TestCorrectMarkdown(unittest.TestCase):
             semconv, "markdown/empty/", "markdown/empty/input.md", content, expected
         )
 
+    def testExampleArray(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/example_array/http.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 1)
+        with open(self.load_file("markdown/example_array/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/example_array/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv, "markdown/example_array/", "markdown/example_array/input.md", content, expected
+        )
+
     def testMultiple(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("markdown/multiple/http.yaml"))
@@ -372,7 +385,6 @@ class TestCorrectMarkdown(unittest.TestCase):
             content,
             expected
             )
-
 
     def check_render(self, semconv, folder, file_name, content: str, expected: str):
         renderer = MarkdownRenderer(self.load_file(folder), semconv)

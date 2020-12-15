@@ -136,7 +136,11 @@ class MarkdownRenderer:
                 attr_type = "{} enum".format(attribute.attr_type.enum_type)
         elif attribute.attr_type:
             example_list = attribute.examples if attribute.examples else []
-            examples = "<br>".join("`{}`".format(ex) for ex in example_list)
+            # check for array types
+            if attribute.attr_type.endswith("[]"):
+                examples = "`[" + ", ".join("{}".format(ex) for ex in example_list) + "]`"
+            else:
+                examples = "<br>".join("`{}`".format(ex) for ex in example_list)
         if attribute.required == Required.ALWAYS:
             required = "Yes"
         elif attribute.required == Required.CONDITIONAL:

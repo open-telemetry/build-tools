@@ -39,8 +39,8 @@ Some database systems may allow a connection to switch to a different `db.user`,
 | `db.system` | string | An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers. | `other_sql` | Yes |
 | `db.connection_string` | string | The connection string used to connect to the database. [1] | `Server=(localdb)\v11.0;Integrated Security=true;` | No |
 | `db.user` | string | Username for accessing the database. | `readonly_user` or `reporting_user` | No |
-| `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | Conditional<br>See below. |
-| `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | Conditional<br>See below. |
+| `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | See below. |
+| `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | See below. |
 | `net.peer.port` | number | Remote port number. | `80` or `8080` or `443` | Conditional [2] |
 | `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | Conditional [3] |
 
@@ -142,8 +142,8 @@ Usually only one `db.name` will be used per connection though.
 | Attribute  | Type | Description  | Example  | Required |
 |---|---|---|---|---|
 | `db.name` | string | If no tech-specific attribute is defined, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [1] | `customers` or `main` | Conditional [2] |
-| `db.statement` | string | The database statement being executed. [3] | `SELECT * FROM wuser_table` or `SET mykey "WuValue"` | Conditional<br>Required if applicable. |
-| `db.operation` | string | The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. [4] | `findAndModify` or `HMSET` | Conditional<br>Required, if `db.statement` is not applicable. |
+| `db.statement` | string | The database statement being executed. [3] | `SELECT * FROM wuser_table` or `SET mykey "WuValue"` | Required if applicable. |
+| `db.operation` | string | The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. [4] | `findAndModify` or `HMSET` | Required, if `db.statement` is not applicable. |
 
 **[1]:** In some SQL databases, the database name to be used is called "schema name".
 

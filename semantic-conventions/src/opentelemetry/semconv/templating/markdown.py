@@ -145,7 +145,7 @@ class MarkdownRenderer:
             required = "Yes"
         elif attribute.required == Required.CONDITIONAL:
             if len(attribute.required_msg) < self.render_ctx.break_count:
-                required = "Conditional<br>{}".format(attribute.required_msg)
+                required = attribute.required_msg
             else:
                 # We put the condition in the notes after the table
                 self.render_ctx.add_note(attribute.required_msg)

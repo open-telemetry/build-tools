@@ -76,10 +76,10 @@ Note that the items marked with [1] are different from the mapping defined in th
 | `http.url` | Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`. Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless. | Defined later. |
 | `http.target` | The full request target as passed in a [HTTP request line][] or equivalent, e.g. `"/path/12314/?q=ddds#123"`. | Defined later. |
 | `http.host` | The value of the [HTTP host header][]. When the header is empty or not present, this attribute should be the same. | Defined later. |
-| `http.scheme` | The URI scheme identifying the used protocol: `"http"` or `"https"` | Defined later. |
+| `http.scheme` | The URI scheme identifying the used protocol: `"http"`; `"https"` | Defined later. |
 | `http.status_code` | [HTTP response status code][]. E.g. `200` (integer) | If and only if one was received/sent. |
 | `http.status_text` | [HTTP reason phrase][]. E.g. `"OK"` | No |
-| `http.flavor` | Kind of HTTP protocol used: `"1.0"`, `"1.1"`, `"2"`, `"SPDY"` or `"QUIC"`. |  No |
+| `http.flavor` | Kind of HTTP protocol used: `"1.0"`, `"1.1"`, `"2"`, `"SPDY"`; `"QUIC"`. |  No |
 | `http.user_agent` | Value of the HTTP [User-Agent][] header sent by the client. | No |
 
 It is recommended to also use the general [network attributes][], especially `net.peer.ip`. If `net.transport` is not specified, it can be assumed to be `IP.TCP` except if `http.flavor` is `QUIC`, in which case `IP.UDP` is assumed.

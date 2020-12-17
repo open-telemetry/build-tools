@@ -204,7 +204,7 @@ groups:
           The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations)
           such as `findAndModify`.
         note: >
-          While it would semantically make sense to set this, e.g., to a SQL keyword like `SELECT` or `INSERT`,
+          While it would semantically make sense to set this, e.g., to a SQL keyword like `SELECT`; `INSERT`,
           it is not recommended to attempt any client-side parsing of `db.statement` just to get this property
           (the back end can do that if required).
         examples: ['findAndModify', 'HMSET']

@@ -75,7 +75,7 @@ class MarkdownRenderer:
     valid_parameters = ["tag", "full", "remove_constraints"]
 
     prelude = "<!-- semconv {} -->\n"
-    table_headers = "| Attribute  | Type | Description  | Example  | Required |\n|---|---|---|---|---|\n"
+    table_headers = "| Attribute  | Type | Description  | Examples  | Required |\n|---|---|---|---|---|\n"
 
     def __init__(
         self,
@@ -125,7 +125,7 @@ class MarkdownRenderer:
                 self.render_ctx.add_enum(attribute)
             example_list = attribute.examples if attribute.examples else ()
             examples = (
-                "<br>".join("`{}`".format(ex) for ex in example_list)
+                "; ".join("`{}`".format(ex) for ex in example_list)
                 if example_list
                 else "`{}`".format(attribute.attr_type.members[0].value)
             )
@@ -140,7 +140,7 @@ class MarkdownRenderer:
             if attribute.attr_type.endswith("[]"):
                 examples = "`[" + ", ".join("{}".format(ex) for ex in example_list) + "]`"
             else:
-                examples = " or ".join("`{}`".format(ex) for ex in example_list)
+                examples = "; ".join("`{}`".format(ex) for ex in example_list)
         if attribute.required == Required.ALWAYS:
             required = "Yes"
         elif attribute.required == Required.CONDITIONAL:

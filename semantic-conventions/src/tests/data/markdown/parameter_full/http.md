@@ -1,7 +1,7 @@
 # General
 
 <!-- semconv http.server -->
-| Attribute  | Type | Description  | Example  | Required |
+| Attribute  | Type | Description  | Examples  | Required |
 |---|---|---|---|---|
 | `http.server_name` | String | The primary server name of the matched virtual host. [1] | `example.com` | Conditional [2] |
 | `http.route` | String | The matched route (path template). | `/users/:userID?` | No |

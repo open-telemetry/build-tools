@@ -11,14 +11,6 @@ for arg in $@; do
             c_out=${arg}
             shift
             ;;
-        --csharp_out=*)
-            csharp_out=${arg}
-            shift
-            ;;
-        --grpc-csharp_out=*)
-            csharp_out=${arg}
-            shift
-            ;;
         --*_out=*)
             outs+=(${arg})
             shift
@@ -40,14 +32,13 @@ fi
 
 protoc_cmd="protoc ${includes[@]} ${outs[@]} ${args[@]}"
 protoc_c_cmd="protoc-c ${includes[@]} ${c_out} ${args[@]}"
-protoc_csharp_cmd="protoc-csharp ${includes[@]} ${csharp_out} ${args[@]}"
 
 if [ ${c_out} ]; then
+    if [ ${#outs[@]} -eq 0 ]; then
+        # only --c_out specified, no need to call `protoc`
+        exec ${protoc_c_cmd}
+    fi
     ${protoc_c_cmd} || exit 1
-fi
-if [ ${csharp_out} ]; then
-    ${protoc_csharp_cmd} || exit 1
-fi
-if [ ${#outs[@]} -gt 0 ]; then
     exec ${protoc_cmd}
 fi
+exec ${protoc_cmd}

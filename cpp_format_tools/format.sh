@@ -20,5 +20,4 @@ echo "Running cmake-format $(cmake-format --version 2>&1)."
 cmake-format -i $($FIND -name 'CMakeLists.txt' -print -name '*.cmake' -print -name '*.cmake.in' -print)
 
 echo "Running buildifier"
-buildifier $($FIND -name WORKSPACE -print -o -name BUILD -print -o \
-    -name '*.BUILD' -o -name '*.bzl' -print)
+buildifier $($FIND -name WORKSPACE -print -o -name BUILD -print -o -name '*.BUILD' -o -name '*.bzl' -print)

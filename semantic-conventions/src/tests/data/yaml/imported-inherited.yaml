@@ -27,7 +27,7 @@ groups:
           Remote
         examples: '127.0.0.1'
       - id: peer.port
-        type: number
+        type: int
         brief: 'Remote port number.'
         note: 'not override'
         examples: [80, 8080, 443]

@@ -266,7 +266,7 @@ groups:
       Call-level attributes for Redis
     attributes:
       - id: database_index
-        type: number
+        type: int
         required:
           conditional: Required, if other than the default database (`0`).
         brief: >

@@ -1,0 +1,21 @@
+groups:
+  - id: test
+    type: span
+    brief: 'test'
+    prefix: test
+    note: 'test'
+    attributes:
+      - id: one
+        tag: tag-one
+        type: int
+        brief: >
+          this is the description of
+          the first attribute
+        examples: 10
+      - id: two
+        tag: tag-two
+        type: double
+        brief: >
+          this is the description of
+          the second attribute. It's a number.
+        examples: [12.01, 1.0]

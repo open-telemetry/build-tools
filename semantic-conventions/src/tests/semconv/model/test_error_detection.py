@@ -254,9 +254,20 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("example with wrong type", msg)
-        self.assertIn("expected number", msg)
+        self.assertIn("expected int", msg)
         self.assertIn("is was <class 'str'>", msg)
         self.assertEqual(e.line, 12)
+
+    def test_example_wrong_double_type(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/wrong_double_type.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("example with wrong type", msg)
+        self.assertIn("expected double", msg)
+        self.assertIn("is was <class 'int'>", msg)
+        self.assertEqual(e.line, 11)
 
     def test_examples_bool(self):
         self.open_yaml("yaml/errors/examples/example_bool.yaml")
@@ -271,7 +282,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("example with wrong type", msg)
-        self.assertIn("expected number", msg)
+        self.assertIn("expected int", msg)
         self.assertIn("is was <class 'str'>", msg)
         self.assertEqual(e.line, 12)
 

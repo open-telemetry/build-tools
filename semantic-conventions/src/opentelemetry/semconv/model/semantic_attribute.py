@@ -49,7 +49,7 @@ class HasAttributes:
 
 def unique_attributes(attributes):
     output = []
-    for x in l:
+    for x in attributes:
         if x.fqn not in [attr.fqn for attr in output]:
             output.append(x)
     return output
@@ -237,7 +237,14 @@ class SemanticAttribute:
             and examples is not None
         ):
             examples = [examples]
-        if is_simple_type and attr_type not in ["boolean", "boolean[]"]:
+        if is_simple_type and attr_type not in [
+            "boolean",
+            "boolean[]",
+            "int",
+            "int[]",
+            "double",
+            "double[]",
+        ]:
             if examples is None or (len(examples) == 0):
                 position = attribute.lc.data[list(attribute)[0]]
                 msg = "Empty examples for {} are not allowed".format(attr_type)
@@ -275,8 +282,10 @@ class AttributeType:
         return attr_type in (
             "string",
             "string[]",
-            "number",
-            "number[]",
+            "int",
+            "int[]",
+            "double",
+            "double[]",
             "boolean",
             "boolean[]",
         )
@@ -284,8 +293,10 @@ class AttributeType:
     @staticmethod
     def type_mapper(attr_type: str):
         type_mapper = {
-            "number": int,
-            "number[]": int,
+            "int": int,
+            "int[]": int,
+            "double": float,
+            "double[]": float,
             "string": str,
             "string[]": str,
             "boolean": bool,

@@ -41,7 +41,7 @@ Some database systems may allow a connection to switch to a different `db.user`,
 | `db.user` | string | Username for accessing the database. | `readonly_user`; `reporting_user` | No |
 | `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | See below. |
 | `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | See below. |
-| `net.peer.port` | number | Remote port number. | `80`; `8080`; `443` | Conditional [2] |
+| `net.peer.port` | int | Remote port number. | `80`; `8080`; `443` | Conditional [2] |
 | `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | Conditional [3] |
 
 **[1]:** It is recommended to remove embedded credentials.
@@ -187,7 +187,7 @@ For example, when retrieving a document, `db.operation` would be set to (literal
 <!-- semconv db.redis -->
 | Attribute  | Type | Description  | Examples  | Required |
 |---|---|---|---|---|
-| `db.redis.database_index` | number | The index of the database being accessed as used in the [`SELECT` command](https://redis.io/commands/select), provided as an integer. To be used instead of the generic `db.name` attribute. | `0`; `1`; `15` | Conditional [1] |
+| `db.redis.database_index` | int | The index of the database being accessed as used in the [`SELECT` command](https://redis.io/commands/select), provided as an integer. To be used instead of the generic `db.name` attribute. | `0`; `1`; `15` | Conditional [1] |
 
 **[1]:** Required, if other than the default database (`0`).
 <!-- endsemconv -->

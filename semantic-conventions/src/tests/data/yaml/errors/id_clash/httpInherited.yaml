@@ -6,7 +6,7 @@ groups:
     note: t
     attributes:
       - id: request_content_length
-        type: number
+        type: int
         brief: t
         examples: 3495
   - id: http.server
@@ -23,6 +23,6 @@ groups:
         note: t
         examples: ['example.com']
       - id: request_content_length
-        type: number
+        type: int
         brief: t
         examples: 3495

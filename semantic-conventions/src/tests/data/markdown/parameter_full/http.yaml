@@ -36,7 +36,7 @@ groups:
         brief: 'The URI scheme identifying the used protocol.'
         examples: ["http", "https"]
       - id: status_code
-        type: number
+        type: int
         required:
           conditional: If and only if one was received/sent.
         brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'

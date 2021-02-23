@@ -8,7 +8,7 @@
 | `db.user` | String | Username for accessing the database. | `readonly_user`<br>`reporting_user` | No |
 | [net.peer.ip](general.md) | String | None | `127.0.0.1` | No |
 | [net.peer.name](general.md) | String | None | `example.com` | No |
-| [net.peer.port](general.md) | Number | None | `80`<br>`8080`<br>`443` | No |
+| [net.peer.port](general.md) | int | None | `80`<br>`8080`<br>`443` | No |
 | [net.transport](general.md) | Enum | None | `IP.TCP` | No |
 
 **[1]:** It is recommended to remove embedded credentials.

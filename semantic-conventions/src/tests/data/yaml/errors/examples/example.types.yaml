@@ -6,12 +6,12 @@ groups:
     span_kind: client
     attributes:
       - id: convention_version
-        type: number
+        type: int
         required: always
         brief: 'test'
         examples: [1,asd]
       - id: convention_version
-        type: number[]
+        type: int[]
         required: always
         brief: 'test'
         examples: [1,3]

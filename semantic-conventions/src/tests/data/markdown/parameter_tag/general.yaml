@@ -42,7 +42,7 @@ groups:
           [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6)
         examples: '127.0.0.1'
       - id: peer.port
-        type: number
+        type: int
         brief: 'Remote port number.'
         examples: [80, 8080, 443]
       - id: peer.name
@@ -54,7 +54,7 @@ groups:
         brief: 'Like `net.peer.ip` but for the host IP. Useful in case of a multi-IP host.'
         examples: '192.168.0.1'
       - id: host.port
-        type: number
+        type: int
         brief: 'Like `net.peer.port` but for the host port.'
         examples: 35555
       - id: host.name

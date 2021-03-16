@@ -121,7 +121,7 @@ class MarkdownRenderer:
             description += " [{}]".format(len(self.render_ctx.notes))
         examples = ""
         if isinstance(attribute.attr_type, EnumAttributeType):
-            if attribute.is_local and not attribute.ref:
+            if self.render_ctx.is_full or (attribute.is_local and not attribute.ref):
                 self.render_ctx.add_enum(attribute)
             example_list = attribute.examples if attribute.examples else ()
             examples = (
@@ -399,6 +399,12 @@ class MarkdownRenderer:
                 continue
             if self.render_ctx.is_full or attr.is_local:
                 attr_to_print.append(attr)
+        if self.render_ctx.group_key is not None and not attr_to_print:
+            raise ValueError(
+                "No attributes retained for '{}' filtering by '{}'".format(
+                    semconv.semconv_id, self.render_ctx.group_key
+                )
+            )
         if attr_to_print:
             output.write(MarkdownRenderer.table_headers)
             for attr in attr_to_print:

@@ -1,0 +1,12 @@
+groups:
+  - id: db
+    type: span
+    prefix: db
+    brief: test
+    span_kind: client
+    attributes:
+      - id: type
+        tag: connection-level
+        type: boolean
+        required: always
+        brief: empty

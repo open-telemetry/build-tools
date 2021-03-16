@@ -78,7 +78,7 @@ docker run --rm otel/semconvgen --yaml-root {yaml_folder} code --template {jinja
 ```
 
 By default, all models are fed into the specified template at once, i.e. only a single file is generated.
-This is helpful to generate constants for the semantic attributes, [example from opentelemetry-java](https://github.com/open-telemetry/opentelemetry-java/blob/master/api/src/main/java/io/opentelemetry/trace/attributes/SemanticAttributes.java).
+This is helpful to generate constants for the semantic attributes, [example from opentelemetry-java](https://github.com/open-telemetry/opentelemetry-java/tree/main/buildscripts/semantic-convention).
 
 If the parameter `--file-per-group {pattern}` is set, a single yaml model is fed into the template
 and the value of `pattern` is resolved from the model and attached as prefix to the output argument.

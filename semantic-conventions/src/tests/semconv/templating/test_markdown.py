@@ -259,6 +259,31 @@ class TestCorrectMarkdown(unittest.TestCase):
             expected,
         )
 
+    def test_parameter_tag_no_attr(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/parameter_tag_no_attr/database.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 1)
+        with open(
+            self.load_file("markdown/parameter_tag_no_attr/input.md"), "r"
+        ) as markdown:
+            content = markdown.read()
+        with open(
+            self.load_file("markdown/parameter_tag_no_attr/expected.md"), "r"
+        ) as markdown:
+            expected = markdown.read()
+        with self.assertRaises(Exception) as ex:
+            self.check_render(
+                semconv,
+                "markdown/parameter_tag_no_attr/",
+                "markdown/parameter_tag_no_attr/input.md",
+                content,
+                expected,
+            )
+        self.assertEqual(
+            "No attributes retained for 'db' filtering by 'wrong'", ex.exception.args[0]
+        )
+
     def test_parameter_remove_constraint(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("markdown/parameter_remove_constraint/database.yaml"))

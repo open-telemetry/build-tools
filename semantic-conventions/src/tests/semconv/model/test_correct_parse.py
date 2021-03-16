@@ -24,6 +24,21 @@ from opentelemetry.semconv.model.semantic_convention import (
 
 
 class TestCorrectParse(unittest.TestCase):
+    def test_numeric_attributes(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("yaml/numeric_attributes.yml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 1)
+
+        expected = {
+            "id": "test",
+            "prefix": "test",
+            "extends": "",
+            "n_constraints": 0,
+            "attributes": ["test.one", "test.two"],
+        }
+        self.semantic_convention_check(list(semconv.models.values())[0], expected)
+
     def test_extends_prefix(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("yaml/extends/http.yaml"))

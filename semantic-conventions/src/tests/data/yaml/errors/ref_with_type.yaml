@@ -6,5 +6,5 @@ groups:
     span_kind: client
     attributes:
       - ref: test
-        type: number
+        type: int
         brief: 'test'

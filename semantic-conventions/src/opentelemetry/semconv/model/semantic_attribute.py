@@ -272,7 +272,7 @@ class AttributeType:
     @staticmethod
     def get_type(t):
         if isinstance(t, numbers.Number):
-            return "number"
+            return "int"
         if AttributeType.bool_type.fullmatch(t):
             return "boolean"
         return "string"

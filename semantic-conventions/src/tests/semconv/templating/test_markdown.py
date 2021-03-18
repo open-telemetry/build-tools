@@ -137,6 +137,23 @@ class TestCorrectMarkdown(unittest.TestCase):
             expected,
         )
 
+    def testEnumInt(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/enum_int/rpc.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 1)
+        with open(self.load_file("markdown/enum_int/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/enum_int/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/enum_int/",
+            "markdown/enum_int/input.md",
+            content,
+            expected,
+        )
+
     def testExtendConstraint(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("markdown/extend_constraint/database.yaml"))

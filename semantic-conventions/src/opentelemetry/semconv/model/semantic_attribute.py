@@ -361,7 +361,7 @@ class EnumAttributeType:
 
     @staticmethod
     def is_valid_enum_value(val):
-        return isinstance(val, int) or isinstance(val, str)
+        return isinstance(val, (int, str))
 
     @staticmethod
     def parse(attribute_type):

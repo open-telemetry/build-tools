@@ -360,7 +360,7 @@ class EnumAttributeType:
         return self.enum_type
 
     @staticmethod
-    def __is_valid_enum_value__(val):
+    def is_valid_enum_value(val):
         return isinstance(val, int) or isinstance(val, str)
 
     @staticmethod
@@ -394,7 +394,7 @@ class EnumAttributeType:
             mandatory_keys = ["id", "value"]
             for member in attribute_type["members"]:
                 validate_values(member, allowed_keys, mandatory_keys)
-                if not EnumAttributeType.__is_valid_enum_value__(member["value"]):
+                if not EnumAttributeType.is_valid_enum_value(member["value"]):
                     raise ValidationError(0, 0, "Invalid value used in enum: <{}>".format(member["value"]))
                 members.append(
                     EnumMember(

@@ -1,0 +1,16 @@
+groups:
+    - id: rpc.grpc
+      prefix: rpc.grpc
+      # extends: rpc -- we only care about the DOUBLE enum here
+      brief: 'Tech-specific attributes for gRPC.'
+      attributes:
+        - id: status_code
+          type:
+            members:
+              - id: OK
+                value: 0.0
+              - id: CANCELLED
+                value: 1.0
+          required: always
+          brief: "The [numeric status code](https://github.com/grpc/grpc/blob/v1.33.2/doc/statuscodes.md) of the gRPC request."
+          examples: [0.0, 1.0]

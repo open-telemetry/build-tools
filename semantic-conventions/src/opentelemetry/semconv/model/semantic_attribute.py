@@ -273,10 +273,6 @@ class AttributeType:
     def get_type(t):
         if isinstance(t, int):
             return "int"
-        if isinstance(t, numbers.Number):
-            raise ValidationError(
-                0, 0, "Invalid value used in enum - only integers are allowed for numeric values"
-            )
         if AttributeType.bool_type.fullmatch(t):
             return "boolean"
         return "string"
@@ -364,6 +360,10 @@ class EnumAttributeType:
         return self.enum_type
 
     @staticmethod
+    def __is_valid_enum_value__(val):
+        return isinstance(val, int) or isinstance(val, str)
+
+    @staticmethod
     def parse(attribute_type):
         """ This method parses the yaml representation for semantic attribute types.
             If the type is an enumeration, it generated the EnumAttributeType object,
@@ -394,6 +394,8 @@ class EnumAttributeType:
             mandatory_keys = ["id", "value"]
             for member in attribute_type["members"]:
                 validate_values(member, allowed_keys, mandatory_keys)
+                if not EnumAttributeType.__is_valid_enum_value__(member["value"]):
+                    raise ValidationError(0, 0, "Invalid value used in enum: <{}>".format(member["value"]))
                 members.append(
                     EnumMember(
                         member_id=member["id"],

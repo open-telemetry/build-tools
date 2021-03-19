@@ -254,7 +254,6 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("invalid value used in enum", msg)
-        self.assertIn("only integers are allowed for numeric values", msg)
         self.assertEqual(e.line, 8)
 
     def test_examples_wrong_type(self):

@@ -247,6 +247,16 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("type", msg)
         self.assertEqual(e.line, 9)
 
+    def test_enum_with_double_values(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/enum/enum_with_double_values.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("invalid value used in enum", msg)
+        self.assertIn("only integers are allowed for numeric values", msg)
+        self.assertEqual(e.line, 8)
+
     def test_examples_wrong_type(self):
         with self.assertRaises(ValidationError) as ex:
             self.open_yaml("yaml/errors/examples/example.types.yaml")

@@ -271,8 +271,12 @@ class AttributeType:
 
     @staticmethod
     def get_type(t):
-        if isinstance(t, numbers.Number):
+        if isinstance(t, int):
             return "int"
+        if isinstance(t, numbers.Number):
+            raise ValidationError(
+                0, 0, "Invalid value used in enum - only integers are allowed for numeric values"
+            )
         if AttributeType.bool_type.fullmatch(t):
             return "boolean"
         return "string"

@@ -6,11 +6,14 @@
 #
 # Learn about membership in OpenTelemetry community:
 #  https://github.com/open-telemetry/community/blob/master/community-membership.md
-# 
 #
-# Learn about CODEOWNERS file format: 
+#
+# Learn about CODEOWNERS file format:
 #  https://help.github.com/en/articles/about-code-owners
 #
 
-# Global owners, will be the owners for everything in the repo. Membership is tracked via https://github.com/open-telemetry/community/blob/master/community-members.md 
+# Global owners, will be the owners for everything in the repo. Membership is tracked via https://github.com/open-telemetry/community/blob/main/community-members.md#specifications-and-proto
 *   @open-telemetry/specs-approvers
+
+# Owners for the semantic conventions generator tool
+/semantic-conventions/      @open-telemetry/specs-approvers @thisthat @Oberon00

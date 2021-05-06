@@ -25,6 +25,7 @@ from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
     HasAttributes,
     SemanticAttribute,
+    StabilityLevel,
     Required,
     unique_attributes,
 )
@@ -116,6 +117,12 @@ class BaseSemanticConvention(ValidatableYamlNode):
         self.semconv_id = self.id
         self.note = group.get("note", "").strip()
         self.prefix = group.get("prefix", "").strip()
+        stability = group.get("stability")
+        deprecated = group.get("deprecated")
+        position_data = group.lc.data
+        self.stability, self.deprecated = SemanticAttribute.parse_stability_deprecated(
+            stability, deprecated, position_data
+        )
         self.extends = group.get("extends", "").strip()
         self.constraints = parse_constraints(group.get("constraints", ()))
 
@@ -187,6 +194,7 @@ class ResourceSemanticConvention(HasAttributes, BaseSemanticConvention):
         "brief",
         "note",
         "prefix",
+        "stability",
         "extends",
         "attributes",
         "constraints",
@@ -194,7 +202,7 @@ class ResourceSemanticConvention(HasAttributes, BaseSemanticConvention):
 
     def __init__(self, group):
         super().__init__(group)
-        self._set_attributes(self.prefix, group)
+        self._set_attributes(self.prefix, self.stability, group)
 
 
 class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
@@ -206,6 +214,7 @@ class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
         "brief",
         "note",
         "prefix",
+        "stability",
         "extends",
         "span_kind",
         "attributes",
@@ -214,7 +223,7 @@ class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
 
     def __init__(self, group):
         super().__init__(group)
-        self._set_attributes(self.prefix, group)
+        self._set_attributes(self.prefix, self.stability, group)
         self.span_kind = SpanKind.parse(group.get("span_kind"))
         if self.span_kind is None:
             position = group.lc.data["span_kind"]

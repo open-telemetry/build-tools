@@ -23,6 +23,7 @@ from pathlib import PurePath
 from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import (
     SemanticAttribute,
+    StabilityLevel,
     EnumAttributeType,
     Required,
     EnumMember,
@@ -33,21 +34,14 @@ from opentelemetry.semconv.model.semantic_convention import (
 )
 from opentelemetry.semconv.model.utils import ID_RE
 
+from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
+
 
 class RenderContext:
-    is_full: bool
-    is_remove_constraint: bool
-    group_key: str
-    break_counter: int
-    enums: list
-    notes: list
-    current_md: str
-
-    def __init__(self, break_count):
+    def __init__(self):
         self.is_full = False
         self.is_remove_constraint = False
         self.group_key = ""
-        self.break_count = break_count
         self.enums = []
         self.notes = []
         self.units = []
@@ -78,24 +72,19 @@ class MarkdownRenderer:
     table_headers = "| Attribute  | Type | Description  | Examples  | Required |\n|---|---|---|---|---|\n"
 
     def __init__(
-        self,
-        md_folder,
-        semconvset: SemanticConventionSet,
-        exclude: list = [],
-        break_count=default_break_conditional_labels,
-        check_only=False,
+        self, md_folder, semconvset: SemanticConventionSet, options=MarkdownOptions()
     ):
-        self.render_ctx = RenderContext(break_count)
+        self.options = options
+        self.render_ctx = RenderContext()
         self.semconvset = semconvset
         # We load all markdown files to render
         self.file_names = sorted(
             set(glob.glob("{}/**/*.md".format(md_folder), recursive=True))
-            - set(exclude)
+            - set(options.exclude_files)
         )
         # We build the dict that maps each attribute that has to be rendered to the latest visited file
         # that contains it
         self.filename_for_attr_fqn = self._create_attribute_location_dict()
-        self.check_only = check_only
 
     def to_markdown_attr(
         self, attribute: SemanticAttribute, output: io.StringIO,
@@ -110,11 +99,27 @@ class MarkdownRenderer:
             else attribute.attr_type
         )
         description = ""
-        if attribute.deprecated:
+        if attribute.deprecated and self.options.enable_deprecated:
             if "deprecated" in attribute.deprecated.lower():
                 description = "**{}**<br>".format(attribute.deprecated)
             else:
-                description = "**Deprecated: {}**<br>".format(attribute.deprecated)
+                deprecated_msg = self.options.md_snippet_by_stability_level[
+                    StabilityLevel.DEPRECATED
+                ].format(attribute.deprecated)
+                description = "{}<br>".format(deprecated_msg)
+        elif (
+            attribute.stability == StabilityLevel.STABLE and self.options.enable_stable
+        ):
+            description = "{}<br>".format(
+                self.options.md_snippet_by_stability_level[StabilityLevel.STABLE]
+            )
+        elif (
+            attribute.stability == StabilityLevel.EXPERIMENTAL
+            and self.options.enable_experimental
+        ):
+            description = "{}<br>".format(
+                self.options.md_snippet_by_stability_level[StabilityLevel.EXPERIMENTAL]
+            )
         description += attribute.brief
         if attribute.note:
             self.render_ctx.add_note(attribute.note)
@@ -138,13 +143,15 @@ class MarkdownRenderer:
             example_list = attribute.examples if attribute.examples else []
             # check for array types
             if attribute.attr_type.endswith("[]"):
-                examples = "`[" + ", ".join("{}".format(ex) for ex in example_list) + "]`"
+                examples = (
+                    "`[" + ", ".join("{}".format(ex) for ex in example_list) + "]`"
+                )
             else:
                 examples = "; ".join("`{}`".format(ex) for ex in example_list)
         if attribute.required == Required.ALWAYS:
             required = "Yes"
         elif attribute.required == Required.CONDITIONAL:
-            if len(attribute.required_msg) < self.render_ctx.break_count:
+            if len(attribute.required_msg) < self.options.break_count:
                 required = attribute.required_msg
             else:
                 # We put the condition in the notes after the table
@@ -273,7 +280,7 @@ class MarkdownRenderer:
                 content = md_file.read()
                 output = io.StringIO()
                 self._render_single_file(content, md_filename, output)
-            if self.check_only:
+            if self.options.check_only:
                 if content != output.getvalue():
                     sys.exit(
                         "File "
@@ -283,7 +290,7 @@ class MarkdownRenderer:
             else:
                 with open(md_filename, "w", encoding="utf-8") as md_file:
                     md_file.write(output.getvalue())
-        if self.check_only:
+        if self.options.check_only:
             print("{} files left unchanged.".format(len(self.file_names)))
 
     def _create_attribute_location_dict(self):

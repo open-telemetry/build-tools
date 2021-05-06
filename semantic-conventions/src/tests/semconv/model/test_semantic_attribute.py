@@ -17,7 +17,7 @@ from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute
 
 def test_parse(load_yaml):
     yaml = load_yaml("semantic_attributes.yml")
-    attributes = SemanticAttribute.parse("prefix", yaml.get("attributes"))
+    attributes = SemanticAttribute.parse("prefix", "", yaml.get("attributes"))
 
     assert len(attributes) == 3
 
@@ -39,7 +39,7 @@ def test_parse(load_yaml):
 
 def test_parse_deprecated(load_yaml):
     yaml = load_yaml("semantic_attributes_deprecated.yml")
-    attributes = SemanticAttribute.parse("", yaml.get("attributes"))
+    attributes = SemanticAttribute.parse("", "", yaml.get("attributes"))
 
     assert len(attributes) == 1
     assert list(attributes.keys()) == [".deprecated_attribute"]

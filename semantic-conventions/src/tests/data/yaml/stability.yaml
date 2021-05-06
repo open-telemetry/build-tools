@@ -1,0 +1,106 @@
+groups:
+  - id: test
+    type: span
+    brief: 'test'
+    prefix: http
+    attributes:
+      - id: exp_attr
+        type: boolean
+        required: always
+        stability: experimental
+        brief: ""
+      - id: stable_attr
+        type: boolean
+        required: always
+        stability: stable
+        brief: ""
+      - id: deprecated_attr
+        type: boolean
+        required: always
+        stability: deprecated
+        brief: ""
+      - id: def_stability
+        type: boolean
+        required: always
+        brief: ""
+
+  - id: parent_default
+    type: span
+    brief: 'test'
+    prefix: http
+    stability: experimental
+    attributes:
+      - id: test_attr
+        type: boolean
+        required: always
+        brief: ""
+      - id: dep
+        type: boolean
+        required: always
+        deprecated: should not fail.
+        brief: ""
+
+  - id: not_fail
+    type: span
+    brief: 'test'
+    prefix: http
+    stability: deprecated
+    attributes:
+      - id: test_attr
+        type: boolean
+        required: always
+        deprecated: should not fail.
+        brief: ""
+
+  - id: resource_test
+    type: resource
+    brief: 'test'
+    prefix: http
+    attributes:
+      - id: exp_attr
+        type: boolean
+        required: always
+        stability: experimental
+        brief: ""
+      - id: stable_attr
+        type: boolean
+        required: always
+        stability: stable
+        brief: ""
+      - id: deprecated_attr
+        type: boolean
+        required: always
+        stability: deprecated
+        brief: ""
+      - id: def_stability
+        type: boolean
+        required: always
+        brief: ""
+
+  - id: resource_parent_default
+    type: resource
+    brief: 'test'
+    prefix: http
+    stability: experimental
+    attributes:
+      - id: test_attr
+        type: boolean
+        required: always
+        brief: ""
+      - id: dep
+        type: boolean
+        required: always
+        deprecated: should not fail.
+        brief: ""
+
+  - id: resource_not_fail
+    type: resource
+    brief: 'test'
+    prefix: http
+    stability: deprecated
+    attributes:
+      - id: test_attr
+        type: boolean
+        required: always
+        deprecated: should not fail.
+        brief: ""

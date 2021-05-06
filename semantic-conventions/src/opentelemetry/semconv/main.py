@@ -23,6 +23,7 @@ from opentelemetry.semconv.model.semantic_convention import SemanticConventionSe
 from opentelemetry.semconv.templating.code import CodeRenderer
 
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
+from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
 
 def parse_semconv(args, parser) -> SemanticConventionSet:
@@ -73,10 +74,16 @@ def main():
 
 
 def process_markdown(semconv, args):
-    exclude = exclude_file_list(args.markdown_root, args.exclude)
-    md_renderer = MarkdownRenderer(
-        args.markdown_root, semconv, exclude, args.md_break_conditional, args.md_check
+    options = MarkdownOptions(
+        check_only=args.md_check,
+        enable_stable=args.md_stable,
+        enable_experimental=args.md_experimental,
+        enable_deprecated=args.md_enable_deprecated,
+        use_badge=args.md_use_badges,
+        break_count=args.md_break_conditional,
+        exclude_files=exclude_file_list(args.markdown_root, args.exclude),
     )
+    md_renderer = MarkdownRenderer(args.markdown_root, semconv, options)
     md_renderer.render_md()
 
 
@@ -154,6 +161,32 @@ def add_md_parser(subparsers):
         "code 1 means some files would change.",
         required=False,
         action="store_true",
+    )
+    parser.add_argument(
+        "--md-use-badges",
+        help="Use stability badges instead of labels for attributes.",
+        required=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--md-stable",
+        help="Add labels to attributes marked as stable.",
+        required=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--md-experimental",
+        help="Add labels to attributes marked as experimental.",
+        required=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--md-disable-deprecated",
+        help="Removes deprecated notes of deprecated attributes.",
+        required=False,
+        default=True,
+        dest="md_enable_deprecated",
+        action="store_false",
     )
 
 

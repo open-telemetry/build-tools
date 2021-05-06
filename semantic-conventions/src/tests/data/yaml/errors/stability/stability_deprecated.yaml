@@ -1,0 +1,13 @@
+groups:
+  - id: test
+    type: span
+    brief: 'test'
+    prefix: http
+    attributes:
+      - id: test_attr
+        type: boolean
+        required: always
+        stability: stable
+        deprecated: should fail.
+        brief: ""
+

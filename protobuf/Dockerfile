@@ -1,12 +1,13 @@
 ARG ALPINE_VERSION=3.12
 ARG GO_VERSION=1.15.6
 # gRPC core version that applies to C++, C#, Objective-C, PhP, Python, Ruby
-ARG GRPC_VERSION=1.34.0
+ARG GRPC_VERSION=1.36.4
 ARG PROTOBUF_C_VERSION=1.3.3
+ARG GRPC_WEB_VERSION=1.2.1
 
-ARG PROTOC_GEN_GO_VERSION=1.4.3
-ARG PROTOC_GEN_GO_GRPC_VERSION=1.34.0
-ARG GRPC_JAVA_VERSION=1.34.1
+ARG PROTOC_GEN_GO_VERSION=1.5.1
+ARG PROTOC_GEN_GO_GRPC_VERSION=1.36.0
+ARG GRPC_JAVA_VERSION=1.36.0
 # v1.3.2, using the version directly does not work: "tar: invalid magic"
 ARG PROTOC_GEN_GOGO_VERSION=b03c65ea87cdc3521ede29f62fe3ce239267c1bc
 ARG PROTOC_GEN_LINT_VERSION=0.2.1
@@ -59,6 +60,13 @@ RUN mkdir -p /grpc-java && \
     install -Ds protoc-gen-grpc-java /out/usr/bin/protoc-gen-grpc-java && \
     rm -Rf /grpc-java && \
     rm -Rf /grpc
+
+ARG GRPC_WEB_VERSION
+RUN mkdir -p /grpc-web && \
+    curl -sSL https://api.github.com/repos/grpc/grpc-web/tarball/${GRPC_WEB_VERSION} | tar xz --strip 1 -C /grpc-web && \
+    cd /grpc-web && \
+    make install-plugin && \
+    install -Ds /usr/local/bin/protoc-gen-grpc-web /out/usr/bin/protoc-gen-grpc-web
 
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} as go_builder
 RUN apk add --no-cache build-base curl git

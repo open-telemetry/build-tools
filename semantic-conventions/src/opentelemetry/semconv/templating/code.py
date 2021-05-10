@@ -21,7 +21,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
 from opentelemetry.semconv.model.utils import ID_RE
-
+from opentelemetry.semconv.model.semantic_attribute import Required
 
 def to_doc_brief(doc_string: typing.Optional[str]) -> str:
     if doc_string is None:
@@ -122,10 +122,12 @@ class CodeRenderer:
                 template = env.get_template(file_name, data)
                 template.globals["now"] = datetime.datetime.utcnow()
                 template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
+                template.globals["Required"] = Required
                 template.stream(data).dump(output_name)
         else:
             data = self.get_data_single_file(semconvset, template_path)
             template = env.get_template(file_name, data)
             template.globals["now"] = datetime.datetime.utcnow()
             template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
+            template.globals["Required"] = Required
             template.stream(data).dump(output_file)

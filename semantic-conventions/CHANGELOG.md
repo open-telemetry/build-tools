@@ -2,7 +2,7 @@
 
 Please update the changelog as part of any significant pull request.
 
-## v0.3.2
+## v0.4.0
 
 - Add stability fields. (#35)
 - Add Markdown render for code generation.

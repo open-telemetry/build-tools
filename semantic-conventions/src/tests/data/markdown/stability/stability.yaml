@@ -1,0 +1,25 @@
+groups:
+  - id: test
+    type: span
+    brief: 'test'
+    prefix: test
+    attributes:
+      - id: exp_attr
+        type: boolean
+        required: always
+        stability: experimental
+        brief: ""
+      - id: stable_attr
+        type: boolean
+        required: always
+        stability: stable
+        brief: ""
+      - id: deprecated_attr
+        type: boolean
+        required: always
+        stability: deprecated
+        brief: ""
+      - id: def_stability
+        type: boolean
+        required: always
+        brief: ""

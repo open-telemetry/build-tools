@@ -16,7 +16,10 @@ import os
 import unittest
 
 from opentelemetry.semconv.model.constraints import Include
-from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute
+from opentelemetry.semconv.model.semantic_attribute import (
+    SemanticAttribute,
+    StabilityLevel,
+)
 from opentelemetry.semconv.model.semantic_convention import (
     parse_semantic_convention_groups,
     SemanticConventionSet,
@@ -241,6 +244,16 @@ class TestCorrectParse(unittest.TestCase):
         }
         self.semantic_convention_check(list(semconv.models.values())[2], expected)
 
+    def test_markdown_link(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("yaml/links.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 1)
+        s = list(semconv.models.values())[0]
+        for attr in s.attributes:
+            brief = attr.brief
+            self.assertEqual(brief.raw_text, brief.__str__())
+
     # This fails until ONE-36916 is not addressed
     def test_ref(self):
         semconv = SemanticConventionSet(debug=False)
@@ -368,6 +381,52 @@ class TestCorrectParse(unittest.TestCase):
             "Use attribute `nonDepecrated`.",
         )
         self.assertIsNone(list(semconv.models.values())[0].attributes[3].deprecated)
+
+    def test_stability(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("yaml/stability.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 6)
+
+        model = list(semconv.models.values())[0]
+        self.assertEqual(len(model.attributes), 4)
+        self.assertEqual(model.stability, None)
+
+        attr = model.attributes[0]
+        self.assertEqual(attr.attr_id, "exp_attr")
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
+
+        attr = model.attributes[1]
+        self.assertEqual(attr.attr_id, "stable_attr")
+        self.assertEqual(attr.stability, StabilityLevel.STABLE)
+
+        attr = model.attributes[2]
+        self.assertEqual(attr.attr_id, "deprecated_attr")
+        self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
+
+        attr = model.attributes[3]
+        self.assertEqual(attr.attr_id, "def_stability")
+        self.assertEqual(attr.stability, StabilityLevel.STABLE)
+
+        model = list(semconv.models.values())[1]
+        self.assertEqual(len(model.attributes), 2)
+        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
+
+        attr = model.attributes[0]
+        self.assertEqual(attr.attr_id, "test_attr")
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
+
+        attr = model.attributes[1]
+        self.assertEqual(attr.attr_id, "dep")
+        self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
+
+        model = list(semconv.models.values())[2]
+        self.assertEqual(len(model.attributes), 1)
+        self.assertEqual(model.stability, StabilityLevel.DEPRECATED)
+
+        attr = model.attributes[0]
+        self.assertEqual(attr.attr_id, "test_attr")
+        self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
 
     def test_populate_other_attributes(self):
         semconv = SemanticConventionSet(debug=False)

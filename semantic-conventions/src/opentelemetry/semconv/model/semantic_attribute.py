@@ -35,9 +35,17 @@ class Required(Enum):
     NO = 3
 
 
+class StabilityLevel(Enum):
+    STABLE = 1
+    EXPERIMENTAL = 2
+    DEPRECATED = 3
+
+
 class HasAttributes:
-    def _set_attributes(self, prefix, node):
-        self.attrs_by_name = SemanticAttribute.parse(prefix, node.get("attributes"))
+    def _set_attributes(self, prefix, stability, node):
+        self.attrs_by_name = SemanticAttribute.parse(
+            prefix, stability, node.get("attributes")
+        )
 
     @property
     def attributes(self):
@@ -64,6 +72,7 @@ class SemanticAttribute:
     brief: str
     examples: List[Union[str, int, bool]]
     tag: str
+    stability: StabilityLevel
     deprecated: str
     required: Required
     required_msg: str
@@ -88,7 +97,7 @@ class SemanticAttribute:
         return isinstance(self.attr_type, EnumAttributeType)
 
     @staticmethod
-    def parse(prefix, yaml_attributes):
+    def parse(prefix, semconv_stability, yaml_attributes):
         """ This method parses the yaml representation for semantic attributes
             creating the respective SemanticAttribute objects.
         """
@@ -101,6 +110,7 @@ class SemanticAttribute:
             "ref",
             "tag",
             "deprecated",
+            "stability",
             "required",
             "sampling_relevant",
             "note",
@@ -112,12 +122,13 @@ class SemanticAttribute:
             validate_values(attribute, allowed_keys)
             attr_id = attribute.get("id")
             ref = attribute.get("ref")
-            position = attribute.lc.data[list(attribute)[0]]
+            position_data = attribute.lc.data
+            position = position_data[next(iter(attribute))]
             if attr_id is None and ref is None:
                 msg = "At least one of id or ref is required."
                 raise ValidationError.from_yaml_pos(position, msg)
             if attr_id is not None:
-                validate_id(attr_id, attribute.lc.data["id"])
+                validate_id(attr_id, position_data["id"])
                 attr_type, brief, examples = SemanticAttribute.parse_id(attribute)
                 fqn = "{}.{}".format(prefix, attr_id)
                 attr_id = attr_id.strip()
@@ -125,7 +136,6 @@ class SemanticAttribute:
                 # Ref
                 attr_type = None
                 if "type" in attribute:
-                    position = attribute.lc.data[list(attribute)[0]]
                     msg = "Ref attribute '{}' must not declare a type".format(ref)
                     raise ValidationError.from_yaml_pos(position, msg)
                 brief = attribute.get("brief")
@@ -144,32 +154,39 @@ class SemanticAttribute:
                 required = Required.CONDITIONAL
                 required_msg = required_val.get("conditional", None)
                 if required_msg is None:
-                    position = attribute.lc.data["required"]
+                    position = position_data["required"]
                     msg = "Missing message for conditional required field!"
                     raise ValidationError.from_yaml_pos(position, msg)
             else:
                 required = required_value_map.get(required_val)
                 if required == Required.CONDITIONAL:
-                    position = attribute.lc.data["required"]
+                    position = position_data["required"]
                     msg = "Missing message for conditional required field!"
                     raise ValidationError.from_yaml_pos(position, msg)
             if required is None:
-                position = attribute.lc.data["required"]
+                position = position_data["required"]
                 msg = "Value '{}' for required field is not allowed".format(
                     required_val
                 )
                 raise ValidationError.from_yaml_pos(position, msg)
             tag = attribute.get("tag", "").strip()
-            deprecated = attribute.get("deprecated")
-            if deprecated is not None:
-                if AttributeType.get_type(deprecated) != "string" or deprecated == "":
-                    position = attribute.lc.data["deprecated"]
-                    msg = (
-                        "Deprecated field expects a string that specify why the attribute is deprecated and/or what"
-                        " to use instead! "
-                    )
-                    raise ValidationError.from_yaml_pos(position, msg)
-                deprecated = deprecated.strip()
+            stability, deprecated = SemanticAttribute.parse_stability_deprecated(
+                attribute.get("stability"), attribute.get("deprecated"), position_data
+            )
+            if (
+                semconv_stability == StabilityLevel.DEPRECATED
+                and stability is not StabilityLevel.DEPRECATED
+            ):
+                position = (
+                    position_data["stability"]
+                    if "stability" in position_data
+                    else position_data["deprecated"]
+                )
+                msg = "Semantic convention stability set to deprecated but attribute '{}' is {}".format(
+                    attr_id, stability
+                )
+                raise ValidationError.from_yaml_pos(position, msg)
+            stability = stability or semconv_stability or StabilityLevel.STABLE
             sampling_relevant = (
                 AttributeType.to_bool("sampling_relevant", attribute)
                 if attribute.get("sampling_relevant")
@@ -177,23 +194,26 @@ class SemanticAttribute:
             )
             note = attribute.get("note", "")
             fqn = fqn.strip()
+            parsed_brief = TextWithLinks(brief.strip() if brief else "")
+            parsed_note = TextWithLinks(note.strip())
             attr = SemanticAttribute(
                 fqn=fqn,
                 attr_id=attr_id,
                 ref=ref,
                 attr_type=attr_type,
-                brief=brief.strip() if brief else "",
+                brief=parsed_brief,
                 examples=examples,
                 tag=tag,
                 deprecated=deprecated,
+                stability=stability,
                 required=required,
                 required_msg=str(required_msg).strip(),
                 sampling_relevant=sampling_relevant,
-                note=note.strip(),
+                note=parsed_note,
                 position=position,
             )
             if attr.fqn in attributes:
-                position = attribute.lc.data[list(attribute)[0]]
+                position = position_data[list(attribute)[0]]
                 msg = (
                     "Attribute id "
                     + fqn
@@ -252,6 +272,48 @@ class SemanticAttribute:
         if is_simple_type and attr_type not in ["boolean", "boolean[]"]:
             AttributeType.check_examples_type(attr_type, examples, zlass)
         return attr_type, str(brief), examples
+
+    @staticmethod
+    def parse_stability_deprecated(stability, deprecated, position_data):
+        if deprecated is not None and stability is None:
+            stability = "deprecated"
+        if deprecated is not None:
+            if stability is not None and stability != "deprecated":
+                position = position_data["deprecated"]
+                msg = "There is a deprecation message but the stability is set to '{}'".format(
+                    stability
+                )
+                raise ValidationError.from_yaml_pos(position, msg)
+            if AttributeType.get_type(deprecated) != "string" or deprecated == "":
+                position = position_data["deprecated"]
+                msg = (
+                    "Deprecated field expects a string that specifies why the attribute is deprecated and/or what"
+                    " to use instead! "
+                )
+                raise ValidationError.from_yaml_pos(position, msg)
+            deprecated = deprecated.strip()
+        if stability is not None:
+            stability = SemanticAttribute.check_stability(
+                stability,
+                position_data["stability"]
+                if "stability" in position_data
+                else position_data["deprecated"],
+            )
+        return stability, deprecated
+
+    @staticmethod
+    def check_stability(stability_value, position):
+
+        stability_value_map = {
+            "deprecated": StabilityLevel.DEPRECATED,
+            "experimental": StabilityLevel.EXPERIMENTAL,
+            "stable": StabilityLevel.STABLE,
+        }
+        val = stability_value_map.get(stability_value)
+        if val is not None:
+            return val
+        msg = "Value '{}' is not allowed as a stability marker".format(stability_value)
+        raise ValidationError.from_yaml_pos(position, msg)
 
     def equivalent_to(self, other: "SemanticAttribute"):
         if self.attr_id is not None:
@@ -395,7 +457,9 @@ class EnumAttributeType:
             for member in attribute_type["members"]:
                 validate_values(member, allowed_keys, mandatory_keys)
                 if not EnumAttributeType.is_valid_enum_value(member["value"]):
-                    raise ValidationError(0, 0, "Invalid value used in enum: <{}>".format(member["value"]))
+                    raise ValidationError(
+                        0, 0, "Invalid value used in enum: <{}>".format(member["value"])
+                    )
                 members.append(
                     EnumMember(
                         member_id=member["id"],
@@ -419,3 +483,43 @@ class EnumMember:
     value: str
     brief: str
     note: str
+
+
+class MdLink:
+    text: str
+    url: str
+
+    def __init__(self, text, url):
+        self.text = text
+        self.url = url
+
+    def __str__(self):
+        return "[{}]({})".format(self.text, self.url)
+
+
+class TextWithLinks(str):
+    parts: List[Union[str, MdLink]]
+    raw_text: str
+    md_link = re.compile("\[([^\[\]]+)\]\(([^)]+)")
+
+    def __init__(self, text):
+        super().__init__()
+        self.raw_text = text
+        self.parts = []
+        last_position = 0
+        for match in self.md_link.finditer(text):
+            prev_text = text[last_position : match.start()]
+            link = MdLink(match.group(1), match.group(2))
+            if prev_text:
+                self.parts.append(prev_text)
+            self.parts.append(link)
+            last_position = match.end() + 1
+        last_part = text[last_position:]
+        if last_part:
+            self.parts.append(last_part)
+
+    def __str__(self):
+        str_list = []
+        for elm in self.parts:
+            str_list.append(elm.__str__())
+        return "".join(str_list)

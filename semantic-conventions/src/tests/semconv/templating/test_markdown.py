@@ -17,6 +17,7 @@ import os
 import unittest
 
 from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
+from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
 
 
@@ -74,6 +75,40 @@ class TestCorrectMarkdown(unittest.TestCase):
             expected,
         )
 
+    def testStability(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/stability/stability.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 1)
+        with open(self.load_file("markdown/stability/input.md"), "r") as markdown:
+            content = markdown.read()
+        # Labels
+        with open(
+            self.load_file("markdown/stability/labels_expected.md"), "r"
+        ) as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/stability/",
+            "markdown/stability/input.md",
+            content,
+            expected,
+        )
+        # Badges
+        with open(
+            self.load_file("markdown/stability/badges_expected.md"), "r"
+        ) as markdown:
+            expected = markdown.read()
+        options = MarkdownOptions(enable_stable=True, use_badge=True)
+        self.check_render(
+            semconv,
+            "markdown/stability/",
+            "markdown/stability/input.md",
+            content,
+            expected,
+            options,
+        )
+
     def testSingle(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("markdown/single/http.yaml"))
@@ -85,11 +120,7 @@ class TestCorrectMarkdown(unittest.TestCase):
         with open(self.load_file("markdown/single/expected.md"), "r") as markdown:
             expected = markdown.read()
         self.check_render(
-            semconv,
-            "markdown/single/",
-            "markdown/single/input.md",
-            content,
-            expected,
+            semconv, "markdown/single/", "markdown/single/input.md", content, expected,
         )
 
     def testEmpty(self):
@@ -113,10 +144,16 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.assertEqual(len(semconv.models), 1)
         with open(self.load_file("markdown/example_array/input.md"), "r") as markdown:
             content = markdown.read()
-        with open(self.load_file("markdown/example_array/expected.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/example_array/expected.md"), "r"
+        ) as markdown:
             expected = markdown.read()
         self.check_render(
-            semconv, "markdown/example_array/", "markdown/example_array/input.md", content, expected
+            semconv,
+            "markdown/example_array/",
+            "markdown/example_array/input.md",
+            content,
+            expected,
         )
 
     def testMultiple(self):
@@ -160,9 +197,13 @@ class TestCorrectMarkdown(unittest.TestCase):
         semconv.parse(self.load_file("markdown/extend_constraint/general.yaml"))
         semconv.finish()
         self.assertEqual(len(semconv.models), 7)
-        with open(self.load_file("markdown/extend_constraint/input.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/extend_constraint/input.md"), "r"
+        ) as markdown:
             content = markdown.read()
-        with open(self.load_file("markdown/extend_constraint/expected.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/extend_constraint/expected.md"), "r"
+        ) as markdown:
             expected = markdown.read()
         self.check_render(
             semconv,
@@ -181,7 +222,9 @@ class TestCorrectMarkdown(unittest.TestCase):
         with open(self.load_file("markdown/missing_end_tag/input.md"), "r") as markdown:
             content = markdown.read()
         with self.assertRaises(Exception) as ex:
-            renderer = MarkdownRenderer(self.load_file("markdown/missing_end_tag/"), semconv)
+            renderer = MarkdownRenderer(
+                self.load_file("markdown/missing_end_tag/"), semconv
+            )
             renderer._render_single_file(
                 content, "markdown/missing_end_tag/input.md", io.StringIO()
             )
@@ -193,10 +236,14 @@ class TestCorrectMarkdown(unittest.TestCase):
         semconv.parse(self.load_file("markdown/wrong_semconv_id/general.yaml"))
         semconv.finish()
         self.assertEqual(len(semconv.models), 5)
-        with open(self.load_file("markdown/wrong_semconv_id/input.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/wrong_semconv_id/input.md"), "r"
+        ) as markdown:
             content = markdown.read()
         with self.assertRaises(Exception) as ex:
-            renderer = MarkdownRenderer(self.load_file("markdown/wrong_semconv_id/"), semconv)
+            renderer = MarkdownRenderer(
+                self.load_file("markdown/wrong_semconv_id/"), semconv
+            )
             renderer._render_single_file(
                 content, "markdown/wrong_semconv_id/input.md", io.StringIO()
             )
@@ -230,7 +277,9 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.assertEqual(len(semconv.models), 7)
         with open(self.load_file("markdown/parameter_full/input.md"), "r") as markdown:
             content = markdown.read()
-        with open(self.load_file("markdown/parameter_full/expected.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/parameter_full/expected.md"), "r"
+        ) as markdown:
             expected = markdown.read()
         self.check_render(
             semconv,
@@ -248,7 +297,9 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.assertEqual(len(semconv.models), 6)
         with open(self.load_file("markdown/parameter_tag/input.md"), "r") as markdown:
             content = markdown.read()
-        with open(self.load_file("markdown/parameter_tag/expected.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/parameter_tag/expected.md"), "r"
+        ) as markdown:
             expected = markdown.read()
         self.check_render(
             semconv,
@@ -264,9 +315,13 @@ class TestCorrectMarkdown(unittest.TestCase):
         semconv.parse(self.load_file("markdown/parameter_tag_empty/general.yaml"))
         semconv.finish()
         self.assertEqual(len(semconv.models), 6)
-        with open(self.load_file("markdown/parameter_tag_empty/input.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/parameter_tag_empty/input.md"), "r"
+        ) as markdown:
             content = markdown.read()
-        with open(self.load_file("markdown/parameter_tag_empty/expected.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/parameter_tag_empty/expected.md"), "r"
+        ) as markdown:
             expected = markdown.read()
         self.check_render(
             semconv,
@@ -303,11 +358,17 @@ class TestCorrectMarkdown(unittest.TestCase):
 
     def test_parameter_remove_constraint(self):
         semconv = SemanticConventionSet(debug=False)
-        semconv.parse(self.load_file("markdown/parameter_remove_constraint/database.yaml"))
-        semconv.parse(self.load_file("markdown/parameter_remove_constraint/general.yaml"))
+        semconv.parse(
+            self.load_file("markdown/parameter_remove_constraint/database.yaml")
+        )
+        semconv.parse(
+            self.load_file("markdown/parameter_remove_constraint/general.yaml")
+        )
         semconv.finish()
         self.assertEqual(len(semconv.models), 6)
-        with open(self.load_file("markdown/parameter_remove_constraint/input.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/parameter_remove_constraint/input.md"), "r"
+        ) as markdown:
             content = markdown.read()
         with open(
             self.load_file("markdown/parameter_remove_constraint/expected.md"), "r"
@@ -330,7 +391,9 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.assertEqual(len(semconv.models), 7)
         with open(self.load_file("markdown/parameter_empty/input.md"), "r") as markdown:
             content = markdown.read()
-        with open(self.load_file("markdown/parameter_empty/expected.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/parameter_empty/expected.md"), "r"
+        ) as markdown:
             expected = markdown.read()
         self.check_render(
             semconv,
@@ -371,7 +434,9 @@ class TestCorrectMarkdown(unittest.TestCase):
         semconv.parse(self.load_file("markdown/parameter_wrong_syntax/general.yaml"))
         semconv.finish()
         self.assertEqual(len(semconv.models), 7)
-        with open(self.load_file("markdown/parameter_wrong_syntax/input.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/parameter_wrong_syntax/input.md"), "r"
+        ) as markdown:
             content = markdown.read()
         expected = ""
         with self.assertRaises(ValueError) as ex:
@@ -394,7 +459,9 @@ class TestCorrectMarkdown(unittest.TestCase):
         semconv.parse(self.load_file("markdown/parameter_wrong_duplicate/general.yaml"))
         semconv.finish()
         self.assertEqual(len(semconv.models), 7)
-        with open(self.load_file("markdown/parameter_wrong_duplicate/input.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/parameter_wrong_duplicate/input.md"), "r"
+        ) as markdown:
             content = markdown.read()
         expected = ""
         with self.assertRaises(ValueError) as ex:
@@ -425,11 +492,19 @@ class TestCorrectMarkdown(unittest.TestCase):
             "markdown/metrics/",
             "markdown/metrics/units_input.md",
             content,
-            expected
-            )
+            expected,
+        )
 
-    def check_render(self, semconv, folder, file_name, content: str, expected: str):
-        renderer = MarkdownRenderer(self.load_file(folder), semconv)
+    def check_render(
+        self,
+        semconv,
+        folder,
+        file_name,
+        content: str,
+        expected: str,
+        options=MarkdownOptions(),
+    ):
+        renderer = MarkdownRenderer(self.load_file(folder), semconv, options)
         output = io.StringIO()
         renderer._render_single_file(content, self.load_file(file_name), output)
         result = output.getvalue()
@@ -439,7 +514,7 @@ class TestCorrectMarkdown(unittest.TestCase):
     _TEST_DIR = os.path.dirname(__file__)
 
     def read_file(self, filename):
-        with open(self.load_file(filename), 'r') as test_file:
+        with open(self.load_file(filename), "r") as test_file:
             return test_file.read()
 
     def load_file(self, filename):

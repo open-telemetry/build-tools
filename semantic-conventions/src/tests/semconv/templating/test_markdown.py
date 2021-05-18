@@ -114,6 +114,9 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_units(self):
         self.check("markdown/metrics_unit/", extra_yaml_dirs=["yaml/metrics/"])
 
+    def test_event(self):
+        self.check("markdown/event/")
+
     def check(
         self,
         input_dir: str,

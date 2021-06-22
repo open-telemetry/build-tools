@@ -242,8 +242,6 @@ class MarkdownRenderer:
             for note in notes:
                 output.write("\n\n**[{}]:** {}".format(counter, note))
                 counter += 1
-            if notes:
-                output.write("\n")
 
     def render_attribute_id(self, attribute_id):
         """

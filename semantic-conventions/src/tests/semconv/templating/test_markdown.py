@@ -174,6 +174,23 @@ class TestCorrectMarkdown(unittest.TestCase):
             expected,
         )
 
+    def testMultipleEnum(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("markdown/multiple_enum/general.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 2)
+        with open(self.load_file("markdown/multiple_enum/input.md"), "r") as markdown:
+            content = markdown.read()
+        with open(self.load_file("markdown/multiple_enum/expected.md"), "r") as markdown:
+            expected = markdown.read()
+        self.check_render(
+            semconv,
+            "markdown/multiple_enum/",
+            "markdown/multiple_enum/input.md",
+            content,
+            expected,
+        )
+
     def testEnumInt(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("markdown/enum_int/rpc.yaml"))

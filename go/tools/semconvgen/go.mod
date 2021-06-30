@@ -1,4 +1,4 @@
-module github.com/open-telemetry/build-tools/go-semconv
+module github.com/open-telemetry/build-tools/go/tools/semconvgen
 
 go 1.16
 

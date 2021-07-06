@@ -17,3 +17,4 @@
 
 # Owners for the semantic conventions generator tool
 /semantic-conventions/      @open-telemetry/specs-approvers @thisthat @Oberon00
+/go/                        @open-telemetry/specs-approvers @open-telemetry/go-maintainers @open-telemetry/collector-maintainers

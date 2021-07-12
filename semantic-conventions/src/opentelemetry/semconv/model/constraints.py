@@ -65,8 +65,8 @@ class Include:
 
 
 def parse_constraints(yaml_constraints):
-    """ This method parses the yaml representation for semantic convention attributes
-        creating a list of Constraint objects.
+    """This method parses the yaml representation for semantic convention attributes
+    creating a list of Constraint objects.
     """
     constraints = ()
     allowed_keys = ("include", "any_of")

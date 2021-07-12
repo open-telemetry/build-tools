@@ -31,8 +31,7 @@ def validate_id(semconv_id, position):
 
 
 def validate_values(yaml, keys, mandatory=()):
-    """ This method checks only valid keywords and value types are used
-    """
+    """This method checks only valid keywords and value types are used"""
     unwanted = [k for k in yaml.keys() if k not in keys]
     if unwanted:
         position = yaml.lc.data[unwanted[0]]
@@ -74,7 +73,7 @@ class ValidatableYamlNode:
 
     def validate_values(self):
         """
-        Subclasses may provide additional validation. 
+        Subclasses may provide additional validation.
         This method should raise an exception with a descriptive
         message if the semantic convention is not valid.
         """

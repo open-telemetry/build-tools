@@ -108,8 +108,7 @@ def SemanticConvention(group):
 
 
 class BaseSemanticConvention(ValidatableYamlNode):
-    """ Contains the model extracted from a yaml file
-    """
+    """Contains the model extracted from a yaml file"""
 
     def __init__(self, group):
         super().__init__(group)
@@ -254,8 +253,8 @@ class MetricSemanticConvention(BaseSemanticConvention):
 
 @dataclass
 class SemanticConventionSet:
-    """ Contains the list of models.
-        From this structure we will generate md/constants/etc with a pretty print of the structure.
+    """Contains the list of models.
+    From this structure we will generate md/constants/etc with a pretty print of the structure.
     """
 
     debug: bool
@@ -301,8 +300,8 @@ class SemanticConventionSet:
                     group_by_fqn[attr.fqn] = model.semconv_id
 
     def finish(self):
-        """ Resolves values referenced from other models using `ref` and `extends` attributes AFTER all models were parsed.
-            Here, sanity checks for `ref/extends` attributes are performed.
+        """Resolves values referenced from other models using `ref` and `extends` attributes AFTER all models were parsed.
+        Here, sanity checks for `ref/extends` attributes are performed.
         """
         # Before resolving attributes, we verify that no duplicate exists.
         self.check_unique_fqns()

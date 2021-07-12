@@ -98,8 +98,8 @@ class SemanticAttribute:
 
     @staticmethod
     def parse(prefix, semconv_stability, yaml_attributes):
-        """ This method parses the yaml representation for semantic attributes
-            creating the respective SemanticAttribute objects.
+        """This method parses the yaml representation for semantic attributes
+        creating the respective SemanticAttribute objects.
         """
         attributes = {}
         allowed_keys = (
@@ -368,8 +368,7 @@ class AttributeType:
 
     @staticmethod
     def check_examples_type(attr_type, examples, zlass):
-        """ This method checks example are correctly typed
-        """
+        """This method checks example are correctly typed"""
         index = -1
         for example in examples:
             index += 1
@@ -392,8 +391,7 @@ class AttributeType:
 
     @staticmethod
     def to_bool(key, parent_object):
-        """ This method translate yaml boolean values to python boolean values
-        """
+        """This method translate yaml boolean values to python boolean values"""
         yaml_value = parent_object.get(key)
         if isinstance(yaml_value, bool):
             return yaml_value
@@ -427,9 +425,9 @@ class EnumAttributeType:
 
     @staticmethod
     def parse(attribute_type):
-        """ This method parses the yaml representation for semantic attribute types.
-            If the type is an enumeration, it generated the EnumAttributeType object,
-            otherwise it returns the basic type as string.
+        """This method parses the yaml representation for semantic attribute types.
+        If the type is an enumeration, it generated the EnumAttributeType object,
+        otherwise it returns the basic type as string.
         """
         if isinstance(attribute_type, str):
             if AttributeType.is_simple_type(attribute_type):

@@ -500,7 +500,7 @@ class MdLink:
 class TextWithLinks(str):
     parts: List[Union[str, MdLink]]
     raw_text: str
-    md_link = re.compile("\[([^\[\]]+)\]\(([^)]+)")
+    md_link = re.compile(r"\[([^\[\]]+)\]\(([^)]+)")
 
     def __init__(self, text):
         super().__init__()

@@ -18,7 +18,9 @@ jobs:
     - name: install dependencies
       run: |
         pip install -U pip setuptools wheel
-        pip install -r semantic-conventions/requirements.txt
+        pip install -r semantic-conventions/dev-requirements.txt
+    - name: install
+    - run: pip install -U -e ./semantic-conventions/
     - name: run tests
       run: pytest -v
 
@@ -27,6 +29,10 @@ jobs:
     needs: tests
     steps:
     - uses: actions/checkout@v1
+    - name: Build the wheel
+      run: |
+       pip install -U pip setuptools wheel
+       pip wheel --no-deps ./semantic-conventions/ --wheel-dir semantic-conventions/
     - name: Build the Docker image
       run: docker build semantic-conventions/. -t semconvgen
     - name: Push the Docker image

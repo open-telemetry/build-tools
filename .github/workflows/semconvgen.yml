@@ -20,7 +20,7 @@ jobs:
         pip install -U pip setuptools wheel
         pip install -r semantic-conventions/dev-requirements.txt
     - name: install
-    - run: pip install -U -e ./semantic-conventions/
+      run: pip install -U -e ./semantic-conventions/
     - name: run tests
       run: pytest -v
 

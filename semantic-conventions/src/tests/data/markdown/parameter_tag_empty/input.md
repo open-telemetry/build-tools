@@ -2,5 +2,4 @@
 
 <!-- semconv db(tag) -->
 
-
 <!-- endsemconv -->

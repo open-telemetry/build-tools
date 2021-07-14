@@ -3,12 +3,11 @@ ARG PYTHON_VERSION=3.8.5
 
 FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
 LABEL maintainer="The OpenTelemetry Authors"
-ADD . /semconvgen/
-WORKDIR semconvgen
+ADD *.whl /semconvgen/
+WORKDIR /semconvgen
 RUN rm -f README.md
 RUN apk --update add --virtual build-dependencies build-base \
-  && pip install -r requirements.txt \
-  && apk del build-dependencies
-
-RUN python setup.py install
+  && pip install -U ./semconvgen-*.whl \
+  && apk del build-dependencies \
+  && rm *.whl
 ENTRYPOINT ["gen-semconv"]

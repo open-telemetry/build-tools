@@ -1,6 +1,8 @@
 # See https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
 # and https://github.com/DavidAnson/markdownlint/blob/main/README.md
 
+# This should be kept in sync with https://github.com/open-telemetry/opentelemetry-specification/blob/main/.markdownlint.yaml
+
 # Default state for all rules
 default: true
 

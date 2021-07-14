@@ -16,6 +16,24 @@ For help try:
 docker run --rm otel/semconvgen -h
 ```
 
+## Model definition language (YAML input)
+
+The expected YAML input file format is documented in [syntax.md](./syntax.md).
+
+There is also a JSON schema definition available for the YAML files, which can
+be used e.g. in VS code to get validation and auto-completion: [semconv.schema.json](semconv.schema.json). For example, with the `redhat.vscode-yaml` plugin, use the following snippet in your VS Code `settings.json` to apply it
+to the test YAML files:
+
+```json
+{
+    "yaml.schemas": {
+        "./semantic-conventions/semconv.schema.json": [
+            "semantic-conventions/src/tests/**/*.yaml"
+        ]
+    }
+}
+```
+
 ## Markdown Tables
 
 Tables can be generated using the command:
@@ -31,7 +49,7 @@ Where `{yaml_folder}` is the absolute path to the directory containing the yaml 
 The tool will automatically replace the tables with the up to date definition of the semantic conventions.
 To do so, the tool looks for special tags in the markdown.
 
-```
+```html
 <!-- semconv {semantic_convention_id} -->
 <!-- endsemconv -->
 ```
@@ -71,10 +89,24 @@ The image supports [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templat
 For example, opentelemetry-java [generates typed constants for semantic conventions](https://github.com/open-telemetry/opentelemetry-java/blob/main/semconv/src/main/java/io/opentelemetry/semconv/trace/attributes/SemanticAttributes.java)
 here using [this template](https://github.com/open-telemetry/opentelemetry-java/blob/main/buildscripts/semantic-convention/templates/SemanticAttributes.java.j2).
 
-The image can generate code with the following command:
+The commands used to generate that are
+[here in the opentelemetry-java repo](https://github.com/open-telemetry/opentelemetry-java/blob/main/buildscripts/semantic-convention/generate.sh).
+Note especially the `docker run` commands. For example to generate the aforementioned `SemanticAttributes.java`,
+the following command is used:
 
 ```bash
-docker run --rm otel/semconvgen --yaml-root {yaml_folder} code --template {jinja-file} --output {output-file}
+docker run --rm \
+  -v ${SCRIPT_DIR}/opentelemetry-specification/semantic_conventions/trace:/source \
+  -v ${SCRIPT_DIR}/templates:/templates \
+  -v ${ROOT_DIR}/semconv/src/main/java/io/opentelemetry/semconv/trace/attributes/:/output \
+  otel/semconvgen:$GENERATOR_VERSION \
+  --yaml-root /source \
+  code \
+  --template /templates/SemanticAttributes.java.j2 \
+  --output /output/SemanticAttributes.java \
+  -Dclass=SemanticAttributes \
+  -DschemaUrl=$SCHEMA_URL \
+  -Dpkg=io.opentelemetry.semconv.trace.attributes
 ```
 
 By default, all models are fed into the specified template at once, i.e. only a single file is generated.
@@ -89,10 +121,4 @@ This way, multiple files are generated. The value of `pattern` can be one of the
 - `extends`: The id of the parent semantic convention.
 
 Finally, additional value can be passed to the template in form of `key=value` pairs separated by
-comma using the `--parameters [{key=value},]+` flag.
-
-For example, to generate the typed spans used by the [opentelemetry-java-instrumentation](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/master/instrumentation-api/src/main/java/io/opentelemetry/instrumentation/api/typedspan), the following command can be used:
-
-```bash
-docker run --rm otel/semconvgen --yaml-root ${yamls} code --template typed_span_class.java.j2 --file-per-group semconv_id -o ${output}/Span.java
-```
+comma using the `--parameters [{key=value},]+` or `-D` flag.

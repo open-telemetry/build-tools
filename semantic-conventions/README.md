@@ -26,7 +26,7 @@ docker run --rm otel/semconvgen --yaml-root {yaml_folder} markdown --markdown-ro
 
 Where `{yaml_folder}` is the absolute path to the directory containing the yaml files and
 `{markdown_folder}` the absolute path to the directory containing the markdown definitions
-(`specification` for [opentelemetry-specification](https://github.com/open-telemetry/opentelemetry-specification/tree/master/)).
+(`specification` for [opentelemetry-specification](https://github.com/open-telemetry/opentelemetry-specification/tree/main/)).
 
 The tool will automatically replace the tables with the up to date definition of the semantic conventions.
 To do so, the tool looks for special tags in the markdown.
@@ -68,8 +68,8 @@ semantic conventions that have the tag `network`.
 
 The image supports [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates to generate code from the models.
 
-For example, the following template is used by the [opentelemetry-java-instrumentation](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/master/instrumentation-api/src/main/java/io/opentelemetry/instrumentation/api/typedspan)
-to generate Java classes. [Template Link.](https://gist.github.com/thisthat/7e34742f4a7f1b5df57118f859a19c3b)
+For example, opentelemetry-java [generates typed constants for semantic conventions](https://github.com/open-telemetry/opentelemetry-java/blob/main/semconv/src/main/java/io/opentelemetry/semconv/trace/attributes/SemanticAttributes.java)
+here using [this template](https://github.com/open-telemetry/opentelemetry-java/blob/main/buildscripts/semantic-convention/templates/SemanticAttributes.java.j2).
 
 The image can generate code with the following command:
 

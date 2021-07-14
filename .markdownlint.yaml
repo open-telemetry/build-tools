@@ -1,0 +1,16 @@
+# See https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+# and https://github.com/DavidAnson/markdownlint/blob/main/README.md
+
+# This should be kept in sync with https://github.com/open-telemetry/opentelemetry-specification/blob/main/.markdownlint.yaml
+
+# Default state for all rules
+default: true
+
+ul-style: false
+line-length: false
+no-duplicate-header:
+  siblings_only: true
+ol-prefix:
+  style: ordered
+no-inline-html: false
+fenced-code-language: false

@@ -14,7 +14,7 @@
 
 
 class ValidationError(Exception):
-    """ Exception raised if validation errors occur
+    """Exception raised if validation errors occur
     Attributes:
         line -- line in the file where the error occurred
         column -- column in the file where the error occurred

@@ -22,7 +22,11 @@ def test_parse(load_yaml):
     assert len(attributes) == 3
 
     expected_keys = sorted(
-        ["prefix.attribute_one", "prefix.attribute_two", "prefix.attribute_three",]
+        [
+            "prefix.attribute_one",
+            "prefix.attribute_two",
+            "prefix.attribute_three",
+        ]
     )
     actual_keys = sorted(list(attributes.keys()))
 

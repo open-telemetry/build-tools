@@ -19,6 +19,8 @@ jobs:
       run: |
         pip install -U pip setuptools wheel
         pip install -r semantic-conventions/dev-requirements.txt
+    - name: Check formatting
+      run: black --check --diff semantic-conventions/
     - name: install
       run: pip install -U -e ./semantic-conventions/
     - name: run tests

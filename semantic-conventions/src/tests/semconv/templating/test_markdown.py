@@ -120,7 +120,11 @@ class TestCorrectMarkdown(unittest.TestCase):
         with open(self.load_file("markdown/single/expected.md"), "r") as markdown:
             expected = markdown.read()
         self.check_render(
-            semconv, "markdown/single/", "markdown/single/input.md", content, expected,
+            semconv,
+            "markdown/single/",
+            "markdown/single/input.md",
+            content,
+            expected,
         )
 
     def testEmpty(self):
@@ -181,7 +185,9 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.assertEqual(len(semconv.models), 2)
         with open(self.load_file("markdown/multiple_enum/input.md"), "r") as markdown:
             content = markdown.read()
-        with open(self.load_file("markdown/multiple_enum/expected.md"), "r") as markdown:
+        with open(
+            self.load_file("markdown/multiple_enum/expected.md"), "r"
+        ) as markdown:
             expected = markdown.read()
         self.check_render(
             semconv,

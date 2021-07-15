@@ -25,6 +25,7 @@ from opentelemetry.semconv.model.semantic_convention import SemanticConventionSe
 from opentelemetry.semconv.model.utils import ID_RE
 from opentelemetry.semconv.model.semantic_attribute import Required
 
+
 def render_markdown(
     txt: str,
     html=True,

@@ -87,7 +87,9 @@ class MarkdownRenderer:
         self.filename_for_attr_fqn = self._create_attribute_location_dict()
 
     def to_markdown_attr(
-        self, attribute: SemanticAttribute, output: io.StringIO,
+        self,
+        attribute: SemanticAttribute,
+        output: io.StringIO,
     ):
         """
         This method renders attributes as markdown table entry
@@ -189,7 +191,7 @@ class MarkdownRenderer:
             output.write("\n")
 
     def to_markdown_notes(self, output: io.StringIO):
-        """ Renders notes after a Semantic Convention Table
+        """Renders notes after a Semantic Convention Table
         :return:
         """
         counter = 1
@@ -210,7 +212,7 @@ class MarkdownRenderer:
         output.write("\n")
 
     def to_markdown_enum(self, output: io.StringIO):
-        """ Renders enum types after a Semantic Convention Table
+        """Renders enum types after a Semantic Convention Table
         :return:
         """
         attr: SemanticAttribute
@@ -258,7 +260,9 @@ class MarkdownRenderer:
         return "`{}`".format(attribute_id)
 
     def to_markdown_constraint(
-        self, obj: typing.Union[AnyOf, Include], output: io.StringIO,
+        self,
+        obj: typing.Union[AnyOf, Include],
+        output: io.StringIO,
     ):
         """
         Entry method to translate attributes and constraints of a semantic convention into Markdown
@@ -293,9 +297,9 @@ class MarkdownRenderer:
 
     def _create_attribute_location_dict(self):
         """
-       This method creates a dictionary that associates each attribute with the latest table in which it is rendered.
-       This is required by the ref attributes to point to the correct file
-       """
+        This method creates a dictionary that associates each attribute with the latest table in which it is rendered.
+        This is required by the ref attributes to point to the correct file
+        """
         m = {}
         for md in self.file_names:
             with open(md, "r", encoding="utf-8") as markdown:

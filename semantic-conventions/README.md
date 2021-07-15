@@ -21,7 +21,8 @@ docker run --rm otel/semconvgen -h
 The expected YAML input file format is documented in [syntax.md](./syntax.md).
 
 There is also a JSON schema definition available for the YAML files, which can
-be used e.g. in VS code to get validation and auto-completion: [semconv.schema.json](semconv.schema.json). For example, with the `redhat.vscode-yaml` plugin, use the following snippet in your VS Code `settings.json` to apply it
+be used e.g. in VS code to get validation and auto-completion: [semconv.schema.json](./semconv.schema.json).
+For example, with the `redhat.vscode-yaml` plugin, use the following snippet in your VS Code `settings.json` to apply it
 to the test YAML files:
 
 ```json
@@ -49,7 +50,7 @@ Where `{yaml_folder}` is the absolute path to the directory containing the yaml 
 The tool will automatically replace the tables with the up to date definition of the semantic conventions.
 To do so, the tool looks for special tags in the markdown.
 
-```html
+```markdown
 <!-- semconv {semantic_convention_id} -->
 <!-- endsemconv -->
 ```

@@ -1,0 +1,24 @@
+name: Markdown checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    paths:
+      - .github/workflows/markdownlint.yml
+      - .markdownlint.yaml
+      - '**.md'
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: check out code
+      uses: actions/checkout@v2
+
+    - name: install markdownlint
+      run: sudo npm install -g markdownlint-cli
+
+    - name: run markdownlint
+      run: markdownlint '**.md' --ignore 'node_modules/**'

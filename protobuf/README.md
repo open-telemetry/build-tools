@@ -3,7 +3,7 @@
 A lightweight protoc Docker image, published as otel/build-protobuf to Docker Hub,
 with all dependencies built-in, to generate code in multiple languages.
 
-Forked from https://github.com/jaegertracing/docker-protobuf.
+Forked from <https://github.com/jaegertracing/docker-protobuf>.
 
 ## What's included in the image
 

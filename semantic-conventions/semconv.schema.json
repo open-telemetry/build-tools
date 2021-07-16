@@ -11,17 +11,16 @@
 				"additionalProperties": false,
 				"required": [
 					"id",
-					"type",
 					"brief"
 				],
 				"anyOf": [
 					{
-						"require": [
-							"attributs"
+						"required": [
+							"attributes"
 						]
 					},
 					{
-						"require": [
+						"required": [
 							"extends"
 						]
 					}

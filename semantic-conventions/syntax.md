@@ -3,6 +3,31 @@
 First, the syntax with a pseudo [EBNF](https://en.wikipedia.org/wiki/Extended_Backus-Naur_form) grammar is presented.
 Then, the semantic of each field is described.
 
+<!-- tocstart -->
+
+<!-- toc -->
+
+- [JSON Schema](#json-schema)
+- [Syntax](#syntax)
+- [Semantics](#semantics)
+  * [Groups](#groups)
+  * [Semantic Convention](#semantic-convention)
+  * [Attributes](#attributes)
+  * [Ref](#ref)
+  * [Type](#type)
+  * [Constraints](#constraints)
+    + [Any Of](#any-of)
+    + [Include](#include)
+
+<!-- tocstop -->
+
+## JSON Schema
+
+A JSON schema description of the syntax is available as [semconv.schema.json](./semconv.schema.json),
+see [README.md](./README.md) for how to use it with an editor. The documentation
+here in `syntax.md` should be considered more authoritative though. Please keep
+`semconv.schema.json` in synch when changing the "grammar" in this file!
+
 ## Syntax
 
 All attributes are lower case.

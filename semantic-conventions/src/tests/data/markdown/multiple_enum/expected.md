@@ -42,18 +42,14 @@
 | `unavailable` | unavailable |
 
 **[1]:** Usually 802.11
+
 `net.host.connection.subtype` MUST be one of the following or, if none of the listed values apply, a custom value:
 
 | Value  | Description |
 |---|---|
-| `1G` | 1G
- |
-| `2G` | 2G
- |
-| `3G` | 3G
- |
-| `4G` | 4G
- |
-| `5G` | 5G
- |
+| `1G` | 1G |
+| `2G` | 2G |
+| `3G` | 3G |
+| `4G` | 4G |
+| `5G` | 5G |
 <!-- endsemconv -->

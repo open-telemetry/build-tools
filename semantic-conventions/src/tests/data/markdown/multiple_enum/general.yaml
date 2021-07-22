@@ -41,6 +41,7 @@ groups:
           members:
             - id: wifi
               value: "wifi"
+              note: "Usually 802.11"
             - id: wired
               value: "wired"
             - id: cell

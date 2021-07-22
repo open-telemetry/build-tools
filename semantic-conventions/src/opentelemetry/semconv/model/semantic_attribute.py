@@ -131,7 +131,6 @@ class SemanticAttribute:
                 validate_id(attr_id, position_data["id"])
                 attr_type, brief, examples = SemanticAttribute.parse_id(attribute)
                 fqn = "{}.{}".format(prefix, attr_id)
-                attr_id = attr_id.strip()
             else:
                 # Ref
                 attr_type = None
@@ -462,10 +461,10 @@ class EnumAttributeType:
                     EnumMember(
                         member_id=member["id"],
                         value=member["value"],
-                        brief=member.get("brief")
+                        brief=member.get("brief").strip()
                         if "brief" in member
                         else member["id"],
-                        note=member.get("note") if "note" in member else "",
+                        note=member.get("note").strip() if "note" in member else "",
                     )
                 )
             enum_type = AttributeType.get_type(members[0].value)

@@ -67,7 +67,7 @@ span_kind ::= "client"
 
 attributes ::= (id type brief examples | ref [brief] [examples]) [tag] [stability] [deprecated] [required] [sampling_relevant] [note]
 
-# Ref MUST point to an existing ID
+# ref MUST point to an existing attribute id
 ref ::= id
 
 type ::= "string"

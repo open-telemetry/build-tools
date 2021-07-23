@@ -32,13 +32,18 @@ here in `syntax.md` should be considered more authoritative though. Please keep
 
 All attributes are lower case.
 
-```bnf
+```ebnf
 groups ::= semconv
        | semconv groups
 
-semconv ::= id brief [note] [prefix] [extends] [span_kind] attributes [constraints]
+semconv ::= id [type] brief [note] [prefix] [extends] [stability] [deprecated] [span_kind] attributes [constraints]
 
 id    ::= string
+
+type ::= "span" # Default if not specified
+     |   "resource"
+     |   "metric"
+
 brief ::= string
 note  ::= string
 
@@ -47,15 +52,22 @@ prefix ::= string
 # extends MUST point to an existing semconv id
 extends ::= string
 
+stability ::= "deprecated"
+          |   "experimental"
+          |   "stable"
+
+deprecated ::= <description>
+
 span_kind ::= "client"
           |   "server"
           |   "producer"
           |   "consumer"
           |   "internal"
 
-attributes ::= (id type brief examples | ref [brief] [examples]) [required] [note]
 
-# ref MUST point to an existing attribute id
+attributes ::= (id type brief examples | ref [brief] [examples]) [tag] [stability] [deprecated] [required] [sampling_relevant] [note]
+
+# Ref MUST point to an existing ID
 ref ::= id
 
 type ::= "string"
@@ -78,6 +90,10 @@ member ::= id value [brief] [note]
 
 required ::= "always"
          |   "conditional" <condition>
+
+
+# EXPERIMENTAL: Using this is NOT ALLOWED in the specification currently.
+sampling_relevant ::= boolean
 
 examples ::= <example_value> {<example_value>}
 
@@ -103,16 +119,29 @@ Groups contain the list of semantic conventions and it is the root node of each 
 The field `semconv` represents a semantic convention and it is made by:
 
 - `id`, string that uniquely identifies the semantic convention.
+- `type`, optional enum, defaults to `span` (with a warning if not present).
 - `brief`, string, a brief description of the semantic convention.
 - `note`, optional string, a more elaborate description of the semantic convention.
-    It defaults to an empty string.
+   It defaults to an empty string.
 - `prefix`, optional string, prefix for the attributes for this semantic convention.
-    It defaults to an empty string.
+   It defaults to an empty string.
 - `extends`, optional string, reference another semantic convention `id`.
-    It inherits the prefix, constraints, and all attributes defined in the specified semantic convention.
-- `span_kind`, optional enum, specifies the kind of the span.
+   It inherits the prefix, constraints, and all attributes defined in the specified semantic convention.
+- `stability`, optional enum, specifies the stability of the semantic convention.
+
+   Note that, if `stability` is missing but `deprecated` is present, will automatically set the `stability` to `deprecated`.
+   If `deprecated` is present and `stability` differs from `deprecated`, this will result in an error.
+- `deprecated`, optional, specifies if the semantic convention is deprecated.
+   The string provided as `<description>` MUST specify why it's deprecated and/or what to use instead.
+   See also `stability`.
 - `attributes`, list of attributes that belong to the semantic convention.
 - `constraints`, optional list, additional constraints (See later). It defaults to an empty list.
+
+#### Span semantic convention
+
+The following is only valid if `type` is `span` (the default):
+
+- `span_kind`, optional enum, specifies the kind of the span.
 
 ### Attributes
 
@@ -122,27 +151,33 @@ An attribute is defined by:
 - `type`, either a string literal denoting the type or an enum definition (See later).
    The accepted string literals are:
 
-  * "string": String attributes.
-  * "int": Integer attributes.
-  * "double": Double attributes.
-  * "boolean": Boolean attributes.
-  * "string[]": Array of strings attributes.
-  * "int[]": Array of integer attributes.
-  * "double[]": Array of double attributes.
-  * "boolean[]": Array of booleans attributes.
+  * `"string"`: String attributes.
+  * `"int"`: Integer attributes.
+  * `"double"`: Double attributes.
+  * `"boolean"`: Boolean attributes.
+  * `"string[]"`: Array of strings attributes.
+  * `"int[]"`: Array of integer attributes.
+  * `"double[]"`: Array of double attributes.
+  * `"boolean[]"`: Array of booleans attributes.
 
-  See the [specification of Attributes](../specification/common/common.md#attributes) for the definition of the value types.
-- `ref`, optional string, reference an existing attribute, see later.
+  See the [specification of Attributes](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/common.md#attributes) for the definition of the value types.
+- `ref`, optional string, reference an existing attribute, see [below](#ref).
 - `required`, optional, specifies if the attribute is mandatory.
-    Can be "always", or "conditional". When omitted, the attribute is not required.
-    When set to "conditional",the string provided as `<condition>` MUST specify
-    the conditions under which the attribute is required.
-- `brief`, string, brief description of the attribute.
-- `note`, optional string, additional notes to the attribute. It defaults to an empty string.
-- `examples`, sequence/dictionary of example values for the attribute.
-   They are optional for boolean and enum attributes.
+   Can be "always", or "conditional". When omitted, the attribute is not required.
+   When set to "conditional",the string provided as `<condition>` MUST specify
+   the conditions under which the attribute is required.
+- `sampling_relevant`, optional EXPERIMENTAL boolean,
+  specifies if the attribute is (especially) relevant for sampling and
+  thus should be set at span start. It defaults to `false`.
+  DO NOT USE for spec semantic conventions!
+- `brief`, `note`, `stability`, `deprecated`, same meaning as for the whole
+  [semantic convention](#semantic-convention), but per attribute.
+- `examples`, sequence of example values for the attribute or single example value.
+   They are required only for string and string array attributes.
    Example values must be of the same type of the attribute.
-   If only a single example is provided, it can directly be reported without encapsulating it into a sequence/dictionary.
+   If only a single example is provided, it can directly be reported without encapsulating it into a sequence/dictionary. See [below](#examples-for-examples).
+
+#### Examples (for examples)
 
 Examples for setting the `examples` field:
 
@@ -221,14 +256,14 @@ examples:
    - ['first element of second array', 'second element of second array']
 ```
 
-### Ref
+#### Ref
 
 `ref` MUST have an id of an existing attribute. When it is set, `id` and `type` MUST NOT be present.
 `ref` is useful for specifying that an existing attribute of another semantic convention is part of
 the current semantic convention and inherit its `brief`, `note`, and `example` values. However, if these
 fields are present in the current attribute definition, they override the inherited values.
 
-### Type
+#### Type
 
 An attribute type can either be a string, int, double, boolean, array of strings, array of int, array of double,
 array of booleans, or an enumeration. If it is an enumeration, additional fields are required:

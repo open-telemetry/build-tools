@@ -129,7 +129,7 @@ The field `semconv` represents a semantic convention and it is made by:
    It inherits the prefix, constraints, and all attributes defined in the specified semantic convention.
 - `stability`, optional enum, specifies the stability of the semantic convention.
 
-   Note that, if `stability` is missing but `deprecated` is present, will automatically set the `stability` to `deprecated`.
+   Note that, if `stability` is missing but `deprecated` is present, it will automatically set the `stability` to `deprecated`.
    If `deprecated` is present and `stability` differs from `deprecated`, this will result in an error.
 - `deprecated`, optional, specifies if the semantic convention is deprecated.
    The string provided as `<description>` MUST specify why it's deprecated and/or what to use instead.

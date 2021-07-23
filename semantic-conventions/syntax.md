@@ -162,6 +162,9 @@ An attribute is defined by:
 
   See the [specification of Attributes](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/common.md#attributes) for the definition of the value types.
 - `ref`, optional string, reference an existing attribute, see [below](#ref).
+- `tag`, optional string, associates a tag ("sub-group") to the attribute.
+   It carries no particular semantic meaning but can be used e.g. for filtering
+   in the markdown generator.
 - `required`, optional, specifies if the attribute is mandatory.
    Can be "always", or "conditional". When omitted, the attribute is not required.
    When set to "conditional",the string provided as `<condition>` MUST specify

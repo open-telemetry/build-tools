@@ -36,12 +36,13 @@ All attributes are lower case.
 groups ::= semconv
        | semconv groups
 
-semconv ::= id [type] brief [note] [prefix] [extends] [stability] [deprecated] [span_kind] attributes [constraints]
+semconv ::= id [type] brief [note] [prefix] [events] [extends] [stability] [deprecated] [span_kind] attributes [constraints]
 
 id    ::= string
 
 type ::= "span" # Default if not specified
      |   "resource"
+     |   "event"
      |   "metric"
 
 brief ::= string
@@ -49,7 +50,6 @@ note  ::= string
 
 prefix ::= string
 
-# extends MUST point to an existing semconv id
 extends ::= string
 
 stability ::= "deprecated"
@@ -142,6 +142,8 @@ The field `semconv` represents a semantic convention and it is made by:
 The following is only valid if `type` is `span` (the default):
 
 - `span_kind`, optional enum, specifies the kind of the span.
+- `events`, optional list of strings that specify the ids of
+  event semantic conventions associated with this span semantic convention.
 
 ### Attributes
 

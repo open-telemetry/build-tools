@@ -56,7 +56,6 @@ groups:
       - id: host.port
         type: int
         brief: 'Like `net.peer.port` but for the host port.'
-        examples: 35555
       - id: host.name
         type: string
         brief: 'Local hostname or similar, see note below.'

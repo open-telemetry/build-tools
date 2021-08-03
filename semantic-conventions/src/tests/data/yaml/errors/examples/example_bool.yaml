@@ -9,4 +9,4 @@ groups:
         type: boolean
         required: always
         brief: 'test'
-        examples: [true, false, yes]
+        examples: [true, false, true]

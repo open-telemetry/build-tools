@@ -276,8 +276,14 @@
 							"description": "additional notes to the attribute. It defaults to an empty string."
 						},
 						"examples": {
-							"$ref": "#/definitions/ValueType",
-							"description": "sequence/dictionary of example values for the attribute. They are optional for boolean and enum attributes. Example values must be of the same type of the attribute. If only a single example is provided, it can directly be reported without encapsulating it into a sequence/dictionary."
+							"anyOf": [
+								{ "$ref": "#/definitions/ValueType" },
+								{
+									"type": "array",
+									"items": { "$ref": "#/definitions/ValueType" }
+								}
+							],
+							"description": "sequence/dictionary of example values for the attribute. They are optional for boolean, int, double, and enum attributes. Example values must be of the same type of the attribute. If only a single example is provided, it can directly be reported without encapsulating it into a sequence/dictionary."
 						},
 						"deprecated": {
 							"type": "string",

@@ -251,7 +251,7 @@ class SemanticAttribute:
             msg = "Non array examples for {} are not allowed".format(attr_type)
             raise ValidationError.from_yaml_pos(position, msg)
         if not isinstance(examples, CommentedSeq) and examples is not None:
-            # TODO: If validation fails later, this will crash when trying to access positio data
+            # TODO: If validation fails later, this will crash when trying to access position data
             # since a list, contratry to a CommentedSeq, does not have position data
             examples = [examples]
         if is_simple_type and attr_type not in (

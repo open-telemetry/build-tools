@@ -15,6 +15,6 @@ groups:
     prefix: random
     brief: example
     attributes:
-        - id: flag
-          type: boolean
-          brief: An attribute.
+      - id: flag
+        type: boolean
+        brief: An attribute.

@@ -9,4 +9,4 @@ groups:
         type: boolean[]
         required: always
         brief: 'test'
-        examples: [[true,false], [true, false]]
+        examples: [[true,false], [true, 1]]

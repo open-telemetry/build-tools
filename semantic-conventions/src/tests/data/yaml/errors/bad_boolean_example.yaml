@@ -1,0 +1,8 @@
+groups:
+  - id: dummy
+    brief: dummy
+    attributes:
+      - id: foo
+        type: boolean
+        brief: bla
+        examples: [dfd]

@@ -407,6 +407,11 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("does not exists", msg)
         self.assertEqual(e.line, 15)
 
+    def test_validate_boolean_example(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("yaml/errors/bad_boolean_example.yaml"))
+        self.assertTrue(semconv.has_error())
+
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:
             return parse_semantic_convention_groups(file)

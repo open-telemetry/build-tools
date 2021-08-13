@@ -277,8 +277,6 @@ class SemanticConventionSet:
                         )
                     self.models[model.semconv_id] = model
             except ValidationError as e:
-                # TODO: Change error handling to not swallow exception
-                #  to allow better tests.
                 self.errors = True
                 print("Error parsing {}\n".format(file), file=sys.stderr)
                 print(e, file=sys.stderr)

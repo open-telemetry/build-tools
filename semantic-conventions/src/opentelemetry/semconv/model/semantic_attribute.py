@@ -250,25 +250,25 @@ class SemanticAttribute:
             position = attribute.lc.data[list(attribute)[0]]
             msg = "Non array examples for {} are not allowed".format(attr_type)
             raise ValidationError.from_yaml_pos(position, msg)
-        if (
-            (is_simple_type or isinstance(attr_type, EnumAttributeType))
-            and not isinstance(examples, CommentedSeq)
-            and examples is not None
-        ):
+        if not isinstance(examples, CommentedSeq) and examples is not None:
+            # TODO: If validation fails later, this will crash when trying to access position data
+            # since a list, contrary to a CommentedSeq, does not have position data
             examples = [examples]
-        if is_simple_type and attr_type not in [
+        if is_simple_type and attr_type not in (
             "boolean",
             "boolean[]",
             "int",
             "int[]",
             "double",
             "double[]",
-        ]:
-            if examples is None or (len(examples) == 0):
+        ):
+            if not examples:
                 position = attribute.lc.data[list(attribute)[0]]
                 msg = "Empty examples for {} are not allowed".format(attr_type)
                 raise ValidationError.from_yaml_pos(position, msg)
-        if is_simple_type and attr_type not in ["boolean", "boolean[]"]:
+
+        # TODO: Implement type check for enum examples or forbid them
+        if examples is not None and is_simple_type:
             AttributeType.check_examples_type(attr_type, examples, zlass)
         return attr_type, str(brief), examples
 

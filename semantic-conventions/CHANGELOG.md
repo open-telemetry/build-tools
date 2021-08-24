@@ -2,6 +2,11 @@
 
 Please update the changelog as part of any significant pull request.
 
+## v0.5.0
+
+- Add event semantic convention type & events span field
+  ([#57](https://github.com/open-telemetry/build-tools/pull/57)).
+
 ## v0.4.0
 
 - Add stability fields. (#35)

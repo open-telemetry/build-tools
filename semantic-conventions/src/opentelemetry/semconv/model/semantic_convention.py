@@ -67,6 +67,7 @@ def parse_semantic_convention_type(type_value):
         for cls in [
             SpanSemanticConvention,
             ResourceSemanticConvention,
+            EventSemanticConvention,
             MetricSemanticConvention,
             UnitSemanticConvention,
         ]
@@ -123,6 +124,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
             stability, deprecated, position_data
         )
         self.extends = group.get("extends", "").strip()
+        self.events = group.get("events", ())
         self.constraints = parse_constraints(group.get("constraints", ()))
 
     @property
@@ -215,6 +217,7 @@ class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
         "prefix",
         "stability",
         "extends",
+        "events",
         "span_kind",
         "attributes",
         "constraints",
@@ -228,6 +231,26 @@ class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
             position = group.lc.data["span_kind"]
             msg = "Invalid value for span_kind: {}".format(group.get("span_kind"))
             raise ValidationError.from_yaml_pos(position, msg)
+
+
+class EventSemanticConvention(HasAttributes, BaseSemanticConvention):
+    GROUP_TYPE_NAME = "event"
+
+    allowed_keys = (
+        "id",
+        "type",
+        "brief",
+        "note",
+        "prefix",
+        "stability",
+        "extends",
+        "attributes",
+        "constraints",
+    )
+
+    def __init__(self, group):
+        super().__init__(group)
+        self._set_attributes(self.prefix, self.stability, group)
 
 
 class UnitSemanticConvention(BaseSemanticConvention):
@@ -324,6 +347,8 @@ class SemanticConventionSet:
         self._populate_extends()
         # From string containing attribute ids to SemanticAttribute objects
         self._populate_anyof_attributes()
+        # From strings containing Semantic Conventions for Events ids to SemanticConvention objects
+        self._populate_events()
 
     def _populate_extends(self):
         """
@@ -422,6 +447,28 @@ class SemanticConventionSet:
                             constraint_attrs.append(ref_attr)
                         if constraint_attrs:
                             any_of.add_attributes(constraint_attrs)
+
+    def _populate_events(self):
+        for semconv in self.models.values():
+            events: typing.List[EventSemanticConvention] = []
+            for event_id in semconv.events:
+                event = self.models.get(event_id)
+                if event is None:
+                    raise ValidationError.from_yaml_pos(
+                        semconv._position,
+                        "Semantic Convention {} has {} as event but the latter cannot be found!".format(
+                            semconv.semconv_id, event_id
+                        ),
+                    )
+                if not isinstance(event, EventSemanticConvention):
+                    raise ValidationError.from_yaml_pos(
+                        semconv._position,
+                        "Semantic Convention {} has {} as event but the latter is not a semantic convention for events!".format(
+                            semconv.semconv_id, event_id
+                        ),
+                    )
+                events.append(event)
+            semconv.events = events
 
     def resolve_ref(self, semconv):
         fixpoint_ref = True

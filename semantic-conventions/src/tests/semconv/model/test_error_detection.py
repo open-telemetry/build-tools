@@ -421,6 +421,28 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("does not exists", msg)
         self.assertEqual(e.line, 15)
 
+    def test_missing_event(self):
+        with self.assertRaises(ValidationError) as ex:
+            semconv = SemanticConventionSet(debug=False)
+            semconv.parse(self.load_file("yaml/errors/events/missing_event.yaml"))
+            semconv.finish()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("as event but the latter cannot be found!", msg)
+        self.assertEqual(e.line, 2)
+
+    def test_wrong_event_type(self):
+        with self.assertRaises(ValidationError) as ex:
+            semconv = SemanticConventionSet(debug=False)
+            semconv.parse(self.load_file("yaml/errors/events/no_event_type.yaml"))
+            semconv.finish()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn(
+            "as event but the latter is not a semantic convention for events", msg
+        )
+        self.assertEqual(e.line, 2)
+
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:
             return parse_semantic_convention_groups(file)

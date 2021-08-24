@@ -7,122 +7,154 @@
 		"groups": {
 			"type": "array",
 			"items": {
-				"type": "object",
-				"additionalProperties": false,
-				"required": [
-					"id",
-					"brief"
-				],
 				"anyOf": [
 					{
-						"required": [
-							"attributes"
-						]
+						"allOf": [{"$ref": "#/definitions/SemanticConvention"}]
 					},
 					{
-						"required": [
-							"extends"
-						]
+						"allOf": [{"$ref": "#/definitions/SpanSemanticConvention"}]
 					}
-				],
-				"properties": {
-					"id": {
-						"type": "string",
-						"description": "unique string"
-					},
-					"type": {
-						"type": "string",
-						"enum": [
-							"span",
-							"resource",
-							"metric"
-						]
-					},
-					"brief": {
-						"type": "string",
-						"description": "a brief description of the semantic convention"
-					},
-					"note": {
-						"type": "string",
-						"description": "a more elaborate description of the semantic convention. It defaults to an empty string"
-					},
-					"prefix": {
-						"type": "string",
-						"description": "prefix of the attribute for this semconv. It defaults to an empty string."
-					},
-					"extends": {
-						"type": "string",
-						"description": "reference another semantic convention ID. It inherits all attributes from the specified semconv."
-					},
-					"span_kind": {
-						"type": "string",
-						"enum": [
-							"client",
-							"server",
-							"producer",
-							"consumer",
-							"internal"
-						],
-						"description": "specifies the kind of the span. Leaf semconv nodes (in the hierarchy tree) that do not have this field set will generate a warning."
-					},
-					"attributes": {
-						"type": "array",
-						"items": {
-							"$ref": "#/definitions/Attribute"
-						},
-						"description": "list of attributes that belong to the semconv"
-					},
-					"constraints": {
-						"type": "array",
-						"items": {
-							"anyOf": [
-								{
-									"type": "object",
-									"additionalProperties": false,
-									"required": [
-										"any_of"
-									],
-									"properties": {
-										"any_of": {
-											"type": "array",
-											"description": " accepts a list of sequences. Each sequence contains a list of attribute ids that are required. any_of enforces that all attributes of at least one of the sequences are set.",
-											"items": {
-												"anyOf": [
-													{
-														"type": "array",
-														"items": {
-															"type": "string"
-														}
-													},
-													{
-														"type": "string"
-													}
-												]
-											}
-										}
-									}
-								},
-								{
-									"type": "object",
-									"additionalProperties": false,
-									"required": [
-										"include"
-									],
-									"properties": {
-										"include": {
-											"type": "string",
-											"description": "accepts a semantic conventions id. It includes as part of this semantic convention all constraints and required attributes that are not already defined in the current semantic convention."
-										}
-									}
-								}
-							]
-						}
-					}
-				}
+				]
 			}
 		}
 	},
 	"definitions": {
+		"SemanticConventionBase": {
+			"type": "object",
+			"required": [
+				"id",
+				"brief"
+			],
+			"anyOf": [
+				{
+					"required": [
+						"attributes"
+					]
+				},
+				{
+					"required": [
+						"extends"
+					]
+				}
+			],
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "unique string"
+				},
+				"type": {
+					"type": "string",
+					"enum": [
+						"span",
+						"resource",
+						"metric",
+						"event"
+					],
+					"description": "The (signal) type of the semantic convention"
+				},
+				"brief": {
+					"type": "string",
+					"description": "a brief description of the semantic convention"
+				},
+				"note": {
+					"type": "string",
+					"description": "a more elaborate description of the semantic convention. It defaults to an empty string"
+				},
+				"prefix": {
+					"type": "string",
+					"description": "prefix of the attribute for this semconv. It defaults to an empty string."
+				},
+				"extends": {
+					"type": "string",
+					"description": "reference another semantic convention ID. It inherits all attributes from the specified semconv."
+				},
+				"attributes": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Attribute"
+					},
+					"description": "list of attributes that belong to the semconv"
+				},
+				"constraints": {
+					"type": "array",
+					"items": {
+						"anyOf": [
+							{
+								"type": "object",
+								"additionalProperties": false,
+								"required": [
+									"any_of"
+								],
+								"properties": {
+									"any_of": {
+										"type": "array",
+										"description": " accepts a list of sequences. Each sequence contains a list of attribute ids that are required. any_of enforces that all attributes of at least one of the sequences are set.",
+										"items": {
+											"anyOf": [
+												{
+													"type": "array",
+													"items": {
+														"type": "string"
+													}
+												},
+												{
+													"type": "string"
+												}
+											]
+										}
+									}
+								}
+							},
+							{
+								"type": "object",
+								"additionalProperties": false,
+								"required": [
+									"include"
+								],
+								"properties": {
+									"include": {
+										"type": "string",
+										"description": "accepts a semantic conventions id. It includes as part of this semantic convention all constraints and required attributes that are not already defined in the current semantic convention."
+									}
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"SpanSemanticConvention": {
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "span"
+				},
+				"span_kind": {
+					"type": "string",
+					"enum": [
+						"client",
+						"server",
+						"producer",
+						"consumer",
+						"internal"
+					],
+					"description": "specifies the kind of the span. Leaf semconv nodes (in the hierarchy tree) that do not have this field set will generate a warning."
+				}
+			}
+		},
+		"SemanticConvention": {
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"required": ["type"],
+			"properties": {
+				"type": {
+					"type": "string",
+					"not": {
+						"const": "span"
+					}
+				}
+			}
+		},
 		"AttributeEnumType": {
 			"type": "object",
 			"additionalProperties": false,

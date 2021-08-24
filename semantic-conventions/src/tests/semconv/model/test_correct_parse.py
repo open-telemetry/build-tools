@@ -15,7 +15,7 @@
 import os
 import unittest
 
-from opentelemetry.semconv.model.constraints import Include
+from opentelemetry.semconv.model.constraints import Include, AnyOf
 from opentelemetry.semconv.model.semantic_attribute import (
     SemanticAttribute,
     StabilityLevel,
@@ -23,6 +23,8 @@ from opentelemetry.semconv.model.semantic_attribute import (
 from opentelemetry.semconv.model.semantic_convention import (
     parse_semantic_convention_groups,
     SemanticConventionSet,
+    SpanSemanticConvention,
+    EventSemanticConvention,
 )
 
 
@@ -213,6 +215,54 @@ class TestCorrectParse(unittest.TestCase):
             ],
         }
         self.semantic_convention_check(cloud, expected)
+
+    def test_event(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("yaml/event.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 1)
+        event = list(semconv.models.values())[0]
+        expected = {
+            "id": "exception",
+            "prefix": "exception",
+            "extends": "",
+            "n_constraints": 1,
+            "attributes": [
+                "exception.type",
+                "exception.message",
+                "exception.stacktrace",
+                "exception.escaped",
+            ],
+        }
+        self.semantic_convention_check(event, expected)
+        constraint = event.constraints[0]
+        self.assertTrue(isinstance(constraint, AnyOf))
+        constraint: AnyOf
+        for choice_index in range(len(constraint.choice_list_ids)):
+            attr_list = constraint.choice_list_ids[choice_index]
+            for attr_index in range(len(attr_list)):
+                attr = attr_list[attr_index]
+                self.assertEqual(
+                    event.attrs_by_name.get(attr),
+                    constraint.choice_list_attributes[choice_index][attr_index],
+                )
+
+    def test_span_with_event(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("yaml/event.yaml"))
+        semconv.parse(self.load_file("yaml/span_event.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 3)
+        semconvs = list(semconv.models.values())
+        self.assertTrue(isinstance(semconvs[0], EventSemanticConvention))
+        self.assertTrue(isinstance(semconvs[1], SpanSemanticConvention))
+        self.assertTrue(isinstance(semconvs[2], EventSemanticConvention))
+        event_semconv = semconvs[1]
+        self.assertEqual(2, len(event_semconv.events))
+        self.assertTrue(isinstance(event_semconv.events[0], EventSemanticConvention))
+        self.assertTrue(isinstance(event_semconv.events[1], EventSemanticConvention))
+        self.assertEqual("exception", event_semconv.events[0].semconv_id)
+        self.assertEqual("random.event", event_semconv.events[1].semconv_id)
 
     def test_rpc(self):
         semconv = SemanticConventionSet(debug=False)

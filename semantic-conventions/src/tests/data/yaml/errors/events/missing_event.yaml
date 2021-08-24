@@ -1,0 +1,21 @@
+groups:
+  - id: has.events
+    type: span
+    prefix: has.events
+    events:
+      - exception
+      - random.event
+    brief: example
+    attributes:
+      - id: flag
+        type: boolean
+        brief: An attribute.
+
+  - id: random.event
+    type: event
+    prefix: random
+    brief: example
+    attributes:
+      - id: flag
+        type: boolean
+        brief: An attribute.

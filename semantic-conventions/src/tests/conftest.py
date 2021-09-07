@@ -6,6 +6,9 @@ from ruamel.yaml import YAML
 
 _TEST_DIR = os.path.dirname(__file__)
 
+# Fixtures in pytest work with reused outer names, so shut up pylint here.
+# pylint:disable=redefined-outer-name
+
 
 @pytest.fixture
 def test_file_path():

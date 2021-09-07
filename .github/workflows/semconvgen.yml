@@ -33,6 +33,8 @@ jobs:
       run: pytest -v
     - name: Slow linting (pylint)
       run: pylint *.py src/
+    - name: Type checking (mypy)
+      run: mypy src/
       
 
   build-and-publish-docker:

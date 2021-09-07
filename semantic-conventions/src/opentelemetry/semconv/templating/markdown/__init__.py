@@ -218,8 +218,7 @@ class MarkdownRenderer:
         """
         attr: SemanticAttribute
         for attr in self.render_ctx.enums:
-            enum: EnumAttributeType
-            enum = attr.attr_type
+            enum = typing.cast(EnumAttributeType, attr.attr_type)
             output.write("\n`" + attr.fqn + "` ")
             if enum.custom_values:
                 output.write(

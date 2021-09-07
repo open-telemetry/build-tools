@@ -99,6 +99,8 @@ def SemanticConvention(group):
 class BaseSemanticConvention(ValidatableYamlNode):
     """Contains the model extracted from a yaml file"""
 
+    GROUP_TYPE_NAME: str
+
     @property
     def attributes(self):
         if not hasattr(self, "attrs_by_name"):
@@ -541,11 +543,11 @@ class SemanticConventionSet:
 
 CONVENTION_CLS_BY_GROUP_TYPE = {
     cls.GROUP_TYPE_NAME: cls
-    for cls in [
+    for cls in (
         SpanSemanticConvention,
         ResourceSemanticConvention,
         EventSemanticConvention,
         MetricSemanticConvention,
         UnitSemanticConvention,
-    ]
+    )
 }

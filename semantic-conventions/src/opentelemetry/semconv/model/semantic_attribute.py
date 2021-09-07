@@ -16,7 +16,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
 from enum import Enum
-from typing import List, Union, Dict
+from typing import List, Optional, Union, Dict
 
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
@@ -88,7 +88,7 @@ class SemanticAttribute:
         """This method parses the yaml representation for semantic attributes
         creating the respective SemanticAttribute objects.
         """
-        attributes = {}
+        attributes = {}  # type: Dict[str, SemanticAttribute]
         allowed_keys = (
             "id",
             "type",
@@ -136,6 +136,7 @@ class SemanticAttribute:
             }
             required_msg = ""
             required_val = attribute.get("required", "")
+            required: Optional[Required]
             if isinstance(required_val, CommentedMap):
                 required = Required.CONDITIONAL
                 required_msg = required_val.get("conditional", None)
@@ -204,7 +205,7 @@ class SemanticAttribute:
                     "Attribute id "
                     + fqn
                     + " is already present at line "
-                    + str(attributes.get(fqn).position[0] + 1)
+                    + str(attributes[fqn].position[0] + 1)
                 )
                 raise ValidationError.from_yaml_pos(position, msg)
             attributes[fqn] = attr

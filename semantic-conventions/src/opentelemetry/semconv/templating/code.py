@@ -188,7 +188,9 @@ class CodeRenderer:
         data.update(self.parameters)
         return data
 
-    def get_data_multiple_files(self, semconv, template_path) -> dict:
+    def get_data_multiple_files(
+        self, semconv, template_path
+    ) -> typing.Dict[str, typing.Any]:
         """Returns a dictionary with the data from a single SemanticConvention to fill the template."""
         data = {"template": template_path, "semconv": semconv}
         data.update(self.parameters)

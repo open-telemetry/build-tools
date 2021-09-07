@@ -12,19 +12,28 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    defaults:
+      run: 
+        working-directory: semantic-conventions/
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-python@v2
-    - name: install dependencies
+    - name: install dev-dependencies
       run: |
-        pip install -U pip setuptools wheel
-        pip install -r semantic-conventions/dev-requirements.txt
-    - name: Check formatting
-      run: black --check --diff semantic-conventions/
+        pip install -U pip
+        pip install -U setuptools wheel
+        pip install -r dev-requirements.txt
+    - name: Check formatting (black)
+      run: black --check --diff .
+    - name: Fast basic linting (flake8)
+      run: flake8 .
     - name: install
-      run: pip install -U -e ./semantic-conventions/
+      run: pip install -U -e .
     - name: run tests
       run: pytest -v
+    - name: Slow linting (pylint)
+      run: pylint *.py src/
+      
 
   build-and-publish-docker:
     runs-on: ubuntu-latest

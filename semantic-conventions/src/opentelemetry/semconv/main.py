@@ -20,12 +20,8 @@ import sys
 from typing import List
 
 from opentelemetry.semconv.model.semantic_convention import (
+    CONVENTION_CLS_BY_GROUP_TYPE,
     SemanticConventionSet,
-    SpanSemanticConvention,
-    ResourceSemanticConvention,
-    EventSemanticConvention,
-    MetricSemanticConvention,
-    UnitSemanticConvention,
 )
 from opentelemetry.semconv.templating.code import CodeRenderer
 
@@ -206,13 +202,7 @@ def setup_parser():
     )
     parser.add_argument(
         "--only",
-        choices=[
-            SpanSemanticConvention.GROUP_TYPE_NAME,
-            ResourceSemanticConvention.GROUP_TYPE_NAME,
-            EventSemanticConvention.GROUP_TYPE_NAME,
-            MetricSemanticConvention.GROUP_TYPE_NAME,
-            UnitSemanticConvention.GROUP_TYPE_NAME,
-        ],
+        choices=list(CONVENTION_CLS_BY_GROUP_TYPE.keys()),
         help="Process only semantic conventions of the specified type.",
     )
     parser.add_argument(

@@ -16,7 +16,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
 from enum import Enum
-from typing import List, Union
+from typing import List, Union, Dict
 
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
@@ -38,20 +38,6 @@ class StabilityLevel(Enum):
     STABLE = 1
     EXPERIMENTAL = 2
     DEPRECATED = 3
-
-
-class HasAttributes:
-    def _set_attributes(self, prefix, stability, node):
-        self.attrs_by_name = SemanticAttribute.parse(
-            prefix, stability, node.get("attributes")
-        )
-
-    @property
-    def attributes(self):
-        if not hasattr(self, "attrs_by_name"):
-            return []
-
-        return list(self.attrs_by_name.values())
 
 
 def unique_attributes(attributes):
@@ -96,7 +82,7 @@ class SemanticAttribute:
         return isinstance(self.attr_type, EnumAttributeType)
 
     @staticmethod
-    def parse(prefix, semconv_stability, yaml_attributes):
+    def parse(prefix, semconv_stability, yaml_attributes) -> "Dict[str, SemanticAttribute]":
         """This method parses the yaml representation for semantic attributes
         creating the respective SemanticAttribute objects.
         """
@@ -396,7 +382,7 @@ class AttributeType:
         if isinstance(yaml_value, str):
             if AttributeType.bool_type_true.fullmatch(yaml_value):
                 return True
-            elif AttributeType.bool_type_false.fullmatch(yaml_value):
+            if AttributeType.bool_type_false.fullmatch(yaml_value):
                 return False
         position = parent_object.lc.data[key]
         msg = "Value '{}' for {} field is not allowed".format(yaml_value, key)
@@ -430,47 +416,46 @@ class EnumAttributeType:
         if isinstance(attribute_type, str):
             if AttributeType.is_simple_type(attribute_type):
                 return attribute_type
-            else:  # Wrong type used - rise the exception and fill the missing data in the parent
-                raise ValidationError(
-                    0, 0, "Invalid type: {} is not allowed".format(attribute_type)
-                )
-        else:
-            allowed_keys = ["allow_custom_values", "members"]
-            mandatory_keys = ["members"]
-            validate_values(attribute_type, allowed_keys, mandatory_keys)
-            custom_values = (
-                bool(attribute_type.get("allow_custom_values"))
-                if "allow_custom_values" in attribute_type
-                else False
+            # Wrong type used - raise the exception and fill the missing data in the parent
+            raise ValidationError(
+                0, 0, "Invalid type: {} is not allowed".format(attribute_type)
             )
-            members = []
-            if attribute_type["members"] is None or len(attribute_type["members"]) < 1:
-                # Missing members - rise the exception and fill the missing data in the parent
-                raise ValidationError(0, 0, "Enumeration without values!")
+        allowed_keys = ["allow_custom_values", "members"]
+        mandatory_keys = ["members"]
+        validate_values(attribute_type, allowed_keys, mandatory_keys)
+        custom_values = (
+            bool(attribute_type.get("allow_custom_values"))
+            if "allow_custom_values" in attribute_type
+            else False
+        )
+        members = []
+        if attribute_type["members"] is None or len(attribute_type["members"]) < 1:
+            # Missing members - rise the exception and fill the missing data in the parent
+            raise ValidationError(0, 0, "Enumeration without values!")
 
-            allowed_keys = ["id", "value", "brief", "note"]
-            mandatory_keys = ["id", "value"]
-            for member in attribute_type["members"]:
-                validate_values(member, allowed_keys, mandatory_keys)
-                if not EnumAttributeType.is_valid_enum_value(member["value"]):
-                    raise ValidationError(
-                        0, 0, "Invalid value used in enum: <{}>".format(member["value"])
-                    )
-                members.append(
-                    EnumMember(
-                        member_id=member["id"],
-                        value=member["value"],
-                        brief=member.get("brief").strip()
-                        if "brief" in member
-                        else member["id"],
-                        note=member.get("note").strip() if "note" in member else "",
-                    )
+        allowed_keys = ["id", "value", "brief", "note"]
+        mandatory_keys = ["id", "value"]
+        for member in attribute_type["members"]:
+            validate_values(member, allowed_keys, mandatory_keys)
+            if not EnumAttributeType.is_valid_enum_value(member["value"]):
+                raise ValidationError(
+                    0, 0, "Invalid value used in enum: <{}>".format(member["value"])
                 )
-            enum_type = AttributeType.get_type(members[0].value)
-            for m in members:
-                if enum_type != AttributeType.get_type(m.value):
-                    raise ValidationError(0, 0, "Enumeration type inconsistent!")
-            return EnumAttributeType(custom_values, members, enum_type)
+            members.append(
+                EnumMember(
+                    member_id=member["id"],
+                    value=member["value"],
+                    brief=member.get("brief").strip()
+                    if "brief" in member
+                    else member["id"],
+                    note=member.get("note").strip() if "note" in member else "",
+                )
+            )
+        enum_type = AttributeType.get_type(members[0].value)
+        for m in members:
+            if enum_type != AttributeType.get_type(m.value):
+                raise ValidationError(0, 0, "Enumeration type inconsistent!")
+        return EnumAttributeType(custom_values, members, enum_type)
 
 
 @dataclass

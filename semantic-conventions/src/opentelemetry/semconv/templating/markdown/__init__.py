@@ -179,7 +179,7 @@ class MarkdownRenderer:
         This method renders anyof constraints into markdown lists
         """
         if anyof.inherited and not self.render_ctx.is_full:
-            return ""
+            return
         output.write(
             "\n**Additional attribute requirements:** At least one of the following sets of attributes is "
             "required:\n\n"
@@ -199,7 +199,8 @@ class MarkdownRenderer:
             output.write("\n**[{}]:** {}\n".format(counter, note))
             counter += 1
 
-    def to_markdown_unit_table(self, members, output):
+    @staticmethod
+    def to_markdown_unit_table(members, output: io.StringIO):
         output.write("\n")
         output.write(
             "| Name        | Kind of Quantity         | Unit String   |\n"
@@ -271,12 +272,10 @@ class MarkdownRenderer:
         """
         if isinstance(obj, AnyOf):
             self.to_markdown_anyof(obj, output)
-            return
-        elif isinstance(obj, Include):
-            return
-        raise Exception(
-            "Trying to generate Markdown for a wrong type {}".format(type(obj))
-        )
+        elif not isinstance(obj, Include):
+            raise Exception(
+                "Trying to generate Markdown for a wrong type {}".format(type(obj))
+            )
 
     def render_md(self):
         for md_filename in self.file_names:

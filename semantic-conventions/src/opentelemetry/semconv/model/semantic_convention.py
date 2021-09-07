@@ -23,7 +23,6 @@ from ruamel.yaml import YAML
 from opentelemetry.semconv.model.constraints import Include, AnyOf, parse_constraints
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
-    HasAttributes,
     SemanticAttribute,
     Required,
     unique_attributes,
@@ -61,17 +60,7 @@ def parse_semantic_convention_type(type_value):
     # Gracefully transition to the new types
     if type_value is None:
         return SpanSemanticConvention
-    enum_map = {
-        cls.GROUP_TYPE_NAME: cls
-        for cls in [
-            SpanSemanticConvention,
-            ResourceSemanticConvention,
-            EventSemanticConvention,
-            MetricSemanticConvention,
-            UnitSemanticConvention,
-        ]
-    }
-    return enum_map.get(type_value)
+    return CONVENTION_CLS_BY_GROUP_TYPE.get(type_value)
 
 
 def parse_semantic_convention_groups(yaml_file):
@@ -110,6 +99,13 @@ def SemanticConvention(group):
 class BaseSemanticConvention(ValidatableYamlNode):
     """Contains the model extracted from a yaml file"""
 
+    @property
+    def attributes(self):
+        if not hasattr(self, "attrs_by_name"):
+            return []
+
+        return list(self.attrs_by_name.values())
+
     def __init__(self, group):
         super().__init__(group)
 
@@ -125,10 +121,9 @@ class BaseSemanticConvention(ValidatableYamlNode):
         self.extends = group.get("extends", "").strip()
         self.events = group.get("events", ())
         self.constraints = parse_constraints(group.get("constraints", ()))
-
-    @property
-    def attributes(self):
-        return []
+        self.attrs_by_name = SemanticAttribute.parse(
+            self.prefix, self.stability, group.get("attributes")
+        )
 
     def contains_attribute(self, attr: "SemanticAttribute"):
         for local_attr in self.attributes:
@@ -140,25 +135,19 @@ class BaseSemanticConvention(ValidatableYamlNode):
         return False
 
     def all_attributes(self):
-        attr: SemanticAttribute
-        return unique_attributes(
-            [attr for attr in self.attributes] + self.conditional_attributes()
-        )
+        return unique_attributes(self.attributes + self.conditional_attributes())
 
     def sampling_attributes(self):
-        attr: SemanticAttribute
         return unique_attributes(
             [attr for attr in self.attributes if attr.sampling_relevant]
         )
 
     def required_attributes(self):
-        attr: SemanticAttribute
         return unique_attributes(
             [attr for attr in self.attributes if attr.required == Required.ALWAYS]
         )
 
     def conditional_attributes(self):
-        attr: SemanticAttribute
         return unique_attributes(
             [attr for attr in self.attributes if attr.required == Required.CONDITIONAL]
         )
@@ -185,7 +174,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
             validate_id(self.prefix, self._position)
 
 
-class ResourceSemanticConvention(HasAttributes, BaseSemanticConvention):
+class ResourceSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "resource"
 
     allowed_keys = (
@@ -200,12 +189,8 @@ class ResourceSemanticConvention(HasAttributes, BaseSemanticConvention):
         "constraints",
     )
 
-    def __init__(self, group):
-        super().__init__(group)
-        self._set_attributes(self.prefix, self.stability, group)
 
-
-class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
+class SpanSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "span"
 
     allowed_keys = (
@@ -224,7 +209,6 @@ class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
 
     def __init__(self, group):
         super().__init__(group)
-        self._set_attributes(self.prefix, self.stability, group)
         self.span_kind = SpanKind.parse(group.get("span_kind"))
         if self.span_kind is None:
             position = group.lc.data["span_kind"]
@@ -232,7 +216,10 @@ class SpanSemanticConvention(HasAttributes, BaseSemanticConvention):
             raise ValidationError.from_yaml_pos(position, msg)
 
 
-class EventSemanticConvention(HasAttributes, BaseSemanticConvention):
+print("MRO: ", SpanSemanticConvention.__mro__)
+
+
+class EventSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "event"
 
     allowed_keys = (
@@ -246,10 +233,6 @@ class EventSemanticConvention(HasAttributes, BaseSemanticConvention):
         "attributes",
         "constraints",
     )
-
-    def __init__(self, group):
-        super().__init__(group)
-        self._set_attributes(self.prefix, self.stability, group)
 
 
 class UnitSemanticConvention(BaseSemanticConvention):
@@ -429,23 +412,22 @@ class SemanticConventionSet:
         any_of: AnyOf
         for semconv in self.models.values():
             for any_of in semconv.constraints:
-                if isinstance(any_of, AnyOf):
-                    index = -1
-                    for attr_ids in any_of.choice_list_ids:
-                        constraint_attrs = []
-                        index += 1
-                        for attr_id in attr_ids:
-                            ref_attr = self._lookup_attribute(attr_id)
-                            if ref_attr is None:
-                                raise ValidationError.from_yaml_pos(
-                                    any_of._yaml_src_position[index],
-                                    "Any_of attribute '{}' of semantic convention {} does not exists!".format(
-                                        attr_id, semconv.semconv_id
-                                    ),
-                                )
-                            constraint_attrs.append(ref_attr)
-                        if constraint_attrs:
-                            any_of.add_attributes(constraint_attrs)
+                if not isinstance(any_of, AnyOf):
+                    continue
+                for index, attr_ids in enumerate(any_of.choice_list_ids):
+                    constraint_attrs = []
+                    for attr_id in attr_ids:
+                        ref_attr = self._lookup_attribute(attr_id)
+                        if ref_attr is None:
+                            raise ValidationError.from_yaml_pos(
+                                any_of._yaml_src_position[index],
+                                "Any_of attribute '{}' of semantic convention {} does not exists!".format(
+                                    attr_id, semconv.semconv_id
+                                ),
+                            )
+                        constraint_attrs.append(ref_attr)
+                    if constraint_attrs:
+                        any_of.add_attributes(constraint_attrs)
 
     def _populate_events(self):
         for semconv in self.models.values():
@@ -555,3 +537,15 @@ class SemanticConventionSet:
         for semconv in self.models.values():
             output.extend(semconv.attributes)
         return output
+
+
+CONVENTION_CLS_BY_GROUP_TYPE = {
+    cls.GROUP_TYPE_NAME: cls
+    for cls in [
+        SpanSemanticConvention,
+        ResourceSemanticConvention,
+        EventSemanticConvention,
+        MetricSemanticConvention,
+        UnitSemanticConvention,
+    ]
+}

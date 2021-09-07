@@ -82,7 +82,9 @@ class SemanticAttribute:
         return isinstance(self.attr_type, EnumAttributeType)
 
     @staticmethod
-    def parse(prefix, semconv_stability, yaml_attributes) -> "Dict[str, SemanticAttribute]":
+    def parse(
+        prefix, semconv_stability, yaml_attributes
+    ) -> "Dict[str, SemanticAttribute]":
         """This method parses the yaml representation for semantic attributes
         creating the respective SemanticAttribute objects.
         """

@@ -1,6 +1,4 @@
 import io
-import tempfile
-import os
 
 from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
 from opentelemetry.semconv.templating.code import CodeRenderer

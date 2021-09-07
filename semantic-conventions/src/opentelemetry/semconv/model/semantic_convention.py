@@ -15,7 +15,7 @@
 import sys
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Union, Iterable, Tuple
+from typing import Union
 
 import typing
 from ruamel.yaml import YAML
@@ -25,7 +25,6 @@ from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
     HasAttributes,
     SemanticAttribute,
-    StabilityLevel,
     Required,
     unique_attributes,
 )
@@ -463,7 +462,8 @@ class SemanticConventionSet:
                 if not isinstance(event, EventSemanticConvention):
                     raise ValidationError.from_yaml_pos(
                         semconv._position,
-                        "Semantic Convention {} has {} as event but the latter is not a semantic convention for events!".format(
+                        "Semantic Convention {} has {} as event but"
+                        " the latter is not a semantic convention for events!".format(
                             semconv.semconv_id, event_id
                         ),
                     )

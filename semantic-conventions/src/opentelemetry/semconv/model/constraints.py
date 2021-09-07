@@ -12,8 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from dataclasses import dataclass, field, replace
-from typing import List, Tuple, Set
+from dataclasses import dataclass, replace
+from typing import List, Tuple
 
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute

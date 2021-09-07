@@ -21,7 +21,6 @@ from opentelemetry.semconv.model.semantic_attribute import (
     StabilityLevel,
 )
 from opentelemetry.semconv.model.semantic_convention import (
-    parse_semantic_convention_groups,
     SemanticConventionSet,
     SpanSemanticConvention,
     EventSemanticConvention,

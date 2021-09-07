@@ -16,11 +16,8 @@ import pytest
 from opentelemetry.semconv.model.utils import (
     validate_id,
     validate_values,
-    check_no_missing_keys,
 )
 from opentelemetry.semconv.model.exceptions import ValidationError
-
-from ruamel.yaml.comments import CommentedMap
 
 _POSITION = [10, 2]
 

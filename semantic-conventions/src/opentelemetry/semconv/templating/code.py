@@ -63,10 +63,10 @@ def render_markdown(
                 return strong.format(text)
             return super().strong(text) if html else text
 
-        def inline_html(self, html):
+        def inline_html(self, html_text):  # pylint:disable=arguments-renamed
             if inline_html:
-                return inline_html.format(html)
-            return super().inline_html(html) if html else html
+                return inline_html.format(html_text)
+            return super().inline_html(html_text) if html else html_text
 
         def paragraph(self, text):
             if paragraph:

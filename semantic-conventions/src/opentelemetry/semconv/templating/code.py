@@ -46,7 +46,7 @@ def render_markdown(
         def link(self, url, text=None, title=None):  # pylint:disable=arguments-renamed
             if link:
                 return link.format(url, text, title)
-            return super().link(url, text, title) if html else link
+            return super().link(url, text, title) if html else url
 
         def image(self, src, alt="", title=None):
             if image:

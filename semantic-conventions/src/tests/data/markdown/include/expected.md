@@ -12,15 +12,12 @@
 | `http.scheme` | string | The URI scheme identifying the used protocol. | `http`; `https` | See below |
 | `http.status_code` | int | [HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6). | `200` | If and only if one was received/sent |
 | `http.status_text` | string | [HTTP reason phrase](https://tools.ietf.org/html/rfc7230#section-3.1.2). | `OK` | No |
-| `http.flavor` | string | Kind of HTTP protocol used [1] | `1.0` | No |
 | `http.user_agent` | string | Value of the [HTTP User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3) header sent by the client. | `CERN-LineMode/2.15 libwww/2.17b3` | No |
-| [`http.server_name`](input_http.md) | string | The primary server name of the matched virtual host. [2] | `example.com` | Conditional [3] |
+| [`http.server_name`](input_http.md) | string | The primary server name of the matched virtual host. [1] | `example.com` | Conditional [2] |
 
-**[1]:** If `net.transport` is not specified, it can be assumed to be `IP.TCP` except if `http.flavor` is `QUIC`, in which case `IP.UDP` is assumed.
+**[1]:** http.url is usually not readily available on the server side but would have to be assembled in a cumbersome and sometimes lossy process from other information (see e.g. open-telemetry/opentelemetry-python/pull/148). It is thus preferred to supply the raw data that is available.
 
-**[2]:** http.url is usually not readily available on the server side but would have to be assembled in a cumbersome and sometimes lossy process from other information (see e.g. open-telemetry/opentelemetry-python/pull/148). It is thus preferred to supply the raw data that is available.
-
-**[3]:** This should be obtained via configuration. If this attribute can be obtained, this attribute MUST NOT be set ( `net.host.name` should be used instead).
+**[2]:** This should be obtained via configuration. If this attribute can be obtained, this attribute MUST NOT be set ( `net.host.name` should be used instead).
 
 **Additional attribute requirements:** At least one of the following sets of attributes is required:
 
@@ -38,14 +35,4 @@
 | `pubsub` | A function is set to be executed when messages are sent to a messaging system. |
 | `timer` | A function is scheduled to be executed regularly. |
 | `other` | other |
-
-`http.flavor` MUST be one of the following or, if none of the listed values apply, a custom value:
-
-| Value  | Description |
-|---|---|
-| `1.0` | HTTP 1.0 |
-| `1.1` | HTTP 1.1 |
-| `2.0` | HTTP 2 |
-| `SPDY` | SPDY protocol. |
-| `QUIC` | QUIC protocol. |
 <!-- endsemconv -->

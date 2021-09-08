@@ -58,7 +58,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("invalid id", msg)
-        self.assertIn("semantic convention ids must be", msg)
+        self.assertIn("semantic convention ids must match", msg)
         self.assertEqual(e.line, 2)
 
     def test_missing_attr_type(self):
@@ -228,11 +228,10 @@ class TestCorrectErrorDetection(unittest.TestCase):
     def test_empty_enum(self):
         with self.assertRaises(ValidationError) as ex:
             self.open_yaml("yaml/errors/empty/empty_enum.yaml")
-            self.fail()
         e = ex.exception
         msg = e.message.lower()
-        self.assertIn("enumeration without values", msg)
-        self.assertEqual(e.line, 9)
+        self.assertIn("enumeration without members", msg)
+        self.assertEqual(e.line, 11)
 
     def test_empty_example_array(self):
         with self.assertRaises(ValidationError) as ex:
@@ -264,7 +263,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         msg = e.message.lower()
         self.assertIn("invalid keys", msg)
         self.assertIn("ambarabacci", msg)
-        self.assertEqual(e.line, 9)
+        self.assertEqual(e.line, 10)
 
     def test_enum_member_invalid_keys(self):
         with self.assertRaises(ValidationError) as ex:
@@ -274,7 +273,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         msg = e.message.lower()
         self.assertIn("invalid keys", msg)
         self.assertIn("type", msg)
-        self.assertEqual(e.line, 9)
+        self.assertEqual(e.line, 13)
 
     def test_enum_with_double_values(self):
         with self.assertRaises(ValidationError) as ex:
@@ -283,7 +282,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("invalid value used in enum", msg)
-        self.assertEqual(e.line, 8)
+        self.assertEqual(e.line, 11)
 
     def test_examples_wrong_type(self):
         with self.assertRaises(ValidationError) as ex:

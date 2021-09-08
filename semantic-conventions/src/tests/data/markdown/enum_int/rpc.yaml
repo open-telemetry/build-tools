@@ -7,39 +7,39 @@ groups:
         - id: status_code
           type:
             members:
-              - id: OK
+              - id: ok
                 value: 0
-              - id: CANCELLED
+              - id: cancelled
                 value: 1
-              - id: UNKNOWN
+              - id: unknown
                 value: 2
-              - id: INVALID_ARGUMENT
+              - id: invalid_argument
                 value: 3
-              - id: DEADLINE_EXCEEDED
+              - id: deadline_exceeded
                 value: 4
-              - id: NOT_FOUND
+              - id: not_found
                 value: 5
-              - id: ALREADY_EXISTS
+              - id: already_exists
                 value: 6
-              - id: PERMISSION_DENIED
+              - id: permission_denied
                 value: 7
-              - id: RESOURCE_EXHAUSTED
+              - id: resource_exhausted
                 value: 8
-              - id: FAILED_PRECONDITION
+              - id: failed_precondition
                 value: 9
-              - id: ABORTED
+              - id: aborted
                 value: 10
-              - id: OUT_OF_RANGE
+              - id: out_of_range
                 value: 11
-              - id: UNIMPLEMENTED
+              - id: unimplemented
                 value: 12
-              - id: INTERNAL
+              - id: internal
                 value: 13
-              - id: UNAVAILABLE
+              - id: unavailable
                 value: 14
-              - id: DATA_LOSS
+              - id: data_loss
                 value: 15
-              - id: UNAUTHENTICATED
+              - id: unauthenticated
                 value: 16
           required: always
           brief: "The [numeric status code](https://github.com/grpc/grpc/blob/v1.33.2/doc/statuscodes.md) of the gRPC request."

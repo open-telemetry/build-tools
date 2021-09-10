@@ -218,9 +218,6 @@ class SpanSemanticConvention(BaseSemanticConvention):
             raise ValidationError.from_yaml_pos(position, msg)
 
 
-print("MRO: ", SpanSemanticConvention.__mro__)
-
-
 class EventSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "event"
 

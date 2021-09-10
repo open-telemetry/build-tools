@@ -1,0 +1,15 @@
+# Adapted from https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#flake8
+[flake8]
+extend-ignore = E203
+max-line-length = 120
+exclude =
+  .bzr
+  .git
+  .hg
+  .svn
+  .tox
+  CVS
+  .venv*/
+  venv*/
+  target
+  __pycache__

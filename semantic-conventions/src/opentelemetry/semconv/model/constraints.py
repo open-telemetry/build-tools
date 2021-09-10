@@ -12,8 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from dataclasses import dataclass, field, replace
-from typing import List, Tuple, Set
+from dataclasses import dataclass, replace
+from typing import List, Tuple
 
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute
@@ -39,9 +39,9 @@ class AnyOf:
         _yaml_src_position          Contains the position in the YAML file of the AnyOf attribute
     """
 
-    choice_list_ids: Tuple[Tuple[str, ...]]
+    choice_list_ids: Tuple[Tuple[str, ...], ...]
     inherited: bool = False
-    choice_list_attributes: Tuple[Tuple[SemanticAttribute, ...]] = ()
+    choice_list_attributes: Tuple[Tuple[SemanticAttribute, ...], ...] = ()
     _yaml_src_position: int = 0
 
     def __eq__(self, other):

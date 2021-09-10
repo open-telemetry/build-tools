@@ -38,12 +38,12 @@ def render_markdown(
     heading=None,
     block_code=None,
     block_quote=None,
-    list=None,
+    list=None,  # pylint:disable=redefined-builtin
     list_item=None,
     code=None,
 ):
     class CustomRender(mistune.HTMLRenderer):
-        def link(self, url, text=None, title=None):
+        def link(self, url, text=None, title=None):  # pylint:disable=arguments-renamed
             if link:
                 return link.format(url, text, title)
             return super().link(url, text, title) if html else url
@@ -63,7 +63,7 @@ def render_markdown(
                 return strong.format(text)
             return super().strong(text) if html else text
 
-        def inline_html(self, html_text):
+        def inline_html(self, html_text):  # pylint:disable=arguments-renamed
             if inline_html:
                 return inline_html.format(html_text)
             return super().inline_html(html_text) if html else html_text
@@ -135,12 +135,12 @@ def to_html_links(doc_string: typing.Optional[typing.Union[str, TextWithLinks]])
 
 def regex_replace(text: str, pattern: str, replace: str):
     # convert standard dollar notation to python
-    replace = re.sub(r"\$", r"\\", replace)
+    replace = re.sub(r"\$", r"\\", replace)  # TODO This is *very* surprising behavior
     return re.sub(pattern, replace, text, 0, re.U)
 
 
-def merge(list: typing.List, elm):
-    return list.extend(elm)
+def merge(elems: typing.List, elm):
+    return elems.extend(elm)
 
 
 def to_const_name(name: str) -> str:
@@ -188,7 +188,9 @@ class CodeRenderer:
         data.update(self.parameters)
         return data
 
-    def get_data_multiple_files(self, semconv, template_path) -> dict:
+    def get_data_multiple_files(
+        self, semconv, template_path
+    ) -> typing.Dict[str, typing.Any]:
         """Returns a dictionary with the data from a single SemanticConvention to fill the template."""
         data = {"template": template_path, "semconv": semconv}
         data.update(self.parameters)
@@ -206,10 +208,10 @@ class CodeRenderer:
 
     @staticmethod
     def prefix_output_file(file_name, pattern, semconv):
-        base = os.path.basename(file_name)
-        dir = os.path.dirname(file_name)
+        basename = os.path.basename(file_name)
+        dirname = os.path.dirname(file_name)
         value = getattr(semconv, pattern)
-        return os.path.join(dir, to_camelcase(value, True), base)
+        return os.path.join(dirname, to_camelcase(value, True), basename)
 
     def render(
         self,

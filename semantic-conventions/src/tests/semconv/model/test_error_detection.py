@@ -451,7 +451,3 @@ class TestCorrectErrorDetection(unittest.TestCase):
 
     def load_file(self, filename):
         return os.path.join(self._TEST_DIR, "..", "..", "data", filename)
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -159,6 +159,7 @@ class TestCorrectMarkdown(unittest.TestCase):
         do_render()
         result = output.getvalue()
         assert result == (dirpath / expected_name).read_text(encoding="utf-8")
+        return None
 
     _TEST_DIR = os.path.dirname(__file__)
 

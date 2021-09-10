@@ -16,12 +16,8 @@ import os
 import unittest
 
 from opentelemetry.semconv.model.constraints import Include, AnyOf
-from opentelemetry.semconv.model.semantic_attribute import (
-    SemanticAttribute,
-    StabilityLevel,
-)
+from opentelemetry.semconv.model.semantic_attribute import StabilityLevel
 from opentelemetry.semconv.model.semantic_convention import (
-    parse_semantic_convention_groups,
     SemanticConventionSet,
     SpanSemanticConvention,
     EventSemanticConvention,
@@ -236,12 +232,10 @@ class TestCorrectParse(unittest.TestCase):
         }
         self.semantic_convention_check(event, expected)
         constraint = event.constraints[0]
-        self.assertTrue(isinstance(constraint, AnyOf))
+        self.assertIsInstance(constraint, AnyOf)
         constraint: AnyOf
-        for choice_index in range(len(constraint.choice_list_ids)):
-            attr_list = constraint.choice_list_ids[choice_index]
-            for attr_index in range(len(attr_list)):
-                attr = attr_list[attr_index]
+        for choice_index, attr_list in enumerate(constraint.choice_list_ids):
+            for attr_index, attr in enumerate(attr_list):
                 self.assertEqual(
                     event.attrs_by_name.get(attr),
                     constraint.choice_list_attributes[choice_index][attr_index],
@@ -314,7 +308,6 @@ class TestCorrectParse(unittest.TestCase):
 
         client = list(semconv.models.values())[1]
         server = list(semconv.models.values())[2]
-        attr: SemanticAttribute
         self.assertIsNotNone(client.attributes[1].ref)
         self.assertIsNotNone(client.attributes[1].attr_type)
 
@@ -680,7 +673,3 @@ class TestCorrectParse(unittest.TestCase):
 
     def load_file(self, filename):
         return os.path.join(self._TEST_DIR, "..", "..", "data", filename)
-
-
-if __name__ == "__main__":
-    unittest.main()

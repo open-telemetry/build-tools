@@ -13,6 +13,7 @@
 #   limitations under the License.
 
 import re
+from typing import Tuple
 
 from opentelemetry.semconv.model.exceptions import ValidationError
 
@@ -51,8 +52,8 @@ def check_no_missing_keys(yaml, mandatory):
 
 class ValidatableYamlNode:
 
-    allowed_keys = ()
-    mandatory_keys = ("id", "brief")
+    allowed_keys = ()  # type: Tuple[str, ...]
+    mandatory_keys = ("id", "brief")  # type: Tuple[str, ...]
 
     def __init__(self, yaml_node):
         self.id = yaml_node.get("id").strip()

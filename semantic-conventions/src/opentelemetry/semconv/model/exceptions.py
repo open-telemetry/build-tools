@@ -28,7 +28,7 @@ class ValidationError(Exception):
         return cls(pos[0] + 1, pos[1] + 1, msg)
 
     def __init__(self, line, column, message):
-        super(ValidationError, self).__init__(line, column, message)
+        super().__init__(line, column, message)
         self.message = message
         self.line = line
         self.column = column

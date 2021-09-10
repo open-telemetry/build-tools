@@ -8,7 +8,7 @@ VERSION_FILENAME = os.path.join(
 )
 PACKAGE_INFO = {}
 with open(VERSION_FILENAME, encoding="utf-8") as f:
-    exec(f.read(), PACKAGE_INFO)
+    exec(f.read(), PACKAGE_INFO)  # pylint:disable=exec-used
 
 
 VERSION_SUFFIX = os.environ.get("SEMCONGEN_VERSION_SUFFIX")

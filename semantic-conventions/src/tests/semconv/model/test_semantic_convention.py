@@ -26,7 +26,7 @@ def test_parse_basic(open_test_file):
     assert conventions is not None
     assert len(conventions) == 2
 
-    first, second = conventions
+    first, second = conventions  # pylint:disable=unbalanced-tuple-unpacking
 
     assert first.semconv_id == "first_group_id"
     assert first.brief == "first description"

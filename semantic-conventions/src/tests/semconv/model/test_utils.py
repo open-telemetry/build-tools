@@ -16,17 +16,14 @@ import pytest
 from opentelemetry.semconv.model.utils import (
     validate_id,
     validate_values,
-    check_no_missing_keys,
 )
 from opentelemetry.semconv.model.exceptions import ValidationError
-
-from ruamel.yaml.comments import CommentedMap
 
 _POSITION = [10, 2]
 
 
 @pytest.mark.parametrize(
-    "id",
+    "semconv_id",
     [
         "abc.def",  # all lowercase letters
         "abc.de_fg",  # lowercase letters, plus underscore
@@ -36,18 +33,20 @@ _POSITION = [10, 2]
         "abc.123.ab9.de_fg.hi-jk",
     ],
 )
-def test_validate_id__valid(id):
+def test_validate_id__valid(semconv_id):
     # valid ids are namespaced, dot separated. The topmost name must start with
     # a lowercase letter. The rest of the id may contain only lowercase letters,
     # numbers, underscores, and dashes
 
-    validate_id(id, _POSITION)
+    validate_id(semconv_id, _POSITION)
 
 
-@pytest.mark.parametrize("id", ["123", "ABC", "abc+def", "ab<", "ab^", "abc.de\xfe"])
-def test_validate_id__invalid(id):
+@pytest.mark.parametrize(
+    "semconv_id", ["123", "ABC", "abc+def", "ab<", "ab^", "abc.de\xfe"]
+)
+def test_validate_id__invalid(semconv_id):
     with pytest.raises(ValidationError) as err:
-        validate_id(id, _POSITION)
+        validate_id(semconv_id, _POSITION)
 
     assert err.value.message.startswith("Invalid id")
 

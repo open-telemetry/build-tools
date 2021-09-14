@@ -19,7 +19,7 @@ from opentelemetry.semconv.model.exceptions import ValidationError
 
 ID_RE = re.compile("([a-z](\\.?[a-z0-9_-]+)+)")
 """Identifiers must start with a lowercase ASCII letter and
-contain only lowercase, digits 0-9, underscore and dots.
+contain only lowercase, digits 0-9, underscore, dash (not recommended) and dots.
 Each dot must be followed by at least one allowed non-dot character."""
 
 

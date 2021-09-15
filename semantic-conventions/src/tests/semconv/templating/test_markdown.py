@@ -117,6 +117,9 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_event(self):
         self.check("markdown/event/")
 
+    def test_event_noprefix(self):
+        self.check("markdown/event_noprefix/")
+
     def check(
         self,
         input_dir: str,

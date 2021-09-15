@@ -1,0 +1,8 @@
+groups:
+  - id: eventid
+    type: event
+    brief: eventbrief
+    attributes:
+      - id: eventattr
+        type: boolean
+        brief: eventattrbrief

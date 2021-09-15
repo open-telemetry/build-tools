@@ -442,6 +442,14 @@ class TestCorrectErrorDetection(unittest.TestCase):
         )
         self.assertEqual(e.line, 2)
 
+    def test_nameless_event(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/events/nameless_event.yaml")
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("at least one of name or prefix", msg)
+        self.assertEqual(e.line, 2)
+
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:
             return parse_semantic_convention_groups(file)

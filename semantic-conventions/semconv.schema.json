@@ -13,6 +13,9 @@
 					},
 					{
 						"allOf": [{"$ref": "#/definitions/SpanSemanticConvention"}]
+					},
+					{
+						"allOf": [{"$ref": "#/definitions/EventSemanticConvention"}]
 					}
 				]
 			}
@@ -143,6 +146,23 @@
 				}
 			}
 		},
+		"EventSemanticConvention": {
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "event"
+				},
+				"name": {
+					"type": "string",
+					"description": "The name of the event. Required if no prefix is given."
+				}
+			},
+			"anyOf": [
+				{"required": ["prefix"]},
+				{"required": ["name"]}
+			]
+		},
 		"SemanticConvention": {
 			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
 			"required": ["type"],
@@ -150,7 +170,7 @@
 				"type": {
 					"type": "string",
 					"not": {
-						"const": "span"
+						"enum": ["span", "event"]
 					}
 				}
 			}

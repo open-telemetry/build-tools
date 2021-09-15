@@ -15,7 +15,7 @@
 import sys
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Union
+from typing import Tuple, Union
 
 import typing
 from ruamel.yaml import YAML
@@ -99,6 +99,18 @@ def SemanticConvention(group):
 class BaseSemanticConvention(ValidatableYamlNode):
     """Contains the model extracted from a yaml file"""
 
+    allowed_keys: Tuple[str, ...] = (
+        "id",
+        "type",
+        "brief",
+        "note",
+        "prefix",
+        "stability",
+        "extends",
+        "attributes",
+        "constraints",
+    )
+
     GROUP_TYPE_NAME: str
 
     @property
@@ -179,34 +191,13 @@ class BaseSemanticConvention(ValidatableYamlNode):
 class ResourceSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "resource"
 
-    allowed_keys = (
-        "id",
-        "type",
-        "brief",
-        "note",
-        "prefix",
-        "stability",
-        "extends",
-        "attributes",
-        "constraints",
-    )
-
 
 class SpanSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "span"
 
-    allowed_keys = (
-        "id",
-        "type",
-        "brief",
-        "note",
-        "prefix",
-        "stability",
-        "extends",
+    allowed_keys = BaseSemanticConvention.allowed_keys + (
         "events",
         "span_kind",
-        "attributes",
-        "constraints",
     )
 
     def __init__(self, group):
@@ -221,23 +212,21 @@ class SpanSemanticConvention(BaseSemanticConvention):
 class EventSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "event"
 
-    allowed_keys = (
-        "id",
-        "type",
-        "brief",
-        "note",
-        "prefix",
-        "stability",
-        "extends",
-        "attributes",
-        "constraints",
-    )
+    allowed_keys = BaseSemanticConvention.allowed_keys + ("name",)
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.name = group.get("name", self.prefix)
+        if not self.name:
+            raise ValidationError.from_yaml_pos(
+                self._position, "Event must define at least one of name or prefix"
+            )
 
 
 class UnitSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "units"
 
-    allowed_keys = (
+    allowed_keys = (  # We completely override base semantic keys here.
         "id",
         "type",
         "brief",

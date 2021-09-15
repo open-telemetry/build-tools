@@ -17,15 +17,17 @@ from typing import Tuple
 
 from opentelemetry.semconv.model.exceptions import ValidationError
 
-
 ID_RE = re.compile("([a-z](\\.?[a-z0-9_-]+)+)")
+"""Identifiers must start with a lowercase ASCII letter and
+contain only lowercase, digits 0-9, underscore, dash (not recommended) and dots.
+Each dot must be followed by at least one allowed non-dot character."""
 
 
 def validate_id(semconv_id, position):
     if not ID_RE.fullmatch(semconv_id):
         raise ValidationError.from_yaml_pos(
             position,
-            "Invalid id {}. Semantic Convention ids MUST be {}".format(
+            "Invalid id {}. Semantic Convention ids MUST match {}".format(
                 semconv_id, ID_RE.pattern
             ),
         )
@@ -45,7 +47,7 @@ def validate_values(yaml, keys, mandatory=()):
 def check_no_missing_keys(yaml, mandatory):
     missing = list(set(mandatory) - set(yaml))
     if missing:
-        position = yaml.lc.data[list(yaml)[0]]
+        position = (yaml.lc.line, yaml.lc.col)
         msg = "Missing keys: {}".format(missing)
         raise ValidationError.from_yaml_pos(position, msg)
 
@@ -59,7 +61,7 @@ class ValidatableYamlNode:
         self.id = yaml_node.get("id").strip()
         self.brief = str(yaml_node.get("brief")).strip()
 
-        self._position = [yaml_node.lc.line, yaml_node.lc.col]
+        self._position = (yaml_node.lc.line, yaml_node.lc.col)
 
     @classmethod
     def validate_keys(cls, node):

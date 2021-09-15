@@ -9,14 +9,14 @@ groups:
         type:
           allow_custom_values: false
           members:
-            - id: IP.TCP
+            - id: ip.tcp
               value: "IP.TCP"
-            - id: IP.UDP
+            - id: ip.udp
               value: "IP.UDP"
-            - id: IP
+            - id: ip
               value: "IP"
               brief: 'Another IP-based protocol'
-            - id: Unix
+            - id: unix
               value: "Unix"
               brief: 'Unix Domain socket. See below.'
             - id: pipe
@@ -54,28 +54,16 @@ groups:
         type:
           allow_custom_values: true
           members:
-            - id: 1G
+            - id: gen1g
               value: "1G"
               brief: >
                 1G
-            - id: 2G
+            - id: gen2g
               value: "2G"
               brief: >
                 2G
-            - id: 3G
-              value: "3G"
-              brief: >
-                3G
-            - id: 4G
-              value: "4G"
-              brief: >
-                4G
-            - id: 5G
-              value: "5G"
-              brief: >
-                5G
         brief: 'This describes more details regarding the connection.type. It may be the type of cell connection, but it could be used for describing details about a wifi connection.'
-        examples: '4G'
+        examples: '2G'
       - id: host.carrier.name
         type: string
         brief: "host.carrier.name"

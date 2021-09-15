@@ -207,6 +207,9 @@ class MarkdownRenderer:
         """
         if sampling_relevant_attrs:
             output.write("\nFollowing attributes MUST be provided **at span creation time** (when provided at all):\n\n")
+            output.write(
+                "\nFollowing attributes MUST be provided **at span creation time** (when provided at all):\n\n"
+            )
 
             for attr in sampling_relevant_attrs:
                 output.write("* " + self.render_attribute_id(attr.fqn) + "\n")
@@ -439,7 +442,9 @@ class MarkdownRenderer:
         if isinstance(semconv, UnitSemanticConvention):
             self.to_markdown_unit_table(semconv.members, output)
 
-        attr_sampling_relevant = [attr for attr in attr_to_print if attr.sampling_relevant]
+        attr_sampling_relevant = [
+            attr for attr in attr_to_print if attr.sampling_relevant
+        ]
         self.to_creation_time_attributes(attr_sampling_relevant, output)
 
         output.write("<!-- endsemconv -->")

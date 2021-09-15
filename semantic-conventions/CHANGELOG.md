@@ -2,6 +2,14 @@
 
 Please update the changelog as part of any significant pull request.
 
+## v0.6.0
+
+- Enforce enum member IDs follow the same rules as other IDs
+  ([#64](https://github.com/open-telemetry/build-tools/pull/64)).
+- Improve some enum-related error messages to point to more precise
+  locations
+  (also [#64](https://github.com/open-telemetry/build-tools/pull/64)).
+
 ## v0.5.0
 
 - Add event semantic convention type & events span field

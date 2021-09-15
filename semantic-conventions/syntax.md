@@ -7,17 +7,20 @@ Then, the semantic of each field is described.
 
 <!-- toc -->
 
-- [JSON Schema](#json-schema)
-- [Syntax](#syntax)
-- [Semantics](#semantics)
-  * [Groups](#groups)
-  * [Semantic Convention](#semantic-convention)
-  * [Attributes](#attributes)
-  * [Ref](#ref)
-  * [Type](#type)
-  * [Constraints](#constraints)
-    + [Any Of](#any-of)
-    + [Include](#include)
+- [Semantic Convention YAML Language](#semantic-convention-yaml-language)
+  - [JSON Schema](#json-schema)
+  - [Syntax](#syntax)
+  - [Semantics](#semantics)
+    - [Groups](#groups)
+    - [Semantic Convention](#semantic-convention)
+      - [Span semantic convention](#span-semantic-convention)
+    - [Attributes](#attributes)
+      - [Examples (for examples)](#examples-for-examples)
+      - [Ref](#ref)
+      - [Type](#type)
+    - [Constraints](#constraints)
+      - [Any Of](#any-of)
+      - [Include](#include)
 
 <!-- tocstop -->
 
@@ -174,7 +177,6 @@ An attribute is defined by:
 - `sampling_relevant`, optional EXPERIMENTAL boolean,
   specifies if the attribute is (especially) relevant for sampling and
   thus should be set at span start. It defaults to `false`.
-  DO NOT USE for spec semantic conventions!
 - `brief`, `note`, `stability`, `deprecated`, same meaning as for the whole
   [semantic convention](#semantic-convention), but per attribute.
 - `examples`, sequence of example values for the attribute or single example value.

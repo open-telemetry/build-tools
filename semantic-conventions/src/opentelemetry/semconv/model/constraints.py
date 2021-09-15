@@ -15,11 +15,11 @@
 from dataclasses import dataclass, replace
 from typing import List, Tuple
 
+from ruamel.yaml.comments import CommentedSeq
+
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute
 from opentelemetry.semconv.model.utils import validate_values
-
-from ruamel.yaml.comments import CommentedSeq
 
 
 # We cannot frozen due to later evaluation of the attributes

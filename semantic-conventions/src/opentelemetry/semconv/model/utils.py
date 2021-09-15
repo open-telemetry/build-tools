@@ -17,7 +17,6 @@ from typing import Tuple
 
 from opentelemetry.semconv.model.exceptions import ValidationError
 
-
 ID_RE = re.compile("([a-z](\\.?[a-z0-9_-]+)+)")
 
 

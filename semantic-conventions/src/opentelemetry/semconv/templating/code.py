@@ -16,14 +16,13 @@ import datetime
 import os.path
 import re
 import typing
-import mistune
 
+import mistune
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from opentelemetry.semconv.model.semantic_attribute import TextWithLinks
+from opentelemetry.semconv.model.semantic_attribute import Required, TextWithLinks
 from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
 from opentelemetry.semconv.model.utils import ID_RE
-from opentelemetry.semconv.model.semantic_attribute import Required
 
 
 def render_markdown(

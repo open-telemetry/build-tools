@@ -209,8 +209,7 @@ class MarkdownRenderer:
             output.write("\nFollowing attributes MUST be provided **at span creation time** (when provided at all):\n\n")
 
             for attr in sampling_relevant_attrs:
-                output.write("* " + str(self.render_attribute_id(attr.fqn)) + "\n")
-            output.write("\n")
+                output.write("* " + self.render_attribute_id(attr.fqn) + "\n")
 
     @staticmethod
     def to_markdown_unit_table(members, output: io.StringIO):

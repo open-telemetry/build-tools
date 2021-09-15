@@ -46,8 +46,6 @@ def test_parse_deprecated(load_yaml):
     attributes = SemanticAttribute.parse("", "", yaml.get("attributes"))
 
     assert len(attributes) == 1
-    assert list(attributes.keys()) == [".deprecated_attribute"]
+    assert list(attributes.keys()) == ["deprecated_attribute"]
 
-    assert (
-        attributes[".deprecated_attribute"].deprecated == "don't use this one anymore"
-    )
+    assert attributes["deprecated_attribute"].deprecated == "don't use this one anymore"

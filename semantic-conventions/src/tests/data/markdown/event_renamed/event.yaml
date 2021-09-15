@@ -1,0 +1,10 @@
+groups:
+  - id: event
+    name: myname
+    prefix: myprefix
+    type: event
+    brief: brief
+    attributes:
+      - id: attr
+        type: boolean
+        brief: attrbrief

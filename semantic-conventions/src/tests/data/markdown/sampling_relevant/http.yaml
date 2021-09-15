@@ -1,0 +1,49 @@
+groups:
+  - id: http
+    prefix: http
+    brief: 'This document defines semantic conventions for HTTP client and server Spans.'
+    attributes:
+      - id: method
+        type: string
+        required: always
+        brief: .
+        sampling_relevant: true
+        examples: ["GET"]
+      - id: url
+        type: string
+        brief: .
+        sampling_relevant: true
+        examples: ['.']
+      - id: target
+        type: string
+        brief: .
+        sampling_relevant: true
+        examples: ['.']
+      - id: host
+        type: string
+        brief: .
+        sampling_relevant: true
+        examples: ['.']
+      - id: scheme
+        type: string
+        brief: .
+        sampling_relevant: true
+        examples: ["http"]
+      - id: status_code
+        type: int
+        required:
+          conditional: .
+        brief: .
+        examples: []
+      - id: user_agent
+        type: string
+        brief: .
+        examples: ['.']
+      - ref: net.peer.name
+        sampling_relevant: true
+      - ref: net.peer.ip
+        sampling_relevant: true
+      - ref: net.peer.port
+        sampling_relevant: true
+    constraints:
+      - include: network

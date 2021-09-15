@@ -7,20 +7,17 @@ Then, the semantic of each field is described.
 
 <!-- toc -->
 
-- [Semantic Convention YAML Language](#semantic-convention-yaml-language)
-  - [JSON Schema](#json-schema)
-  - [Syntax](#syntax)
-  - [Semantics](#semantics)
-    - [Groups](#groups)
-    - [Semantic Convention](#semantic-convention)
-      - [Span semantic convention](#span-semantic-convention)
-    - [Attributes](#attributes)
-      - [Examples (for examples)](#examples-for-examples)
-      - [Ref](#ref)
-      - [Type](#type)
-    - [Constraints](#constraints)
-      - [Any Of](#any-of)
-      - [Include](#include)
+- [JSON Schema](#json-schema)
+- [Syntax](#syntax)
+- [Semantics](#semantics)
+  * [Groups](#groups)
+  * [Semantic Convention](#semantic-convention)
+  * [Attributes](#attributes)
+  * [Ref](#ref)
+  * [Type](#type)
+  * [Constraints](#constraints)
+    + [Any Of](#any-of)
+    + [Include](#include)
 
 <!-- tocstop -->
 

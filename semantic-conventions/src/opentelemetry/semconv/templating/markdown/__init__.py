@@ -201,12 +201,12 @@ class MarkdownRenderer:
     def to_creation_time_attributes(
         self,
         sampling_relevant_attrs: typing.List[SemanticAttribute],
-        output: io.StringIO):
+        output: io.StringIO,
+    ):
         """Renders list of attributes that MUST be provided at creation time
         :return:
         """
         if sampling_relevant_attrs:
-            output.write("\nFollowing attributes MUST be provided **at span creation time** (when provided at all):\n\n")
             output.write(
                 "\nFollowing attributes MUST be provided **at span creation time** (when provided at all):\n\n"
             )

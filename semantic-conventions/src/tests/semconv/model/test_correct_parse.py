@@ -15,12 +15,12 @@
 import os
 import unittest
 
-from opentelemetry.semconv.model.constraints import Include, AnyOf
+from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import StabilityLevel
 from opentelemetry.semconv.model.semantic_convention import (
+    EventSemanticConvention,
     SemanticConventionSet,
     SpanSemanticConvention,
-    EventSemanticConvention,
 )
 
 

@@ -13,11 +13,8 @@
 #   limitations under the License.
 import pytest
 
-from opentelemetry.semconv.model.utils import (
-    validate_id,
-    validate_values,
-)
 from opentelemetry.semconv.model.exceptions import ValidationError
+from opentelemetry.semconv.model.utils import validate_id, validate_values
 
 _POSITION = [10, 2]
 

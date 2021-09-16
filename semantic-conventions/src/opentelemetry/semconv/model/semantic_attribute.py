@@ -16,15 +16,15 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
 from enum import Enum
-from typing import List, Optional, Union, Dict
+from typing import Dict, List, Optional, Union
 
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.utils import (
-    validate_values,
-    validate_id,
     check_no_missing_keys,
+    validate_id,
+    validate_values,
 )
 
 

@@ -1,8 +1,7 @@
 import os
+
 import pytest
-
 from ruamel.yaml import YAML
-
 
 _TEST_DIR = os.path.dirname(__file__)
 

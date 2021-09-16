@@ -24,7 +24,6 @@ from opentelemetry.semconv.model.semantic_convention import (
     SemanticConventionSet,
 )
 from opentelemetry.semconv.templating.code import CodeRenderer
-
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 

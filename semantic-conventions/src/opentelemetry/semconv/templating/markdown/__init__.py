@@ -22,11 +22,11 @@ from pathlib import PurePath
 
 from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import (
+    EnumAttributeType,
+    EnumMember,
+    Required,
     SemanticAttribute,
     StabilityLevel,
-    EnumAttributeType,
-    Required,
-    EnumMember,
 )
 from opentelemetry.semconv.model.semantic_convention import (
     EventSemanticConvention,
@@ -34,7 +34,6 @@ from opentelemetry.semconv.model.semantic_convention import (
     UnitSemanticConvention,
 )
 from opentelemetry.semconv.model.utils import ID_RE
-
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
 

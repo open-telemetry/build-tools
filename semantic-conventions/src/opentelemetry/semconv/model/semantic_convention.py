@@ -13,25 +13,22 @@
 #   limitations under the License.
 
 import sys
+import typing
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Union
 
-import typing
 from ruamel.yaml import YAML
 
-from opentelemetry.semconv.model.constraints import Include, AnyOf, parse_constraints
+from opentelemetry.semconv.model.constraints import AnyOf, Include, parse_constraints
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
-    SemanticAttribute,
     Required,
+    SemanticAttribute,
     unique_attributes,
 )
 from opentelemetry.semconv.model.unit_member import UnitMember
-from opentelemetry.semconv.model.utils import (
-    ValidatableYamlNode,
-    validate_id,
-)
+from opentelemetry.semconv.model.utils import ValidatableYamlNode, validate_id
 
 
 class SpanKind(Enum):

@@ -17,8 +17,8 @@ import unittest
 
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_convention import (
-    parse_semantic_convention_groups,
     SemanticConventionSet,
+    parse_semantic_convention_groups,
 )
 
 

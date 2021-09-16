@@ -6,7 +6,7 @@
 |---|---|---|---|---|
 | `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | No |
 | `net.host.connection.type` | string | unavailable | `wifi` | No |
-| `net.host.connection.subtype` | string | This describes more details regarding the connection.type. It may be the type of cell connection, but it could be used for describing details about a wifi connection. | `4G` | No |
+| `net.host.connection.subtype` | string | This describes more details regarding the connection.type. It may be the type of cell connection, but it could be used for describing details about a wifi connection. | `2G` | No |
 | `net.host.carrier.name` | string | host.carrier.name | `sprint` | No |
 | `net.host.carrier.mcc` | string | host.carrier.mcc | `310` | No |
 | `net.host.carrier.mnc` | string | host.carrier.mnc | `001` | No |
@@ -22,8 +22,8 @@
 
 | Value  | Description |
 |---|---|
-| `IP.TCP` | IP.TCP |
-| `IP.UDP` | IP.UDP |
+| `IP.TCP` | ip.tcp |
+| `IP.UDP` | ip.udp |
 | `IP` | Another IP-based protocol |
 | `Unix` | Unix Domain socket. See below. |
 | `pipe` | Named or anonymous pipe. See note below. |
@@ -49,7 +49,4 @@
 |---|---|
 | `1G` | 1G |
 | `2G` | 2G |
-| `3G` | 3G |
-| `4G` | 4G |
-| `5G` | 5G |
 <!-- endsemconv -->

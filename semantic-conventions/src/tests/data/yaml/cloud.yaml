@@ -9,11 +9,11 @@ groups:
         type:
           allow_custom_values: true
           members:
-            - id: AWS
+            - id: aws
               value: 'aws'
-            - id: GCP
+            - id: gcp
               value: 'gcp'
-            - id: Azure
+            - id: azure
               value: 'azure'
         brief: >
            	Name of the cloud provider.

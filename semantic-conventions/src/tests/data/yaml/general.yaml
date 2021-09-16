@@ -9,14 +9,14 @@ groups:
         type:
           allow_custom_values: false
           members:
-            - id: IP.TCP
+            - id: ip.tcp
               value: "IP.TCP"
-            - id: IP.UDP
+            - id: ip.udp
               value: "IP.UDP"
-            - id: IP
+            - id: ip
               value: "IP"
               brief: 'Another IP-based protocol'
-            - id: Unix
+            - id: unix
               value: "Unix"
               brief: 'Unix Domain socket. See below.'
             - id: pipe
@@ -34,7 +34,7 @@ groups:
               brief: 'Something else (non IP-based).'
         brief: >
           Transport protocol used. See note below.
-        examples: 'IP.TCP'
+        examples: 'ip.tcp'
       - id: peer.ip
         type: string
         brief: >

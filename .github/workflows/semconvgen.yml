@@ -29,6 +29,8 @@ jobs:
       run: flake8 .
     - name: install
       run: pip install -U -e .
+    - name: Check imports (isort)
+      run: isort --check --diff .
     - name: run tests
       run: pytest -v
     - name: Slow linting (pylint)

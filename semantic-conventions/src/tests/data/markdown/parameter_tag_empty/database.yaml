@@ -210,9 +210,6 @@ groups:
         tag: connection-level
       - ref: net.peer.port
         tag: connection-level
-      - ref: net.transport
-        tag: connection-level
-
     constraints:
       - any_of:
         - 'net.peer.name'
@@ -257,4 +254,3 @@ groups:
         brief: >
           The collection being accessed within the database stated in `db.name`.
         examples: [ 'customers', 'products' ] 
-

@@ -16,15 +16,15 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
 from enum import Enum
-from typing import List, Optional, Union, Dict
+from typing import Dict, List, Optional, Union
 
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.utils import (
-    validate_values,
-    validate_id,
     check_no_missing_keys,
+    validate_id,
+    validate_values,
 )
 
 
@@ -218,6 +218,8 @@ class SemanticAttribute:
         try:
             attr_type = EnumAttributeType.parse(attr_val)
         except ValidationError as e:
+            if e.line != 0:  # Does the error already have a position?
+                raise
             position = attribute.lc.data["type"]
             raise ValidationError.from_yaml_pos(position, e.message) from e
         brief = attribute["brief"]
@@ -432,32 +434,39 @@ class EnumAttributeType:
             else False
         )
         members = []
-        if attribute_type["members"] is None or len(attribute_type["members"]) < 1:
-            # Missing members - rise the exception and fill the missing data in the parent
-            raise ValidationError(0, 0, "Enumeration without values!")
+        if (
+            not isinstance(attribute_type["members"], CommentedSeq)
+            or len(attribute_type["members"]) < 1
+        ):
+            raise ValidationError.from_yaml_pos(
+                attribute_type.lc.data["members"], "Enumeration without members!"
+            )
 
         allowed_keys = ["id", "value", "brief", "note"]
         mandatory_keys = ["id", "value"]
         for member in attribute_type["members"]:
             validate_values(member, allowed_keys, mandatory_keys)
             if not EnumAttributeType.is_valid_enum_value(member["value"]):
-                raise ValidationError(
-                    0, 0, "Invalid value used in enum: <{}>".format(member["value"])
+                raise ValidationError.from_yaml_pos(
+                    member.lc.data["value"][:2],
+                    "Invalid value used in enum: <{}>".format(member["value"]),
                 )
+            validate_id(member["id"], member.lc.data["id"])
             members.append(
                 EnumMember(
                     member_id=member["id"],
                     value=member["value"],
-                    brief=member.get("brief").strip()
-                    if "brief" in member
-                    else member["id"],
-                    note=member.get("note").strip() if "note" in member else "",
+                    brief=member.get("brief", member["id"]).strip(),
+                    note=member.get("note", "").strip(),
                 )
             )
         enum_type = AttributeType.get_type(members[0].value)
-        for m in members:
+        for myaml, m in zip(attribute_type["members"], members):
             if enum_type != AttributeType.get_type(m.value):
-                raise ValidationError(0, 0, "Enumeration type inconsistent!")
+                raise ValidationError.from_yaml_pos(
+                    myaml.lc.data["value"],
+                    "Enumeration member does not have type {}!".format(enum_type),
+                )
         return EnumAttributeType(custom_values, members, enum_type)
 
 

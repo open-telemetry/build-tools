@@ -1,0 +1,5 @@
+# Attributes
+
+<!-- semconv http -->
+
+<!-- endsemconv -->

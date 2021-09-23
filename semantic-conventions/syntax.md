@@ -174,7 +174,6 @@ An attribute is defined by:
 - `sampling_relevant`, optional EXPERIMENTAL boolean,
   specifies if the attribute is (especially) relevant for sampling and
   thus should be set at span start. It defaults to `false`.
-  DO NOT USE for spec semantic conventions!
 - `brief`, `note`, `stability`, `deprecated`, same meaning as for the whole
   [semantic convention](#semantic-convention), but per attribute.
 - `examples`, sequence of example values for the attribute or single example value.

@@ -123,6 +123,9 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_event_renamed(self):
         self.check("markdown/event_renamed/")
 
+    def testSamplingRelevant(self):
+        self.check("markdown/sampling_relevant/")
+
     def check(
         self,
         input_dir: str,

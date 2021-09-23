@@ -199,6 +199,22 @@ class MarkdownRenderer:
             output.write("\n**[{}]:** {}\n".format(counter, note))
             counter += 1
 
+    def to_creation_time_attributes(
+        self,
+        sampling_relevant_attrs: typing.List[SemanticAttribute],
+        output: io.StringIO,
+    ):
+        """Renders list of attributes that MUST be provided at creation time
+        :return:
+        """
+        if sampling_relevant_attrs:
+            output.write(
+                "\nFollowing attributes MUST be provided **at span creation time** (when provided at all):\n\n"
+            )
+
+            for attr in sampling_relevant_attrs:
+                output.write("* " + self.render_attribute_id(attr.fqn) + "\n")
+
     @staticmethod
     def to_markdown_unit_table(members, output: io.StringIO):
         output.write("\n")
@@ -430,5 +446,10 @@ class MarkdownRenderer:
 
         if isinstance(semconv, UnitSemanticConvention):
             self.to_markdown_unit_table(semconv.members, output)
+
+        attr_sampling_relevant = [
+            attr for attr in attr_to_print if attr.sampling_relevant
+        ]
+        self.to_creation_time_attributes(attr_sampling_relevant, output)
 
         output.write("<!-- endsemconv -->")

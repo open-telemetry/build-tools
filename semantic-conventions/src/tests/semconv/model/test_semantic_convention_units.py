@@ -1,5 +1,8 @@
 import os
 
+import pytest
+
+from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_convention import (
     UnitSemanticConvention,
     parse_semantic_convention_groups,
@@ -33,3 +36,11 @@ def test_build_units(open_test_file):
     assert convention.members["connections"].id == "connections"
     assert convention.members["connections"].brief == "connections"
     assert convention.members["connections"].value == "{connections}"
+
+
+def test_build_units_bad(open_test_file):
+    with pytest.raises(ValidationError) as excinfo, open_test_file(
+        os.path.join("yaml", "metrics", "units_bad_with_attributes.yaml")
+    ) as yaml_file:
+        parse_semantic_convention_groups(yaml_file)
+    assert "attributes" in str(excinfo.value)

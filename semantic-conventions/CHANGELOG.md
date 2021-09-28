@@ -2,6 +2,11 @@
 
 Please update the changelog as part of any significant pull request.
 
+## v0.8.0
+
+- Better explanation for sampling_relevant attributes
+  ([#70]https://github.com/open-telemetry/build-tools/pull/70)
+
 ## v0.7.0
 
 - Support sampling_relevant attribute fields

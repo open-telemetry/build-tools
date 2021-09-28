@@ -14,7 +14,7 @@
 | [`net.peer.name`](span-general.md) | string | . | `.` | No |
 | [`net.peer.port`](span-general.md) | int | . |  | No |
 
-Following attributes SHOULD be provided **at span creation time** (when provided at all), so they can be considered for sampling decisions:
+Following attributes MUST be provided **at span creation time** (when provided at all), so they can be considered for sampling decisions:
 
 * `http.method`
 * `http.url`

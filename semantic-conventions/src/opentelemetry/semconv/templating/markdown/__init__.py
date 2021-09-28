@@ -203,13 +203,13 @@ class MarkdownRenderer:
         sampling_relevant_attrs: typing.List[SemanticAttribute],
         output: io.StringIO,
     ):
-        """Renders list of attributes that SHOULD be provided at creation time
+        """Renders list of attributes that MUST be provided at creation time
         :return:
         """
         if sampling_relevant_attrs:
             output.write(
-              "\nFollowing attributes SHOULD be provided **at span creation time** (when provided at all), " + 
-              "so they can be considered for sampling decisions:\n\n"
+                "\nFollowing attributes MUST be provided **at span creation time** (when provided at all), "
+                + "so they can be considered for sampling decisions:\n\n"
             )
 
             for attr in sampling_relevant_attrs:

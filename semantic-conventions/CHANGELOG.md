@@ -2,6 +2,11 @@
 
 Please update the changelog as part of any significant pull request.
 
+## v0.8.0
+
+- Add `name` field for events. It defaults to the `prefix`
+  ([#67](https://github.com/open-telemetry/build-tools/pull/67)).
+
 ## v0.7.0
 
 - Support sampling_relevant attribute fields

@@ -7,17 +7,21 @@ Then, the semantic of each field is described.
 
 <!-- toc -->
 
-- [JSON Schema](#json-schema)
-- [Syntax](#syntax)
-- [Semantics](#semantics)
-  * [Groups](#groups)
-  * [Semantic Convention](#semantic-convention)
-  * [Attributes](#attributes)
-  * [Ref](#ref)
-  * [Type](#type)
-  * [Constraints](#constraints)
-    + [Any Of](#any-of)
-    + [Include](#include)
+- [Semantic Convention YAML Language](#semantic-convention-yaml-language)
+  - [JSON Schema](#json-schema)
+  - [Syntax](#syntax)
+  - [Semantics](#semantics)
+    - [Groups](#groups)
+    - [Semantic Convention](#semantic-convention)
+      - [Span semantic convention](#span-semantic-convention)
+      - [Event semantic convention](#event-semantic-convention)
+    - [Attributes](#attributes)
+      - [Examples (for examples)](#examples-for-examples)
+      - [Ref](#ref)
+      - [Type](#type)
+    - [Constraints](#constraints)
+      - [Any Of](#any-of)
+      - [Include](#include)
 
 <!-- tocstop -->
 
@@ -36,14 +40,14 @@ All attributes are lower case.
 groups ::= semconv
        | semconv groups
 
-semconv ::= id [type] brief [note] [prefix] [events] [extends] [stability] [deprecated] [span_kind] attributes [constraints]
+semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields]
 
 id    ::= string
 
-type ::= "span" # Default if not specified
-     |   "resource"
-     |   "event"
-     |   "metric"
+convtype ::= "span" # Default if not specified
+         |   "resource" # see spanspecificfields
+         |   "event"    # see eventspecificfields
+         |   "metric"   # (currently non-functional)
 
 brief ::= string
 note  ::= string
@@ -57,13 +61,6 @@ stability ::= "deprecated"
           |   "stable"
 
 deprecated ::= <description>
-
-span_kind ::= "client"
-          |   "server"
-          |   "producer"
-          |   "consumer"
-          |   "internal"
-
 
 attributes ::= (id type brief examples | ref [brief] [examples]) [tag] [stability] [deprecated] [required] [sampling_relevant] [note]
 
@@ -106,6 +103,22 @@ any_of ::= id {id}
 
 include ::= id
 
+specificfields ::= spanfields
+               |   eventfields
+
+spanfields ::= [events] [span_kind]
+eventfields ::= [name]
+
+span_kind ::= "client"
+          |   "server"
+          |   "producer"
+          |   "consumer"
+          |   "internal"
+
+events ::= id {id} # MUST point to an existing event group
+
+name ::= string
+
 ```
 
 ## Semantics
@@ -144,6 +157,14 @@ The following is only valid if `type` is `span` (the default):
 - `span_kind`, optional enum, specifies the kind of the span.
 - `events`, optional list of strings that specify the ids of
   event semantic conventions associated with this span semantic convention.
+
+#### Event semantic convention
+
+The following is only valid if `type` is `event`:
+
+- `name`, conditionally required string. The name of the event.
+  If not specified, the `prefix` is used. If `prefix` is empty (or unspecified),
+  `name` is required.
 
 ### Attributes
 

@@ -1,6 +1,8 @@
 # Test
 
 <!-- semconv event -->
+The event name MUST be `exception`.
+
 | Attribute  | Type | Description  | Examples  | Required |
 |---|---|---|---|---|
 | `exception.type` | string | The type of the exception. | `java.net.ConnectException`; `OSError` | See below |

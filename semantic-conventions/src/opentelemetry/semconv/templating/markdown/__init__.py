@@ -29,6 +29,7 @@ from opentelemetry.semconv.model.semantic_attribute import (
     StabilityLevel,
 )
 from opentelemetry.semconv.model.semantic_convention import (
+    EventSemanticConvention,
     SemanticConventionSet,
     UnitSemanticConvention,
 )
@@ -391,14 +392,14 @@ class MarkdownRenderer:
                     "Semantic Convention ID {} not found".format(semconv_id)
                 )
             output.write(content[last_match : match.start(0)])
-            self._render_table(semconv, parameters, output)
+            self._render_group(semconv, parameters, output)
             end_match = self.p_end.search(content, last_match)
             if not end_match:
                 raise ValueError("Missing ending <!-- endsemconv --> tag")
             last_match = end_match.end()
         output.write(content[last_match:])
 
-    def _render_table(self, semconv, parameters, output):
+    def _render_group(self, semconv, parameters, output):
         header: str
         header = semconv.semconv_id
         if parameters:
@@ -413,6 +414,10 @@ class MarkdownRenderer:
         self.render_ctx.is_remove_constraint = "remove_constraints" in parameters
         self.render_ctx.group_key = parameters.get("tag")
         self.render_ctx.is_full = "full" in parameters
+
+        if isinstance(semconv, EventSemanticConvention):
+            output.write("The event name MUST be `{}`.\n\n".format(semconv.name))
+
         attr_to_print = []
         attr: SemanticAttribute
         for attr in sorted(

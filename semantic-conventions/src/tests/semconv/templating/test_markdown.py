@@ -117,6 +117,12 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_event(self):
         self.check("markdown/event/")
 
+    def test_event_noprefix(self):
+        self.check("markdown/event_noprefix/")
+
+    def test_event_renamed(self):
+        self.check("markdown/event_renamed/")
+
     def testSamplingRelevant(self):
         self.check("markdown/sampling_relevant/")
 

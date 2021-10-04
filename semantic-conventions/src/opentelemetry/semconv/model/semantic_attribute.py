@@ -117,7 +117,10 @@ class SemanticAttribute:
             if attr_id is not None:
                 validate_id(attr_id, position_data["id"])
                 attr_type, brief, examples = SemanticAttribute.parse_id(attribute)
-                fqn = "{}.{}".format(prefix, attr_id)
+                if prefix:
+                    fqn = "{}.{}".format(prefix, attr_id)
+                else:
+                    fqn = attr_id
             else:
                 # Ref
                 attr_type = None

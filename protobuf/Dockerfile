@@ -10,7 +10,7 @@ ARG PROTOC_GEN_GO_GRPC_VERSION=1.36.0
 ARG GRPC_JAVA_VERSION=1.36.0
 # v1.3.2, using the version directly does not work: "tar: invalid magic"
 ARG PROTOC_GEN_GOGO_VERSION=b03c65ea87cdc3521ede29f62fe3ce239267c1bc
-ARG PROTOC_GEN_LINT_VERSION=0.2.1
+ARG PROTOC_GEN_LINT_VERSION=0.2.4
 ARG GRPC_GATEWAY_VERSION=1.16.0
 ARG UPX_VERSION=3.96
 
@@ -102,12 +102,13 @@ RUN mkdir -p ${GOPATH}/src/github.com/gogo/protobuf && \
     install -D ./gogoproto/gogo.proto /out/usr/include/github.com/gogo/protobuf/gogoproto/gogo.proto
 
 ARG PROTOC_GEN_LINT_VERSION
+ARG TARGETARCH
 RUN cd / && \
-    curl -sSLO https://github.com/ckaznocha/protoc-gen-lint/releases/download/v${PROTOC_GEN_LINT_VERSION}/protoc-gen-lint_linux_amd64.zip && \
+    curl -sSLO https://github.com/ckaznocha/protoc-gen-lint/releases/download/v${PROTOC_GEN_LINT_VERSION}/protoc-gen-lint_linux_${TARGETARCH}.zip && \
     mkdir -p /protoc-gen-lint-out && \
     cd /protoc-gen-lint-out && \
-    unzip -q /protoc-gen-lint_linux_amd64.zip && \
-    install -Ds /protoc-gen-lint-out/protoc-gen-lint /out/usr/bin/protoc-gen-lint
+    unzip -q /protoc-gen-lint_linux_${TARGETARCH}.zip && \
+    install -D /protoc-gen-lint-out/protoc-gen-lint /out/usr/bin/protoc-gen-lint
 
 ARG GRPC_GATEWAY_VERSION
 RUN mkdir -p ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
@@ -129,7 +130,8 @@ FROM alpine:${ALPINE_VERSION} as packer
 RUN apk add --no-cache curl
 
 ARG UPX_VERSION
-RUN mkdir -p /upx && curl -sSL https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz | tar xJ --strip 1 -C /upx && \
+ARG TARGETARCH
+RUN mkdir -p /upx && curl -sSL https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-${TARGETARCH}_linux.tar.xz | tar xJ --strip 1 -C /upx && \
     install -D /upx/upx /usr/local/bin/upx
 
 # Use all output including headers and protoc from protoc_builder

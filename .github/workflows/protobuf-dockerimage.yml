@@ -14,21 +14,37 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Build the Docker image
-      run: docker build protobuf/. -t build-protobuf
-    - name: Push the Docker image
-      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    - uses: actions/checkout@v2
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Determine tag
       run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-        function tag_and_push {
-          docker tag build-protobuf "otel/build-protobuf:${1}" && docker push "otel/build-protobuf:${1}"
+        function set_tag {
+          echo "DOCKER_TAG=${1}" >> $GITHUB_ENV
         }
         if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-          tag_and_push "latest"
+          set_tag "latest"
         elif [[ "${GITHUB_REF}" =~ refs/tags/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-            TAG="${GITHUB_REF#"refs/tags/v"}"
-            tag_and_push "${TAG}"
+          set_tag "${GITHUB_REF#"refs/tags/v"}"
         else
-          tag_and_push "${GITHUB_REF#"refs/tags/"}"
+          set_tag "${GITHUB_REF#"refs/tags/"}"
         fi
+
+    - name: Build and push the Docker image
+      uses: docker/build-push-action@v2
+      with:
+        builder: ${{ steps.buildx.outputs.name }}
+        context: ./protobuf/
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
+        tags: otel/build-protobuf:${{ env.DOCKER_TAG }}

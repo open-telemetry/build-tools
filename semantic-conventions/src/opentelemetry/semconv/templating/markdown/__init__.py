@@ -209,7 +209,8 @@ class MarkdownRenderer:
         """
         if sampling_relevant_attrs:
             output.write(
-                "\nFollowing attributes MUST be provided **at span creation time** (when provided at all):\n\n"
+                "\nFollowing attributes MUST be provided **at span creation time** (when provided at all), "
+                + "so they can be considered for sampling decisions:\n\n"
             )
 
             for attr in sampling_relevant_attrs:

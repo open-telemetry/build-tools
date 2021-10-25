@@ -10,7 +10,8 @@ ARG PROTOC_GEN_GO_VERSION=1.5.1
 ARG PROTOC_GEN_GO_GRPC_VERSION=1.36.0
 ARG GRPC_JAVA_VERSION=1.36.0
 # v1.3.2, using the version directly does not work: "tar: invalid magic"
-ARG PROTOC_GEN_GOGO_VERSION=b03c65ea87cdc3521ede29f62fe3ce239267c1bc
+# ARG PROTOC_GEN_GOGO_VERSION=b03c65ea87cdc3521ede29f62fe3ce239267c1bc
+ARG PROTOC_GEN_GOGO_VERSION=a14692478eb2567709e10b6b57b8b5062ca6357a
 ARG PROTOC_GEN_LINT_VERSION=0.2.4
 ARG GRPC_GATEWAY_VERSION=1.16.0
 ARG UPX_VERSION=3.96
@@ -87,9 +88,9 @@ RUN mkdir -p ${GOPATH}/src/github.com/golang/protobuf && \
     install -Ds /golang-protobuf-out/protoc-gen-go /out/usr/bin/protoc-gen-go
 
 ARG PROTOC_GEN_GOGO_VERSION
-RUN mkdir -p ${GOPATH}/src/github.com/gogo/protobuf && \
-    curl -sSL https://api.github.com/repos/gogo/protobuf/tarball/${PROTOC_GEN_GOGO_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/gogo/protobuf &&\
-    cd ${GOPATH}/src/github.com/gogo/protobuf && \
+RUN mkdir -p ${GOPATH}/src/github.com/jsuereth/protobuf && \
+    curl -sSL https://api.github.com/repos/jsuereth/protobuf/tarball/${PROTOC_GEN_GOGO_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/jsuereth/protobuf &&\
+    cd ${GOPATH}/src/github.com/jsuereth/protobuf && \
     go build -ldflags '-w -s' -o /gogo-protobuf-out/protoc-gen-gofast ./protoc-gen-gofast && \
     install -Ds /gogo-protobuf-out/protoc-gen-gofast /out/usr/bin/protoc-gen-gofast && \
     go build -ldflags '-w -s' -o /gogo-protobuf-out/protoc-gen-gogo ./protoc-gen-gogo && \
@@ -98,9 +99,9 @@ RUN mkdir -p ${GOPATH}/src/github.com/gogo/protobuf && \
     install -Ds /gogo-protobuf-out/protoc-gen-gogofast /out/usr/bin/protoc-gen-gogofast && \
     go build -ldflags '-w -s' -o /gogo-protobuf-out/protoc-gen-gogofaster ./protoc-gen-gogofaster && \
     install -Ds /gogo-protobuf-out/protoc-gen-gogofaster /out/usr/bin/protoc-gen-gogofaster && \
-    mkdir -p /out/usr/include/github.com/gogo/protobuf/protobuf/google/protobuf && \
-    install -D $(find ./protobuf/google/protobuf -name '*.proto') -t /out/usr/include/github.com/gogo/protobuf/protobuf/google/protobuf && \
-    install -D ./gogoproto/gogo.proto /out/usr/include/github.com/gogo/protobuf/gogoproto/gogo.proto
+    mkdir -p /out/usr/include/github.com/jsuereth/protobuf/protobuf/google/protobuf && \
+    install -D $(find ./protobuf/google/protobuf -name '*.proto') -t /out/usr/include/github.com/jsuereth/protobuf/protobuf/google/protobuf && \
+    install -D ./gogoproto/gogo.proto /out/usr/include/github.com/jsuereth/protobuf/gogoproto/gogo.proto
 
 ARG PROTOC_GEN_LINT_VERSION
 ARG ARCH

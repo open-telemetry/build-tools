@@ -14,6 +14,7 @@ Forked from <https://github.com/jaegertracing/docker-protobuf>.
 - <https://github.com/grpc-ecosystem/grpc-gateway>
 - <https://github.com/grpc/grpc>
 - <https://github.com/grpc/grpc-java>
+- <https://github.com/atoulme/protoc-gen-parquet>
 
 ## Supported languages
 
@@ -21,8 +22,10 @@ Forked from <https://github.com/jaegertracing/docker-protobuf>.
 - C++
 - Go
 - Java / JavaNano (Android)
+- Kotlin
 - JavaScript
 - Objective-C
+- Parquet
 - PHP
 - Python
 - Ruby
@@ -50,7 +53,9 @@ docker run --rm otel/build-protobuf --help
   --csharp_out=OUT_DIR        Generate C# source file.
   --java_out=OUT_DIR          Generate Java source file.
   --js_out=OUT_DIR            Generate JavaScript source.
+  --kotlin_out=OUT_DIR        Generate Kotlin source file.
   --objc_out=OUT_DIR          Generate Objective C header and source.
+  --parquet_out=OUT_DIR       Generate Parquet schema.
   --php_out=OUT_DIR           Generate PHP source file.
   --python_out=OUT_DIR        Generate Python source file.
   --ruby_out=OUT_DIR          Generate Ruby source file.

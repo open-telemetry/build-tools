@@ -30,6 +30,7 @@ from opentelemetry.semconv.model.semantic_attribute import (
 )
 from opentelemetry.semconv.model.semantic_convention import (
     EventSemanticConvention,
+    MetricSemanticConvention,
     SemanticConventionSet,
     UnitSemanticConvention,
 )
@@ -66,7 +67,7 @@ class MarkdownRenderer:
     )
     p_end = re.compile("<!--\\s*endsemconv\\s*-->")
     default_break_conditional_labels = 50
-    valid_parameters = ["tag", "full", "remove_constraints"]
+    valid_parameters = ["tag", "full", "remove_constraints", "metric_table"]
 
     prelude = "<!-- semconv {} -->\n"
     table_headers = "| Attribute  | Type | Description  | Examples  | Required |\n|---|---|---|---|---|\n"
@@ -173,6 +174,19 @@ class MarkdownRenderer:
                 name, attr_type, description, examples, required
             )
         )
+
+    def to_markdown_metric_table(self, semconv: MetricSemanticConvention, output: io.StringIO):
+        """
+        This method renders metrics as markdown table entry
+        """
+        output.write(
+            "| Name     | Instrument       | Unit ([UCUM](README.md#instrument-units)) | Description    |\n"
+            "| -------- | ---------------- | ---------                                 | -------------- |\n"
+        )
+        for metric in semconv.metrics:
+            output.write(
+                "| `{}` | {} | `{}` | {} |\n".format(metric.id, metric.instrument, metric.units, metric.brief)
+            )
 
     def to_markdown_anyof(self, anyof: AnyOf, output: io.StringIO):
         """
@@ -414,15 +428,21 @@ class MarkdownRenderer:
         self.render_ctx.is_remove_constraint = "remove_constraints" in parameters
         self.render_ctx.group_key = parameters.get("tag")
         self.render_ctx.is_full = "full" in parameters
+        self.render_ctx.is_metric_table = "metric_table" in parameters
 
         if isinstance(semconv, EventSemanticConvention):
             output.write("The event name MUST be `{}`.\n\n".format(semconv.name))
+
+        if isinstance(semconv, MetricSemanticConvention) and self.render_ctx.is_metric_table:
+            self.to_markdown_metric_table(semconv, output)
 
         attr_to_print = []
         attr: SemanticAttribute
         for attr in sorted(
             semconv.attributes, key=lambda a: "" if a.ref is None else a.ref
         ):
+            if self.render_ctx.is_metric_table:
+                break
             if self.render_ctx.group_key is not None:
                 if attr.tag == self.render_ctx.group_key:
                     attr_to_print.append(attr)

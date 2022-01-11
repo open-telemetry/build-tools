@@ -83,6 +83,9 @@ convention that have the tag `network`.
 `<!-- semconv http.server(tag=network, full) -->` will print the constraints and attributes of both `http` and `http.server`
 semantic conventions that have the tag `network`.
 
+`<!-- semconv metric.http.server(metric_table) -->` will print a table of metrics with all metrics prefixed with 
+`metric.http.server`.
+
 ## Code Generator
 
 The image supports [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates to generate code from the models.

@@ -53,6 +53,18 @@ class SpanKind(Enum):
         return kind_map.get(span_kind_value)
 
 
+class InstrumentKind(Enum):
+    Empty = 1
+    Counter = 2
+    AsynchronousCounter = 3
+    Histogram = 4
+    AsynchronousGauge = 5
+    UpDownCounter = 6
+    AsynchronousUpDownCounter = 7
+
+    def __str__(self):
+        return self.name
+
 def parse_semantic_convention_type(type_value):
     # Gracefully transition to the new types
     if type_value is None:
@@ -238,7 +250,36 @@ class UnitSemanticConvention(BaseSemanticConvention):
 class MetricSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "metric"
 
-    allowed_keys = ()
+    allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + ("metrics",)
+
+    class Metric:
+        def __init__(self, metric):
+            self.id: str = metric.get("id")
+            self.instrument: InstrumentKind = InstrumentKind[metric.get("instrument")]
+            self.units: str = metric.get("units")
+            self.brief: str = metric.get("brief")
+
+            if None in [metric.get("instrument"), self.id, self.units, self.brief]:
+                raise ValueError
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.metrics = ()
+        if group.get("metrics"):
+            try:
+                self.metrics: Tuple[MetricSemanticConvention.Metric] = tuple(
+                    map(lambda m: MetricSemanticConvention.Metric(m), group.get("metrics"))
+                )
+            except ValueError:
+                raise ValidationError.from_yaml_pos(
+                    self._position, "id, instrument, units, and brief must all be defined for concrete metrics"
+                )
+        for metric in self.metrics:
+            if not metric.id.startswith(self.semconv_id):
+                raise ValidationError.from_yaml_pos(
+                    self._position,
+                    "id of metric `{}` must be prefixed with its parent's id `{}`".format(metric.id, self.semconv_id)
+                )
 
 
 @dataclass

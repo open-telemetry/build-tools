@@ -65,6 +65,7 @@ class InstrumentKind(Enum):
     def __str__(self):
         return self.name
 
+
 def parse_semantic_convention_type(type_value):
     # Gracefully transition to the new types
     if type_value is None:
@@ -268,17 +269,23 @@ class MetricSemanticConvention(BaseSemanticConvention):
         if group.get("metrics"):
             try:
                 self.metrics: Tuple[MetricSemanticConvention.Metric] = tuple(
-                    map(lambda m: MetricSemanticConvention.Metric(m), group.get("metrics"))
+                    map(
+                        MetricSemanticConvention.Metric,
+                        group.get("metrics"),
+                    )
                 )
-            except ValueError:
+            except ValueError as e:
                 raise ValidationError.from_yaml_pos(
-                    self._position, "id, instrument, units, and brief must all be defined for concrete metrics"
-                )
+                    self._position,
+                    "id, instrument, units, and brief must all be defined for concrete metrics",
+                ) from e
         for metric in self.metrics:
             if not metric.id.startswith(self.semconv_id):
                 raise ValidationError.from_yaml_pos(
                     self._position,
-                    "id of metric `{}` must be prefixed with its parent's id `{}`".format(metric.id, self.semconv_id)
+                    "id of metric `{}` must be prefixed with its parent's id `{}`".format(
+                        metric.id, self.semconv_id
+                    ),
                 )
 
 

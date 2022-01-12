@@ -20,9 +20,9 @@ from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import StabilityLevel
 from opentelemetry.semconv.model.semantic_convention import (
     EventSemanticConvention,
+    MetricSemanticConvention,
     SemanticConventionSet,
     SpanSemanticConvention,
-    MetricSemanticConvention,
 )
 
 
@@ -202,14 +202,21 @@ class TestCorrectParse(unittest.TestCase):
         semconv.parse(self.load_file("yaml/general.yaml"))
         semconv.parse(self.load_file("yaml/http.yaml"))
 
-        metric_semconvs = cast(List[MetricSemanticConvention], list(semconv.models.values())[:3])
+        metric_semconvs = cast(
+            List[MetricSemanticConvention], list(semconv.models.values())[:3]
+        )
 
         expected = {
             "id": "metric.http",
             "prefix": "http",
             "extends": "",
             "n_constraints": 0,
-            "attributes": ["http.method", "http.host", "http.scheme", "http.status_code"]
+            "attributes": [
+                "http.method",
+                "http.host",
+                "http.scheme",
+                "http.status_code",
+            ],
         }
         self.semantic_convention_check(metric_semconvs[0], expected)
 
@@ -219,11 +226,13 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "metric.http",
             "n_constraints": 1,
             "attributes": ["net.peer.name", "net.peer.port", "net.peer.ip"],
-            "metrics": [{
+            "metrics": [
+                {
                     "id": "metric.http.client.duration",
                     "instrument": "Histogram",
-                    "units": "ms"
-            }]
+                    "units": "ms",
+                }
+            ],
         }
         self.semantic_convention_check(metric_semconvs[1], expected)
         self.metric_check(metric_semconvs[1].metrics, expected.get("metrics"))
@@ -238,18 +247,17 @@ class TestCorrectParse(unittest.TestCase):
                 {
                     "id": "metric.http.server.duration",
                     "instrument": "Histogram",
-                    "units": "ms"
+                    "units": "ms",
                 },
                 {
                     "id": "metric.http.server.active_requests",
                     "instrument": "AsynchronousUpDownCounter",
-                    "units": "{requests}"
-                }
-            ]
+                    "units": "{requests}",
+                },
+            ],
         }
         self.semantic_convention_check(metric_semconvs[2], expected)
         self.metric_check(metric_semconvs[2].metrics, expected.get("metrics"))
-
 
     def test_resource(self):
         semconv = SemanticConventionSet(debug=False)

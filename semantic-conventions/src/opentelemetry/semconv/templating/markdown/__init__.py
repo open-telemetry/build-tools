@@ -42,6 +42,7 @@ class RenderContext:
     def __init__(self):
         self.is_full = False
         self.is_remove_constraint = False
+        self.is_metric_table = False
         self.group_key = ""
         self.enums = []
         self.notes = []
@@ -175,7 +176,10 @@ class MarkdownRenderer:
             )
         )
 
-    def to_markdown_metric_table(self, semconv: MetricSemanticConvention, output: io.StringIO):
+    @staticmethod
+    def to_markdown_metric_table(
+        semconv: MetricSemanticConvention, output: io.StringIO
+    ):
         """
         This method renders metrics as markdown table entry
         """
@@ -185,7 +189,9 @@ class MarkdownRenderer:
         )
         for metric in semconv.metrics:
             output.write(
-                "| `{}` | {} | `{}` | {} |\n".format(metric.id, metric.instrument, metric.units, metric.brief)
+                "| `{}` | {} | `{}` | {} |\n".format(
+                    metric.id, metric.instrument, metric.units, metric.brief
+                )
             )
 
     def to_markdown_anyof(self, anyof: AnyOf, output: io.StringIO):
@@ -433,7 +439,10 @@ class MarkdownRenderer:
         if isinstance(semconv, EventSemanticConvention):
             output.write("The event name MUST be `{}`.\n\n".format(semconv.name))
 
-        if isinstance(semconv, MetricSemanticConvention) and self.render_ctx.is_metric_table:
+        if (
+            isinstance(semconv, MetricSemanticConvention)
+            and self.render_ctx.is_metric_table
+        ):
             self.to_markdown_metric_table(semconv, output)
 
         attr_to_print = []

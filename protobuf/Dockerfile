@@ -1,17 +1,17 @@
 ARG ALPINE_VERSION=3.14
 ARG GO_VERSION=1.17.1
 # gRPC core version that applies to C++, C#, Objective-C, PhP, Python, Ruby
-ARG GRPC_VERSION=1.36.4
-ARG PROTOBUF_C_VERSION=1.3.3
-ARG GRPC_WEB_VERSION=1.2.1
+ARG GRPC_VERSION=1.41.0
+ARG PROTOBUF_C_VERSION=1.4.0
+ARG GRPC_WEB_VERSION=1.3.0
 
-ARG PROTOC_GEN_GO_VERSION=1.5.1
-ARG PROTOC_GEN_GO_GRPC_VERSION=1.36.0
-ARG GRPC_JAVA_VERSION=1.36.0
+ARG PROTOC_GEN_GO_VERSION=1.5.2
+ARG PROTOC_GEN_GO_GRPC_VERSION=1.41.0
+ARG GRPC_JAVA_VERSION=1.41.0
 # v1.3.2, using the version directly does not work: "tar: invalid magic"
 ARG PROTOC_GEN_GOGO_VERSION=b03c65ea87cdc3521ede29f62fe3ce239267c1bc
-ARG PROTOC_GEN_LINT_VERSION=0.2.1
-ARG GRPC_GATEWAY_VERSION=1.16.0
+ARG PROTOC_GEN_LINT_VERSION=0.2.4
+ARG GRPC_GATEWAY_VERSION=2.6.0
 ARG PROTOC_GEN_PARQUET_VERSION=0.4.1
 ARG UPX_VERSION=3.96
 
@@ -115,15 +115,11 @@ RUN mkdir -p ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
     curl -sSL https://api.github.com/repos/grpc-ecosystem/grpc-gateway/tarball/v${GRPC_GATEWAY_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
     cd ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
     go build -ldflags '-w -s' -o /grpc-gateway-out/protoc-gen-grpc-gateway ./protoc-gen-grpc-gateway && \
-    go build -ldflags '-w -s' -o /grpc-gateway-out/protoc-gen-swagger ./protoc-gen-swagger && \
+    go build -ldflags '-w -s' -o /grpc-gateway-out/protoc-gen-openapiv2 ./protoc-gen-openapiv2 && \
     install -Ds /grpc-gateway-out/protoc-gen-grpc-gateway /out/usr/bin/protoc-gen-grpc-gateway && \
-    install -Ds /grpc-gateway-out/protoc-gen-swagger /out/usr/bin/protoc-gen-swagger && \
-    mkdir -p /out/usr/include/protoc-gen-swagger/options && \
-    install -D $(find ./protoc-gen-swagger/options -name '*.proto') -t /out/usr/include/protoc-gen-swagger/options && \
-    mkdir -p /out/usr/include/google/api && \
-    install -D $(find ./third_party/googleapis/google/api -name '*.proto') -t /out/usr/include/google/api && \
-    mkdir -p /out/usr/include/google/rpc && \
-    install -D $(find ./third_party/googleapis/google/rpc -name '*.proto') -t /out/usr/include/google/rpc
+    install -Ds /grpc-gateway-out/protoc-gen-openapiv2 /out/usr/bin/protoc-gen-openapiv2 && \
+    mkdir -p /out/usr/include/protoc-gen-openapiv2/options && \
+    install -D $(find ./protoc-gen-openapiv2/options -name '*.proto') -t /out/usr/include/protoc-gen-openapiv2/options
 
 ARG PROTOC_GEN_PARQUET_VERSION
 RUN mkdir -p ${GOPATH}/src/github.com/atoulme/protoc-gen-parquet && \

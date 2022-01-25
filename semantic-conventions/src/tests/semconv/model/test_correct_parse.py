@@ -736,10 +736,10 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(expected["attributes"], [a.fqn for a in s.attributes])
 
     def metric_check(self, metrics: Tuple[MetricSemanticConvention.Metric], expected):
-        for i, metric in enumerate(metrics):
-            self.assertEqual(metric.id, expected[i]["id"])
-            self.assertEqual(str(metric.instrument), expected[i]["instrument"])
-            self.assertEqual(metric.units, expected[i]["units"])
+        for m, ex in zip(metrics, expected):
+            self.assertEqual(m.id, ex["id"])
+            self.assertEqual(str(m.instrument), ex["instrument"])
+            self.assertEqual(m.units, ex["units"])
 
     _TEST_DIR = os.path.dirname(__file__)
 

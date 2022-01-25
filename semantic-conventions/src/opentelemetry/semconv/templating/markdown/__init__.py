@@ -439,6 +439,16 @@ class MarkdownRenderer:
         if isinstance(semconv, EventSemanticConvention):
             output.write("The event name MUST be `{}`.\n\n".format(semconv.name))
 
+        if self.render_ctx.is_metric_table:
+            if isinstance(semconv, MetricSemanticConvention):
+                self.to_markdown_metric_table(semconv, output)
+            else:
+                raise ValueError(
+                    "semconv `{}` was specified with `metric_table`, but it is not a metric convention".format(
+                        semconv.semconv_id
+                    )
+                )
+
         if (
             isinstance(semconv, MetricSemanticConvention)
             and self.render_ctx.is_metric_table

@@ -449,12 +449,6 @@ class MarkdownRenderer:
                     )
                 )
 
-        if (
-            isinstance(semconv, MetricSemanticConvention)
-            and self.render_ctx.is_metric_table
-        ):
-            self.to_markdown_metric_table(semconv, output)
-
         attr_to_print = []
         attr: SemanticAttribute
         for attr in sorted(

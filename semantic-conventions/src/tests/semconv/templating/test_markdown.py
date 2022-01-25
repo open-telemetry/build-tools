@@ -124,7 +124,10 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.check("markdown/event_renamed/")
 
     def test_metric_tables(self):
-        self.check("markdown/metrics_tables")
+        self.check(
+            "markdown/metrics_tables",
+            extra_yaml_files=["yaml/general.yaml", "yaml/http_metrics.yaml"],
+        )
 
     def testSamplingRelevant(self):
         self.check("markdown/sampling_relevant/")
@@ -136,6 +139,7 @@ class TestCorrectMarkdown(unittest.TestCase):
         *,
         expected_name="expected.md",
         extra_yaml_dirs: Sequence[str] = (),
+        extra_yaml_files: Sequence[str] = (),
         assert_raises=None
     ) -> Optional[BaseException]:
         dirpath = Path(self.get_file_path(input_dir))
@@ -151,6 +155,9 @@ class TestCorrectMarkdown(unittest.TestCase):
             for fname in Path(self.get_file_path(extra_dir)).glob("*.yaml"):
                 print("Parsing", fname)
                 semconv.parse(fname)
+        for fname in map(self.get_file_path, extra_yaml_files):
+            print("Parsing ", fname)
+            semconv.parse(fname)
 
         semconv.finish()
 

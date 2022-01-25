@@ -40,7 +40,7 @@ All attributes are lower case.
 groups ::= semconv
        | semconv groups
 
-semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields]
+semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields] [metrics]
 
 id    ::= string
 
@@ -119,6 +119,18 @@ events ::= id {id} # MUST point to an existing event group
 
 name ::= string
 
+instrument ::=  "Counter" 
+            | "AsynchronousCounter" 
+            | "Histogram" 
+            | "AsynchronousGauge" 
+            | "UpDownCounter" 
+            | "AsynchronousUpDownCounter"
+            
+units ::= string            
+
+metric ::= id instrument units brief
+
+metrics ::= {metrics}
 ```
 
 ## Semantics

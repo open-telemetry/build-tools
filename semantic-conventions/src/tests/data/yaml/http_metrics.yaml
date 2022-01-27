@@ -1,6 +1,6 @@
 groups:
   - id: metric.http
-    prefix: http
+    prefix: metric.http
     type: metric
     brief: "This document defines semantic convention for HTTP client and server metrics."
     note: >
@@ -18,7 +18,7 @@ groups:
       - ref: http.status_code
 
   - id: metric.http.client
-    prefix: http
+    prefix: metric.http
     type: metric
     extends: metric.http
     brief: 'Semantic Convention for HTTP Client'
@@ -33,17 +33,16 @@ groups:
       - ref: net.peer.port
       - ref: net.peer.ip
     metrics:
-      - id: metric.http.client.duration
+      - id: client.duration
         brief: "Measures the duration of the outbound HTTP request."
-        extends: metric.http.client
         instrument: Histogram
         units: ms
 
   - id: metric.http.server
-    prefix: http
+    prefix: metric.http
     type: metric
     extends: metric.http
-    brief: 'Semantic Convention for HTTP Server'
+    brief: "Semantic Convention for HTTP Server"
     constraints:
       - any_of:
           - [http.scheme, http.host, http.target]
@@ -55,11 +54,11 @@ groups:
       - ref: net.host.name
       - ref: net.host.port
     metrics:
-      - id: metric.http.server.duration
+      - id: server.duration
         brief: "Measures the duration of the inbound HTTP request."
         instrument: Histogram
         units: ms
-      - id: metric.http.server.active_requests
+      - id: server.active_requests
         brief: "Measures the number of concurrent HTTP requests that are currently in-flight."
         instrument: AsynchronousUpDownCounter
         units: "{requests}"

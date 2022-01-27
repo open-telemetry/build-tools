@@ -208,7 +208,7 @@ class TestCorrectParse(unittest.TestCase):
 
         expected = {
             "id": "metric.http",
-            "prefix": "http",
+            "prefix": "metric.http",
             "extends": "",
             "n_constraints": 0,
             "attributes": [
@@ -222,13 +222,13 @@ class TestCorrectParse(unittest.TestCase):
 
         expected = {
             "id": "metric.http.client",
-            "prefix": "http",
+            "prefix": "metric.http",
             "extends": "metric.http",
             "n_constraints": 1,
             "attributes": ["net.peer.name", "net.peer.port", "net.peer.ip"],
             "metrics": [
                 {
-                    "id": "metric.http.client.duration",
+                    "id": "client.duration",
                     "instrument": "Histogram",
                     "units": "ms",
                 }
@@ -239,18 +239,18 @@ class TestCorrectParse(unittest.TestCase):
 
         expected = {
             "id": "metric.http.server",
-            "prefix": "http",
+            "prefix": "metric.http",
             "extends": "metric.http",
             "n_constraints": 1,
             "attributes": ["http.server_name", "net.host.name", "net.host.port"],
             "metrics": [
                 {
-                    "id": "metric.http.server.duration",
+                    "id": "server.duration",
                     "instrument": "Histogram",
                     "units": "ms",
                 },
                 {
-                    "id": "metric.http.server.active_requests",
+                    "id": "server.active_requests",
                     "instrument": "AsynchronousUpDownCounter",
                     "units": "{requests}",
                 },

@@ -254,8 +254,9 @@ class MetricSemanticConvention(BaseSemanticConvention):
     allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + ("metrics",)
 
     class Metric:
-        def __init__(self, metric):
+        def __init__(self, metric, parent_prefix):
             self.id: str = metric.get("id")
+            self.fqn = "{}.{}".format(parent_prefix, self.id)
             self.instrument: InstrumentKind = InstrumentKind[metric.get("instrument")]
             self.units: str = metric.get("units")
             self.brief: str = metric.get("brief")
@@ -270,7 +271,7 @@ class MetricSemanticConvention(BaseSemanticConvention):
             try:
                 self.metrics: Tuple[MetricSemanticConvention.Metric] = tuple(
                     map(
-                        MetricSemanticConvention.Metric,
+                        lambda m: MetricSemanticConvention.Metric(m, self.prefix),
                         group.get("metrics"),
                     )
                 )
@@ -279,14 +280,6 @@ class MetricSemanticConvention(BaseSemanticConvention):
                     self._position,
                     "id, instrument, units, and brief must all be defined for concrete metrics",
                 ) from e
-        for metric in self.metrics:
-            if not metric.id.startswith(self.semconv_id):
-                raise ValidationError.from_yaml_pos(
-                    self._position,
-                    "id of metric `{}` must be prefixed with its parent's id `{}`".format(
-                        metric.id, self.semconv_id
-                    ),
-                )
 
 
 @dataclass

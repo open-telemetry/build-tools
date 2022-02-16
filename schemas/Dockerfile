@@ -20,6 +20,4 @@ WORKDIR /
 
 COPY --from=build /schemas-tool /schemas-tool
 
-USER nonroot:nonroot
-
 ENTRYPOINT ["/schemas-tool"]

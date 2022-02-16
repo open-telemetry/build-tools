@@ -14,7 +14,7 @@ import (
 var schemaFilePath = flag.String("file", "", "Input schema file path")
 var schemaVersion = flag.String("version", "", "Expected schema version (optional)")
 
-func loadSchemaFromFile(schemaFilePath string) error {
+func loadSchemaFromFile(schemaFilePath string, schemaVersion string) error {
 	// Parse the schema file.
 	telSchema, err := schema.ParseFile(schemaFilePath)
 	if err != nil {
@@ -43,26 +43,26 @@ func loadSchemaFromFile(schemaFilePath string) error {
 		return fmt.Errorf("invalid host name in: %s, expected %s", telSchema.SchemaURL, expectedHost)
 	}
 
-	if *schemaVersion != "" {
+	if schemaVersion != "" {
 		// Version check is requested.
 
 		// Check the URL first.
-		expectedURL := fmt.Sprintf("https://opentelemetry.io/schemas/%s", *schemaVersion)
+		expectedURL := fmt.Sprintf("https://opentelemetry.io/schemas/%s", schemaVersion)
 		if telSchema.SchemaURL != expectedURL {
 			return fmt.Errorf("invalid Schema URL: expected %s, got %s", telSchema.SchemaURL, expectedURL)
 		}
 
 		// Ensure the version exists in the file.
-		_, exists := telSchema.Versions[types.TelemetryVersion(*schemaVersion)]
+		_, exists := telSchema.Versions[types.TelemetryVersion(schemaVersion)]
 		if !exists {
-			return fmt.Errorf("%s does not exist in 'versions' section", *schemaVersion)
+			return fmt.Errorf("%s does not exist in 'versions' section", schemaVersion)
 		}
 
-		thisVer, err := semver.StrictNewVersion(string(*schemaVersion))
+		thisVer, err := semver.StrictNewVersion(schemaVersion)
 		if err != nil {
 			return fmt.Errorf(
 				"invalid version number %s in the schema file: %w",
-				*schemaVersion, err,
+				schemaVersion, err,
 			)
 		}
 
@@ -98,7 +98,7 @@ func main() {
 
 	fmt.Printf("Checking schema file %s...", *schemaFilePath)
 
-	err := loadSchemaFromFile(*schemaFilePath)
+	err := loadSchemaFromFile(*schemaFilePath, *schemaVersion)
 	if err != nil {
 		fmt.Printf("\nSchema file is not valid: %v\n", err)
 		os.Exit(2)

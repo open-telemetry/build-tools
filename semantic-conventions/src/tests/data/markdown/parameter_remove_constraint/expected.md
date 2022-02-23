@@ -12,7 +12,7 @@
 
 **[1]:** It is recommended to remove embedded credentials.
 
-`db.type` MUST be one of the following or, if none of the listed values apply, a custom value:
+`db.type` If one of the listed values applies, then the respective value MUST be used, otherwise a custom value MAY be used:
 
 | Value  | Description |
 |---|---|

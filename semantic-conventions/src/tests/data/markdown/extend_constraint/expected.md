@@ -55,7 +55,7 @@ Some database systems may allow a connection to switch to a different `db.user`,
 * `net.peer.name`
 * `net.peer.ip`
 
-`db.system` MUST be one of the following or, if none of the listed values apply, a custom value:
+`db.system` If one of the listed values applies, then the respective value MUST be used, otherwise a custom value MAY be used:
 
 | Value  | Description |
 |---|---|

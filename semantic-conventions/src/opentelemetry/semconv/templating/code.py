@@ -230,14 +230,14 @@ class CodeRenderer:
             for semconv in semconvset.models.values():
                 output_name = self.prefix_output_file(output_file, pattern, semconv)
                 data = self.get_data_multiple_files(semconv, template_path)
-                template = env.get_template(file_name, data)
+                template = env.get_template(file_name, globals=data)
                 template.globals["now"] = datetime.datetime.utcnow()
                 template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
                 template.globals["Required"] = Required
                 template.stream(data).dump(output_name)
         else:
             data = self.get_data_single_file(semconvset, template_path)
-            template = env.get_template(file_name, data)
+            template = env.get_template(file_name, globals=data)
             template.globals["now"] = datetime.datetime.utcnow()
             template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
             template.globals["Required"] = Required

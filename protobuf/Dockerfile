@@ -1,5 +1,7 @@
 ARG ALPINE_VERSION=3.14
 ARG GO_VERSION=1.17.1
+ARG NODE_VERSION=17.3.0
+
 # gRPC core version that applies to C++, C#, Objective-C, PhP, Python, Ruby
 ARG GRPC_VERSION=1.41.0
 ARG PROTOBUF_C_VERSION=1.4.0
@@ -8,6 +10,9 @@ ARG GRPC_WEB_VERSION=1.3.0
 ARG PROTOC_GEN_GO_VERSION=1.5.2
 ARG PROTOC_GEN_GO_GRPC_VERSION=1.41.0
 ARG GRPC_JAVA_VERSION=1.41.0
+
+ARG PROTOC_GEN_TS_VERSION=0.15.0
+
 # v1.3.2, using the version directly does not work: "tar: invalid magic"
 ARG PROTOC_GEN_GOGO_VERSION=b03c65ea87cdc3521ede29f62fe3ce239267c1bc
 ARG PROTOC_GEN_LINT_VERSION=0.2.4
@@ -154,8 +159,10 @@ RUN upx --lzma $(find /out/usr/bin/ \
     )
 RUN find /out -name "*.a" -delete -or -name "*.la" -delete
 
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION}
+ARG TS_PROTOC_GEN_VERSION
+RUN npm install -g ts-protoc-gen@${TS_PROTOC_GEN_VERSION} && npm cache clean --force
 
-FROM alpine:${ALPINE_VERSION}
 LABEL maintainer="The OpenTelemetry Authors"
 COPY --from=packer /out/ /
 RUN apk add --no-cache bash libstdc++ && \
@@ -165,7 +172,9 @@ RUN apk add --no-cache bash libstdc++ && \
     ln -s /usr/bin/grpc_node_plugin /usr/bin/protoc-gen-grpc-js && \
     ln -s /usr/bin/grpc_php_plugin /usr/bin/protoc-gen-grpc-php && \
     ln -s /usr/bin/grpc_python_plugin /usr/bin/protoc-gen-grpc-python && \
-    ln -s /usr/bin/grpc_ruby_plugin /usr/bin/protoc-gen-grpc-ruby
+    ln -s /usr/bin/grpc_ruby_plugin /usr/bin/protoc-gen-grpc-ruby && \
+    ln -s /usr/local/lib/node_modules/ts-protoc-gen/bin/protoc-gen-ts /usr/bin/protoc-gen-ts
+
 COPY protoc-wrapper /usr/bin/protoc-wrapper
 ENV LD_LIBRARY_PATH='/usr/lib:/usr/lib64:/usr/lib/local'
 ENTRYPOINT ["protoc-wrapper", "-I/usr/include"]

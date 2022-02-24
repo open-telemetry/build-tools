@@ -239,7 +239,8 @@ class MarkdownRenderer:
             output.write("\n")
             if enum.custom_values:
                 output.write(
-                    "The following values are defined for `" + attr.fqn
+                    "The following values are defined for `"
+                    + attr.fqn
                     + "`. If one of them applies, then it MUST be used, otherwise a custom value MAY be used."
                 )
             else:

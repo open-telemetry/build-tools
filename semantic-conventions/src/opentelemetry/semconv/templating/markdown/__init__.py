@@ -236,15 +236,15 @@ class MarkdownRenderer:
         attr: SemanticAttribute
         for attr in self.render_ctx.enums:
             enum = typing.cast(EnumAttributeType, attr.attr_type)
-            output.write("\n`" + attr.fqn + "` ")
+            output.write("\n")
             if enum.custom_values:
                 output.write(
-                    "If one of the listed values applies, then the respective value MUST be used, "
-                    + "otherwise a custom value MAY be used"
+                    "The following values are defined for `" + attr.fqn
+                    + "`. If one of them applies, then it MUST be used, otherwise a custom value MAY be used."
                 )
             else:
-                output.write("MUST be one of the following")
-            output.write(":\n\n")
+                output.write("`" + attr.fqn + "` MUST be one of the following:")
+            output.write("\n\n")
             output.write("| Value  | Description |\n|---|---|")
             member: EnumMember
             counter = 1

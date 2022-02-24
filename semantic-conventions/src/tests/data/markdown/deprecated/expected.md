@@ -16,7 +16,7 @@
 
 **[1]:** If `net.transport` is not specified, it can be assumed to be `IP.TCP` except if `http.flavor` is `QUIC`, in which case `IP.UDP` is assumed.
 
-`http.flavor` If one of the listed values applies, then the respective value MUST be used, otherwise a custom value MAY be used:
+The following values are defined for `http.flavor`. If one of them applies, then it MUST be used, otherwise a custom value MAY be used.
 
 | Value  | Description |
 |---|---|

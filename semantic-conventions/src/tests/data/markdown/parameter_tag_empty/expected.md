@@ -23,7 +23,7 @@
 * `net.peer.name`
 * `net.peer.ip`
 
-`db.dbms` If one of the listed values applies, then the respective value MUST be used, otherwise a custom value MAY be used:
+The following values are defined for `db.dbms`. If one of them applies, then it MUST be used, otherwise a custom value MAY be used.
 
 | Value  | Description |
 |---|---|

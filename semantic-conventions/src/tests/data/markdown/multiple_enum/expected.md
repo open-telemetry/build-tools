@@ -32,7 +32,7 @@
 
 **[1]:** Signals that there is only in-process communication not using a "real" network protocol in cases where network attributes would normally be expected. Usually all other network attributes can be left out in that case.
 
-`net.host.connection.type` If one of the listed values applies, then the respective value MUST be used, otherwise a custom value MAY be used:
+The following values are defined for `net.host.connection.type`. If one of them applies, then it MUST be used, otherwise a custom value MAY be used.
 
 | Value  | Description |
 |---|---|
@@ -43,7 +43,7 @@
 
 **[1]:** Usually 802.11
 
-`net.host.connection.subtype` If one of the listed values applies, then the respective value MUST be used, otherwise a custom value MAY be used:
+The following values are defined for `net.host.connection.subtype`. If one of them applies, then it MUST be used, otherwise a custom value MAY be used.
 
 | Value  | Description |
 |---|---|

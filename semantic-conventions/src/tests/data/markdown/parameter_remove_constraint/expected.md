@@ -12,7 +12,7 @@
 
 **[1]:** It is recommended to remove embedded credentials.
 
-The following values are defined for `db.type`. If one of them applies, then it MUST be used, otherwise a custom value MAY be used.
+`db.type` has the following list of well-known values. If one of them applies, then it MUST be used, otherwise a custom value MAY be used.
 
 | Value  | Description |
 |---|---|

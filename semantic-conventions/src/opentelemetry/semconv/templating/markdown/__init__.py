@@ -240,7 +240,7 @@ class MarkdownRenderer:
             if enum.custom_values:
                 output.write(
                     "has the following list of well-known values."
-                    + " If one of them applies, then it MUST be used, otherwise a custom value MAY be used."
+                    + " If one of them applies, then the respective value MUST be used, otherwise a custom value MAY be used."
                 )
             else:
                 output.write("MUST be one of the following:")

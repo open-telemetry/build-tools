@@ -55,7 +55,7 @@ At least one of the following is required:
 * `net.peer.name`
 * `net.peer.ip`
 
-`db.system` has the following list of well-known values. If one of them applies, then it MUST be used, otherwise a custom value MAY be used.
+`db.system` has the following list of well-known values. If one of them applies, then the respective value MUST be used, otherwise a custom value MAY be used.
 
 | Value  | Description |
 |---|---|

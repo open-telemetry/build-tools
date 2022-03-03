@@ -239,11 +239,13 @@ class MarkdownRenderer:
             output.write("\n`" + attr.fqn + "` ")
             if enum.custom_values:
                 output.write(
-                    "MUST be one of the following or, if none of the listed values apply, a custom value"
+                    "has the following list of well-known values."
+                    + " If one of them applies, then the respective value MUST be used,"
+                    + " otherwise a custom value MAY be used."
                 )
             else:
-                output.write("MUST be one of the following")
-            output.write(":\n\n")
+                output.write("MUST be one of the following:")
+            output.write("\n\n")
             output.write("| Value  | Description |\n|---|---|")
             member: EnumMember
             counter = 1

@@ -119,16 +119,16 @@ events ::= id {id} # MUST point to an existing event group
 
 name ::= string
 
-instrument ::=  "Counter" 
-            | "Histogram" 
-            | "Gauge" 
-            | "UpDownCounter" 
+instrument ::=  "counter" 
+            | "histogram" 
+            | "gauge" 
+            | "updowncounter" 
             
 units ::= string            
 
 metric ::= id instrument units brief
 
-metrics ::= {metrics}
+metrics ::= {metric}
 ```
 
 ## Semantics
@@ -175,6 +175,18 @@ The following is only valid if `type` is `event`:
 - `name`, conditionally required string. The name of the event.
   If not specified, the `prefix` is used. If `prefix` is empty (or unspecified),
   `name` is required.
+
+#### Metric semantic convention
+
+The following is only valid if `type` is `metric`:
+
+- `metrics`, an optional list of metrics that belong to the semantic convention.
+  Each individual metric has the following semantics: 
+  - `id`, the ID of the metric. The fully qualified name of the metric includes its parent 
+    semantic convention ID prefixed like so: `{parent.id}.{metric.id}`. 
+  - `brief`, a brief description of the metric.
+  - `instrument`, the instrument that *should* be used to record the metric.
+  - `units`, the units in which the metric is measured.
 
 ### Attributes
 

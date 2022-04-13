@@ -252,33 +252,30 @@ class MetricSemanticConvention(BaseSemanticConvention):
     allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + ("metrics",)
 
     class Metric:
-        def __init__(self, metric, parent_prefix):
+        def __init__(self, metric, parent_prefix, position):
             self.id: str = metric.get("id")
             self.fqn = "{}.{}".format(parent_prefix, self.id)
             self.instrument: InstrumentKind = InstrumentKind[metric.get("instrument")]
             self.units: str = metric.get("units")
             self.brief: str = metric.get("brief")
+            self._position = position
 
             if None in [metric.get("instrument"), self.id, self.units, self.brief]:
-                raise ValueError
+                raise ValidationError.from_yaml_pos(
+                    self._position,
+                    "id, instrument, units, and brief must all be defined for concrete metrics",
+                )
 
     def __init__(self, group):
         super().__init__(group)
         self.metrics = ()
         if group.get("metrics"):
-            try:
-                self.metrics: Tuple[MetricSemanticConvention.Metric] = tuple(
-                    map(
-                        lambda m: MetricSemanticConvention.Metric(m, self.prefix),
-                        group.get("metrics"),
-                    )
+            self.metrics: Tuple[MetricSemanticConvention.Metric, ...] = tuple(
+                map(
+                    lambda m: MetricSemanticConvention.Metric(m, self.prefix),
+                    group.get("metrics"),
                 )
-            except ValueError as e:
-                raise ValidationError.from_yaml_pos(
-                    self._position,
-                    "id, instrument, units, and brief must all be defined for concrete metrics",
-                ) from e
-
+            )
 
 @dataclass
 class SemanticConventionSet:

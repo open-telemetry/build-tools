@@ -54,13 +54,11 @@ class SpanKind(Enum):
 
 
 class InstrumentKind(Enum):
-    Empty = 1
-    Counter = 2
-    AsynchronousCounter = 3
-    Histogram = 4
-    AsynchronousGauge = 5
-    UpDownCounter = 6
-    AsynchronousUpDownCounter = 7
+    EMPTY = 1
+    COUNTER = 2
+    UP_DOWN_COUNTER = 3
+    HISTOGRAM = 4
+    GAUGE = 5
 
     def __str__(self):
         return self.name

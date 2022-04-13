@@ -120,11 +120,9 @@ events ::= id {id} # MUST point to an existing event group
 name ::= string
 
 instrument ::=  "Counter" 
-            | "AsynchronousCounter" 
             | "Histogram" 
-            | "AsynchronousGauge" 
+            | "Gauge" 
             | "UpDownCounter" 
-            | "AsynchronousUpDownCounter"
             
 units ::= string            
 

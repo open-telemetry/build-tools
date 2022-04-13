@@ -184,8 +184,8 @@ class MarkdownRenderer:
         This method renders metrics as markdown table entry
         """
         output.write(
-            "| Name     | Instrument       | Unit ([UCUM](README.md#instrument-units)) | Description    |\n"
-            "| -------- | ---------------- | ---------                                 | -------------- |\n"
+            "| Name     | Instrument       | Unit (UCUM) | Description    |\n"
+            "| -------- | ---------------- | ---------   | -------------- |\n"
         )
         for metric in semconv.metrics:
             output.write(

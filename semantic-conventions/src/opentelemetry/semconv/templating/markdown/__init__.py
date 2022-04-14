@@ -183,9 +183,16 @@ class MarkdownRenderer:
         """
         This method renders metrics as markdown table entry
         """
+        if not isinstance(semconv, MetricSemanticConvention):
+            raise ValueError(
+                "semconv `{}` was specified with `metric_table`, but it is not a metric convention".format(
+                    semconv.semconv_id
+                )
+            )
+
         output.write(
-            "| Name     | Instrument       | Unit (UCUM) | Description    |\n"
-            "| -------- | ---------------- | ---------   | -------------- |\n"
+            "| Name     | Instrument    | Unit (UCUM) | Description    |\n"
+            "| -------- | ------------- | ----------- | -------------- |\n"
         )
         for metric in semconv.metrics:
             output.write(
@@ -439,39 +446,31 @@ class MarkdownRenderer:
         if isinstance(semconv, EventSemanticConvention):
             output.write("The event name MUST be `{}`.\n\n".format(semconv.name))
 
+        attr_to_print = []
         if self.render_ctx.is_metric_table:
-            if isinstance(semconv, MetricSemanticConvention):
-                self.to_markdown_metric_table(semconv, output)
-            else:
+            self.to_markdown_metric_table(semconv, output)
+        else:
+            attr: SemanticAttribute
+            for attr in sorted(
+                semconv.attributes, key=lambda a: "" if a.ref is None else a.ref
+            ):
+                if self.render_ctx.group_key is not None:
+                    if attr.tag == self.render_ctx.group_key:
+                        attr_to_print.append(attr)
+                    continue
+                if self.render_ctx.is_full or attr.is_local:
+                    attr_to_print.append(attr)
+            if self.render_ctx.group_key is not None and not attr_to_print:
                 raise ValueError(
-                    "semconv `{}` was specified with `metric_table`, but it is not a metric convention".format(
-                        semconv.semconv_id
+                    "No attributes retained for '{}' filtering by '{}'".format(
+                        semconv.semconv_id, self.render_ctx.group_key
                     )
                 )
+            if attr_to_print:
+                output.write(MarkdownRenderer.table_headers)
+                for attr in attr_to_print:
+                    self.to_markdown_attr(attr, output)
 
-        attr_to_print = []
-        attr: SemanticAttribute
-        for attr in sorted(
-            semconv.attributes, key=lambda a: "" if a.ref is None else a.ref
-        ):
-            if self.render_ctx.is_metric_table:
-                break
-            if self.render_ctx.group_key is not None:
-                if attr.tag == self.render_ctx.group_key:
-                    attr_to_print.append(attr)
-                continue
-            if self.render_ctx.is_full or attr.is_local:
-                attr_to_print.append(attr)
-        if self.render_ctx.group_key is not None and not attr_to_print:
-            raise ValueError(
-                "No attributes retained for '{}' filtering by '{}'".format(
-                    semconv.semconv_id, self.render_ctx.group_key
-                )
-            )
-        if attr_to_print:
-            output.write(MarkdownRenderer.table_headers)
-            for attr in attr_to_print:
-                self.to_markdown_attr(attr, output)
         self.to_markdown_notes(output)
         if not self.render_ctx.is_remove_constraint:
             for cnst in semconv.constraints:

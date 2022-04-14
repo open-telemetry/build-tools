@@ -19,8 +19,8 @@ The following attributes SHOULD be included on all HTTP metrics for both server 
 ### HTTP Client Metrics
 
 <!-- semconv metric.http.client(metric_table,remove_constraints) -->
-| Name     | Instrument       | Unit ([UCUM](README.md#instrument-units)) | Description    |
-| -------- | ---------------- | ---------                                 | -------------- |
+| Name     | Instrument    | Unit (UCUM) | Description    |
+| -------- | ------------- | ----------- | -------------- |
 | `metric.http.client.duration` | Histogram | `ms` | Measures the duration of the outbound HTTP request. |
 <!-- endsemconv -->
 
@@ -48,10 +48,10 @@ The following attributes SHOULD be included on HTTP Client metrics, where applic
 ### HTTP Server Metrics
 
 <!-- semconv metric.http.server(metric_table,remove_constraints) -->
-| Name     | Instrument       | Unit ([UCUM](README.md#instrument-units)) | Description    |
-| -------- | ---------------- | ---------                                 | -------------- |
+| Name     | Instrument    | Unit (UCUM) | Description    |
+| -------- | ------------- | ----------- | -------------- |
 | `metric.http.server.duration` | Histogram | `ms` | Measures the duration of the inbound HTTP request. |
-| `metric.http.server.active_requests` | AsynchronousUpDownCounter | `{requests}` | Measures the number of concurrent HTTP requests that are currently in-flight. |
+| `metric.http.server.active_requests` | UpDownCounter | `{requests}` | Measures the number of concurrent HTTP requests that are currently in-flight. |
 <!-- endsemconv -->
 
 ### HTTP Server Attributes

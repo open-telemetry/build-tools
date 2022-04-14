@@ -54,14 +54,29 @@ class SpanKind(Enum):
 
 
 class InstrumentKind(Enum):
-    EMPTY = 1
-    COUNTER = 2
-    UP_DOWN_COUNTER = 3
-    HISTOGRAM = 4
-    GAUGE = 5
+    COUNTER = 1
+    UP_DOWN_COUNTER = 2
+    HISTOGRAM = 3
+    GAUGE = 4
+
+    @staticmethod
+    def parse(instrument_kind_value):
+        return InstrumentKind.kind_map().get(instrument_kind_value)
+
+    @staticmethod
+    def kind_map():
+        return {
+            "Counter": InstrumentKind.COUNTER,
+            "UpDownCounter": InstrumentKind.UP_DOWN_COUNTER,
+            "Histogram": InstrumentKind.HISTOGRAM,
+            "Gauge": InstrumentKind.GAUGE,
+        }
 
     def __str__(self):
-        return self.name
+        # reverse lookup kind_map()
+        return next(filter(lambda i: i[1] is self, InstrumentKind.kind_map().items()))[
+            0
+        ]
 
 
 def parse_semantic_convention_type(type_value):
@@ -255,15 +270,23 @@ class MetricSemanticConvention(BaseSemanticConvention):
         def __init__(self, metric, parent_prefix, position):
             self.id: str = metric.get("id")
             self.fqn = "{}.{}".format(parent_prefix, self.id)
-            self.instrument: InstrumentKind = InstrumentKind[metric.get("instrument")]
+            self._position = position
             self.units: str = metric.get("units")
             self.brief: str = metric.get("brief")
-            self._position = position
+            instrument_str = metric.get("instrument")
+            self.instrument: InstrumentKind = InstrumentKind.parse(instrument_str)
 
-            if None in [metric.get("instrument"), self.id, self.units, self.brief]:
+            if None in [instrument_str, self.id, self.units, self.brief]:
                 raise ValidationError.from_yaml_pos(
                     self._position,
                     "id, instrument, units, and brief must all be defined for concrete metrics",
+                )
+            if self.instrument is None:
+                raise ValidationError.from_yaml_pos(
+                    self._position,
+                    "Instrument '{}' is not a valid instrument name".format(
+                        metric.get("instrument")
+                    ),
                 )
 
     def __init__(self, group):
@@ -272,10 +295,13 @@ class MetricSemanticConvention(BaseSemanticConvention):
         if group.get("metrics"):
             self.metrics: Tuple[MetricSemanticConvention.Metric, ...] = tuple(
                 map(
-                    lambda m: MetricSemanticConvention.Metric(m, self.prefix),
+                    lambda m: MetricSemanticConvention.Metric(
+                        m, self.prefix, self._position
+                    ),
                     group.get("metrics"),
                 )
             )
+
 
 @dataclass
 class SemanticConventionSet:

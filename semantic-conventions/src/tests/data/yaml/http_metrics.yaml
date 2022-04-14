@@ -60,5 +60,5 @@ groups:
         units: ms
       - id: server.active_requests
         brief: "Measures the number of concurrent HTTP requests that are currently in-flight."
-        instrument: AsynchronousUpDownCounter
+        instrument: UpDownCounter
         units: "{requests}"

@@ -20,7 +20,6 @@ from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import StabilityLevel
 from opentelemetry.semconv.model.semantic_convention import (
     EventSemanticConvention,
-    InstrumentKind,
     MetricSemanticConvention,
     SemanticConventionSet,
     SpanSemanticConvention,

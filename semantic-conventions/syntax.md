@@ -183,7 +183,7 @@ The following is only valid if `type` is `metric`:
 - `metrics`, an optional list of metrics that belong to the semantic convention.
   Each individual metric has the following semantics: 
   - `id`, the ID of the metric. The fully qualified name of the metric includes its parent 
-    semantic convention ID prefixed like so: `{parent.id}.{metric.id}`. 
+    semantic convention prefix like so: `{parent.prefix}.{metric.id}`. 
   - `brief`, a brief description of the metric.
   - `instrument`, the instrument that *should* be used to record the metric.
   - `units`, the units in which the metric is measured.

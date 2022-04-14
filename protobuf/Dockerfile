@@ -12,7 +12,7 @@ ARG GRPC_JAVA_VERSION=1.41.0
 ARG PROTOC_GEN_GOGO_VERSION=b03c65ea87cdc3521ede29f62fe3ce239267c1bc
 ARG PROTOC_GEN_LINT_VERSION=0.2.4
 ARG GRPC_GATEWAY_VERSION=2.6.0
-ARG PROTOC_GEN_PARQUET_VERSION=0.4.1
+ARG PROTOC_GEN_PARQUET_VERSION=0.4.3
 ARG UPX_VERSION=3.96
 
 
@@ -126,7 +126,9 @@ RUN mkdir -p ${GOPATH}/src/github.com/atoulme/protoc-gen-parquet && \
     curl -sSL https://api.github.com/repos/atoulme/protoc-gen-parquet/tarball/v${PROTOC_GEN_PARQUET_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/atoulme/protoc-gen-parquet && \
     cd ${GOPATH}/src/github.com/atoulme/protoc-gen-parquet && \
     go build -ldflags '-w -s' -o bin/protoc-gen-parquet . && \
-    install -Ds bin/protoc-gen-parquet /out/usr/bin/protoc-gen-parquet
+    install -Ds bin/protoc-gen-parquet /out/usr/bin/protoc-gen-parquet && \
+    mkdir -p /out/usr/include/protoc-gen-parquet/options && \
+    install -D $(find ./parquet_options -name '*.proto') -t /out/usr/include/protoc-gen-parquet/options
 
 FROM alpine:${ALPINE_VERSION} as packer
 RUN apk add --no-cache curl

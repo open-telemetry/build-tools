@@ -159,6 +159,8 @@ class MarkdownRenderer:
                 # We put the condition in the notes after the table
                 self.render_ctx.add_note(attribute.required_msg)
                 required = "Conditional [{}]".format(len(self.render_ctx.notes))
+        elif attribute.required == Required.OPT_IN:
+            required = "Opt-in"
         else:
             # check if they are required by some constraint
             if (

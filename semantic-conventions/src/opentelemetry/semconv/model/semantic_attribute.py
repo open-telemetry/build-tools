@@ -12,6 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from argparse import OPTIONAL
 import re
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
@@ -31,7 +32,8 @@ from opentelemetry.semconv.model.utils import (
 class Required(Enum):
     ALWAYS = 1
     CONDITIONAL = 2
-    NO = 3
+    OPTIONAL = 3
+    OPT_IN = 4
 
 
 class StabilityLevel(Enum):
@@ -135,7 +137,9 @@ class SemanticAttribute:
             required_value_map = {
                 "always": Required.ALWAYS,
                 "conditional": Required.CONDITIONAL,
-                "": Required.NO,
+                "": Required.OPTIONAL,
+                "optional": Required.OPTIONAL,
+                "opt-in": Required.OPT_IN,
             }
             required_msg = ""
             required_val = attribute.get("required", "")

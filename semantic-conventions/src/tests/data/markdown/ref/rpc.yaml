@@ -22,6 +22,10 @@ groups:
       - ref: net.peer.port
         required: always
         brief: 'It describes the server port the client is connecting to'
+      - ref: net.peer.name
+        required: opt-in
+        brief: override brief.
+        note: override note.
   - id: grpc.server
     type: span
     extends: rpc

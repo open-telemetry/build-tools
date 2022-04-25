@@ -45,6 +45,7 @@ groups:
         examples: ['OK']
       - id: user_agent
         type: string
+        required: optional
         brief: 'Value of the [HTTP User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3) header sent by the client.'
         examples: ['CERN-LineMode/2.15 libwww/2.17b3']
   - id: http.client

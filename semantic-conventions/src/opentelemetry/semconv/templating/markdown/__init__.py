@@ -29,6 +29,7 @@ from opentelemetry.semconv.model.semantic_attribute import (
     StabilityLevel,
 )
 from opentelemetry.semconv.model.semantic_convention import (
+    BaseSemanticConvention,
     EventSemanticConvention,
     MetricSemanticConvention,
     SemanticConventionSet,
@@ -175,6 +176,32 @@ class MarkdownRenderer:
                 name, attr_type, description, examples, required
             )
         )
+
+    def to_markdown_attribute_table(self, semconv: BaseSemanticConvention, output: io.StringIO):
+        attr_to_print = []
+        for attr in sorted(
+                semconv.attributes, key=lambda a: "" if a.ref is None else a.ref
+        ):
+            if self.render_ctx.group_key is not None:
+                if attr.tag == self.render_ctx.group_key:
+                    attr_to_print.append(attr)
+                continue
+            if self.render_ctx.is_full or attr.is_local:
+                attr_to_print.append(attr)
+        if self.render_ctx.group_key is not None and not attr_to_print:
+            raise ValueError(
+                "No attributes retained for '{}' filtering by '{}'".format(
+                    semconv.semconv_id, self.render_ctx.group_key
+                )
+            )
+        if attr_to_print:
+            output.write(MarkdownRenderer.table_headers)
+            for attr in attr_to_print:
+                self.to_markdown_attr(attr, output)
+        attr_sampling_relevant = [
+            attr for attr in attr_to_print if attr.sampling_relevant
+        ]
+        self.to_creation_time_attributes(attr_sampling_relevant, output)
 
     @staticmethod
     def to_markdown_metric_table(
@@ -445,33 +472,12 @@ class MarkdownRenderer:
         self.render_ctx.is_full = "full" in parameters
         self.render_ctx.is_metric_table = "metric_table" in parameters
 
-        if isinstance(semconv, EventSemanticConvention):
-            output.write("The event name MUST be `{}`.\n\n".format(semconv.name))
-
-        attr_to_print = []
         if self.render_ctx.is_metric_table:
             self.to_markdown_metric_table(semconv, output)
         else:
-            attr: SemanticAttribute
-            for attr in sorted(
-                semconv.attributes, key=lambda a: "" if a.ref is None else a.ref
-            ):
-                if self.render_ctx.group_key is not None:
-                    if attr.tag == self.render_ctx.group_key:
-                        attr_to_print.append(attr)
-                    continue
-                if self.render_ctx.is_full or attr.is_local:
-                    attr_to_print.append(attr)
-            if self.render_ctx.group_key is not None and not attr_to_print:
-                raise ValueError(
-                    "No attributes retained for '{}' filtering by '{}'".format(
-                        semconv.semconv_id, self.render_ctx.group_key
-                    )
-                )
-            if attr_to_print:
-                output.write(MarkdownRenderer.table_headers)
-                for attr in attr_to_print:
-                    self.to_markdown_attr(attr, output)
+            if isinstance(semconv, EventSemanticConvention):
+                output.write("The event name MUST be `{}`.\n\n".format(semconv.name))
+            self.to_markdown_attribute_table(semconv, output)
 
         self.to_markdown_notes(output)
         if not self.render_ctx.is_remove_constraint:
@@ -481,10 +487,5 @@ class MarkdownRenderer:
 
         if isinstance(semconv, UnitSemanticConvention):
             self.to_markdown_unit_table(semconv.members, output)
-
-        attr_sampling_relevant = [
-            attr for attr in attr_to_print if attr.sampling_relevant
-        ]
-        self.to_creation_time_attributes(attr_sampling_relevant, output)
 
         output.write("<!-- endsemconv -->")

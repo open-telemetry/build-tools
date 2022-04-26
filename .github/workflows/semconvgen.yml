@@ -24,7 +24,9 @@ jobs:
         pip install -U setuptools wheel
         pip install -r dev-requirements.txt
     - name: Check formatting (black)
-      run: black --check --diff .
+      run: |
+        pip install -U black
+        black --check --diff .
     - name: Fast basic linting (flake8)
       run: flake8 .
     - name: install

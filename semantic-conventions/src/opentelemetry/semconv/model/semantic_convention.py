@@ -53,32 +53,6 @@ class SpanKind(Enum):
         return kind_map.get(span_kind_value)
 
 
-class InstrumentKind(Enum):
-    COUNTER = 1
-    UP_DOWN_COUNTER = 2
-    HISTOGRAM = 3
-    GAUGE = 4
-
-    @staticmethod
-    def parse(instrument_kind_value):
-        return InstrumentKind.kind_map().get(instrument_kind_value)
-
-    @staticmethod
-    def kind_map():
-        return {
-            "Counter": InstrumentKind.COUNTER,
-            "UpDownCounter": InstrumentKind.UP_DOWN_COUNTER,
-            "Histogram": InstrumentKind.HISTOGRAM,
-            "Gauge": InstrumentKind.GAUGE,
-        }
-
-    def __str__(self):
-        # reverse lookup kind_map()
-        return next(filter(lambda i: i[1] is self, InstrumentKind.kind_map().items()))[
-            0
-        ]
-
-
 def parse_semantic_convention_type(type_value):
     # Gracefully transition to the new types
     if type_value is None:
@@ -267,26 +241,27 @@ class MetricSemanticConvention(BaseSemanticConvention):
     allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + ("metrics",)
 
     class Metric:
+        allowed_instruments: Tuple[str, ...] = ("Counter", "UpDownCounter", "Histogram", "Gauge")
+
         def __init__(self, metric, parent_prefix, position):
             self.id: str = metric.get("id")
             self.fqn = "{}.{}".format(parent_prefix, self.id)
             self._position = position
             self.units: str = metric.get("units")
             self.brief: str = metric.get("brief")
-            instrument_str = metric.get("instrument")
-            self.instrument: InstrumentKind = InstrumentKind.parse(instrument_str)
+            self.instrument: str = metric.get("instrument")
 
-            if None in [instrument_str, self.id, self.units, self.brief]:
-                raise ValidationError.from_yaml_pos(
-                    self._position,
-                    "id, instrument, units, and brief must all be defined for concrete metrics",
-                )
-            if self.instrument is None:
+            if self.instrument not in self.allowed_instruments:
                 raise ValidationError.from_yaml_pos(
                     self._position,
                     "Instrument '{}' is not a valid instrument name".format(
-                        metric.get("instrument")
+                        self.instrument
                     ),
+                )
+            if None in [self.instrument, self.id, self.units, self.brief]:
+                raise ValidationError.from_yaml_pos(
+                    self._position,
+                    "id, instrument, units, and brief must all be defined for concrete metrics",
                 )
 
     def __init__(self, group):

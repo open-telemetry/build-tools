@@ -4,12 +4,12 @@
 | Attribute  | Type | Description  | Examples  | Required |
 |---|---|---|---|---|
 | `db.type` | String | Database type. For any SQL database, "sql". For others, the lower-case database category. | `sql` | Yes |
-| `db.connection_string` | String | The connection string used to connect to the database. [1] | `Server=(localdb)\v11.0;Integrated Security=true;` | No |
-| `db.user` | String | Username for accessing the database. | `readonly_user`<br>`reporting_user` | No |
-| [net.peer.ip](general.md) | String | None | `127.0.0.1` | No |
-| [net.peer.name](general.md) | String | None | `example.com` | No |
-| [net.peer.port](general.md) | int | None | `80`<br>`8080`<br>`443` | No |
-| [net.transport](general.md) | Enum | None | `IP.TCP` | No |
+| `db.connection_string` | String | The connection string used to connect to the database. [1] | `Server=(localdb)\v11.0;Integrated Security=true;` | Recommended |
+| `db.user` | String | Username for accessing the database. | `readonly_user`<br>`reporting_user` | Recommended |
+| [net.peer.ip](general.md) | String | None | `127.0.0.1` | Recommended |
+| [net.peer.name](general.md) | String | None | `example.com` | Recommended |
+| [net.peer.port](general.md) | int | None | `80`<br>`8080`<br>`443` | Recommended |
+| [net.transport](general.md) | Enum | None | `IP.TCP` | Recommended |
 
 **[1]:** It is recommended to remove embedded credentials.
 

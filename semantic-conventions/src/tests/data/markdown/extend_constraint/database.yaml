@@ -189,8 +189,7 @@ groups:
         tag: call-level
         type: string
         required:
-          conditional: >
-            Required if applicable.
+          conditional: if applicable.
         brief: >
           The database statement being executed.
         note: The value may be sanitized to exclude sensitive information.
@@ -199,7 +198,7 @@ groups:
         tag: call-level
         type: string
         required:
-          conditional: Required, if `db.statement` is not applicable.
+          conditional: if `db.statement` is not applicable.
         brief: >
           The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations)
           such as `findAndModify`.
@@ -210,12 +209,8 @@ groups:
         examples: ['findAndModify', 'HMSET']
       - ref: net.peer.name
         tag: connection-level
-        required:
-          conditional: See below.
       - ref: net.peer.ip
         tag: connection-level
-        required:
-          conditional: See below.
       - ref: net.peer.port
         tag: connection-level
         required:

@@ -36,7 +36,7 @@ groups:
       - id: status_code
         type: int
         required:
-          conditional: "If and only if one was received/sent"
+          conditional: "if and only if one was received/sent"
         brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'
         examples: [200]
       - id: status_text

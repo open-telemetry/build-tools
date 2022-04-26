@@ -32,7 +32,7 @@ groups:
       - id: status_code
         type: int
         required:
-          conditional: .
+          conditional: <condition>
         brief: .
         examples: []
       - id: user_agent

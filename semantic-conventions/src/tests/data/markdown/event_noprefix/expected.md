@@ -5,5 +5,5 @@ The event name MUST be `myname`.
 
 | Attribute  | Type | Description  | Examples  | Required |
 |---|---|---|---|---|
-| `attr` | boolean | attrbrief |  | No |
+| `attr` | boolean | attrbrief |  | Recommended |
 <!-- endsemconv -->

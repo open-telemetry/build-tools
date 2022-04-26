@@ -292,7 +292,7 @@
 				{
 					"properties": {
 						"required": {
-							"description": "specifies if the attribute is mandatory. Can be 'always', 'conditional', or 'opt_in'. When omitted, the attribute is 'optional'. When set to 'conditional',the string provided as <condition> MUST specify the conditions under which the attribute is required.",
+							"description": "specifies if the attribute is mandatory. Can be 'always', 'conditional', 'recommended', or 'opt_in'. When omitted, the attribute is 'recommended'. When set to 'conditional',the string provided as <condition> MUST specify the conditions under which the attribute is required.",
 							"oneOf": [
 								{
 									"type": "string",
@@ -311,6 +311,28 @@
 											"type": "string"
 										}
 									}
+								},
+								{
+									"oneOf": [
+										{
+											"type": "string",
+											"enum": [
+												"recommended"
+											]
+										},
+										{
+											"type": "object",
+											"additionalProperties": false,
+											"required": [
+												"recommended"
+											],
+											"properties": {
+												"recommended": {
+													"type": "string"
+												}
+											}
+										}
+									]
 								},
 								{
 									"type": "string",

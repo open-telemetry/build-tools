@@ -36,7 +36,7 @@ groups:
       - id: status_code
         type: int
         required:
-          conditional: "If and only if one was received/sent"
+          conditional: "if and only if one was received/sent"
         brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'
         examples: [200]
       - id: status_text
@@ -45,9 +45,22 @@ groups:
         examples: ['OK']
       - id: user_agent
         type: string
-        required: optional
+        required: recommended
         brief: 'Value of the [HTTP User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3) header sent by the client.'
         examples: ['CERN-LineMode/2.15 libwww/2.17b3']
+      - id: recommended_attribute
+        brief: brief
+        type: string
+        required: 
+          recommended: short note
+        examples: foo
+      - id: recommended_attribute_long_note
+        brief: brief
+        type: string
+        required: 
+          recommended: some very long not that should be written under the semconv table
+        examples: bar
+
   - id: http.client
     type: span
     prefix: http
@@ -77,9 +90,12 @@ groups:
         brief: >
             The primary server name of the matched virtual host.
         note: >
-            http.url is usually not readily available on the server side but would have to be assembled in a cumbersome and
-            sometimes lossy process from other information (see e.g. open-telemetry/opentelemetry-python/pull/148).
-            It is thus preferred to supply the raw data that is available.
+            This is an example
+
+
+            - of note
+
+            - with list 
         examples: ['example.com']
     constraints:
       - any_of:

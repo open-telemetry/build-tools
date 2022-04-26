@@ -142,7 +142,7 @@ groups:
               value: 'coldfusion'
               brief: 'ColdFusion IMQ'
         required:
-          conditional: Recommended for `db.type="sql"`
+          conditional: for `db.type="sql"`
         brief: >
           An identifier for the DBMS (database management system) product
       - id: connection_string
@@ -188,8 +188,7 @@ groups:
       - id: statement
         type: string
         required:
-          conditional: >
-            Required if applicable.
+          conditional: if applicable.
         note: The value may be sanitized to exclude sensitive information.
         brief: >
           A database statement for the given database type.
@@ -197,7 +196,7 @@ groups:
       - id: operation
         type: string
         required:
-          conditional: Required, if `db.statement` is not applicable.
+          conditional: if `db.statement` is not applicable.
         brief: >
           The type of operation that is executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations)
           such as `findAndModify`. While it would semantically make sense to set this, e.g., to a SQL

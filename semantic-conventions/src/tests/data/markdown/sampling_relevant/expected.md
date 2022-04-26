@@ -4,15 +4,15 @@
 | Attribute  | Type | Description  | Examples  | Required |
 |---|---|---|---|---|
 | `http.method` | string | . | `GET` | Yes |
-| `http.url` | string | . | `.` | No |
-| `http.target` | string | . | `.` | No |
-| `http.host` | string | . | `.` | No |
-| `http.scheme` | string | . | `http` | No |
-| `http.status_code` | int | . |  | . |
-| `http.user_agent` | string | . | `.` | No |
-| [`net.peer.ip`](span-general.md) | string | . | `.` | No |
-| [`net.peer.name`](span-general.md) | string | . | `.` | No |
-| [`net.peer.port`](span-general.md) | int | . |  | No |
+| `http.url` | string | . | `.` | Recommended |
+| `http.target` | string | . | `.` | Recommended |
+| `http.host` | string | . | `.` | Recommended |
+| `http.scheme` | string | . | `http` | Recommended |
+| `http.status_code` | int | . |  | Required <condition> |
+| `http.user_agent` | string | . | `.` | Recommended |
+| [`net.peer.ip`](span-general.md) | string | . | `.` | Recommended |
+| [`net.peer.name`](span-general.md) | string | . | `.` | Recommended |
+| [`net.peer.port`](span-general.md) | int | . |  | Recommended |
 
 Following attributes MUST be provided **at span creation time** (when provided at all), so they can be considered for sampling decisions:
 

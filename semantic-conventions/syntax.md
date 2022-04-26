@@ -87,7 +87,7 @@ member ::= id value [brief] [note]
 
 required ::= "always"
          |   "conditional" <condition>
-         |   "optional" # Default if not specified
+         |   "recommended" # Default if not specified
          |   "opt-in"
 
 # EXPERIMENTAL: Using this is NOT ALLOWED in the specification currently.

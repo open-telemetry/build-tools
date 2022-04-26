@@ -32,7 +32,7 @@ from opentelemetry.semconv.model.utils import (
 class Required(Enum):
     ALWAYS = 1
     CONDITIONAL = 2
-    OPTIONAL = 3
+    RECOMMENDED = 3
     OPT_IN = 4
 
 
@@ -137,26 +137,33 @@ class SemanticAttribute:
             required_value_map = {
                 "always": Required.ALWAYS,
                 "conditional": Required.CONDITIONAL,
-                "": Required.OPTIONAL,
-                "optional": Required.OPTIONAL,
+                "": Required.RECOMMENDED,
+                "recommended": Required.RECOMMENDED,
                 "opt-in": Required.OPT_IN,
             }
             required_msg = ""
             required_val = attribute.get("required", "")
             required: Optional[Required]
             if isinstance(required_val, CommentedMap):
-                required = Required.CONDITIONAL
-                required_msg = required_val.get("conditional", None)
-                if required_msg is None:
+                recommended_msg = required_val.get("recommended", None)
+                conditional_msg = required_val.get("conditional", None)
+                if conditional_msg is not None:
+                  required = Required.CONDITIONAL
+                  required_msg = conditional_msg
+                  if conditional_msg is None:
                     position = position_data["required"]
                     msg = "Missing message for conditional required field!"
                     raise ValidationError.from_yaml_pos(position, msg)
+                elif recommended_msg is not None:
+                  required = Required.RECOMMENDED
+                  required_msg = recommended_msg
             else:
                 required = required_value_map.get(required_val)
                 if required == Required.CONDITIONAL:
                     position = position_data["required"]
                     msg = "Missing message for conditional required field!"
                     raise ValidationError.from_yaml_pos(position, msg)
+
             if required is None:
                 position = position_data["required"]
                 msg = "Value '{}' for required field is not allowed".format(

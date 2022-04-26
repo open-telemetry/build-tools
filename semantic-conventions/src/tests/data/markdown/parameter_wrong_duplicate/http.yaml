@@ -30,7 +30,7 @@ groups:
             When the header is empty or not present, this attribute should be the same.
         examples: ['www.example.org']
         required:
-          conditional: You should always have this.
+          conditional: <condition>
       - id: scheme
         type: string
         brief: 'The URI scheme identifying the used protocol.'
@@ -38,7 +38,7 @@ groups:
       - id: status_code
         type: int
         required:
-          conditional: If and only if one was received/sent.
+          conditional: if and only if one was received/sent.
         brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'
         examples: [200]
       - id: status_text

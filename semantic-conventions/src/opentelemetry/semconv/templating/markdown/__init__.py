@@ -154,14 +154,14 @@ class MarkdownRenderer:
             required = "Yes"
         elif attribute.required == Required.CONDITIONAL:
             if len(attribute.required_msg) < self.options.break_count:
-                required = attribute.required_msg
+                required = "Required " + attribute.required_msg
             else:
                 # We put the condition in the notes after the table
                 self.render_ctx.add_note(attribute.required_msg)
-                required = "Conditional [{}]".format(len(self.render_ctx.notes))
+                required = "Required conditionally [{}]".format(len(self.render_ctx.notes))
         elif attribute.required == Required.OPT_IN:
             required = "Opt-in"
-        else:
+        else:  # attribute.required == Required.RECOMMENDED
             # check if they are required by some constraint
             if (
                 not self.render_ctx.is_remove_constraint
@@ -169,7 +169,15 @@ class MarkdownRenderer:
             ):
                 required = "See below"
             else:
-                required = "No"
+                if not attribute.required_msg:
+                    required = "Recommended"
+                elif len(attribute.required_msg) < self.options.break_count:
+                    required = "Recommended " + attribute.required_msg
+                else:
+                    # We put the condition in the notes after the table
+                    self.render_ctx.add_note(attribute.required_msg)
+                    required = "Recommended [{}]".format(len(self.render_ctx.notes))
+
         output.write(
             "| {} | {} | {} | {} | {} |\n".format(
                 name, attr_type, description, examples, required

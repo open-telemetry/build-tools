@@ -37,12 +37,12 @@ Some database systems may allow a connection to switch to a different `db.user`,
 | Attribute  | Type | Description  | Examples  | Required |
 |---|---|---|---|---|
 | `db.system` | string | An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers. | `other_sql` | Yes |
-| `db.connection_string` | string | The connection string used to connect to the database. [1] | `Server=(localdb)\v11.0;Integrated Security=true;` | No |
-| `db.user` | string | Username for accessing the database. | `readonly_user`<br>`reporting_user` | No |
+| `db.connection_string` | string | The connection string used to connect to the database. [1] | `Server=(localdb)\v11.0;Integrated Security=true;` | Recommended |
+| `db.user` | string | Username for accessing the database. | `readonly_user`<br>`reporting_user` | Recommended |
 | `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | Conditional<br>See below. |
 | `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | Conditional<br>See below. |
-| `net.peer.port` | int | Remote port number. | `80`<br>`8080`<br>`443` | Conditional [2] |
-| `net.transport` | string enum | Transport protocol used. See note below. | `IP.TCP` | Conditional [3] |
+| `net.peer.port` | int | Remote port number. | `80`<br>`8080`<br>`443` | Required conditionally [2] |
+| `net.transport` | string enum | Transport protocol used. See note below. | `IP.TCP` | Required conditionally [3] |
 
 **[1]:** It is recommended to remove embedded credentials.
 
@@ -127,8 +127,8 @@ When additional attributes are added that only apply to a specific DBMS, its ide
 <!-- semconv db(tag=connection-level-tech-specific,remove_constraints) -->
 | Attribute  | Type | Description  | Examples  | Required |
 |---|---|---|---|---|
-| `db.mssql.instance_name` | string | The Microsoft SQL Server [instance name](https://docs.microsoft.com/en-us/sql/connect/jdbc/building-the-connection-url?view=sql-server-ver15) connecting to. This name is used to determine the port of a named instance. [1] | `MSSQLSERVER` | No |
-| `db.jdbc.driver_classname` | string | The fully-qualified class name of the JDBC driver used to connect. | `org.postgresql.Driver`<br>`com.microsoft.sqlserver.jdbc.SQLServerDriver` | No |
+| `db.mssql.instance_name` | string | The Microsoft SQL Server [instance name](https://docs.microsoft.com/en-us/sql/connect/jdbc/building-the-connection-url?view=sql-server-ver15) connecting to. This name is used to determine the port of a named instance. [1] | `MSSQLSERVER` | Recommended |
+| `db.jdbc.driver_classname` | string | The fully-qualified class name of the JDBC driver used to connect. | `org.postgresql.Driver`<br>`com.microsoft.sqlserver.jdbc.SQLServerDriver` | Recommended |
 
 **[1]:** If setting a `db.mssql.instance_name`, `net.peer.port` is no longer required (but still recommended if non-standard).
 <!-- endsemconv -->
@@ -141,9 +141,9 @@ Usually only one `db.name` will be used per connection though.
 <!-- semconv db(tag=call-level,remove_constraints) -->
 | Attribute  | Type | Description  | Examples  | Required |
 |---|---|---|---|---|
-| `db.name` | string | If no tech-specific attribute is defined, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [1] | `customers`<br>`main` | Conditional [2] |
+| `db.name` | string | If no tech-specific attribute is defined, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [1] | `customers`<br>`main` | Required conditionally [2] |
 | `db.statement` | string | The database statement being executed. [3] | `SELECT * FROM wuser_table`<br>`SET mykey "WuValue"` | Conditional<br>Required if applicable. |
-| `db.operation` | string | The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. [4] | `findAndModify`<br>`HMSET` | Conditional<br>Required, if `db.statement` is not applicable. |
+| `db.operation` | string | The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. [4] | `findAndModify`<br>`HMSET` | Conditional<br>Required if `db.statement` is not applicable. |
 
 **[1]:** In some SQL databases, the database name to be used is called "schema name".
 

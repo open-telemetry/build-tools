@@ -177,10 +177,12 @@ class MarkdownRenderer:
             )
         )
 
-    def to_markdown_attribute_table(self, semconv: BaseSemanticConvention, output: io.StringIO):
+    def to_markdown_attribute_table(
+        self, semconv: BaseSemanticConvention, output: io.StringIO
+    ):
         attr_to_print = []
         for attr in sorted(
-                semconv.attributes, key=lambda a: "" if a.ref is None else a.ref
+            semconv.attributes, key=lambda a: "" if a.ref is None else a.ref
         ):
             if self.render_ctx.group_key is not None:
                 if attr.tag == self.render_ctx.group_key:

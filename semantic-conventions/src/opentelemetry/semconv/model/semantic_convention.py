@@ -241,7 +241,12 @@ class MetricSemanticConvention(BaseSemanticConvention):
     allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + ("metrics",)
 
     class Metric:
-        allowed_instruments: Tuple[str, ...] = ("Counter", "UpDownCounter", "Histogram", "Gauge")
+        allowed_instruments: Tuple[str, ...] = (
+            "Counter",
+            "UpDownCounter",
+            "Histogram",
+            "Gauge",
+        )
 
         def __init__(self, metric, parent_prefix, position):
             self.id: str = metric.get("id")

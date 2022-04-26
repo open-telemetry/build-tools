@@ -119,10 +119,10 @@ events ::= id {id} # MUST point to an existing event group
 
 name ::= string
 
-instrument ::=  "counter" 
-            | "histogram" 
-            | "gauge" 
-            | "updowncounter" 
+instrument ::=  "Counter" 
+            | "Histogram" 
+            | "Gauge" 
+            | "UpDownCounter" 
             
 units ::= string            
 

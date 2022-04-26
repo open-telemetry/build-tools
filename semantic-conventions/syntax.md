@@ -186,7 +186,8 @@ The following is only valid if `type` is `metric`:
     semantic convention prefix like so: `{parent.prefix}.{metric.id}`. 
   - `brief`, a brief description of the metric.
   - `instrument`, the instrument that *should* be used to record the metric.
-  - `units`, the units in which the metric is measured.
+  - `units`, the units in which the metric is measured, which should adhere to 
+     [UCUM](https://ucum.org/ucum.html). 
 
 ### Attributes
 

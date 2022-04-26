@@ -147,15 +147,15 @@ class SemanticAttribute:
                 recommended_msg = required_val.get("recommended", None)
                 conditional_msg = required_val.get("conditional", None)
                 if conditional_msg is not None:
-                  required = Required.CONDITIONAL
-                  required_msg = conditional_msg
-                  if conditional_msg is None:
-                    position = position_data["required"]
-                    msg = "Missing message for conditional required field!"
-                    raise ValidationError.from_yaml_pos(position, msg)
+                    required = Required.CONDITIONAL
+                    required_msg = conditional_msg
+                    if conditional_msg is None:
+                        position = position_data["required"]
+                        msg = "Missing message for conditional required field!"
+                        raise ValidationError.from_yaml_pos(position, msg)
                 elif recommended_msg is not None:
-                  required = Required.RECOMMENDED
-                  required_msg = recommended_msg
+                    required = Required.RECOMMENDED
+                    required_msg = recommended_msg
             else:
                 required = required_value_map.get(required_val)
                 if required == Required.CONDITIONAL:

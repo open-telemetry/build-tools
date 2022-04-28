@@ -17,7 +17,7 @@
 | `http.recommended_attribute_long_note` | string | brief | `bar` | Recommended [1] |
 | [`http.server_name`](input_http.md) | string | The primary server name of the matched virtual host. [2] | `example.com` | Required conditionally [3] |
 
-**[1]:** some very long not that should be written under the semconv table
+**[1]:** some very long note that should be written under the semconv table
 
 **[2]:** This is an example
 

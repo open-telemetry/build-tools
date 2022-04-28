@@ -58,7 +58,7 @@ groups:
         brief: brief
         type: string
         required: 
-          recommended: some very long not that should be written under the semconv table
+          recommended: some very long note that should be written under the semconv table
         examples: bar
 
   - id: http.client
@@ -89,12 +89,10 @@ groups:
         sampling_relevant: false
         brief: >
             The primary server name of the matched virtual host.
-        note: >
+        note: |
             This is an example
 
-
             - of note
-
             - with list 
         examples: ['example.com']
     constraints:

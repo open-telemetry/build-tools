@@ -145,7 +145,9 @@ class SemanticAttribute:
             required: Optional[RequirementLevel]
             if isinstance(requirement_level_val, CommentedMap):
                 recommended_msg = requirement_level_val.get("recommended", None)
-                condition_msg = requirement_level_val.get("conditionally_required", None)
+                condition_msg = requirement_level_val.get(
+                    "conditionally_required", None
+                )
                 if condition_msg is not None:
                     required = RequirementLevel.CONDITIONALLY_REQUIRED
                     msg = condition_msg

@@ -34,19 +34,19 @@ These attributes will usually be the same for all operations performed over the 
 Some database systems may allow a connection to switch to a different `db.user`, for example, and other database systems may not even have the concept of a connection at all.
 
 <!-- semconv db(tag=connection-level) -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `db.system` | string | An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers. | `other_sql` | Yes |
 | `db.connection_string` | string | The connection string used to connect to the database. [1] | `Server=(localdb)\v11.0;Integrated Security=true;` | Recommended |
 | `db.user` | string | Username for accessing the database. | `readonly_user`<br>`reporting_user` | Recommended |
 | `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | Conditional<br>See below. |
 | `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | Conditional<br>See below. |
-| `net.peer.port` | int | Remote port number. | `80`<br>`8080`<br>`443` | Required conditionally [2] |
-| `net.transport` | string enum | Transport protocol used. See note below. | `IP.TCP` | Required conditionally [3] |
+| `net.peer.port` | int | Remote port number. | `80`<br>`8080`<br>`443` | Conditionally Required: [2] |
+| `net.transport` | string enum | Transport protocol used. See note below. | `IP.TCP` | Conditionally Required: [3] |
 
 **[1]:** It is recommended to remove embedded credentials.
 
-**[2]:** Required if using a port other than the default port for this DBMS.
+**[2]:** Conditionally Required: if using a port other than the default port for this DBMS.
 
 **[3]:** Recommended in general, required for in-process databases (`"inproc"`).
 
@@ -125,7 +125,7 @@ When additional attributes are added that only apply to a specific DBMS, its ide
 ### Connection-level attributes for specific technologies
 
 <!-- semconv db(tag=connection-level-tech-specific,remove_constraints) -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `db.mssql.instance_name` | string | The Microsoft SQL Server [instance name](https://docs.microsoft.com/en-us/sql/connect/jdbc/building-the-connection-url?view=sql-server-ver15) connecting to. This name is used to determine the port of a named instance. [1] | `MSSQLSERVER` | Recommended |
 | `db.jdbc.driver_classname` | string | The fully-qualified class name of the JDBC driver used to connect. | `org.postgresql.Driver`<br>`com.microsoft.sqlserver.jdbc.SQLServerDriver` | Recommended |
@@ -139,15 +139,15 @@ These attributes may be different for each operation performed, even if the same
 Usually only one `db.name` will be used per connection though.
 
 <!-- semconv db(tag=call-level,remove_constraints) -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `db.name` | string | If no tech-specific attribute is defined, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [1] | `customers`<br>`main` | Required conditionally [2] |
-| `db.statement` | string | The database statement being executed. [3] | `SELECT * FROM wuser_table`<br>`SET mykey "WuValue"` | Conditional<br>Required if applicable. |
-| `db.operation` | string | The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. [4] | `findAndModify`<br>`HMSET` | Conditional<br>Required if `db.statement` is not applicable. |
+| `db.name` | string | If no tech-specific attribute is defined, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [1] | `customers`<br>`main` | Conditionally Required: [2] |
+| `db.statement` | string | The database statement being executed. [3] | `SELECT * FROM wuser_table`<br>`SET mykey "WuValue"` | Conditional<br>Conditionally Required: if applicable. |
+| `db.operation` | string | The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. [4] | `findAndModify`<br>`HMSET` | Conditional<br>Conditionally Required: if `db.statement` is not applicable. |
 
 **[1]:** In some SQL databases, the database name to be used is called "schema name".
 
-**[2]:** Required, if applicable and no more-specific attribute is defined.
+**[2]:** if applicable and no more-specific attribute is defined.
 
 **[3]:** The value may be sanitized to exclude sensitive information.
 
@@ -169,7 +169,7 @@ For example, when retrieving a document, `db.operation` would be set to (literal
 #### Cassandra
 
 <!-- semconv db.cassandra -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `db.cassandra.keyspace` | string | The name of the keyspace being accessed. To be used instead of the generic `db.name` attribute. | `mykeyspace` | Yes |
 <!-- endsemconv -->
@@ -177,7 +177,7 @@ For example, when retrieving a document, `db.operation` would be set to (literal
 #### Apache HBase
 
 <!-- semconv db.hbase -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `db.hbase.namespace` | string | The [HBase namespace](https://hbase.apache.org/book.html#_namespace) being accessed. To be used instead of the generic `db.name` attribute. | `default` | Yes |
 <!-- endsemconv -->
@@ -185,17 +185,17 @@ For example, when retrieving a document, `db.operation` would be set to (literal
 #### Redis
 
 <!-- semconv db.redis -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `db.redis.database_index` | int | The index of the database being accessed as used in the [`SELECT` command](https://redis.io/commands/select), provided as an integer. To be used instead of the generic `db.name` attribute. | `0`<br>`1`<br>`15` | Conditional [1] |
 
-**[1]:** Required, if other than the default database (`0`).
+**[1]:** if other than the default database (`0`).
 <!-- endsemconv -->
 
 #### MongoDB
 
 <!-- semconv db.mongodb -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `db.mongodb.collection` | string | The collection being accessed within the database stated in `db.name`. | `customers`<br>`products` | Yes |
 <!-- endsemconv -->

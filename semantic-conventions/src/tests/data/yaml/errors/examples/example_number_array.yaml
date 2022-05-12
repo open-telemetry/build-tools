@@ -7,6 +7,6 @@ groups:
     attributes:
       - id: convention_version
         type: int[]
-        required: always
+        requirement_level: required
         brief: 'test'
         examples: [1, asd]

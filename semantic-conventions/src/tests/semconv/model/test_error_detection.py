@@ -450,6 +450,15 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("at least one of name or prefix", msg)
         self.assertEqual(e.line, 2)
 
+    def test_condition_missing_contionally_required_attribute(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/wrong_conditionally_required_no_condition.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("missing message for conditionally required field!", msg)
+        self.assertEqual(e.line, 11)
+
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:
             return parse_semantic_convention_groups(file)

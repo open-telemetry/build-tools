@@ -8,7 +8,7 @@ groups:
         serverless) with spans.
     attributes:
       - id: trigger
-        required: always
+        requirement_level: required
         brief: 'Type of the trigger on which the function is executed.'
         type:
           allow_custom_values: false
@@ -41,14 +41,14 @@ groups:
     attributes:
       - id: collection
         type: string
-        required: always
+        requirement_level: required
         brief: 'The name of the source on which the triggering operation was performed.'
         note: >
           For example, in Cloud Storage or S3 corresponds to the bucket name,
           and in Cosmos DB to the database name.
         examples: ['myBucketName', 'myDbName']
       - id: operation
-        required: always
+        requirement_level: required
         type:
           allow_custom_values: true
           members:
@@ -61,7 +61,7 @@ groups:
         brief: 'Describes the type of the operation that was performed on the data.'
       - id: time
         type: string
-        required: always
+        requirement_level: required
         brief: >
           A string containing the time when the data was accessed in the
           [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html)
@@ -97,7 +97,7 @@ groups:
     attributes:
       - id: time
         type: string
-        required: always
+        requirement_level: required
         brief: >
           A string containing the function invocation time in the
           [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html)

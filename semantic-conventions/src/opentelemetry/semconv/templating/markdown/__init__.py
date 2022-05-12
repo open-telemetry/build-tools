@@ -24,7 +24,7 @@ from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import (
     EnumAttributeType,
     EnumMember,
-    Required,
+    RequirementLevel,
     SemanticAttribute,
     StabilityLevel,
 )
@@ -69,7 +69,7 @@ class MarkdownRenderer:
     valid_parameters = ["tag", "full", "remove_constraints"]
 
     prelude = "<!-- semconv {} -->\n"
-    table_headers = "| Attribute  | Type | Description  | Examples  | Required |\n|---|---|---|---|---|\n"
+    table_headers = "| Attribute  | Type | Description  | Examples  | Requirement Level |\n|---|---|---|---|---|\n"
 
     def __init__(
         self, md_folder, semconvset: SemanticConventionSet, options=MarkdownOptions()
@@ -150,34 +150,34 @@ class MarkdownRenderer:
                 )
             else:
                 examples = "; ".join("`{}`".format(ex) for ex in example_list)
-        if attribute.required == Required.ALWAYS:
+        if attribute.requirement_level == RequirementLevel.REQUIRED:
             required = "Yes"
-        elif attribute.required == Required.CONDITIONAL:
-            if len(attribute.required_msg) < self.options.break_count:
-                required = "Required " + attribute.required_msg
+        elif attribute.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED:
+            if len(attribute.requirement_level_msg) < self.options.break_count:
+                required = "Conditionally Required: " + attribute.requirement_level_msg
             else:
                 # We put the condition in the notes after the table
-                self.render_ctx.add_note(attribute.required_msg)
-                required = "Required conditionally [{}]".format(
+                self.render_ctx.add_note(attribute.requirement_level_msg)
+                required = "Conditionally Required: [{}]".format(
                     len(self.render_ctx.notes)
                 )
-        elif attribute.required == Required.OPT_IN:
-            required = "Opt-in"
-        else:  # attribute.required == Required.RECOMMENDED
-            # check if they are required by some constraint
+        elif attribute.requirement_level == RequirementLevel.OPTIONAL:
+            required = "Optional"
+        else:  # attribute.requirement_level == Required.RECOMMENDED
+            # check if there are any notes
             if (
                 not self.render_ctx.is_remove_constraint
                 and self.render_ctx.current_semconv.has_attribute_constraint(attribute)
             ):
                 required = "See below"
             else:
-                if not attribute.required_msg:
+                if not attribute.requirement_level_msg:
                     required = "Recommended"
-                elif len(attribute.required_msg) < self.options.break_count:
-                    required = "Recommended " + attribute.required_msg
+                elif len(attribute.requirement_level_msg) < self.options.break_count:
+                    required = "Recommended " + attribute.requirement_level_msg
                 else:
                     # We put the condition in the notes after the table
-                    self.render_ctx.add_note(attribute.required_msg)
+                    self.render_ctx.add_note(attribute.requirement_level_msg)
                     required = "Recommended [{}]".format(len(self.render_ctx.notes))
 
         output.write(

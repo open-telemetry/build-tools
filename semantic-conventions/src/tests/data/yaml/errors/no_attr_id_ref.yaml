@@ -6,4 +6,4 @@ groups:
     attributes:
       - type: string
         brief: asd
-        required: always
+        requirement_level: required

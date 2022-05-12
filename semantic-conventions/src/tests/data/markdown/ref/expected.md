@@ -1,10 +1,10 @@
 # Attributes
 
 <!-- semconv grpc.client(full) -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `rpc.service` | string | The service name, must be equal to the $service part in the span name. | `EchoService` | Yes |
-| [`net.peer.name`](input_general.md) | string | override brief. [1] | `example.com` | Opt-in |
+| [`net.peer.name`](input_general.md) | string | override brief. [1] | `example.com` | Optional |
 | [`net.peer.port`](input_general.md) | int | It describes the server port the client is connecting to | `80`; `8080`; `443` | Yes |
 
 **[1]:** override note.

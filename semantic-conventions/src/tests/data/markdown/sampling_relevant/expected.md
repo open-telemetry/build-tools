@@ -1,14 +1,14 @@
 # Attributes
 
 <!-- semconv http -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `http.method` | string | . | `GET` | Yes |
 | `http.url` | string | . | `.` | Recommended |
 | `http.target` | string | . | `.` | Recommended |
 | `http.host` | string | . | `.` | Recommended |
 | `http.scheme` | string | . | `http` | Recommended |
-| `http.status_code` | int | . |  | Required <condition> |
+| `http.status_code` | int | . |  | Conditionally Required: <condition> |
 | `http.user_agent` | string | . | `.` | Recommended |
 | [`net.peer.ip`](span-general.md) | string | . | `.` | Recommended |
 | [`net.peer.name`](span-general.md) | string | . | `.` | Recommended |

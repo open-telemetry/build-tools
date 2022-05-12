@@ -28,11 +28,11 @@ from opentelemetry.semconv.model.utils import (
 )
 
 
-class Required(Enum):
-    ALWAYS = 1
-    CONDITIONAL = 2
+class RequirementLevel(Enum):
+    REQUIRED = 1
+    CONDITIONALLY_REQUIRED = 2
     RECOMMENDED = 3
-    OPT_IN = 4
+    OPTIONAL = 4
 
 
 class StabilityLevel(Enum):
@@ -60,8 +60,8 @@ class SemanticAttribute:
     tag: str
     stability: StabilityLevel
     deprecated: str
-    required: Required
-    required_msg: str
+    requirement_level: RequirementLevel
+    requirement_level_msg: str
     sampling_relevant: bool
     note: str
     position: List[int]
@@ -99,7 +99,7 @@ class SemanticAttribute:
             "tag",
             "deprecated",
             "stability",
-            "required",
+            "requirement_level",
             "sampling_relevant",
             "note",
         )
@@ -134,39 +134,39 @@ class SemanticAttribute:
                 fqn = ref
 
             required_value_map = {
-                "always": Required.ALWAYS,
-                "conditional": Required.CONDITIONAL,
-                "": Required.RECOMMENDED,
-                "recommended": Required.RECOMMENDED,
-                "opt-in": Required.OPT_IN,
+                "required": RequirementLevel.REQUIRED,
+                "conditionally_required": RequirementLevel.CONDITIONALLY_REQUIRED,
+                "": RequirementLevel.RECOMMENDED,
+                "recommended": RequirementLevel.RECOMMENDED,
+                "optional": RequirementLevel.OPTIONAL,
             }
-            required_msg = ""
-            required_val = attribute.get("required", "")
-            required: Optional[Required]
-            if isinstance(required_val, CommentedMap):
-                recommended_msg = required_val.get("recommended", None)
-                conditional_msg = required_val.get("conditional", None)
-                if conditional_msg is not None:
-                    required = Required.CONDITIONAL
-                    required_msg = conditional_msg
-                    if conditional_msg is None:
-                        position = position_data["required"]
-                        msg = "Missing message for conditional required field!"
+            msg = ""
+            requirement_level_val = attribute.get("requirement_level", "")
+            required: Optional[RequirementLevel]
+            if isinstance(requirement_level_val, CommentedMap):
+                recommended_msg = requirement_level_val.get("recommended", None)
+                condition_msg = requirement_level_val.get("conditionally_required", None)
+                if condition_msg is not None:
+                    required = RequirementLevel.CONDITIONALLY_REQUIRED
+                    msg = condition_msg
+                    if condition_msg is None:
+                        position = position_data["requirement_level"]
+                        msg = "Missing message for conditionally required field!"
                         raise ValidationError.from_yaml_pos(position, msg)
                 elif recommended_msg is not None:
-                    required = Required.RECOMMENDED
-                    required_msg = recommended_msg
+                    required = RequirementLevel.RECOMMENDED
+                    msg = recommended_msg
             else:
-                required = required_value_map.get(required_val)
-                if required == Required.CONDITIONAL:
-                    position = position_data["required"]
-                    msg = "Missing message for conditional required field!"
+                required = required_value_map.get(requirement_level_val)
+                if required == RequirementLevel.CONDITIONALLY_REQUIRED:
+                    position = position_data["requirement_level"]
+                    msg = "Missing message for conditionally required field!"
                     raise ValidationError.from_yaml_pos(position, msg)
 
             if required is None:
-                position = position_data["required"]
+                position = position_data["requirement_level"]
                 msg = "Value '{}' for required field is not allowed".format(
-                    required_val
+                    requirement_level_val
                 )
                 raise ValidationError.from_yaml_pos(position, msg)
             tag = attribute.get("tag", "").strip()
@@ -206,8 +206,8 @@ class SemanticAttribute:
                 tag=tag,
                 deprecated=deprecated,
                 stability=stability,
-                required=required,
-                required_msg=str(required_msg).strip(),
+                requirement_level=required,
+                requirement_level_msg=str(msg).strip(),
                 sampling_relevant=sampling_relevant,
                 note=parsed_note,
                 position=position,

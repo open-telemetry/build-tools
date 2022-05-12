@@ -1,9 +1,9 @@
 # General
 
 <!-- semconv http.server -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `http.server_name` | String | The primary server name of the matched virtual host. [1] | `example.com` | Required conditionally [2] |
+| `http.server_name` | String | The primary server name of the matched virtual host. [1] | `example.com` | Conditionally Required: [2] |
 | `http.route` | String | The matched route (path template). | `/users/:userID?` | Recommended |
 | `http.client_ip` | String | The IP address of the original client behind all proxies, if known (e.g. from [X-Forwarded-For](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For)). [3] | `83.164.160.102` | Recommended |
 

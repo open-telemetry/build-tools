@@ -2,6 +2,11 @@
 
 Please update the changelog as part of any significant pull request.
 
+## v0.12.0
+
+- Support attribute requirement levels
+  ([#92](https://github.com/open-telemetry/build-tools/pull/92)).
+
 ## v0.8.0
 
 - Add `name` field for events. It defaults to the `prefix`

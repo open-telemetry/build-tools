@@ -9,7 +9,7 @@ groups:
     attributes:
       - id: method
         type: string
-        required: always
+        requirement_level: required
         sampling_relevant: false
         brief: 'HTTP request method.'
         examples: ["GET", "POST", "HEAD"]
@@ -29,16 +29,16 @@ groups:
             The value of the [HTTP host header](https://tools.ietf.org/html/rfc7230#section-5.4).
             When the header is empty or not present, this attribute should be the same.
         examples: ['www.example.org']
-        required:
-          conditional: <condition>.
+        requirement_level:
+          conditionally_required: <condition>.
       - id: scheme
         type: string
         brief: 'The URI scheme identifying the used protocol.'
         examples: ["http", "https"]
       - id: status_code
         type: int
-        required:
-          conditional: if and only if one was received/sent.
+        requirement_level:
+          conditionally_required: if and only if one was received/sent.
         brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'
         examples: [200]
       - id: status_text
@@ -70,8 +70,8 @@ groups:
     attributes:
       - id: server_name
         type: string
-        required:
-          conditional: >
+        requirement_level:
+          conditionally_required: >
             This should be obtained via configuration.
             If this attribute can be obtained, this attribute MUST NOT be set ( `net.host.name` should be used instead).
         sampling_relevant: false

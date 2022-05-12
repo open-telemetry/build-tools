@@ -8,14 +8,14 @@ groups:
     attributes:
       - id: type
         type: string
-        required: always
+        requirement_level: required
         brief: >
           Database type. For any SQL database, "sql".
           For others, the lower-case database category.
         examples: ['cassandra', 'hbase', 'redis']
       - id: instance
         type: string
-        required: always
+        requirement_level: required
         brief: >
           Database instance name. In java, if the
           jdbc.url="jdbc:mysql://db.example.com:3306/customers",
@@ -23,7 +23,7 @@ groups:
         examples: ['customers']
       - id: statement
         type: string
-        required: always
+        requirement_level: required
         brief: >
           A database statement for the given database type.
           Note, that the value may be sanitized to exclude
@@ -31,7 +31,7 @@ groups:
         examples: ['SELECT * FROM wuser_table', "SET mykey 'WuValue'"]
       - id: url
         type: string
-        required: always
+        requirement_level: required
         brief: 'JDBC substring'
         examples: ['mysql://db.example.com:3306']
       - id: user

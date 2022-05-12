@@ -3,7 +3,7 @@
 <!-- semconv event -->
 The event name MUST be `exception`.
 
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `exception.type` | string | The type of the exception. | `java.net.ConnectException`; `OSError` | See below |
 | `exception.message` | string | The exception message. | `Division by zero`; `Can't convert 'int' object to str implicitly` | See below |

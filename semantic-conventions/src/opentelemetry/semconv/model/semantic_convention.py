@@ -23,7 +23,7 @@ from ruamel.yaml import YAML
 from opentelemetry.semconv.model.constraints import AnyOf, Include, parse_constraints
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
-    Required,
+    RequirementLevel,
     SemanticAttribute,
     unique_attributes,
 )
@@ -155,12 +155,12 @@ class BaseSemanticConvention(ValidatableYamlNode):
 
     def required_attributes(self):
         return unique_attributes(
-            [attr for attr in self.attributes if attr.required == Required.ALWAYS]
+            [attr for attr in self.attributes if attr.requirement_level == RequirementLevel.REQUIRED]
         )
 
     def conditional_attributes(self):
         return unique_attributes(
-            [attr for attr in self.attributes if attr.required == Required.CONDITIONAL]
+            [attr for attr in self.attributes if attr.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED]
         )
 
     def any_of(self):

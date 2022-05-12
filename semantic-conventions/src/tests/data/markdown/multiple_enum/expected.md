@@ -2,7 +2,7 @@
 
 <!-- Re-generate TOC with `TODO: ADD cmd` -->
 <!-- semconv network -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | Recommended |
 | `net.host.connection.type` | string | unavailable | `wifi` | Recommended |

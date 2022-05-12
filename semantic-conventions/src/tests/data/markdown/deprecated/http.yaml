@@ -9,7 +9,7 @@ groups:
     attributes:
       - id: method
         type: string
-        required: always
+        requirement_level: required
         sampling_relevant: false
         brief: 'HTTP request method.'
         examples: ["GET", "POST", "HEAD"]
@@ -35,8 +35,8 @@ groups:
         examples: ["http", "https"]
       - id: status_code
         type: int
-        required:
-          conditional: "if and only if one was received/sent"
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent"
         brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'
         examples: [200]
       - id: status_text
@@ -96,8 +96,8 @@ groups:
     attributes:
       - id: server_name
         type: string
-        required:
-          conditional: >
+        requirement_level:
+          conditionally_required: >
             This should be obtained via configuration.
         sampling_relevant: false
         brief: >

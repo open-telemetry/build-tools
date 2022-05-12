@@ -6,7 +6,7 @@ groups:
     attributes:
       - id: service
         type: string
-        required: always
+        requirement_level: required
         brief: 'The service name, must be equal to the $service part in the span name.'
         examples: "EchoService"
     constraints:
@@ -20,7 +20,7 @@ groups:
     brief: 'Outgoing gRPC request.'
     attributes:
       - ref: net.peer.port
-        required: always
+        requirement_level: required
         brief: 'It describes the server port the client is connecting to'
   - id: grpc.server
     type: span

@@ -85,10 +85,10 @@ members ::= member {member}
 
 member ::= id value [brief] [note]
 
-required ::= "always"
-         |   "conditional" <condition>
+requirement_level ::= "required"
+         |   "conditionally_required" <condition>
          |   "recommended" # Default if not specified
-         |   "opt-in"
+         |   "optional"
 
 # EXPERIMENTAL: Using this is NOT ALLOWED in the specification currently.
 sampling_relevant ::= boolean
@@ -189,9 +189,9 @@ An attribute is defined by:
 - `tag`, optional string, associates a tag ("sub-group") to the attribute.
    It carries no particular semantic meaning but can be used e.g. for filtering
    in the markdown generator.
-- `required`, optional, specifies if the attribute is mandatory.
-   Can be "always", "conditional", "optional" or "opt-in". When omitted, the attribute is "optional".
-   When set to "conditional",the string provided as `<condition>` MUST specify
+- `requirement_level`, optional, specifies if the attribute is mandatory.
+   Can be "required", "conditionally_required", "recommended" or "optional". When omitted, the attribute is "recommended".
+   When set to "conditionally_required",the string provided as `<condition>` MUST specify
    the conditions under which the attribute is required.
 - `sampling_relevant`, optional EXPERIMENTAL boolean,
   specifies if the attribute is (especially) relevant for sampling and

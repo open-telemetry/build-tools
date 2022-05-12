@@ -291,23 +291,23 @@
 			"allOf": [
 				{
 					"properties": {
-						"required": {
-							"description": "specifies if the attribute is mandatory. Can be 'always', 'conditional', 'recommended', or 'opt_in'. When omitted, the attribute is 'recommended'. When set to 'conditional',the string provided as <condition> MUST specify the conditions under which the attribute is required.",
+						"requirement_level": {
+							"description": "specifies the attribute requirement level. Can be 'required', 'conditionally_required', 'recommended', or 'optional'. When omitted, the attribute is 'recommended'. When set to 'conditionally_required',the string provided as <condition> MUST specify the conditions under which the attribute is required.",
 							"oneOf": [
 								{
 									"type": "string",
 									"enum": [
-										"always"
+										"required"
 									]
 								},
 								{
 									"type": "object",
 									"additionalProperties": false,
 									"required": [
-										"conditional"
+										"conditionally_required"
 									],
 									"properties": {
-										"conditional": {
+										"condition": {
 											"type": "string"
 										}
 									}
@@ -337,7 +337,7 @@
 								{
 									"type": "string",
 									"enum": [
-										"opt-in"
+										"optional"
 									]
 								}
 							]

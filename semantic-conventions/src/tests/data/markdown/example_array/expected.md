@@ -3,5 +3,5 @@
 <!-- semconv http -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `http.method` | string[] | HTTP request method. | `[GET, POST, HEAD]` | Yes |
+| `http.method` | string[] | HTTP request method. | `[GET, POST, HEAD]` | Required |
 <!-- endsemconv -->

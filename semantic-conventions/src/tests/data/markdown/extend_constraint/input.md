@@ -36,7 +36,7 @@ Some database systems may allow a connection to switch to a different `db.user`,
 <!-- semconv db(tag=connection-level) -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `db.system` | string | An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers. | `other_sql` | Yes |
+| `db.system` | string | An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers. | `other_sql` | Required |
 | `db.connection_string` | string | The connection string used to connect to the database. [1] | `Server=(localdb)\v11.0;Integrated Security=true;` | Recommended |
 | `db.user` | string | Username for accessing the database. | `readonly_user`<br>`reporting_user` | Recommended |
 | `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | Conditional<br>See below. |
@@ -171,7 +171,7 @@ For example, when retrieving a document, `db.operation` would be set to (literal
 <!-- semconv db.cassandra -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `db.cassandra.keyspace` | string | The name of the keyspace being accessed. To be used instead of the generic `db.name` attribute. | `mykeyspace` | Yes |
+| `db.cassandra.keyspace` | string | The name of the keyspace being accessed. To be used instead of the generic `db.name` attribute. | `mykeyspace` | Required |
 <!-- endsemconv -->
 
 #### Apache HBase
@@ -179,7 +179,7 @@ For example, when retrieving a document, `db.operation` would be set to (literal
 <!-- semconv db.hbase -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `db.hbase.namespace` | string | The [HBase namespace](https://hbase.apache.org/book.html#_namespace) being accessed. To be used instead of the generic `db.name` attribute. | `default` | Yes |
+| `db.hbase.namespace` | string | The [HBase namespace](https://hbase.apache.org/book.html#_namespace) being accessed. To be used instead of the generic `db.name` attribute. | `default` | Required |
 <!-- endsemconv -->
 
 #### Redis
@@ -197,7 +197,7 @@ For example, when retrieving a document, `db.operation` would be set to (literal
 <!-- semconv db.mongodb -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `db.mongodb.collection` | string | The collection being accessed within the database stated in `db.name`. | `customers`<br>`products` | Yes |
+| `db.mongodb.collection` | string | The collection being accessed within the database stated in `db.name`. | `customers`<br>`products` | Required |
 <!-- endsemconv -->
 
 ## Examples

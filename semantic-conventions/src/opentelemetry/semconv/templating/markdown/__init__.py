@@ -151,7 +151,7 @@ class MarkdownRenderer:
             else:
                 examples = "; ".join("`{}`".format(ex) for ex in example_list)
         if attribute.requirement_level == RequirementLevel.REQUIRED:
-            required = "Yes"
+            required = "Required"
         elif attribute.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED:
             if len(attribute.requirement_level_msg) < self.options.break_count:
                 required = "Conditionally Required: " + attribute.requirement_level_msg

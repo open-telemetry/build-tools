@@ -3,7 +3,7 @@
 <!-- semconv db(tag=connection-level,remove_constraints) -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `db.type` | String | Database type. For any SQL database, "sql". For others, the lower-case database category. | `sql` | Yes |
+| `db.type` | String | Database type. For any SQL database, "sql". For others, the lower-case database category. | `sql` | Required |
 | `db.connection_string` | String | The connection string used to connect to the database. [1] | `Server=(localdb)\v11.0;Integrated Security=true;` | Recommended |
 | `db.user` | String | Username for accessing the database. | `readonly_user`<br>`reporting_user` | Recommended |
 | [net.peer.ip](general.md) | String | None | `127.0.0.1` | Recommended |

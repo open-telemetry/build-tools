@@ -3,7 +3,7 @@
 <!-- semconv http -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `http.method` | string | . | `GET` | Yes |
+| `http.method` | string | . | `GET` | Required |
 | `http.url` | string | . | `.` | Recommended |
 | `http.target` | string | . | `.` | Recommended |
 | `http.host` | string | . | `.` | Recommended |

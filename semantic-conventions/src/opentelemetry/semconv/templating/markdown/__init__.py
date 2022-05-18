@@ -174,11 +174,11 @@ class MarkdownRenderer:
                 if not attribute.requirement_level_msg:
                     required = "Recommended"
                 elif len(attribute.requirement_level_msg) < self.options.break_count:
-                    required = "Recommended " + attribute.requirement_level_msg
+                    required = "Recommended: " + attribute.requirement_level_msg
                 else:
                     # We put the condition in the notes after the table
                     self.render_ctx.add_note(attribute.requirement_level_msg)
-                    required = "Recommended [{}]".format(len(self.render_ctx.notes))
+                    required = "Recommended: [{}]".format(len(self.render_ctx.notes))
 
         output.write(
             "| {} | {} | {} | {} | {} |\n".format(

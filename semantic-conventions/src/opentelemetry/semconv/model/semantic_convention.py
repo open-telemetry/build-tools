@@ -150,25 +150,21 @@ class BaseSemanticConvention(ValidatableYamlNode):
 
     def sampling_attributes(self):
         return unique_attributes(
-            [attr for attr in self.attributes if attr.sampling_relevant]
+            attr for attr in self.attributes if attr.sampling_relevant
         )
 
     def required_attributes(self):
         return unique_attributes(
-            [
-                attr
-                for attr in self.attributes
-                if attr.requirement_level == RequirementLevel.REQUIRED
-            ]
+            attr
+            for attr in self.attributes
+            if attr.requirement_level == RequirementLevel.REQUIRED
         )
 
     def conditional_attributes(self):
         return unique_attributes(
-            [
-                attr
-                for attr in self.attributes
-                if attr.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED
-            ]
+            attr
+            for attr in self.attributes
+            if attr.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED
         )
 
     def any_of(self):

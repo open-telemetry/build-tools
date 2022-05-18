@@ -13,8 +13,8 @@
 | `http.status_code` | int | [HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6). | `200` | Conditionally Required: if and only if one was received/sent |
 | `http.status_text` | string | [HTTP reason phrase](https://tools.ietf.org/html/rfc7230#section-3.1.2). | `OK` | Recommended |
 | `http.user_agent` | string | Value of the [HTTP User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3) header sent by the client. | `CERN-LineMode/2.15 libwww/2.17b3` | Recommended |
-| `http.recommended_attribute` | string | brief | `foo` | Recommended short note |
-| `http.recommended_attribute_long_note` | string | brief | `bar` | Recommended [1] |
+| `http.recommended_attribute` | string | brief | `foo` | Recommended: short note |
+| `http.recommended_attribute_long_note` | string | brief | `bar` | Recommended: [1] |
 | [`http.server_name`](input_http.md) | string | The primary server name of the matched virtual host. [2] | `example.com` | Conditionally Required: [3] |
 
 **[1]:** some very long note that should be written under the semconv table

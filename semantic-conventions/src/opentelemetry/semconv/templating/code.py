@@ -236,12 +236,12 @@ class CodeRenderer:
                 template = env.get_template(file_name, globals=data)
                 template.globals["now"] = datetime.datetime.utcnow()
                 template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
-                template.globals["Requirement Level"] = RequirementLevel
+                template.globals["RequirementLevel"] = RequirementLevel
                 template.stream(data).dump(output_name)
         else:
             data = self.get_data_single_file(semconvset, template_path)
             template = env.get_template(file_name, globals=data)
             template.globals["now"] = datetime.datetime.utcnow()
             template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
-            template.globals["Requirement Level"] = RequirementLevel
+            template.globals["RequirementLevel"] = RequirementLevel
             template.stream(data).dump(output_file)

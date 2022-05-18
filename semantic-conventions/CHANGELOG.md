@@ -2,9 +2,9 @@
 
 Please update the changelog as part of any significant pull request.
 
-## v0.12.0
+## Unreleased
 
-- Support attribute requirement levels
+- BREAKING: Attribute property `required` is removed and replaced by `requirement_level`
   ([#92](https://github.com/open-telemetry/build-tools/pull/92)).
 
 ## v0.8.0

@@ -292,13 +292,10 @@
 				{
 					"properties": {
 						"requirement_level": {
-							"description": "specifies the attribute requirement level. Can be 'required', 'conditionally_required', 'recommended', or 'optional'. When omitted, the attribute is 'recommended'. When set to 'conditionally_required',the string provided as <condition> MUST specify the conditions under which the attribute is required.",
+							"description": "specifies the attribute requirement level. Can be 'required', 'conditionally_required', 'recommended', or 'optional'. When omitted, the attribute is 'recommended'. When set to 'conditionally_required', the string provided as <condition> MUST specify the conditions under which the attribute is required.",
 							"oneOf": [
 								{
-									"type": "string",
-									"enum": [
-										"required"
-									]
+									"const": "required"
 								},
 								{
 									"type": "object",
@@ -315,10 +312,7 @@
 								{
 									"oneOf": [
 										{
-											"type": "string",
-											"enum": [
-												"recommended"
-											]
+											"const": "recommended"
 										},
 										{
 											"type": "object",
@@ -335,10 +329,7 @@
 									]
 								},
 								{
-									"type": "string",
-									"enum": [
-										"optional"
-									]
+									"const": "optional"
 								}
 							]
 						},

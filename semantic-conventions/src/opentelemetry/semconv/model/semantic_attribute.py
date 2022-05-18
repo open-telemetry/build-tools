@@ -140,37 +140,38 @@ class SemanticAttribute:
                 "recommended": RequirementLevel.RECOMMENDED,
                 "optional": RequirementLevel.OPTIONAL,
             }
-            msg = ""
+            requirement_level_msg = ""
             requirement_level_val = attribute.get("requirement_level", "")
-            required: Optional[RequirementLevel]
+            requirement_level: Optional[RequirementLevel]
             if isinstance(requirement_level_val, CommentedMap):
                 recommended_msg = requirement_level_val.get("recommended", None)
                 condition_msg = requirement_level_val.get(
                     "conditionally_required", None
                 )
                 if condition_msg is not None:
-                    required = RequirementLevel.CONDITIONALLY_REQUIRED
-                    msg = condition_msg
-                    if condition_msg is None:
-                        position = position_data["requirement_level"]
-                        msg = "Missing message for conditionally required field!"
-                        raise ValidationError.from_yaml_pos(position, msg)
+                    requirement_level = RequirementLevel.CONDITIONALLY_REQUIRED
+                    requirement_level_msg = condition_msg
                 elif recommended_msg is not None:
-                    required = RequirementLevel.RECOMMENDED
-                    msg = recommended_msg
+                    requirement_level = RequirementLevel.RECOMMENDED
+                    requirement_level_msg = recommended_msg
             else:
-                required = required_value_map.get(requirement_level_val)
-                if required == RequirementLevel.CONDITIONALLY_REQUIRED:
-                    position = position_data["requirement_level"]
-                    msg = "Missing message for conditionally required field!"
-                    raise ValidationError.from_yaml_pos(position, msg)
+                requirement_level = required_value_map.get(requirement_level_val)
 
-            if required is None:
+            if requirement_level is None:
                 position = position_data["requirement_level"]
                 msg = "Value '{}' for required field is not allowed".format(
                     requirement_level_val
                 )
                 raise ValidationError.from_yaml_pos(position, msg)
+
+            if (
+                requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED
+                and not requirement_level_msg
+            ):
+                position = position_data["requirement_level"]
+                msg = "Missing message for conditionally required field!"
+                raise ValidationError.from_yaml_pos(position, msg)
+
             tag = attribute.get("tag", "").strip()
             stability, deprecated = SemanticAttribute.parse_stability_deprecated(
                 attribute.get("stability"), attribute.get("deprecated"), position_data
@@ -208,8 +209,8 @@ class SemanticAttribute:
                 tag=tag,
                 deprecated=deprecated,
                 stability=stability,
-                requirement_level=required,
-                requirement_level_msg=str(msg).strip(),
+                requirement_level=requirement_level,
+                requirement_level_msg=str(requirement_level_msg).strip(),
                 sampling_relevant=sampling_relevant,
                 note=parsed_note,
                 position=position,

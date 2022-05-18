@@ -87,7 +87,7 @@ member ::= id value [brief] [note]
 
 requirement_level ::= "required"
          |   "conditionally_required" <condition>
-         |   "recommended" # Default if not specified
+         |   "recommended" [condition] # Default if not specified
          |   "optional"
 
 # EXPERIMENTAL: Using this is NOT ALLOWED in the specification currently.

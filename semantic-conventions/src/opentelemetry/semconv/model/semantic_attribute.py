@@ -144,6 +144,12 @@ class SemanticAttribute:
             requirement_level_val = attribute.get("requirement_level", "")
             requirement_level: Optional[RequirementLevel]
             if isinstance(requirement_level_val, CommentedMap):
+
+                if len(requirement_level_val) != 1:
+                    position = position_data["requirement_level"]
+                    msg = "Multiple requirement_level values are not allowed!"
+                    raise ValidationError.from_yaml_pos(position, msg)
+
                 recommended_msg = requirement_level_val.get("recommended", None)
                 condition_msg = requirement_level_val.get(
                     "conditionally_required", None

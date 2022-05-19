@@ -464,6 +464,14 @@ class TestCorrectErrorDetection(unittest.TestCase):
         with self.assertRaises(DuplicateKeyError):
             self.open_yaml("yaml/errors/wrong_multiple_requirement_levels.yaml")
 
+    def test_multiple_requirement_level_values(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/wrong_multiple_requirement_level_values.yaml")
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("multiple requirement_level values are not allowed!", msg)
+        self.assertEqual(e.line, 11)
+
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:
             return parse_semantic_convention_groups(file)

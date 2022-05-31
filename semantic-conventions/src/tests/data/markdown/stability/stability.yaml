@@ -6,20 +6,20 @@ groups:
     attributes:
       - id: exp_attr
         type: boolean
-        required: always
+        requirement_level: required
         stability: experimental
         brief: ""
       - id: stable_attr
         type: boolean
-        required: always
+        requirement_level: required
         stability: stable
         brief: ""
       - id: deprecated_attr
         type: boolean
-        required: always
+        requirement_level: required
         stability: deprecated
         brief: ""
       - id: def_stability
         type: boolean
-        required: always
+        requirement_level: required
         brief: ""

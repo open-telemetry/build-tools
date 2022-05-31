@@ -15,6 +15,8 @@
 import os
 import unittest
 
+from ruamel.yaml.constructor import DuplicateKeyError
+
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_convention import (
     SemanticConventionSet,
@@ -449,6 +451,26 @@ class TestCorrectErrorDetection(unittest.TestCase):
         msg = e.message.lower()
         self.assertIn("at least one of name or prefix", msg)
         self.assertEqual(e.line, 2)
+
+    def test_condition_missing_conditionally_required_attribute(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/wrong_conditionally_required_no_condition.yaml")
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("missing message for conditionally required field!", msg)
+        self.assertEqual(e.line, 11)
+
+    def test_multiple_requirement_levels(self):
+        with self.assertRaises(DuplicateKeyError):
+            self.open_yaml("yaml/errors/wrong_multiple_requirement_levels.yaml")
+
+    def test_multiple_requirement_level_values(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/wrong_multiple_requirement_level_values.yaml")
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("multiple requirement_level values are not allowed!", msg)
+        self.assertEqual(e.line, 11)
 
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:

@@ -8,5 +8,5 @@ groups:
         type:
           allow_custom_values: false
           members:
-        required: always
+        requirement_level: required
         brief: 'test'

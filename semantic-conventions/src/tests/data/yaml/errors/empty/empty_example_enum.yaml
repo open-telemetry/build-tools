@@ -12,5 +12,5 @@ groups:
             - id: first
               value: 'first'
               note: 'first'
-        required: always
+        requirement_level: required
         brief: 'test'

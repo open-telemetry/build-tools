@@ -9,7 +9,7 @@ groups:
     attributes:
       - id: method
         type: string
-        required: always
+        requirement_level: required
         sampling_relevant: false
         brief: 'HTTP request method.'
         examples: ["GET", "POST", "HEAD"]
@@ -35,8 +35,8 @@ groups:
         examples: ["http", "https"]
       - id: status_code
         type: int
-        required:
-          conditional: "If and only if one was received/sent"
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent"
         brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'
         examples: [200]
       - id: status_text
@@ -45,8 +45,22 @@ groups:
         examples: ['OK']
       - id: user_agent
         type: string
+        requirement_level: recommended
         brief: 'Value of the [HTTP User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3) header sent by the client.'
         examples: ['CERN-LineMode/2.15 libwww/2.17b3']
+      - id: recommended_attribute
+        brief: brief
+        type: string
+        requirement_level: 
+          recommended: short note
+        examples: foo
+      - id: recommended_attribute_long_note
+        brief: brief
+        type: string
+        requirement_level: 
+          recommended: some very long note that should be written under the semconv table
+        examples: bar
+
   - id: http.client
     type: span
     prefix: http
@@ -68,17 +82,18 @@ groups:
     attributes:
       - id: server_name
         type: string
-        required:
-          conditional: >
+        requirement_level:
+          conditionally_required: >
             This should be obtained via configuration.
             If this attribute can be obtained, this attribute MUST NOT be set ( `net.host.name` should be used instead).
         sampling_relevant: false
         brief: >
             The primary server name of the matched virtual host.
-        note: >
-            http.url is usually not readily available on the server side but would have to be assembled in a cumbersome and
-            sometimes lossy process from other information (see e.g. open-telemetry/opentelemetry-python/pull/148).
-            It is thus preferred to supply the raw data that is available.
+        note: |
+            This is an example
+
+            - of note
+            - with list 
         examples: ['example.com']
     constraints:
       - any_of:

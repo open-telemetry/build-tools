@@ -9,7 +9,7 @@ groups:
     attributes:
       - id: method
         type: string
-        required: always
+        requirement_level: required
         sampling_relevant: false
         brief: 'HTTP request method.'
         examples: ["GET", "POST", "HEAD"]
@@ -17,7 +17,7 @@ groups:
         type: string
         brief: >
             Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`.
-            Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless.
+            Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless. See note [1]
         examples: ['https://www.foo.bar/search?q=OpenTelemetry#SemConv']
       - id: target
         type: string
@@ -35,8 +35,8 @@ groups:
         examples: ["http", "https"]
       - id: status_code
         type: int
-        required:
-          conditional: "If and only if one was received/sent"
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent"
         brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'
         examples: [200]
       - id: status_text
@@ -68,8 +68,8 @@ groups:
     attributes:
       - id: server_name
         type: string
-        required:
-          conditional: >
+        requirement_level:
+          conditionally_required: >
             This should be obtained via configuration.
         sampling_relevant: false
         brief: >

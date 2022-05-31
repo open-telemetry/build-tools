@@ -4,8 +4,8 @@ groups:
     prefix: messaging
     attributes:
       - id: node_version
-        required:
-          conditional: See below.
+        requirement_level:
+          conditionally_required: See below.
         type: string
         brief: The version of the Node.js runtime.
         examples: [ '10.19.0' ]

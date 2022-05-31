@@ -41,6 +41,6 @@ groups:
                 value: 15
               - id: unauthenticated
                 value: 16
-          required: always
+          requirement_level: required
           brief: "The [numeric status code](https://github.com/grpc/grpc/blob/v1.33.2/doc/statuscodes.md) of the gRPC request."
           examples: [0, 1, 16]

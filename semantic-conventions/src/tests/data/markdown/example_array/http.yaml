@@ -9,7 +9,7 @@ groups:
     attributes:
       - id: method
         type: string[]
-        required: always
+        requirement_level: required
         sampling_relevant: false
         brief: 'HTTP request method.'
         examples: ["GET", "POST", "HEAD"]

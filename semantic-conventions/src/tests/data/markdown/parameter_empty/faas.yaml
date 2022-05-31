@@ -8,7 +8,7 @@ groups:
         serverless) with spans.
     attributes:
       - id: trigger
-        required: always
+        requirement_level: required
         brief: 'Type of the trigger on which the function is executed.'
         type:
           allow_custom_values: false

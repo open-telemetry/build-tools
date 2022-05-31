@@ -20,7 +20,10 @@ import typing
 import mistune
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from opentelemetry.semconv.model.semantic_attribute import Required, TextWithLinks
+from opentelemetry.semconv.model.semantic_attribute import (
+    RequirementLevel,
+    TextWithLinks,
+)
 from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
 from opentelemetry.semconv.model.utils import ID_RE
 
@@ -233,12 +236,12 @@ class CodeRenderer:
                 template = env.get_template(file_name, globals=data)
                 template.globals["now"] = datetime.datetime.utcnow()
                 template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
-                template.globals["Required"] = Required
+                template.globals["RequirementLevel"] = RequirementLevel
                 template.stream(data).dump(output_name)
         else:
             data = self.get_data_single_file(semconvset, template_path)
             template = env.get_template(file_name, globals=data)
             template.globals["now"] = datetime.datetime.utcnow()
             template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
-            template.globals["Required"] = Required
+            template.globals["RequirementLevel"] = RequirementLevel
             template.stream(data).dump(output_file)

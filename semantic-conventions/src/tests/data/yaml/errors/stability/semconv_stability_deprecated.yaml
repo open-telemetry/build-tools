@@ -7,7 +7,7 @@ groups:
     attributes:
       - id: test_attr
         type: boolean
-        required: always
+        requirement_level: required
         stability: stable
         brief: ""
 

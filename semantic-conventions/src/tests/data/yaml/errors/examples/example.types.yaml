@@ -7,17 +7,17 @@ groups:
     attributes:
       - id: convention_version
         type: int
-        required: always
+        requirement_level: required
         brief: 'test'
         examples: [1,asd]
       - id: convention_version
         type: int[]
-        required: always
+        requirement_level: required
         brief: 'test'
         examples: [1,3]
       - id: url
         type: string
-        required: always
+        requirement_level: required
         brief: 'test'
         examples: ['http://1.2.3.4:5678/']
       - id: value
@@ -27,10 +27,10 @@ groups:
             - id: VAL
               value: 'val'
               note: 'val'
-        required: always
+        requirement_level: required
         brief: 'test.'
       - id: flag
-        required: conditional
+        requirement_level: conditionally_required
         type: boolean
         brief: 'test'
         examples: [true]

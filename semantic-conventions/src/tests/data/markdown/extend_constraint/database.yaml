@@ -10,7 +10,7 @@ groups:
       - id: system
         tag: connection-level
         brief: An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers.
-        required: always
+        requirement_level: required
         type:
           allow_custom_values: true
           members:
@@ -175,9 +175,8 @@ groups:
       - id: name
         tag: call-level
         type: string
-        required:
-          conditional: >
-            Required, if applicable and no more-specific attribute is defined.
+        requirement_level:
+          conditionally_required: if applicable and no more-specific attribute is defined.
         brief: >
           If no tech-specific attribute is defined, this attribute is used to report the name
           of the database being accessed. For commands that switch the database, this should be set
@@ -188,9 +187,8 @@ groups:
       - id: statement
         tag: call-level
         type: string
-        required:
-          conditional: >
-            Required if applicable.
+        requirement_level:
+          conditionally_required: if applicable.
         brief: >
           The database statement being executed.
         note: The value may be sanitized to exclude sensitive information.
@@ -198,8 +196,8 @@ groups:
       - id: operation
         tag: call-level
         type: string
-        required:
-          conditional: Required, if `db.statement` is not applicable.
+        requirement_level:
+          conditionally_required: if `db.statement` is not applicable.
         brief: >
           The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations)
           such as `findAndModify`.
@@ -210,20 +208,16 @@ groups:
         examples: ['findAndModify', 'HMSET']
       - ref: net.peer.name
         tag: connection-level
-        required:
-          conditional: See below.
       - ref: net.peer.ip
         tag: connection-level
-        required:
-          conditional: See below.
       - ref: net.peer.port
         tag: connection-level
-        required:
-          conditional: Required if using a port other than the default port for this DBMS.
+        requirement_level:
+          conditionally_required: if using a port other than the default port for this DBMS.
       - ref: net.transport
         tag: connection-level
-        required:
-          conditional: Recommended in general, required for in-process databases (`"inproc"`).
+        requirement_level:
+          conditionally_required: Recommended in general, required for in-process databases (`"inproc"`).
     constraints:
       - any_of:
         - 'net.peer.name'
@@ -238,7 +232,7 @@ groups:
     attributes:
       - id: keyspace
         type: string
-        required: always
+        requirement_level: required
         brief: >
           The name of the keyspace being accessed. To be used instead of the generic `db.name` attribute.
         examples: 'mykeyspace'
@@ -252,7 +246,7 @@ groups:
     attributes:
       - id: namespace
         type: string
-        required: always
+        requirement_level: required
         brief: >
           The [HBase namespace](https://hbase.apache.org/book.html#_namespace) being accessed.
           To be used instead of the generic `db.name` attribute.
@@ -267,8 +261,8 @@ groups:
     attributes:
       - id: database_index
         type: int
-        required:
-          conditional: Required, if other than the default database (`0`).
+        requirement_level:
+          conditionally_required: if other than the default database (`0`).
         brief: >
           The index of the database being accessed as used in the [`SELECT` command](https://redis.io/commands/select), provided as an integer.
           To be used instead of the generic `db.name` attribute.
@@ -283,7 +277,7 @@ groups:
     attributes:
       - id: collection
         type: string
-        required: always
+        requirement_level: required
         brief: >
           The collection being accessed within the database stated in `db.name`.
         examples: [ 'customers', 'products' ]

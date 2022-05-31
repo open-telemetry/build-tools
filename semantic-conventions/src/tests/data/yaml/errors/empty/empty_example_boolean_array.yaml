@@ -7,5 +7,5 @@ groups:
     attributes:
       - id: convention_version
         type: boolean[]
-        required: always
+        requirement_level: required
         brief: 'test'

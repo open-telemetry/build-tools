@@ -4,7 +4,11 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
-- BREAKING: Introduced attribute requirement levels ([#92](https://github.com/open-telemetry/build-tools/pull/92)):
+- Add changes here.
+
+## v0.12.0
+
+- **BREAKING**: Introduced attribute requirement levels ([#92](https://github.com/open-telemetry/build-tools/pull/92)):
   - Schema: Attribute property `required` is removed and replaced by `requirement_level`, supported values are changed to `required` (previously `always`), `conditionally_required` (previously `conditional`), `recommended`, and `optional`.
   - Templates: `opentelemetry.semconv.model.semantic_attribute.Required` enum is replaced by `RequirementLevel` with supported values listed above, `required_msg` is renamed to `requirement_level_msg`
 

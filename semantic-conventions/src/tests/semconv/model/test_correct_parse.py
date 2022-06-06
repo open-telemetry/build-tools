@@ -208,7 +208,7 @@ class TestCorrectParse(unittest.TestCase):
 
         expected = {
             "id": "metric.http",
-            "prefix": "metric.http",
+            "prefix": "http",
             "extends": "",
             "n_constraints": 0,
             "attributes": [
@@ -222,7 +222,7 @@ class TestCorrectParse(unittest.TestCase):
 
         expected = {
             "id": "metric.http.client",
-            "prefix": "metric.http",
+            "prefix": "http",
             "extends": "metric.http",
             "n_constraints": 1,
             "attributes": ["net.peer.name", "net.peer.port", "net.peer.ip"],
@@ -239,7 +239,7 @@ class TestCorrectParse(unittest.TestCase):
 
         expected = {
             "id": "metric.http.server",
-            "prefix": "metric.http",
+            "prefix": "http",
             "extends": "metric.http",
             "n_constraints": 1,
             "attributes": ["http.server_name", "net.host.name", "net.host.port"],

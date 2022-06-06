@@ -1,6 +1,6 @@
 groups:
   - id: metric.http
-    prefix: metric.http
+    prefix: http
     type: metric
     brief: "This document defines semantic convention for HTTP client and server metrics."
     note: >
@@ -18,7 +18,7 @@ groups:
       - ref: http.status_code
 
   - id: metric.http.client
-    prefix: metric.http
+    prefix: http
     type: metric
     extends: metric.http
     brief: 'Semantic Convention for HTTP Client'
@@ -39,7 +39,7 @@ groups:
         units: ms
 
   - id: metric.http.server
-    prefix: metric.http
+    prefix: http
     type: metric
     extends: metric.http
     brief: "Semantic Convention for HTTP Server"

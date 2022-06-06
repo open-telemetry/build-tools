@@ -238,7 +238,7 @@ class MarkdownRenderer:
         for metric in semconv.metrics:
             output.write(
                 "| `{}` | {} | `{}` | {} |\n".format(
-                    metric.fqn.removeprefix("metric."),
+                    metric.fqn,
                     metric.instrument,
                     metric.units,
                     metric.brief,

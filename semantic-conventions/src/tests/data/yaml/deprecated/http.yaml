@@ -9,7 +9,7 @@ groups:
     attributes:
       - id: method
         type: string
-        required: always
+        requirement_level: required
         sampling_relevant: false
         deprecated: Use attribute `nonDepecrated`.
         brief: 'HTTP request method.'
@@ -37,8 +37,8 @@ groups:
         examples: ["http", "https"]
       - id: status_code
         type: int
-        required:
-          conditional: "If and only if one was received/sent"
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent"
         brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'
         examples: [200]
       - id: status_text

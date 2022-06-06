@@ -5,15 +5,15 @@
 
 | Attribute name | Notes and examples                                           | Required? |
 | :------------- | :----------------------------------------------------------- | --------- |
-| `http.method` | HTTP request method. E.g. `"GET"`. | Yes |
+| `http.method` | HTTP request method. E.g. `"GET"`. | Required |
 | `http.url` | Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`. Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless. | Defined later. |
 | `http.target` | The full request target as passed in a [HTTP request line][] or equivalent, e.g. `"/path/12314/?q=ddds#123"`. | Defined later. |
 | `http.host` | The value of the [HTTP host header][]. When the header is empty or not present, this attribute should be the same. | Defined later. |
 | `http.scheme` | The URI scheme identifying the used protocol: `"http"` or `"https"` | Defined later. |
-| `http.status_code` | [HTTP response status code][]. E.g. `200` (integer) | If and only if one was received/sent. |
-| `http.status_text` | [HTTP reason phrase][]. E.g. `"OK"` | No |
+| `http.status_code` | [HTTP response status code][]. E.g. `200` (integer) | Conditionally Required: if and only if one was received/sent. |
+| `http.status_text` | [HTTP reason phrase][]. E.g. `"OK"` | Recommended |
 | `http.flavor` | Kind of HTTP protocol used: `"1.0"`, `"1.1"`, `"2"`, `"SPDY"` or `"QUIC"`. |  No |
-| `http.user_agent` | Value of the HTTP [User-Agent][] header sent by the client. | No |
+| `http.user_agent` | Value of the HTTP [User-Agent][] header sent by the client. | Recommended |
 
 <!-- endsemconv -->
 

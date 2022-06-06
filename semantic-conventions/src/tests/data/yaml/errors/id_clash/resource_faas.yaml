@@ -7,13 +7,13 @@ groups:
     attributes:
       - id: name
         type: string
-        required: always
+        requirement_level: required
         brief: >
            	The name of the function being executed.
         examples: ['my-function']
       - id: id
         type: string
-        required: always
+        requirement_level: required
         brief: >
            	The unique name of the function being executed.
         note: >

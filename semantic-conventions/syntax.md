@@ -85,9 +85,10 @@ members ::= member {member}
 
 member ::= id value [brief] [note]
 
-required ::= "always"
-         |   "conditional" <condition>
-
+requirement_level ::= "required"
+         |   "conditionally_required" <condition>
+         |   "recommended" [condition] # Default if not specified
+         |   "optional"
 
 # EXPERIMENTAL: Using this is NOT ALLOWED in the specification currently.
 sampling_relevant ::= boolean
@@ -206,14 +207,14 @@ An attribute is defined by:
   * `"double[]"`: Array of double attributes.
   * `"boolean[]"`: Array of booleans attributes.
 
-  See the [specification of Attributes](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/common.md#attributes) for the definition of the value types.
+  See the [specification of Attributes](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) for the definition of the value types.
 - `ref`, optional string, reference an existing attribute, see [below](#ref).
 - `tag`, optional string, associates a tag ("sub-group") to the attribute.
    It carries no particular semantic meaning but can be used e.g. for filtering
    in the markdown generator.
-- `required`, optional, specifies if the attribute is mandatory.
-   Can be "always", or "conditional". When omitted, the attribute is not required.
-   When set to "conditional",the string provided as `<condition>` MUST specify
+- `requirement_level`, optional, specifies if the attribute is mandatory.
+   Can be "required", "conditionally_required", "recommended" or "optional". When omitted, the attribute is "recommended".
+   When set to "conditionally_required", the string provided as `<condition>` MUST specify
    the conditions under which the attribute is required.
 - `sampling_relevant`, optional EXPERIMENTAL boolean,
   specifies if the attribute is (especially) relevant for sampling and

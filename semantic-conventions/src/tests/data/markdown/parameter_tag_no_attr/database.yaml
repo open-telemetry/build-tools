@@ -8,5 +8,5 @@ groups:
       - id: type
         tag: connection-level
         type: boolean
-        required: always
+        requirement_level: required
         brief: empty

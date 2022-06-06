@@ -1,10 +1,10 @@
 # Common Attributes
 
 <!-- semconv test -->
-| Attribute  | Type | Description  | Examples  | Required |
+| Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| [`test.exp_attr`](labels_expected.md) | boolean |  |  | Yes |
-| [`test.stable_attr`](labels_expected.md) | boolean |  |  | Yes |
-| [`test.deprecated_attr`](labels_expected.md) | boolean |  |  | Yes |
-| [`test.def_stability`](labels_expected.md) | boolean |  |  | Yes |
+| [`test.exp_attr`](labels_expected.md) | boolean |  |  | Required |
+| [`test.stable_attr`](labels_expected.md) | boolean |  |  | Required |
+| [`test.deprecated_attr`](labels_expected.md) | boolean |  |  | Required |
+| [`test.def_stability`](labels_expected.md) | boolean |  |  | Required |
 <!-- endsemconv -->

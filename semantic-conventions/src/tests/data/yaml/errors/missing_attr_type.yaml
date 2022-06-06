@@ -5,5 +5,5 @@ groups:
     span_kind: client
     attributes:
       - id: test
-        required: always
+        requirement_level: required
         brief: 'test.'

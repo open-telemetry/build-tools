@@ -6,6 +6,8 @@ groups:
     span_kind: client
     attributes:
       - id: convention_version
-        type: string
-        requirement_level: required
+        type: boolean
         brief: 'test'
+        requirement_level: required
+        requirement_level: optional
+        examples: [true, false]

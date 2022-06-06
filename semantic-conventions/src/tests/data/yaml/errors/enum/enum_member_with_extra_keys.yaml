@@ -12,5 +12,5 @@ groups:
             - id: my_id
               type: shouldnt
               value: yesyes
-        required: always
+        requirement_level: required
         brief: 'test'

@@ -254,7 +254,7 @@ class MetricSemanticConvention(BaseSemanticConvention):
 
         def __init__(self, metric, parent_prefix, position):
             self.id: str = metric.get("id")
-            self.fqn = "{}.{}".format(parent_prefix, self.id).removeprefix("metric.")
+            self.fqn = "{}.{}".format(parent_prefix, self.id)
             self._position = position
             self.units: str = metric.get("units")
             self.brief: str = metric.get("brief")

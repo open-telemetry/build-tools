@@ -8,13 +8,13 @@ groups:
         and various HTTP versions like 1.1, 2 and SPDY.
     attributes:
       - ref: http.method
-        required: always
+        requirement_level: required
       - ref: http.host
-        required:
-          conditional: "See attribute alternatives"
+        requirement_level:
+          conditionally_required: "See attribute alternatives"
       - ref: http.scheme
-        required:
-          conditional: "See attribute alternative"
+        requirement_level:
+          conditionally_required: "See attribute alternative"
       - ref: http.status_code
 
   - id: metric.http.client

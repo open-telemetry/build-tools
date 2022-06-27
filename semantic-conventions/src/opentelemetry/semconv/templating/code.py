@@ -168,12 +168,12 @@ class CodeRenderer:
     def from_commandline_params(parameters=None, jinja_env_params=None):
         return CodeRenderer(
             CodeRenderer.parse_key_value_params(parameters),
-            CodeRenderer.parse_key_value_params(jinja_env_params)
+            CodeRenderer.parse_key_value_params(jinja_env_params),
         )
 
-    def __init__(self,
-                 parameters: typing.Dict[str, str],
-                 jinja_env_params: typing.Dict[str, str]):
+    def __init__(
+        self, parameters: typing.Dict[str, str], jinja_env_params: typing.Dict[str, str]
+    ):
         self.parameters = parameters
         self.jinja_env_params = jinja_env_params
 
@@ -209,7 +209,7 @@ class CodeRenderer:
 
         for param in jinja_env_params:
             val = jinja_env_params[param]
-            if (val == 'True' or val == 'False'):
+            if val == "True" or val == "False":
                 setattr(env, param, bool(strtobool(str(val))))
             else:
                 setattr(env, param, val)
@@ -245,7 +245,7 @@ class CodeRenderer:
         folder = os.path.dirname(template_path)
         env = Environment(
             loader=FileSystemLoader(searchpath=folder),
-            autoescape=select_autoescape([""])
+            autoescape=select_autoescape([""]),
         )
         self.setup_environment(env, self.jinja_env_params)
         if pattern:

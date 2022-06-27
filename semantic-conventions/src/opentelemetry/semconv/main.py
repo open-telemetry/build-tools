@@ -69,7 +69,7 @@ def main():
     if len(semconv.models) == 0:
         parser.error("No semantic convention model found!")
     if args.flavor == "code":
-        renderer = CodeRenderer.from_commandline_params(args.parameters)
+        renderer = CodeRenderer.from_commandline_params(args.parameters, args.jinja_env_params)
         renderer.render(semconv, args.template, args.output, args.pattern)
     elif args.flavor == "markdown":
         process_markdown(semconv, args)
@@ -136,6 +136,14 @@ def add_code_parser(subparsers):
         dest="parameters",
         action="append",
         help="List of key=value pairs separated by comma. These values are fed into the template as is.",
+        type=str,
+    )
+    parser.add_argument(
+        "--jinja-env-params",
+        "-J",
+        dest="jinja_env_params",
+        action="append",
+        help="List of key=value pairs separated by comma. These values are fed into the jinja2.Environment as is.",
         type=str,
     )
 

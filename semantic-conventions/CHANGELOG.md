@@ -5,7 +5,7 @@ Please update the changelog as part of any significant pull request.
 ## Unreleased
 
 - Allow customising the `jinja2.Environment` via command line arguments
-  ([#xx](https://github.com/open-telemetry/build-tools/pull/xx)).
+  ([#101](https://github.com/open-telemetry/build-tools/pull/101)).
 
 ## v0.12.0
 

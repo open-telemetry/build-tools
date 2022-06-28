@@ -459,6 +459,10 @@ class SemanticConventionSet:
                 attr.attr_type = ref_attr.attr_type
                 if not attr.brief:
                     attr.brief = ref_attr.brief
+                if not attr.requirement_level:
+                    attr.requirement_level = ref_attr.requirement_level
+                if not attr.requirement_level_msg:
+                    attr.requirement_level_msg = ref_attr.requirement_level_msg
                 if not attr.note:
                     attr.note = ref_attr.note
                 if attr.examples is None:

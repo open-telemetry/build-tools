@@ -7,7 +7,7 @@
 | [`net.peer.name`](input_general.md) | string | override brief. [1] | `example.com` | Optional |
 | [`net.peer.port`](input_general.md) | int | It describes the server port the client is connecting to | `80`; `8080`; `443` | Required |
 | [`net.sock.peer.addr`](input_general.md) | string | Remote socket peer address. | `127.0.0.1`; `/tmp/mysql.sock` | Required |
-| [`net.sock.peer.port`](input_general.md) | int | Remote socket peer port. | `16456` | Recommended: <condition> |
+| [`net.sock.peer.port`](input_general.md) | int | Remote socket peer port. | `16456` | Conditionally Required: <condition> |
 
 **[1]:** override note.
 

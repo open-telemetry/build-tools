@@ -46,7 +46,7 @@ groups:
         type: int
         brief: Remote socket peer port.
         requirement_level:
-          recommended: <condition>
+          conditionally_required: <condition>
         examples: 16456
   - id: identity
     prefix: enduser

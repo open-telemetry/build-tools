@@ -60,7 +60,7 @@ class SemanticAttribute:
     tag: str
     stability: StabilityLevel
     deprecated: str
-    requirement_level: RequirementLevel
+    requirement_level: Optional[RequirementLevel]
     requirement_level_msg: str
     sampling_relevant: bool
     note: str
@@ -136,7 +136,6 @@ class SemanticAttribute:
             required_value_map = {
                 "required": RequirementLevel.REQUIRED,
                 "conditionally_required": RequirementLevel.CONDITIONALLY_REQUIRED,
-                "": None,
                 "recommended": RequirementLevel.RECOMMENDED,
                 "optional": RequirementLevel.OPTIONAL,
             }

@@ -26,6 +26,10 @@ groups:
         requirement_level: optional
         brief: override brief.
         note: override note.
+      - ref: net.sock.peer.addr
+        requirement_level: required # override level
+      - ref: net.sock.peer.port
+
   - id: grpc.server
     type: span
     extends: rpc

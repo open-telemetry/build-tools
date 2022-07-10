@@ -22,6 +22,7 @@ def test_codegen_units(test_file_path, read_test_file):
 
 
 def test_strip_blocks_enabled(test_file_path, read_test_file):
+    """Tests that Jinja config options are passed to the Jinja environment"""
     semconv = SemanticConventionSet(debug=False)
     semconv.parse(test_file_path("yaml", "metrics", "units.yaml"))
     semconv.finish()

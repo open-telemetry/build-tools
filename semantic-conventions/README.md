@@ -123,3 +123,32 @@ This way, multiple files are generated. The value of `pattern` can be one of the
 
 Finally, additional value can be passed to the template in form of `key=value` pairs separated by
 comma using the `--parameters [{key=value},]+` or `-D` flag.
+
+### Customizing the Jinja Environment
+
+The image also supports configuring the [Jinja Environment](https://jinja.palletsprojects.com/en/3.0.x/api/#basics)
+via additional values passed in the form of `key=value` pairs separated by comma using the
+`--jinja-env-params [{key=value},]+` or `-J` flag.
+
+> Refer to the Jinja [Environment documentation](https://jinja.palletsprojects.com/en/3.0.x/api/#jinja2.Environment)
+for the complete list of available options. Note that only `string` and `boolean` values are supported at the moment.
+
+Example: Customizing [whitespace control](https://jinja.palletsprojects.com/en/3.1.x/templates/#whitespace-control)
+rendering in templates: 
+
+```bash
+docker run --rm \
+  -v ${SCRIPT_DIR}/opentelemetry-specification/semantic_conventions/trace:/source \
+  -v ${SCRIPT_DIR}/templates:/templates \
+  -v ${ROOT_DIR}/semconv/src/main/java/io/opentelemetry/semconv/trace/attributes/:/output \
+  otel/semconvgen:$GENERATOR_VERSION \
+  --yaml-root /source \
+  code \
+  --template /templates/SemanticAttributes.java.j2 \
+  --output /output/SemanticAttributes.java \
+  -Dclass=SemanticAttributes \
+  -DschemaUrl=$SCHEMA_URL \
+  -Dpkg=io.opentelemetry.semconv.trace.attributes
+  -Jtrim_blocks=True \
+  -Jlstrip_blocks=True
+```

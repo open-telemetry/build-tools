@@ -209,7 +209,7 @@ class CodeRenderer:
 
         for param in jinja_env_params:
             val = jinja_env_params[param]
-            if val in ("True", "False"):
+            if val.lower() in ("true", "false"):
                 setattr(env, param, bool(strtobool(str(val))))
             else:
                 setattr(env, param, val)

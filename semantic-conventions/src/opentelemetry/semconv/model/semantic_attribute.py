@@ -60,7 +60,7 @@ class SemanticAttribute:
     tag: str
     stability: StabilityLevel
     deprecated: str
-    requirement_level: RequirementLevel
+    requirement_level: Optional[RequirementLevel]
     requirement_level_msg: str
     sampling_relevant: bool
     note: str
@@ -136,7 +136,6 @@ class SemanticAttribute:
             required_value_map = {
                 "required": RequirementLevel.REQUIRED,
                 "conditionally_required": RequirementLevel.CONDITIONALLY_REQUIRED,
-                "": RequirementLevel.RECOMMENDED,
                 "recommended": RequirementLevel.RECOMMENDED,
                 "optional": RequirementLevel.OPTIONAL,
             }
@@ -163,7 +162,7 @@ class SemanticAttribute:
             else:
                 requirement_level = required_value_map.get(requirement_level_val)
 
-            if requirement_level is None:
+            if requirement_level_val and requirement_level is None:
                 position = position_data["requirement_level"]
                 msg = "Value '{}' for required field is not allowed".format(
                     requirement_level_val

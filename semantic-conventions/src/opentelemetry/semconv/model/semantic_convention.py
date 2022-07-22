@@ -70,15 +70,6 @@ def parse_semantic_convention_groups(yaml_file):
 
 def SemanticConvention(group):
     type_value = group.get("type")
-    if type_value is None:
-        line = group.lc.data["id"][1] + 1
-        print(
-            "Using default SPAN type for semantic convention '{}' @ line {}".format(
-                group["id"], line
-            ),
-            file=sys.stderr,
-        )
-
     convention_type = parse_semantic_convention_type(type_value)
     if convention_type is None:
         position = group.lc.data["type"] if "type" in group else group.lc.data["id"]

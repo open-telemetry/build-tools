@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/Masterminds/semver/v3"
-	schema "go.opentelemetry.io/otel/schema/v1.0"
-	"go.opentelemetry.io/otel/schema/v1.0/types"
+	schema "go.opentelemetry.io/otel/schema/v1.1"
+	"go.opentelemetry.io/otel/schema/v1.1/types"
 )
 
 var schemaFilePath = flag.String("file", "", "Input schema file path")
@@ -21,8 +21,8 @@ func loadSchemaFromFile(schemaFilePath string, schemaVersion string) error {
 		return err
 	}
 
-	// We only support a specific format version.
-	if telSchema.FileFormat != "1.0.0" {
+	// We only support specific format versions.
+	if telSchema.FileFormat != "1.0.0" && telSchema.FileFormat != "1.1.0" {
 		return fmt.Errorf("incorrect schema file format version: %s", telSchema.FileFormat)
 	}
 

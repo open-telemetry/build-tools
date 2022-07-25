@@ -71,9 +71,9 @@ def parse_semantic_convention_groups(yaml_file):
 def SemanticConvention(group):
     type_value = group.get("type")
     if type_value is None:
-        line = group.lc.data["id"][1] + 1
+        line = group.lc.data["id"][0] + 1
         print(
-            "Using default SPAN type for semantic convention '{}' @ line {}".format(
+            "Please set the type for group '{}' on line {} - defaulting to type 'span'. See https://github.com/open-telemetry/build-tools/blob/main/semantic-conventions/syntax.md#groups".format(
                 group["id"], line
             ),
             file=sys.stderr,

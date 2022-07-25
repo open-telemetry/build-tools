@@ -143,7 +143,7 @@ def add_code_parser(subparsers):
     parser.add_argument(
         "--trim-whitespace",
         help="Allow customising whitespace control in Jinja templates."
-             "Providing the flag will enable both `lstrip_blocks` and `trim_blocks`",
+        "Providing the flag will enable both `lstrip_blocks` and `trim_blocks`",
         required=False,
         action="store_true",
     )

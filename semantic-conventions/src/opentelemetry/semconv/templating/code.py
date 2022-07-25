@@ -16,7 +16,6 @@ import datetime
 import os.path
 import re
 import typing
-from distutils.util import strtobool
 
 import mistune
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -162,20 +161,24 @@ class CodeRenderer:
     matcher = re.compile(pattern)
 
     parameters: typing.Dict[str, str]
-    jinja_env_params: typing.Dict[str, str]
+    trim_whitespace: bool
 
     @staticmethod
-    def from_commandline_params(parameters=None, jinja_env_params=None):
-        return CodeRenderer(
-            CodeRenderer.parse_key_value_params(parameters),
-            CodeRenderer.parse_key_value_params(jinja_env_params),
-        )
+    def from_commandline_params(parameters=None, trim_whitespace=False):
+        if parameters is None:
+            parameters = []
+        params = {}
+        if parameters:
+            for elm in parameters:
+                pairs = elm.split(",")
+                for pair in pairs:
+                    (k, v) = pair.split("=")
+                    params[k] = v
+        return CodeRenderer(params, trim_whitespace)
 
-    def __init__(
-        self, parameters: typing.Dict[str, str], jinja_env_params: typing.Dict[str, str]
-    ):
+    def __init__(self, parameters: typing.Dict[str, str], trim_whitespace: bool):
         self.parameters = parameters
-        self.jinja_env_params = jinja_env_params
+        self.trim_whitespace = trim_whitespace
 
     def get_data_single_file(
         self, semconvset: SemanticConventionSet, template_path: str
@@ -198,7 +201,7 @@ class CodeRenderer:
         return data
 
     @staticmethod
-    def setup_environment(env: Environment, jinja_env_params: typing.Dict[str, str]):
+    def setup_environment(env: Environment, trim_whitespace: bool):
         env.filters["to_doc_brief"] = to_doc_brief
         env.filters["to_const_name"] = to_const_name
         env.filters["merge"] = merge
@@ -206,13 +209,8 @@ class CodeRenderer:
         env.filters["to_html_links"] = to_html_links
         env.filters["regex_replace"] = regex_replace
         env.filters["render_markdown"] = render_markdown
-
-        for param in jinja_env_params:
-            val = jinja_env_params[param]
-            if val.lower() in ("true", "false"):
-                setattr(env, param, bool(strtobool(str(val))))
-            else:
-                setattr(env, param, val)
+        setattr(env, "trim_blocks", trim_whitespace)
+        setattr(env, "lstrip_blocks", trim_whitespace)
 
     @staticmethod
     def prefix_output_file(file_name, pattern, semconv):
@@ -220,19 +218,6 @@ class CodeRenderer:
         dirname = os.path.dirname(file_name)
         value = getattr(semconv, pattern)
         return os.path.join(dirname, to_camelcase(value, True), basename)
-
-    @staticmethod
-    def parse_key_value_params(parameters=None):
-        if parameters is None:
-            parameters = []
-        params = {}
-        if parameters:
-            for elm in parameters:
-                pairs = elm.split(",")
-                for pair in pairs:
-                    (k, v) = pair.split("=")
-                    params[k] = v
-        return params
 
     def render(
         self,
@@ -247,7 +232,7 @@ class CodeRenderer:
             loader=FileSystemLoader(searchpath=folder),
             autoescape=select_autoescape([""]),
         )
-        self.setup_environment(env, self.jinja_env_params)
+        self.setup_environment(env, self.trim_whitespace)
         if pattern:
             for semconv in semconvset.models.values():
                 output_name = self.prefix_output_file(output_file, pattern, semconv)

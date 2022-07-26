@@ -4,8 +4,8 @@ go 1.17
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
-	github.com/stretchr/testify v1.7.0
-	go.opentelemetry.io/otel/schema v0.0.2
+	github.com/stretchr/testify v1.7.1
+	go.opentelemetry.io/otel/schema v0.0.3-0.20220725153023-1eae91b3b099
 )
 
 require (

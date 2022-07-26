@@ -209,8 +209,8 @@ class CodeRenderer:
         env.filters["to_html_links"] = to_html_links
         env.filters["regex_replace"] = regex_replace
         env.filters["render_markdown"] = render_markdown
-        setattr(env, "trim_blocks", trim_whitespace)
-        setattr(env, "lstrip_blocks", trim_whitespace)
+        env.trim_blocks = trim_whitespace
+        env.lstrip_blocks = trim_whitespace
 
     @staticmethod
     def prefix_output_file(file_name, pattern, semconv):

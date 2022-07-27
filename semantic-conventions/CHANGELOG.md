@@ -10,7 +10,7 @@ Please update the changelog as part of any significant pull request.
 
 - Allow customising whitespace control in Jinja templates
   ([#101](https://github.com/open-telemetry/build-tools/pull/101)).
-- Clarify warning & fix line number
+- Clarify warning about convention group type & fix line number
   ([#109](https://github.com/open-telemetry/build-tools/pull/109)).
 
 ## v0.12.1

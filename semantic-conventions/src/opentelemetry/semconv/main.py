@@ -69,7 +69,9 @@ def main():
     if len(semconv.models) == 0:
         parser.error("No semantic convention model found!")
     if args.flavor == "code":
-        renderer = CodeRenderer.from_commandline_params(args.parameters)
+        renderer = CodeRenderer.from_commandline_params(
+            args.parameters, args.trim_whitespace
+        )
         renderer.render(semconv, args.template, args.output, args.pattern)
     elif args.flavor == "markdown":
         process_markdown(semconv, args)
@@ -137,6 +139,13 @@ def add_code_parser(subparsers):
         action="append",
         help="List of key=value pairs separated by comma. These values are fed into the template as is.",
         type=str,
+    )
+    parser.add_argument(
+        "--trim-whitespace",
+        help="Allow customising whitespace control in Jinja templates."
+        " Providing the flag will enable both `lstrip_blocks` and `trim_blocks`",
+        required=False,
+        action="store_true",
     )
 
 

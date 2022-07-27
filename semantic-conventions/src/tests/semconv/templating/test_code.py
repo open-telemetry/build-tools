@@ -10,12 +10,34 @@ def test_codegen_units(test_file_path, read_test_file):
     semconv.finish()
 
     template_path = test_file_path("jinja", "metrics", "units_template")
-    renderer = CodeRenderer({})
+    renderer = CodeRenderer({}, trim_whitespace=False)
 
     output = io.StringIO()
     renderer.render(semconv, template_path, output, None)
     result = output.getvalue()
 
     expected = read_test_file("jinja", "metrics", "expected.java")
+
+    assert result == expected
+
+
+def test_strip_blocks_enabled(test_file_path, read_test_file):
+    """Tests that the Jinja whitespace control params are fed to the Jinja environment"""
+    semconv = SemanticConventionSet(debug=False)
+    semconv.parse(test_file_path("yaml", "metrics", "units.yaml"))
+    semconv.finish()
+
+    template_path = test_file_path(
+        "jinja", "metrics", "units_template_trim_whitespace_enabled"
+    )
+    renderer = CodeRenderer({}, trim_whitespace=True)
+
+    output = io.StringIO()
+    renderer.render(semconv, template_path, output, None)
+    result = output.getvalue()
+
+    expected = read_test_file(
+        "jinja", "metrics", "expected_trim_whitespace_enabled.java"
+    )
 
     assert result == expected

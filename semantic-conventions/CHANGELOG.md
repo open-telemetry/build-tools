@@ -4,8 +4,14 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- ...
+
+## v0.13.0
+
 - Allow customising whitespace control in Jinja templates
   ([#101](https://github.com/open-telemetry/build-tools/pull/101)).
+- Clarify warning & fix line number
+  ([#109](https://github.com/open-telemetry/build-tools/pull/109)).
 
 ## v0.12.1
 

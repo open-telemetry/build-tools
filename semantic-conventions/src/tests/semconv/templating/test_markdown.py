@@ -126,6 +126,9 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testSamplingRelevant(self):
         self.check("markdown/sampling_relevant/")
 
+    def testScope(self):
+        self.check("markdown/scope/")
+
     def check(
         self,
         input_dir: str,

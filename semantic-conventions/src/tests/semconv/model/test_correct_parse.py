@@ -675,13 +675,14 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(len(semconv.models), 1)
 
         expected = {
-            "id": "scope",
-            "prefix": "scope",
+            "id": "scope-id",
+            "prefix": "scopeprefix",
+            "type": "scope",
             "extends": "",
             "brief": "Instrumentation Scope attributes",
             "n_constraints": 0,
             "attributes": [
-                "scope.short_name",
+                "scopeprefix.short_name",
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)

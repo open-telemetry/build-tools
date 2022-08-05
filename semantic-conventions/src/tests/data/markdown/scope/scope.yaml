@@ -1,6 +1,7 @@
 groups:
   - id: scope
-    prefix: scope
+    prefix:
+    type: scope
     brief: >
       Instrumentation Scope attributes
     attributes:

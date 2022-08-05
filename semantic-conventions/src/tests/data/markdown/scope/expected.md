@@ -3,5 +3,5 @@
 <!-- semconv scope -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `scope.short_name` | string | The single-word name for the instrumentation scope. | `mylibrary` | Recommended |
+| `short_name` | string | The single-word name for the instrumentation scope. | `mylibrary` | Recommended |
 <!-- endsemconv -->

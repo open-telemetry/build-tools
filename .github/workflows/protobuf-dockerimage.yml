@@ -15,20 +15,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build protobuf/. -t build-protobuf
-    - name: Push the Docker image
-      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
-      run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-        function tag_and_push {
-          docker tag build-protobuf "otel/build-protobuf:${1}" && docker push "otel/build-protobuf:${1}"
-        }
-        if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-          tag_and_push "latest"
-        elif [[ "${GITHUB_REF}" =~ refs/tags/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-            TAG="${GITHUB_REF#"refs/tags/v"}"
-            tag_and_push "${TAG}"
-        else
-          tag_and_push "${GITHUB_REF#"refs/tags/"}"
-        fi
+
+    # https://github.com/docker/setup-qemu-action
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+
+    # https://github.com/docker/setup-buildx-action
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: docker/setup-buildx-action@v1
+
+    # https://github.com/docker/login-action
+    - name: Login to DockerHub
+      if: github.event_name != 'pull_request'
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # https://github.com/docker/metadata-action
+    - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            otel/build-protobuf
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=schedule
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+
+    # https://github.com/docker/build-push-action
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./protobuf/Dockerfile
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}

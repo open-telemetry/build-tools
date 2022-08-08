@@ -4,7 +4,8 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
-- ...
+- Add a semantic convention type for Instrumentation Scope ("scope")
+  ([#114](https://github.com/open-telemetry/build-tools/pull/114)).
 
 ## v0.13.0
 

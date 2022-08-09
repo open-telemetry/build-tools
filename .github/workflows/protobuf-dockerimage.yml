@@ -14,8 +14,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
     # https://github.com/docker/setup-qemu-action
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
@@ -50,7 +48,6 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
-        context: .
         file: ./protobuf/Dockerfile
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' }}

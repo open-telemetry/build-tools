@@ -19,6 +19,7 @@ ARG UPX_VERSION=3.96
 ARG TARGETARCH=amd64
 
 FROM alpine:${ALPINE_VERSION} as protoc_builder
+RUN echo "Build arch: $TARGETARCH"
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
 
 RUN mkdir -p /out

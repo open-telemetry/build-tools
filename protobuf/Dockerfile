@@ -20,8 +20,12 @@ ARG BUILDPLATFORM BUILDOS BUILDARCH
 ARG TARGETPLATFORM TARGETOS TARGETARCH
 
 FROM alpine:${ALPINE_VERSION} as protoc_builder
-RUN echo "Build platform: $BUILDPLATFORM - $BUILDOS/$BUILDARCH"
-RUN echo "Target platform: $TARGETPLATFORM - $TARGETOS/$TARGETARCH"
+
+ARG BUILDPLATFORM
+RUN echo "Build platform $BUILDPLATFORM"
+ARG TARGETPLATFORM
+RUN echo "Target platform: $TARGETPLATFORM"
+
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
 
 RUN mkdir -p /out

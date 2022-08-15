@@ -16,15 +16,12 @@ ARG PROTOC_GEN_PARQUET_VERSION=0.4.3
 ARG UPX_VERSION=3.96
 
 # Provided by docker buildx when running multi-arch builds via --platform flag
-ARG BUILDPLATFORM BUILDOS BUILDARCH
-ARG TARGETPLATFORM TARGETOS TARGETARCH
+ARG BUILDPLATFORM TARGETPLATFORM TARGETARCH=arm64
 
 FROM alpine:${ALPINE_VERSION} as protoc_builder
 
-ARG BUILDPLATFORM
-RUN echo "Build platform $BUILDPLATFORM"
-ARG TARGETPLATFORM
-RUN echo "Target platform: $TARGETPLATFORM"
+ARG BUILDPLATFORM TARGETPLATFORM TARGETARCH
+RUN echo "Build args: $BUILDPLATFORM -- $TARGETPLATFORM -- $TARGETARCH"
 
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
 

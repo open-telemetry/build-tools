@@ -15,13 +15,9 @@ ARG GRPC_GATEWAY_VERSION=2.6.0
 ARG PROTOC_GEN_PARQUET_VERSION=0.4.3
 ARG UPX_VERSION=3.96
 
-# Provided by docker buildx when running multi-arch builds via --platform flag
-ARG BUILDPLATFORM TARGETPLATFORM TARGETARCH=arm64
-
 FROM alpine:${ALPINE_VERSION} as protoc_builder
-
-ARG BUILDPLATFORM TARGETPLATFORM TARGETARCH
-RUN echo "Build args: $BUILDPLATFORM -- $TARGETPLATFORM -- $TARGETARCH"
+ARG TARGETPLATFORM
+RUN echo "I'm building for $TARGETPLATFORM"
 
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
 

@@ -51,7 +51,8 @@
 						"span",
 						"resource",
 						"metric",
-						"event"
+						"event",
+						"scope"
 					],
 					"description": "The (signal) type of the semantic convention"
 				},

@@ -48,6 +48,7 @@ convtype ::= "span" # Default if not specified
          |   "resource" # see spanspecificfields
          |   "event"    # see eventspecificfields
          |   "metric"   # (currently non-functional)
+         |   "scope"
 
 brief ::= string
 note  ::= string

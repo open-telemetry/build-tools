@@ -1,0 +1,13 @@
+groups:
+  - id: scope
+    prefix: ""
+    type: scope
+    brief: >
+      Instrumentation Scope attributes
+    attributes:
+      - id: short_name
+        type: string
+        requirement_level: recommended
+        brief: >
+          The single-word name for the instrumentation scope.
+        examples: ['mylibrary']

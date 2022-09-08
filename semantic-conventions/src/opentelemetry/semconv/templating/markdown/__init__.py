@@ -166,7 +166,7 @@ class MarkdownRenderer:
                 )
         elif attribute.requirement_level == RequirementLevel.OPTIONAL:
             required = "Optional"
-        else:  # attribute.requirement_level == Required.RECOMMENDED
+        else:  # attribute.requirement_level == Required.RECOMMENDED or None
             # check if there are any notes
             if (
                 not self.render_ctx.is_remove_constraint

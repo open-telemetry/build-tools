@@ -4,7 +4,23 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
-- Add changes here.
+- ...
+
+## v0.14.0
+
+- Add a semantic convention type for Instrumentation Scope ("scope")
+  ([#114](https://github.com/open-telemetry/build-tools/pull/114)).
+
+## v0.13.0
+
+- Allow customising whitespace control in Jinja templates
+  ([#101](https://github.com/open-telemetry/build-tools/pull/101)).
+- Clarify warning about convention group type & fix line number
+  ([#109](https://github.com/open-telemetry/build-tools/pull/109)).
+
+## v0.12.1
+
+- Apply requirement level and msg of referenced attribute by default ([#102](https://github.com/open-telemetry/build-tools/pull/102)).
 
 ## v0.12.0
 

@@ -71,10 +71,11 @@ def parse_semantic_convention_groups(yaml_file):
 def SemanticConvention(group):
     type_value = group.get("type")
     if type_value is None:
-        line = group.lc.data["id"][1] + 1
+        line = group.lc.data["id"][0] + 1
+        doc_url = "https://github.com/open-telemetry/build-tools/blob/main/semantic-conventions/syntax.md#groups"
         print(
-            "Using default SPAN type for semantic convention '{}' @ line {}".format(
-                group["id"], line
+            "Please set the type for group '{}' on line {} - defaulting to type 'span'. See {}".format(
+                group["id"], line, doc_url
             ),
             file=sys.stderr,
         )
@@ -191,6 +192,10 @@ class BaseSemanticConvention(ValidatableYamlNode):
 
 class ResourceSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "resource"
+
+
+class ScopeSemanticConvention(BaseSemanticConvention):
+    GROUP_TYPE_NAME = "scope"
 
 
 class SpanSemanticConvention(BaseSemanticConvention):
@@ -501,6 +506,10 @@ class SemanticConventionSet:
                 attr.attr_type = ref_attr.attr_type
                 if not attr.brief:
                     attr.brief = ref_attr.brief
+                if not attr.requirement_level:
+                    attr.requirement_level = ref_attr.requirement_level
+                    if not attr.requirement_level_msg:
+                        attr.requirement_level_msg = ref_attr.requirement_level_msg
                 if not attr.note:
                     attr.note = ref_attr.note
                 if attr.examples is None:
@@ -578,5 +587,6 @@ CONVENTION_CLS_BY_GROUP_TYPE = {
         EventSemanticConvention,
         MetricSemanticConvention,
         UnitSemanticConvention,
+        ScopeSemanticConvention,
     )
 }

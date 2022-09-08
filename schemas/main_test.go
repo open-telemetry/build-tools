@@ -12,6 +12,9 @@ func TestValidSchema(t *testing.T) {
 
 	err = loadSchemaFromFile("testdata/1.9.0", "1.9.0")
 	assert.NoError(t, err)
+
+	err = loadSchemaFromFile("testdata/1.13.0-example", "1.13.0")
+	assert.NoError(t, err)
 }
 
 func TestInvalidSchemas(t *testing.T) {

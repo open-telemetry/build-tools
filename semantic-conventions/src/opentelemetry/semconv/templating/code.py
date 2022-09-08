@@ -161,9 +161,10 @@ class CodeRenderer:
     matcher = re.compile(pattern)
 
     parameters: typing.Dict[str, str]
+    trim_whitespace: bool
 
     @staticmethod
-    def from_commandline_params(parameters=None):
+    def from_commandline_params(parameters=None, trim_whitespace=False):
         if parameters is None:
             parameters = []
         params = {}
@@ -173,10 +174,11 @@ class CodeRenderer:
                 for pair in pairs:
                     (k, v) = pair.split("=")
                     params[k] = v
-        return CodeRenderer(params)
+        return CodeRenderer(params, trim_whitespace)
 
-    def __init__(self, parameters: typing.Dict[str, str]):
+    def __init__(self, parameters: typing.Dict[str, str], trim_whitespace: bool):
         self.parameters = parameters
+        self.trim_whitespace = trim_whitespace
 
     def get_data_single_file(
         self, semconvset: SemanticConventionSet, template_path: str
@@ -199,7 +201,7 @@ class CodeRenderer:
         return data
 
     @staticmethod
-    def setup_environment(env: Environment):
+    def setup_environment(env: Environment, trim_whitespace: bool):
         env.filters["to_doc_brief"] = to_doc_brief
         env.filters["to_const_name"] = to_const_name
         env.filters["merge"] = merge
@@ -207,6 +209,8 @@ class CodeRenderer:
         env.filters["to_html_links"] = to_html_links
         env.filters["regex_replace"] = regex_replace
         env.filters["render_markdown"] = render_markdown
+        env.trim_blocks = trim_whitespace
+        env.lstrip_blocks = trim_whitespace
 
     @staticmethod
     def prefix_output_file(file_name, pattern, semconv):
@@ -228,7 +232,7 @@ class CodeRenderer:
             loader=FileSystemLoader(searchpath=folder),
             autoescape=select_autoescape([""]),
         )
-        self.setup_environment(env)
+        self.setup_environment(env, self.trim_whitespace)
         if pattern:
             for semconv in semconvset.models.values():
                 output_name = self.prefix_output_file(output_file, pattern, semconv)

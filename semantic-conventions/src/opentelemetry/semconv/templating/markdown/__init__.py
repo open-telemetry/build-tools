@@ -232,18 +232,17 @@ class MarkdownRenderer:
             )
 
         output.write(
-            "| Name     | Instrument    | Unit (UCUM) | Description    |\n"
-            "| -------- | ------------- | ----------- | -------------- |\n"
+            "| Name     | Instrument Type | Unit (UCUM) | Description    |\n"
+            "| -------- | --------------- | ----------- | -------------- |\n"
         )
-        for metric in semconv.metrics:
-            output.write(
-                "| `{}` | {} | `{}` | {} |\n".format(
-                    metric.fqn,
-                    metric.instrument,
-                    metric.units,
-                    metric.brief,
-                )
+        output.write(
+            "| `{}` | {} | `{}` | {} |\n".format(
+                semconv.name,
+                semconv.instrument_markdown_fmt,
+                semconv.units,
+                semconv.brief,
             )
+        )
 
     def to_markdown_anyof(self, anyof: AnyOf, output: io.StringIO):
         """

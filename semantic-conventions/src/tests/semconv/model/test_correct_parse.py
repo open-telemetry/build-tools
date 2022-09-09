@@ -198,12 +198,12 @@ class TestCorrectParse(unittest.TestCase):
     def test_metrics_http(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("yaml/http_metrics.yaml"))
-        self.assertEqual(len(semconv.models), 3)
+        self.assertEqual(len(semconv.models), 8)
         semconv.parse(self.load_file("yaml/general.yaml"))
         semconv.parse(self.load_file("yaml/http.yaml"))
 
         metric_semconvs = cast(
-            List[MetricSemanticConvention], list(semconv.models.values())[:3]
+            List[MetricSemanticConvention], list(semconv.models.values())[:2]
         )
 
         expected = {
@@ -211,53 +211,28 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "http",
             "extends": "",
             "n_constraints": 0,
-            "attributes": [
-                "http.method",
-                "http.host",
-                "http.scheme",
-                "http.status_code",
-            ],
+            "attributes": [],
         }
         self.semantic_convention_check(metric_semconvs[0], expected)
 
         expected = {
-            "id": "metric.http.client",
+            "id": "metric.http.client.duration",
             "prefix": "http",
             "extends": "metric.http",
-            "n_constraints": 1,
-            "attributes": ["net.peer.name", "net.peer.port", "net.peer.ip"],
-            "metrics": [
-                {
-                    "id": "client.duration",
-                    "instrument": "Histogram",
-                    "units": "ms",
-                }
+            "n_constraints": 0,
+            "name": "http.client.duration",
+            "units": "ms",
+            "instrument": "histogram",
+            "attributes": [
+                "http.method",
+                "http.status_code",
+                "http.flavor",
+                "net.peer.name",
+                "net.peer.port",
+                "net.sock.peer.addr",
             ],
         }
         self.semantic_convention_check(metric_semconvs[1], expected)
-        self.metric_check(metric_semconvs[1].metrics, expected.get("metrics"))
-
-        expected = {
-            "id": "metric.http.server",
-            "prefix": "http",
-            "extends": "metric.http",
-            "n_constraints": 1,
-            "attributes": ["http.server_name", "net.host.name", "net.host.port"],
-            "metrics": [
-                {
-                    "id": "server.duration",
-                    "instrument": "Histogram",
-                    "units": "ms",
-                },
-                {
-                    "id": "server.active_requests",
-                    "instrument": "UpDownCounter",
-                    "units": "{requests}",
-                },
-            ],
-        }
-        self.semantic_convention_check(metric_semconvs[2], expected)
-        self.metric_check(metric_semconvs[2].metrics, expected.get("metrics"))
 
     def test_resource(self):
         semconv = SemanticConventionSet(debug=False)
@@ -752,12 +727,6 @@ class TestCorrectParse(unittest.TestCase):
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
-
-    def metric_check(self, metrics: Tuple[MetricSemanticConvention.Metric], expected):
-        for m, ex in zip(metrics, expected):
-            self.assertEqual(m.id, ex["id"])
-            self.assertEqual(str(m.instrument), ex["instrument"])
-            self.assertEqual(m.units, ex["units"])
 
     _TEST_DIR = os.path.dirname(__file__)
 

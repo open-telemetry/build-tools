@@ -16,7 +16,7 @@ import sys
 import typing
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Tuple, Union
+from typing import Tuple, Union, Dict
 
 from ruamel.yaml import YAML
 
@@ -247,50 +247,42 @@ class UnitSemanticConvention(BaseSemanticConvention):
 class MetricSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "metric"
 
-    allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + ("metrics",)
+    allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + (
+        "name",
+        "units",
+        "instrument"
+    )
 
-    class Metric:
-        allowed_instruments: Tuple[str, ...] = (
-            "Counter",
-            "UpDownCounter",
-            "Histogram",
-            "Gauge",
-        )
+    yaml_to_markdown_instrument_repr: Dict[str, str] = {
+        "counter": "Counter",
+        "updowncounter": "UpDownCounter",
+        "histogram": "Histogram",
+        "gauge": "Gauge",
+    }
 
-        def __init__(self, metric, parent_prefix, position):
-            self.id: str = metric.get("id")
-            self.fqn = "{}.{}".format(parent_prefix, self.id)
-            self._position = position
-            self.units: str = metric.get("units")
-            self.brief: str = metric.get("brief")
-            self.instrument: str = metric.get("instrument")
-
-            if self.instrument not in self.allowed_instruments:
-                raise ValidationError.from_yaml_pos(
-                    self._position,
-                    "Instrument '{}' is not a valid instrument name".format(
-                        self.instrument
-                    ),
-                )
-            if None in [self.instrument, self.id, self.units, self.brief]:
-                raise ValidationError.from_yaml_pos(
-                    self._position,
-                    "id, instrument, units, and brief must all be defined for concrete metrics",
-                )
+    allowed_instruments: Tuple[str, ...] = tuple(yaml_to_markdown_instrument_repr.keys()) + (None,)
 
     def __init__(self, group):
         super().__init__(group)
-        self.metrics = ()
-        if group.get("metrics"):
-            self.metrics: Tuple[MetricSemanticConvention.Metric, ...] = tuple(
-                map(
-                    lambda m: MetricSemanticConvention.Metric(
-                        m, self.prefix, self._position
-                    ),
-                    group.get("metrics"),
-                )
+        self.name = group.get("name")
+        self.units = group.get("units")
+        self.instrument = group.get("instrument")
+        self.instrument_markdown_fmt = self.yaml_to_markdown_instrument_repr.get(self.instrument)
+        self.validate()
+
+    def validate(self):
+        val_tuple = (self.name, self.units, self.instrument)
+        if not all(val_tuple) and any(val_tuple):
+            raise ValidationError.from_yaml_pos(
+                self._position,
+                "Either all or none of name, units, and instrument must be defined"
             )
 
+        if self.instrument not in self.allowed_instruments:
+            raise ValidationError.from_yaml_pos(
+                self._position,
+                "Instrument '{}' is not a valid instrument name".format(self.instrument)
+            )
 
 @dataclass
 class SemanticConventionSet:

@@ -6,59 +6,165 @@ groups:
     note: >
         These conventions can be used for http and https schemes
         and various HTTP versions like 1.1, 2 and SPDY.
+
+  - id: metric.http.client.duration
+    prefix: http
+    type: metric
+    extends: metric.http
+    name: http.client.duration
+    brief: "Measures the duration of the outbound HTTP request."
+    instrument: histogram
+    units: ms
     attributes:
       - ref: http.method
         requirement_level: required
-      - ref: http.host
-        requirement_level:
-          conditionally_required: "See attribute alternatives"
-      - ref: http.scheme
-        requirement_level:
-          conditionally_required: "See attribute alternative"
       - ref: http.status_code
-
-  - id: metric.http.client
-    prefix: http
-    type: metric
-    extends: metric.http
-    brief: 'Semantic Convention for HTTP Client'
-    constraints:
-      - any_of:
-          - [http.url]
-          - [http.scheme, http.host, http.target]
-          - [http.scheme, net.peer.name, net.peer.port, http.target]
-          - [http.scheme, net.peer.ip, net.peer.port, http.target]
-    attributes:
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent."
+      - ref: http.flavor
+        requirement_level: recommended
       - ref: net.peer.name
+        requirement_level: required
       - ref: net.peer.port
-      - ref: net.peer.ip
-    metrics:
-      - id: client.duration
-        brief: "Measures the duration of the outbound HTTP request."
-        instrument: Histogram
-        units: ms
+        requirement_level:
+          conditionally_required: If not default (`80` for `http`, `443` for `https`).
+      - ref: net.sock.peer.addr
+        requirement_level: recommended
 
-  - id: metric.http.server
+  - id: metric.http.client.request.size
     prefix: http
     type: metric
     extends: metric.http
-    brief: "Semantic Convention for HTTP Server"
-    constraints:
-      - any_of:
-          - [http.scheme, http.host, http.target]
-          - [http.scheme, http.server_name, net.host.port, http.target]
-          - [http.scheme, net.host.name, net.host.port, http.target]
-          - [http.url]
+    name: http.client.request.size
+    brief: "Measures the size of HTTP request messages (compressed)."
+    instrument: histogram
+    units: By
     attributes:
-      - ref: http.server_name
+      - ref: http.method
+        requirement_level: required
+      - ref: http.status_code
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent."
+      - ref: http.flavor
+        requirement_level: recommended
+      - ref: net.peer.name
+        requirement_level: required
+      - ref: net.peer.port
+        requirement_level:
+          conditionally_required: If not default (`80` for `http`, `443` for `https`).
+      - ref: net.sock.peer.addr
+        requirement_level: recommended
+
+  - id: metric.http.client.response.size
+    prefix: http
+    type: metric
+    extends: metric.http
+    name: http.client.response.size
+    brief: "Measures the size of HTTP response messages (compressed)."
+    instrument: histogram
+    units: By
+    attributes:
+      - ref: http.method
+        requirement_level: required
+      - ref: http.status_code
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent."
+      - ref: http.flavor
+        requirement_level: recommended
+      - ref: net.peer.name
+        requirement_level: required
+      - ref: net.peer.port
+        requirement_level:
+          conditionally_required: "if not default (`80` for `http`, `443` for `https`)."
+      - ref: net.sock.peer.addr
+        requirement_level: recommended
+
+  - id: metric.http.server.duration
+    prefix: http
+    type: metric
+    extends: metric.http
+    name: http.server.duration
+    brief: "Measures the duration inbound HTTP requests."
+    instrument: histogram
+    units: ms
+    attributes:
+      - ref: http.method
+        requirement_level: required
+      - ref: http.status_code
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent."
+      - ref: http.scheme
+        requirement_level: required
+      - ref: http.flavor
+        requirement_level: recommended
       - ref: net.host.name
+        requirement_level: required
       - ref: net.host.port
-    metrics:
-      - id: server.duration
-        brief: "Measures the duration of the inbound HTTP request."
-        instrument: Histogram
-        units: ms
-      - id: server.active_requests
-        brief: "Measures the number of concurrent HTTP requests that are currently in-flight."
-        instrument: UpDownCounter
-        units: "{requests}"
+        requirement_level:
+          conditionally_required: "if not default (`80` for `http`, `443` for `https`)."
+
+  - id: metric.http.server.request.size
+    prefix: http
+    type: metric
+    extends: metric.http
+    name: http.server.request.size
+    brief: "Measures the size of HTTP request messages (compressed)."
+    instrument: histogram
+    units: By
+    attributes:
+      - ref: http.method
+        requirement_level: required
+      - ref: http.status_code
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent."
+      - ref: http.scheme
+        requirement_level: required
+      - ref: http.flavor
+        requirement_level: recommended
+      - ref: net.host.name
+        requirement_level: required
+      - ref: net.host.port
+        requirement_level:
+          conditionally_required: "if not default (`80` for `http`, `443` for `https`)."
+
+  - id: metric.http.server.response.size
+    prefix: http
+    type: metric
+    extends: metric.http
+    name: http.server.response.size
+    brief: "Measures the size of HTTP response messages (compressed)."
+    instrument: histogram
+    units: By
+    attributes:
+      - ref: http.method
+        requirement_level: required
+      - ref: http.status_code
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent."
+      - ref: http.scheme
+        requirement_level: required
+      - ref: http.flavor
+        requirement_level: recommended
+      - ref: net.host.name
+        requirement_level: required
+      - ref: net.host.port
+        requirement_level:
+          conditionally_required: "if not default (`80` for `http`, `443` for `https`)."
+
+  - id: metric.http.server.active_requests
+    prefix: http
+    type: metric
+    extends: metric.http
+    name: http.server.request.size
+    brief: "Measures the number of concurrent HTTP requests that are currently in-flight."
+    instrument: updowncounter
+    units: "{requests}"
+    attributes:
+      - ref: http.method
+        requirement_level: required
+      - ref: http.scheme
+        requirement_level: required
+      - ref: http.flavor
+        requirement_level: recommended
+      - ref: net.host.name
+        requirement_level: required

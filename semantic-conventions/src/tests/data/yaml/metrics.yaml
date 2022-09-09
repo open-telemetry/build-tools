@@ -20,5 +20,3 @@ groups:
       - ref: http.status_code
         requirement_level:
           conditionally_required: "if and only if one was received/sent."
-      - ref: http.flavor
-        requirement_level: recommended

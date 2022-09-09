@@ -226,7 +226,6 @@ class TestCorrectParse(unittest.TestCase):
             "attributes": [
                 "http.method",
                 "http.status_code",
-                "http.flavor",
             ],
         }
         self.semantic_convention_check(metric_semconvs[1], expected)

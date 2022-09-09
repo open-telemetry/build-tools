@@ -16,7 +16,7 @@ import sys
 import typing
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Tuple, Union, Dict
+from typing import Dict, Tuple, Union
 
 from ruamel.yaml import YAML
 
@@ -250,7 +250,7 @@ class MetricSemanticConvention(BaseSemanticConvention):
     allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + (
         "name",
         "units",
-        "instrument"
+        "instrument",
     )
 
     yaml_to_markdown_instrument_repr: Dict[str, str] = {
@@ -260,14 +260,18 @@ class MetricSemanticConvention(BaseSemanticConvention):
         "gauge": "Gauge",
     }
 
-    allowed_instruments: Tuple[str, ...] = tuple(yaml_to_markdown_instrument_repr.keys()) + (None,)
+    allowed_instruments: Tuple[str, ...] = tuple(
+        yaml_to_markdown_instrument_repr.keys()
+    ) + (None,)
 
     def __init__(self, group):
         super().__init__(group)
         self.name = group.get("name")
         self.units = group.get("units")
         self.instrument = group.get("instrument")
-        self.instrument_markdown_fmt = self.yaml_to_markdown_instrument_repr.get(self.instrument)
+        self.instrument_markdown_fmt = self.yaml_to_markdown_instrument_repr.get(
+            self.instrument
+        )
         self.validate()
 
     def validate(self):
@@ -275,14 +279,17 @@ class MetricSemanticConvention(BaseSemanticConvention):
         if not all(val_tuple) and any(val_tuple):
             raise ValidationError.from_yaml_pos(
                 self._position,
-                "Either all or none of name, units, and instrument must be defined"
+                "Either all or none of name, units, and instrument must be defined",
             )
 
         if self.instrument not in self.allowed_instruments:
             raise ValidationError.from_yaml_pos(
                 self._position,
-                "Instrument '{}' is not a valid instrument name".format(self.instrument)
+                "Instrument '{}' is not a valid instrument name".format(
+                    self.instrument
+                ),
             )
+
 
 @dataclass
 class SemanticConventionSet:

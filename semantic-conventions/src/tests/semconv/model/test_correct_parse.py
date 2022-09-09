@@ -14,7 +14,7 @@
 
 import os
 import unittest
-from typing import List, Tuple, cast
+from typing import List, cast
 
 from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import StabilityLevel
@@ -195,10 +195,10 @@ class TestCorrectParse(unittest.TestCase):
         }
         self.semantic_convention_check(list(semconv.models.values())[2], expected)
 
-    def test_metrics_http(self):
+    def test_metrics(self):
         semconv = SemanticConventionSet(debug=False)
-        semconv.parse(self.load_file("yaml/http_metrics.yaml"))
-        self.assertEqual(len(semconv.models), 8)
+        semconv.parse(self.load_file("yaml/metrics.yaml"))
+        self.assertEqual(len(semconv.models), 2)
         semconv.parse(self.load_file("yaml/general.yaml"))
         semconv.parse(self.load_file("yaml/http.yaml"))
 
@@ -207,8 +207,8 @@ class TestCorrectParse(unittest.TestCase):
         )
 
         expected = {
-            "id": "metric.http",
-            "prefix": "http",
+            "id": "metric.foo",
+            "prefix": "foo",
             "extends": "",
             "n_constraints": 0,
             "attributes": [],
@@ -216,20 +216,17 @@ class TestCorrectParse(unittest.TestCase):
         self.semantic_convention_check(metric_semconvs[0], expected)
 
         expected = {
-            "id": "metric.http.client.duration",
-            "prefix": "http",
-            "extends": "metric.http",
+            "id": "metric.foo.size",
+            "prefix": "foo",
+            "extends": "metric.foo",
             "n_constraints": 0,
-            "name": "http.client.duration",
-            "units": "ms",
+            "name": "foo.size",
+            "units": "{bars}",
             "instrument": "histogram",
             "attributes": [
                 "http.method",
                 "http.status_code",
                 "http.flavor",
-                "net.peer.name",
-                "net.peer.port",
-                "net.sock.peer.addr",
             ],
         }
         self.semantic_convention_check(metric_semconvs[1], expected)

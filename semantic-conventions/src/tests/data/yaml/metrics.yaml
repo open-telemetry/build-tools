@@ -1,0 +1,24 @@
+groups:
+  - id: metric.foo
+    prefix: foo
+    type: metric
+    brief: "This document defines foo."
+    note: >
+        Details about foo.
+
+  - id: metric.foo.size
+    prefix: foo
+    type: metric
+    extends: metric.foo
+    name: foo.size
+    brief: "Measures the size of foo."
+    instrument: histogram
+    units: "{bars}"
+    attributes:
+      - ref: http.method
+        requirement_level: required
+      - ref: http.status_code
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent."
+      - ref: http.flavor
+        requirement_level: recommended

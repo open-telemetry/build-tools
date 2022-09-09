@@ -248,7 +248,7 @@ class MetricSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "metric"
 
     allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + (
-        "name",
+        "metric_name",
         "units",
         "instrument",
     )
@@ -266,7 +266,7 @@ class MetricSemanticConvention(BaseSemanticConvention):
 
     def __init__(self, group):
         super().__init__(group)
-        self.name = group.get("name")
+        self.name = group.get("metric_name")
         self.units = group.get("units")
         self.instrument = group.get("instrument")
         self.instrument_markdown_fmt = self.yaml_to_markdown_instrument_repr.get(

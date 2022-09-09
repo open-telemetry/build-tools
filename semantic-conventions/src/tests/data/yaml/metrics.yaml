@@ -10,7 +10,7 @@ groups:
     prefix: foo
     type: metric
     extends: metric.foo
-    name: foo.size
+    metric_name: foo.size
     brief: "Measures the size of foo."
     instrument: histogram
     units: "{bars}"

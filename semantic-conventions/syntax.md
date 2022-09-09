@@ -40,14 +40,14 @@ All attributes are lower case.
 groups ::= semconv
        | semconv groups
 
-semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields] [metrics]
+semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields] [instrument] [metric_name] [units]
 
 id    ::= string
 
 convtype ::= "span" # Default if not specified
          |   "resource" # see spanspecificfields
          |   "event"    # see eventspecificfields
-         |   "metric"   # (currently non-functional)
+         |   "metric"   
          |   "scope"
 
 brief ::= string
@@ -119,18 +119,14 @@ span_kind ::= "client"
 
 events ::= id {id} # MUST point to an existing event group
 
-name ::= string
+metric_name ::= string
 
-instrument ::=  "Counter" 
-            | "Histogram" 
-            | "Gauge" 
-            | "UpDownCounter" 
+instrument ::=  "counter" 
+            | "histogram" 
+            | "gauge" 
+            | "updowncounter" 
             
-units ::= string            
-
-metric ::= id instrument units brief
-
-metrics ::= {metric}
+units ::= string
 ```
 
 ## Semantics

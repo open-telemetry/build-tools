@@ -40,7 +40,7 @@ All attributes are lower case.
 groups ::= semconv
        | semconv groups
 
-semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields] [instrument] [metric_name] [units]
+semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields] [instrument] [metric_name] [unit]
 
 id    ::= string
 
@@ -126,7 +126,7 @@ instrument ::=  "counter"
             | "gauge" 
             | "updowncounter" 
             
-units ::= string
+unit ::= string
 ```
 
 ## Semantics
@@ -182,7 +182,7 @@ The following is only valid if `type` is `metric`:
   - `instrument`, the [instrument type]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/api.md#instrument) 
   that *should* be used to record the metric. These include `counter`, `gauge`, `updowncounter`, and `histogram`. Whether the instrument 
   is synchronous or asynchronous is an implementation detail and should not be specified. 
-  - `unit`, the units in which the metric is measured, which should adhere to 
+  - `unit`, the unit in which the metric is measured, which should adhere to 
     [the guidelines](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-units). 
 
 ### Attributes

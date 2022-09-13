@@ -237,9 +237,9 @@ class MarkdownRenderer:
         )
         output.write(
             "| `{}` | {} | `{}` | {} |\n".format(
-                semconv.name,
+                semconv.metric_name,
                 semconv.instrument_markdown_fmt,
-                semconv.units,
+                semconv.unit,
                 semconv.brief,
             )
         )

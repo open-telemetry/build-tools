@@ -220,8 +220,8 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "foo",
             "extends": "metric.foo",
             "n_constraints": 0,
-            "name": "foo.size",
-            "units": "{bars}",
+            "metric_name": "foo.size",
+            "unit": "{bars}",
             "instrument": "histogram",
             "attributes": [
                 "http.method",
@@ -229,6 +229,9 @@ class TestCorrectParse(unittest.TestCase):
             ],
         }
         self.semantic_convention_check(metric_semconvs[1], expected)
+        self.assertEqual(metric_semconvs[1].unit, expected["unit"])
+        self.assertEqual(metric_semconvs[1].instrument, expected["instrument"])
+        self.assertEqual(metric_semconvs[1].metric_name, expected["metric_name"])
 
     def test_resource(self):
         semconv = SemanticConventionSet(debug=False)

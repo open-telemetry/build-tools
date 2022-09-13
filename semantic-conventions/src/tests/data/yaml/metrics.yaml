@@ -13,7 +13,7 @@ groups:
     metric_name: foo.size
     brief: "Measures the size of foo."
     instrument: histogram
-    units: "{bars}"
+    unit: "{bars}"
     attributes:
       - ref: http.method
         requirement_level: required

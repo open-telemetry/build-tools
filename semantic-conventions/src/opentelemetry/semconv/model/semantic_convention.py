@@ -249,7 +249,7 @@ class MetricSemanticConvention(BaseSemanticConvention):
 
     allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + (
         "metric_name",
-        "units",
+        "unit",
         "instrument",
     )
 
@@ -266,8 +266,8 @@ class MetricSemanticConvention(BaseSemanticConvention):
 
     def __init__(self, group):
         super().__init__(group)
-        self.name = group.get("metric_name")
-        self.units = group.get("units")
+        self.metric_name = group.get("metric_name")
+        self.unit = group.get("unit")
         self.instrument = group.get("instrument")
         self.instrument_markdown_fmt = self.yaml_to_markdown_instrument_repr.get(
             self.instrument
@@ -275,7 +275,7 @@ class MetricSemanticConvention(BaseSemanticConvention):
         self.validate()
 
     def validate(self):
-        val_tuple = (self.name, self.units, self.instrument)
+        val_tuple = (self.metric_name, self.unit, self.instrument)
         if not all(val_tuple) and any(val_tuple):
             raise ValidationError.from_yaml_pos(
                 self._position,

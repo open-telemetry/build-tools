@@ -126,7 +126,7 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_metric_tables(self):
         self.check(
             "markdown/metrics_tables",
-            extra_yaml_files=["yaml/general.yaml", "yaml/metrics.yaml"],
+            extra_yaml_files=["yaml/general.yaml", "yaml/http.yaml", "yaml/metrics.yaml"],
         )
 
     def testSamplingRelevant(self):

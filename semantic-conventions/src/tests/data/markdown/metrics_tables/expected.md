@@ -6,6 +6,7 @@
 | -------- | --------------- | ----------- | -------------- |
 | `foo.size` | Histogram | `{bars}` | Measures the size of foo. |
 <!-- endsemconv -->
+
 **Attributes for `foo.size`**
 <!-- semconv metric.foo.size -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |

@@ -16,6 +16,9 @@
 					},
 					{
 						"allOf": [{"$ref": "#/definitions/EventSemanticConvention"}]
+					},
+					{
+						"allOf": [{"$ref": "#/definitions/MetricSemanticConvention"}]
 					}
 				]
 			}
@@ -163,6 +166,33 @@
 				{"required": ["prefix"]},
 				{"required": ["name"]}
 			]
+		},
+		"MetricSemanticConvention": {
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"properties": {
+				"instrument": {
+					"type": "string",
+					"description": "The instrument used to record the metric.",
+					"enum": [
+						"counter",
+						"gauge",
+						"histogram",
+						"updowncounter"
+					]
+				},
+				"metric_name": {
+					"type": "string",
+					"description": "The name of the metric."
+				},
+				"type": {
+					"type": "string",
+					"const": "metric"
+				},
+				"unit": {
+					"type": "string",
+					"description": "The unit in which the metric is measured in."
+				}
+			}
 		},
 		"SemanticConvention": {
 			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],

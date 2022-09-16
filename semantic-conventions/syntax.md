@@ -180,8 +180,9 @@ The following is only valid if `type` is `metric`:
 
   - `metric_name`, the metric name as described by the [OpenTelemetry Specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/data-model.md#timeseries-model). 
   - `instrument`, the [instrument type]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/api.md#instrument) 
-  that *should* be used to record the metric. These include `counter`, `gauge`, `updowncounter`, and `histogram`. Whether the instrument 
-  is synchronous or asynchronous is an implementation detail and should not be specified. 
+  that should be used to record the metric. Note that the semantic conventions must be written 
+  using the names of the synchronous instrument types (`counter`, `gauge`, `updowncounter` and `histogram`).
+  For more details: [Metrics semantic conventions - Instrument types](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-types).
   - `unit`, the unit in which the metric is measured, which should adhere to 
     [the guidelines](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-units). 
 

@@ -83,8 +83,8 @@ convention that have the tag `network`.
 `<!-- semconv http.server(tag=network, full) -->` will print the constraints and attributes of both `http` and `http.server`
 semantic conventions that have the tag `network`.
 
-`<!-- semconv metric.http.server(metric_table) -->` will print a table of metrics with all metrics prefixed with 
-`metric.http.server`.
+`<!-- semconv metric.http.server.active_requests(metric_table) -->` will print a table describing a single metric 
+`http.server.active_requests`. 
 
 ## Code Generator
 

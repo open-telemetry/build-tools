@@ -119,6 +119,8 @@ span_kind ::= "client"
 
 events ::= id {id} # MUST point to an existing event group
 
+name ::= string
+
 metric_name ::= string
 
 instrument ::=  "counter" 

@@ -198,7 +198,7 @@ class TestCorrectParse(unittest.TestCase):
     def test_metrics(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("yaml/metrics.yaml"))
-        self.assertEqual(len(semconv.models), 2)
+        self.assertEqual(len(semconv.models), 3)
         semconv.parse(self.load_file("yaml/general.yaml"))
         semconv.parse(self.load_file("yaml/http.yaml"))
 
@@ -211,7 +211,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "foo",
             "extends": "",
             "n_constraints": 0,
-            "attributes": [],
+            "attributes": ["foo.egg.type"],
         }
         self.semantic_convention_check(metric_semconvs[0], expected)
 

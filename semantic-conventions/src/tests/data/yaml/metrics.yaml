@@ -5,6 +5,11 @@ groups:
     brief: "This document defines foo."
     note: >
         Details about foo.
+    attributes: 
+      - id: egg.type
+        type: string
+        brief: 'Type of egg.'
+        examples: ["chicken", "emu", "dragon"]
 
   - id: metric.foo.size
     prefix: foo
@@ -20,3 +25,18 @@ groups:
       - ref: http.status_code
         requirement_level:
           conditionally_required: "if and only if one was received/sent."
+
+  - id: metric.foo.active_eggs
+    prefix: foo
+    type: metric
+    extends: metric.foo
+    metric_name: foo.active_eggs
+    brief: "Measures how many eggs are currently active."
+    instrument: updowncounter
+    unit: "{cartons}"
+    attributes: 
+      - ref: http.method
+        requirement_level: optional
+      - ref: foo.egg.type
+        requirement_level: 
+          conditionally_required: "if available to instrumentation."

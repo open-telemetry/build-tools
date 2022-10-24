@@ -208,10 +208,10 @@ class TestCorrectParse(unittest.TestCase):
 
         expected = {
             "id": "metric.foo",
-            "prefix": "foo",
+            "prefix": "bar",
             "extends": "",
             "n_constraints": 0,
-            "attributes": ["foo.egg.type"],
+            "attributes": ["bar.egg.type"],
         }
         self.semantic_convention_check(metric_semconvs[0], expected)
 

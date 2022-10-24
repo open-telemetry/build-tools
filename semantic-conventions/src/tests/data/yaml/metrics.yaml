@@ -1,6 +1,6 @@
 groups:
   - id: metric.foo
-    prefix: foo
+    prefix: bar
     type: metric
     brief: "This document defines foo."
     note: >
@@ -37,6 +37,6 @@ groups:
     attributes: 
       - ref: http.method
         requirement_level: optional
-      - ref: foo.egg.type
+      - ref: bar.egg.type
         requirement_level: 
           conditionally_required: "if available to instrumentation."

@@ -26,6 +26,6 @@
 <!-- semconv metric.foo.active_eggs -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `foo.egg.type` | string | Type of egg. | `chicken`; `emu`; `dragon` | Conditionally Required: if available to instrumentation. |
+| `bar.egg.type` | string | Type of egg. | `chicken`; `emu`; `dragon` | Conditionally Required: if available to instrumentation. |
 | `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | Optional |
 <!-- endsemconv -->

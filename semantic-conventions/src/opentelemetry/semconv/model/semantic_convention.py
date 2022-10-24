@@ -244,7 +244,11 @@ class UnitSemanticConvention(BaseSemanticConvention):
         self.members = UnitMember.parse(group.get("members"))
 
 
-class MetricSemanticConvention(BaseSemanticConvention):
+class MetricGroupSemanticConvention(BaseSemanticConvention):
+    GROUP_TYPE_NAME = "metric_group"
+
+
+class MetricSemanticConvention(MetricGroupSemanticConvention):
     GROUP_TYPE_NAME = "metric"
 
     allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + (
@@ -262,7 +266,7 @@ class MetricSemanticConvention(BaseSemanticConvention):
 
     allowed_instruments: Tuple[str, ...] = tuple(
         yaml_to_markdown_instrument_repr.keys()
-    ) + (None,)
+    )
 
     def __init__(self, group):
         super().__init__(group)
@@ -276,10 +280,10 @@ class MetricSemanticConvention(BaseSemanticConvention):
 
     def validate(self):
         val_tuple = (self.metric_name, self.unit, self.instrument)
-        if not all(val_tuple) and any(val_tuple):
+        if not all(val_tuple):
             raise ValidationError.from_yaml_pos(
                 self._position,
-                "Either all or none of name, units, and instrument must be defined",
+                "All of metric_name, units, and instrument must be defined",
             )
 
         if self.instrument not in self.allowed_instruments:
@@ -584,6 +588,7 @@ CONVENTION_CLS_BY_GROUP_TYPE = {
         SpanSemanticConvention,
         ResourceSemanticConvention,
         EventSemanticConvention,
+        MetricGroupSemanticConvention,
         MetricSemanticConvention,
         UnitSemanticConvention,
         ScopeSemanticConvention,

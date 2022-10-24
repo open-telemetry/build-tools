@@ -1,7 +1,7 @@
 groups:
   - id: metric.foo
     prefix: bar
-    type: metric
+    type: metric_group
     brief: "This document defines foo."
     note: >
         Details about foo.

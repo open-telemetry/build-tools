@@ -54,6 +54,7 @@
 						"span",
 						"resource",
 						"metric",
+						"metric_group",
 						"event",
 						"scope"
 					],
@@ -167,8 +168,24 @@
 				{"required": ["name"]}
 			]
 		},
+		"MetricGroupSemanticConvention": {
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"required": ["type"],
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "metric_group"
+				}
+			}
+		},
 		"MetricSemanticConvention": {
 			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"required": [
+				"type",
+				"metric_name",
+				"instrument",
+				"unit"
+			],
 			"properties": {
 				"instrument": {
 					"type": "string",

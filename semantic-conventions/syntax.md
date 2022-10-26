@@ -40,14 +40,15 @@ All attributes are lower case.
 groups ::= semconv
        | semconv groups
 
-semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields] [instrument] [metric_name] [unit]
+semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields]
 
 id    ::= string
 
 convtype ::= "span" # Default if not specified
          |   "resource" # see spanspecificfields
          |   "event"    # see eventspecificfields
-         |   "metric"   
+         |   "metric"   # see metricfields
+         |   "metric_group"
          |   "scope"
 
 brief ::= string
@@ -107,6 +108,7 @@ include ::= id
 
 specificfields ::= spanfields
                |   eventfields
+               |   metricfields
 
 spanfields ::= [events] [span_kind]
 eventfields ::= [name]
@@ -121,13 +123,13 @@ events ::= id {id} # MUST point to an existing event group
 
 name ::= string
 
-metric_name ::= string
+metricfields ::= metric_name instrument unit
 
+metric_name ::= string
 instrument ::=  "counter" 
             | "histogram" 
             | "gauge" 
             | "updowncounter" 
-            
 unit ::= string
 ```
 
@@ -176,16 +178,24 @@ The following is only valid if `type` is `event`:
   If not specified, the `prefix` is used. If `prefix` is empty (or unspecified),
   `name` is required.
 
+#### Metric Group semantic convention
+
+Metric group inherits all from the base semantic convention, and does not 
+add any additional fields. Its only requirement is that `type` is `metric_group`. 
+
+The metric group semconv is intended to be a group where metric attributes 
+can be defined and then referenced from other `metric` groups. 
+
 #### Metric semantic convention
 
 The following is only valid if `type` is `metric`:
 
-  - `metric_name`, the metric name as described by the [OpenTelemetry Specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/data-model.md#timeseries-model). 
-  - `instrument`, the [instrument type]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/api.md#instrument) 
+  - `metric_name`, required, the metric name as described by the [OpenTelemetry Specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/data-model.md#timeseries-model). 
+  - `instrument`, required, the [instrument type]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/api.md#instrument) 
   that should be used to record the metric. Note that the semantic conventions must be written 
   using the names of the synchronous instrument types (`counter`, `gauge`, `updowncounter` and `histogram`).
   For more details: [Metrics semantic conventions - Instrument types](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-types).
-  - `unit`, the unit in which the metric is measured, which should adhere to 
+  - `unit`, required, the unit in which the metric is measured, which should adhere to 
     [the guidelines](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-units). 
 
 ### Attributes

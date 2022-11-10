@@ -49,6 +49,7 @@ convtype ::= "span" # Default if not specified
          |   "event"    # see eventspecificfields
          |   "metric"   # (currently non-functional)
          |   "scope"
+         |   "attribute_group"
 
 brief ::= string
 note  ::= string

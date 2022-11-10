@@ -4,7 +4,8 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
-- ...
+- Add a semantic convention type for generic attribute group ("attribute_group")
+  ([#TODO](https://github.com/open-telemetry/build-tools/pull/TODO)).
 
 ## v0.14.0
 

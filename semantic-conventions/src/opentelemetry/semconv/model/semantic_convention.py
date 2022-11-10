@@ -195,8 +195,10 @@ class ResourceSemanticConvention(BaseSemanticConvention):
 class ScopeSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "scope"
 
+
 class AttributeGroupConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "attribute_group"
+
 
 class SpanSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "span"
@@ -533,6 +535,6 @@ CONVENTION_CLS_BY_GROUP_TYPE = {
         MetricSemanticConvention,
         UnitSemanticConvention,
         ScopeSemanticConvention,
-        AttributeGroupConvention
+        AttributeGroupConvention,
     )
 }

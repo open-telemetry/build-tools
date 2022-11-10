@@ -45,11 +45,11 @@ semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecate
 id    ::= string
 
 convtype ::= "span" # Default if not specified
-         |   "resource" # see spanspecificfields
-         |   "event"    # see eventspecificfields
+         |   "resource" # see spanfields
+         |   "event"    # see eventfields
          |   "metric"   # (currently non-functional)
-         |   "scope"
-         |   "attribute_group"
+         |   "scope"    # no specific fields defined
+         |   "attribute_group" # no specific fields defined
 
 brief ::= string
 note  ::= string

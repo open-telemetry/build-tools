@@ -266,7 +266,10 @@ class SemanticConventionSet:
                     if model.semconv_id in self.models:
                         self.errors = True
                         print(f"Error parsing {file}\n", file=sys.stderr)
-                        print(f"Semantic convention '{model.semconv_id}' is already defined.", file=sys.stderr)
+                        print(
+                            f"Semantic convention '{model.semconv_id}' is already defined.",
+                            file=sys.stderr,
+                        )
                     self.models[model.semconv_id] = model
             except ValidationError as e:
                 self.errors = True
@@ -475,7 +478,9 @@ class SemanticConventionSet:
                 for attr in include_semconv.attributes:
                     if semconv.contains_attribute(attr):
                         if self.debug:
-                            print("[Includes] {semconv.semconv_id} already contains attribute {attr}")
+                            print(
+                                f"[Includes] {semconv.semconv_id} already contains attribute {attr}"
+                            )
                         continue
                     # There are changes
                     fixpoint_inc = False

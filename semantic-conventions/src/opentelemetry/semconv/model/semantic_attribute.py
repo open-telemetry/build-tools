@@ -164,7 +164,9 @@ class SemanticAttribute:
 
             if requirement_level_val and requirement_level is None:
                 position = position_data["requirement_level"]
-                msg = f"Value '{requirement_level_val}' for required field is not allowed"
+                msg = (
+                    f"Value '{requirement_level_val}' for required field is not allowed"
+                )
                 raise ValidationError.from_yaml_pos(position, msg)
 
             if (
@@ -286,7 +288,7 @@ class SemanticAttribute:
         if deprecated is not None:
             if stability is not None and stability != "deprecated":
                 position = position_data["deprecated"]
-                msg = "There is a deprecation message but the stability is set to '{stability}'"
+                msg = f"There is a deprecation message but the stability is set to '{stability}'"
                 raise ValidationError.from_yaml_pos(position, msg)
             if AttributeType.get_type(deprecated) != "string" or deprecated == "":
                 position = position_data["deprecated"]

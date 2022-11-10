@@ -121,7 +121,7 @@ class MarkdownRenderer:
         description += attribute.brief
         if attribute.note:
             self.render_ctx.add_note(attribute.note)
-            description += f" [{self.render_ctx.notes}]"
+            description += f" [{len(self.render_ctx.notes)}]"
         examples = ""
         if isinstance(attribute.attr_type, EnumAttributeType):
             if self.render_ctx.is_full or (attribute.is_local and not attribute.ref):
@@ -141,9 +141,7 @@ class MarkdownRenderer:
             example_list = attribute.examples if attribute.examples else []
             # check for array types
             if attribute.attr_type.endswith("[]"):
-                examples = (
-                    "`[" + ", ".join(f"{ex}" for ex in example_list) + "]`"
-                )
+                examples = "`[" + ", ".join(f"{ex}" for ex in example_list) + "]`"
             else:
                 examples = "; ".join(f"`{ex}`" for ex in example_list)
         if attribute.requirement_level == RequirementLevel.REQUIRED:
@@ -228,9 +226,7 @@ class MarkdownRenderer:
             "| ------------| ----------------         | -----------   |"
         )
         for member in members.values():
-            output.write(
-                f"\n| {member.id} | {member.brief} | `{member.value}` |"
-            )
+            output.write(f"\n| {member.id} | {member.brief} | `{member.value}` |")
         output.write("\n")
 
     def to_markdown_enum(self, output: io.StringIO):
@@ -295,9 +291,7 @@ class MarkdownRenderer:
         if isinstance(obj, AnyOf):
             self.to_markdown_anyof(obj, output)
         elif not isinstance(obj, Include):
-            raise Exception(
-                f"Trying to generate Markdown for a wrong type {type(obj)}"
-            )
+            raise Exception(f"Trying to generate Markdown for a wrong type {type(obj)}")
 
     def render_md(self):
         for md_filename in self.file_names:
@@ -394,9 +388,7 @@ class MarkdownRenderer:
             if not semconv:
                 # We should not fail here since we would detect this earlier
                 # But better be safe than sorry
-                raise ValueError(
-                    f"Semantic Convention ID {semconv_id} not found"
-                )
+                raise ValueError(f"Semantic Convention ID {semconv_id} not found")
             output.write(content[last_match : match.start(0)])
             self._render_group(semconv, parameters, output)
             end_match = self.p_end.search(content, last_match)

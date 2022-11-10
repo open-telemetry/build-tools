@@ -62,7 +62,7 @@ class RenderContext:
 class MarkdownRenderer:
     p_start = re.compile("<!--\\s*semconv\\s+(.+)-->")
     p_semconv_selector = re.compile(
-        r"(?P<semconv_id>{})(?:\((?P<parameters>.*)\))?".format(ID_RE.pattern)
+        rf"(?P<semconv_id>{ID_RE.pattern})(?:\((?P<parameters>.*)\))?"
     )
     p_end = re.compile("<!--\\s*endsemconv\\s*-->")
     default_break_conditional_labels = 50
@@ -79,7 +79,7 @@ class MarkdownRenderer:
         self.semconvset = semconvset
         # We load all markdown files to render
         self.file_names = sorted(
-            set(glob.glob("{}/**/*.md".format(md_folder), recursive=True))
+            set(glob.glob(f"{md_folder}/**/*.md", recursive=True))
             - set(options.exclude_files)
         )
         # We build the dict that maps each attribute that has to be rendered to the latest visited file
@@ -103,38 +103,34 @@ class MarkdownRenderer:
         description = ""
         if attribute.deprecated and self.options.enable_deprecated:
             if "deprecated" in attribute.deprecated.lower():
-                description = "**{}**<br>".format(attribute.deprecated)
+                description = f"**{attribute.deprecated}**<br>"
             else:
                 deprecated_msg = self.options.md_snippet_by_stability_level[
                     StabilityLevel.DEPRECATED
                 ].format(attribute.deprecated)
-                description = "{}<br>".format(deprecated_msg)
+                description = f"{deprecated_msg}<br>"
         elif (
             attribute.stability == StabilityLevel.STABLE and self.options.enable_stable
         ):
-            description = "{}<br>".format(
-                self.options.md_snippet_by_stability_level[StabilityLevel.STABLE]
-            )
+            description = f"{self.options.md_snippet_by_stability_level[StabilityLevel.STABLE]}<br>"
         elif (
             attribute.stability == StabilityLevel.EXPERIMENTAL
             and self.options.enable_experimental
         ):
-            description = "{}<br>".format(
-                self.options.md_snippet_by_stability_level[StabilityLevel.EXPERIMENTAL]
-            )
+            description = f"{self.options.md_snippet_by_stability_level[StabilityLevel.EXPERIMENTAL]}<br>"
         description += attribute.brief
         if attribute.note:
             self.render_ctx.add_note(attribute.note)
-            description += " [{}]".format(len(self.render_ctx.notes))
+            description += f" [{self.render_ctx.notes}]"
         examples = ""
         if isinstance(attribute.attr_type, EnumAttributeType):
             if self.render_ctx.is_full or (attribute.is_local and not attribute.ref):
                 self.render_ctx.add_enum(attribute)
             example_list = attribute.examples if attribute.examples else ()
             examples = (
-                "; ".join("`{}`".format(ex) for ex in example_list)
+                "; ".join(f"`{ex}`" for ex in example_list)
                 if example_list
-                else "`{}`".format(attribute.attr_type.members[0].value)
+                else f"`{attribute.attr_type.members[0].value}`"
             )
             # Add better type info to enum
             if attribute.attr_type.custom_values:
@@ -146,10 +142,10 @@ class MarkdownRenderer:
             # check for array types
             if attribute.attr_type.endswith("[]"):
                 examples = (
-                    "`[" + ", ".join("{}".format(ex) for ex in example_list) + "]`"
+                    "`[" + ", ".join(f"{ex}" for ex in example_list) + "]`"
                 )
             else:
-                examples = "; ".join("`{}`".format(ex) for ex in example_list)
+                examples = "; ".join(f"`{ex}`" for ex in example_list)
         if attribute.requirement_level == RequirementLevel.REQUIRED:
             required = "Required"
         elif attribute.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED:
@@ -158,9 +154,7 @@ class MarkdownRenderer:
             else:
                 # We put the condition in the notes after the table
                 self.render_ctx.add_note(attribute.requirement_level_msg)
-                required = "Conditionally Required: [{}]".format(
-                    len(self.render_ctx.notes)
-                )
+                required = f"Conditionally Required: [{ len(self.render_ctx.notes)}]"
         elif attribute.requirement_level == RequirementLevel.OPTIONAL:
             required = "Optional"
         else:  # attribute.requirement_level == Required.RECOMMENDED or None
@@ -178,12 +172,10 @@ class MarkdownRenderer:
                 else:
                     # We put the condition in the notes after the table
                     self.render_ctx.add_note(attribute.requirement_level_msg)
-                    required = "Recommended: [{}]".format(len(self.render_ctx.notes))
+                    required = f"Recommended: [{len(self.render_ctx.notes)}]"
 
         output.write(
-            "| {} | {} | {} | {} | {} |\n".format(
-                name, attr_type, description, examples, required
-            )
+            f"| {name} | {attr_type} | {description} | {examples} | {required} |\n"
         )
 
     def to_markdown_anyof(self, anyof: AnyOf, output: io.StringIO):
@@ -208,7 +200,7 @@ class MarkdownRenderer:
         """
         counter = 1
         for note in self.render_ctx.notes:
-            output.write("\n**[{}]:** {}\n".format(counter, note))
+            output.write(f"\n**[{counter}]:** {note}\n")
             counter += 1
 
     def to_creation_time_attributes(
@@ -237,7 +229,7 @@ class MarkdownRenderer:
         )
         for member in members.values():
             output.write(
-                "\n| {} | {} | `{}` |".format(member.id, member.brief, member.value)
+                f"\n| {member.id} | {member.brief} | `{member.value}` |"
             )
         output.write("\n")
 
@@ -265,15 +257,15 @@ class MarkdownRenderer:
             for member in enum.members:
                 description = member.brief
                 if member.note:
-                    description += " [{}]".format(counter)
+                    description += f" [{counter}]"
                     counter += 1
                     notes.append(member.note)
-                output.write("\n| `{}` | {} |".format(member.value, description))
+                output.write(f"\n| `{member.value}` | {description} |")
             counter = 1
             if not notes:
                 output.write("\n")
             for note in notes:
-                output.write("\n\n**[{}]:** {}".format(counter, note))
+                output.write(f"\n\n**[{counter}]:** {note}")
                 counter += 1
             if notes:
                 output.write("\n")
@@ -289,8 +281,8 @@ class MarkdownRenderer:
             if path.as_posix() != PurePath(md_file).as_posix():
                 diff = PurePath(os.path.relpath(md_file, start=path.parent)).as_posix()
                 if diff != ".":
-                    return "[`{}`]({})".format(attribute_id, diff)
-        return "`{}`".format(attribute_id)
+                    return f"[`{attribute_id}`]({diff})"
+        return f"`{attribute_id}`"
 
     def to_markdown_constraint(
         self,
@@ -304,7 +296,7 @@ class MarkdownRenderer:
             self.to_markdown_anyof(obj, output)
         elif not isinstance(obj, Include):
             raise Exception(
-                "Trying to generate Markdown for a wrong type {}".format(type(obj))
+                f"Trying to generate Markdown for a wrong type {type(obj)}"
             )
 
     def render_md(self):
@@ -324,7 +316,7 @@ class MarkdownRenderer:
                 with open(md_filename, "w", encoding="utf-8") as md_file:
                     md_file.write(output.getvalue())
         if self.options.check_only:
-            print("{} files left unchanged.".format(len(self.file_names)))
+            print(f"{len(self.file_names)} files left unchanged.")
 
     def _create_attribute_location_dict(self):
         """
@@ -341,7 +333,7 @@ class MarkdownRenderer:
                     semconv = self.semconvset.models.get(semconv_id)
                     if not semconv:
                         raise ValueError(
-                            "Semantic Convention ID {} not found".format(semconv_id)
+                            f"Semantic Convention ID {semconv_id} not found"
                         )
                     a: SemanticAttribute
                     valid_attr = (
@@ -403,7 +395,7 @@ class MarkdownRenderer:
                 # We should not fail here since we would detect this earlier
                 # But better be safe than sorry
                 raise ValueError(
-                    "Semantic Convention ID {} not found".format(semconv_id)
+                    f"Semantic Convention ID {semconv_id} not found"
                 )
             output.write(content[last_match : match.start(0)])
             self._render_group(semconv, parameters, output)
@@ -430,7 +422,7 @@ class MarkdownRenderer:
         self.render_ctx.is_full = "full" in parameters
 
         if isinstance(semconv, EventSemanticConvention):
-            output.write("The event name MUST be `{}`.\n\n".format(semconv.name))
+            output.write(f"The event name MUST be `{semconv.name}`.\n\n")
 
         attr_to_print = []
         attr: SemanticAttribute
@@ -445,9 +437,7 @@ class MarkdownRenderer:
                 attr_to_print.append(attr)
         if self.render_ctx.group_key is not None and not attr_to_print:
             raise ValueError(
-                "No attributes retained for '{}' filtering by '{}'".format(
-                    semconv.semconv_id, self.render_ctx.group_key
-                )
+                f"No attributes retained for '{semconv.semconv_id}' filtering by '{self.render_ctx.group_key}'"
             )
         if attr_to_print:
             output.write(MarkdownRenderer.table_headers)

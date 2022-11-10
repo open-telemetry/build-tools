@@ -119,14 +119,14 @@ class SemanticAttribute:
                 validate_id(attr_id, position_data["id"])
                 attr_type, brief, examples = SemanticAttribute.parse_id(attribute)
                 if prefix:
-                    fqn = "{}.{}".format(prefix, attr_id)
+                    fqn = f"{prefix}.{attr_id}"
                 else:
                     fqn = attr_id
             else:
                 # Ref
                 attr_type = None
                 if "type" in attribute:
-                    msg = "Ref attribute '{}' must not declare a type".format(ref)
+                    msg = f"Ref attribute '{ref}' must not declare a type"
                     raise ValidationError.from_yaml_pos(position, msg)
                 brief = attribute.get("brief")
                 examples = attribute.get("examples")
@@ -164,9 +164,7 @@ class SemanticAttribute:
 
             if requirement_level_val and requirement_level is None:
                 position = position_data["requirement_level"]
-                msg = "Value '{}' for required field is not allowed".format(
-                    requirement_level_val
-                )
+                msg = f"Value '{requirement_level_val}' for required field is not allowed"
                 raise ValidationError.from_yaml_pos(position, msg)
 
             if (
@@ -190,9 +188,7 @@ class SemanticAttribute:
                     if "stability" in position_data
                     else position_data["deprecated"]
                 )
-                msg = "Semantic convention stability set to deprecated but attribute '{}' is {}".format(
-                    attr_id, stability
-                )
+                msg = f"Semantic convention stability set to deprecated but attribute '{attr_id}' is {stability}"
                 raise ValidationError.from_yaml_pos(position, msg)
             stability = stability or semconv_stability or StabilityLevel.STABLE
             sampling_relevant = (
@@ -259,7 +255,7 @@ class SemanticAttribute:
             and not isinstance(examples, CommentedSeq)
         ):
             position = attribute.lc.data[list(attribute)[0]]
-            msg = "Non array examples for {} are not allowed".format(attr_type)
+            msg = f"Non array examples for {attr_type} are not allowed"
             raise ValidationError.from_yaml_pos(position, msg)
         if not isinstance(examples, CommentedSeq) and examples is not None:
             # TODO: If validation fails later, this will crash when trying to access position data
@@ -275,7 +271,7 @@ class SemanticAttribute:
         ):
             if not examples:
                 position = attribute.lc.data[list(attribute)[0]]
-                msg = "Empty examples for {} are not allowed".format(attr_type)
+                msg = f"Empty examples for {attr_type} are not allowed"
                 raise ValidationError.from_yaml_pos(position, msg)
 
         # TODO: Implement type check for enum examples or forbid them
@@ -290,9 +286,7 @@ class SemanticAttribute:
         if deprecated is not None:
             if stability is not None and stability != "deprecated":
                 position = position_data["deprecated"]
-                msg = "There is a deprecation message but the stability is set to '{}'".format(
-                    stability
-                )
+                msg = "There is a deprecation message but the stability is set to '{stability}'"
                 raise ValidationError.from_yaml_pos(position, msg)
             if AttributeType.get_type(deprecated) != "string" or deprecated == "":
                 position = position_data["deprecated"]
@@ -322,7 +316,7 @@ class SemanticAttribute:
         val = stability_value_map.get(stability_value)
         if val is not None:
             return val
-        msg = "Value '{}' is not allowed as a stability marker".format(stability_value)
+        msg = f"Value '{stability_value}' is not allowed as a stability marker"
         raise ValidationError.from_yaml_pos(position, msg)
 
     def equivalent_to(self, other: "SemanticAttribute"):
@@ -387,16 +381,12 @@ class AttributeType:
                 for element in example:
                     if not isinstance(element, zlass):
                         position = examples.lc.data[index]
-                        msg = "Example with wrong type. Expected {} examples but is was {}.".format(
-                            attr_type, type(element)
-                        )
+                        msg = f"Example with wrong type. Expected {attr_type} examples but is was {type(element)}."
                         raise ValidationError.from_yaml_pos(position, msg)
             else:  # Single value example or array example with a single example array
                 if not isinstance(example, zlass):
                     position = examples.lc.data[index]
-                    msg = "Example with wrong type. Expected {} examples but is was {}.".format(
-                        attr_type, type(example)
-                    )
+                    msg = f"Example with wrong type. Expected {attr_type} examples but is was {type(example)}."
                     raise ValidationError.from_yaml_pos(position, msg)
 
     @staticmethod
@@ -411,7 +401,7 @@ class AttributeType:
             if AttributeType.bool_type_false.fullmatch(yaml_value):
                 return False
         position = parent_object.lc.data[key]
-        msg = "Value '{}' for {} field is not allowed".format(yaml_value, key)
+        msg = f"Value '{yaml_value}' for {key} field is not allowed"
         raise ValidationError.from_yaml_pos(position, msg)
 
 
@@ -444,7 +434,7 @@ class EnumAttributeType:
                 return attribute_type
             # Wrong type used - raise the exception and fill the missing data in the parent
             raise ValidationError(
-                0, 0, "Invalid type: {} is not allowed".format(attribute_type)
+                0, 0, f"Invalid type: {attribute_type} is not allowed"
             )
         allowed_keys = ["allow_custom_values", "members"]
         mandatory_keys = ["members"]
@@ -470,7 +460,7 @@ class EnumAttributeType:
             if not EnumAttributeType.is_valid_enum_value(member["value"]):
                 raise ValidationError.from_yaml_pos(
                     member.lc.data["value"][:2],
-                    "Invalid value used in enum: <{}>".format(member["value"]),
+                    f"Invalid value used in enum: <{member['value']}>",
                 )
             validate_id(member["id"], member.lc.data["id"])
             members.append(
@@ -486,7 +476,7 @@ class EnumAttributeType:
             if enum_type != AttributeType.get_type(m.value):
                 raise ValidationError.from_yaml_pos(
                     myaml.lc.data["value"],
-                    "Enumeration member does not have type {}!".format(enum_type),
+                    f"Enumeration member does not have type {enum_type}!",
                 )
         return EnumAttributeType(custom_values, members, enum_type)
 
@@ -508,7 +498,7 @@ class MdLink:
         self.url = url
 
     def __str__(self):
-        return "[{}]({})".format(self.text, self.url)
+        return f"[{self.text}]({self.url})"
 
 
 class TextWithLinks(str):

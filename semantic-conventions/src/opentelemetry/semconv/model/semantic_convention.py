@@ -287,7 +287,8 @@ class SemanticConventionSet:
                     if attr.fqn in group_by_fqn:
                         self.errors = True
                         print(
-                            f"Attribute {attr.fqn} of Semantic convention '{model.semconv_id}' is already defined in {group_by_fqn.get(attr.fqn)}.",
+                            f"Attribute {attr.fqn} of Semantic convention '{model.semconv_id}'"
+                            "is already defined in {group_by_fqn.get(attr.fqn)}.",
                             file=sys.stderr,
                         )
                     group_by_fqn[attr.fqn] = model.semconv_id
@@ -345,7 +346,8 @@ class SemanticConventionSet:
             if extended is None:
                 raise ValidationError.from_yaml_pos(
                     semconv._position,
-                    f"Semantic Convention {semconv.semconv_id} extends {semconv.extends} but the latter cannot be found!",
+                    f"Semantic Convention {semconv.semconv_id} extends "
+                    "{semconv.extends} but the latter cannot be found!",
                 )
 
             # Process hierarchy chain
@@ -407,7 +409,8 @@ class SemanticConventionSet:
                         if ref_attr is None:
                             raise ValidationError.from_yaml_pos(
                                 any_of._yaml_src_position[index],
-                                f"Any_of attribute '{attr_id}' of semantic convention {semconv.semconv_id} does not exists!",
+                                f"Any_of attribute '{attr_id}' of semantic convention "
+                                "{semconv.semconv_id} does not exists!",
                             )
                         constraint_attrs.append(ref_attr)
                     if constraint_attrs:
@@ -421,7 +424,8 @@ class SemanticConventionSet:
                 if event is None:
                     raise ValidationError.from_yaml_pos(
                         semconv._position,
-                        f"Semantic Convention {semconv.semconv_id} has {event_id} as event but the latter cannot be found!",
+                        f"Semantic Convention {semconv.semconv_id} has "
+                        "{event_id} as event but the latter cannot be found!",
                     )
                 if not isinstance(event, EventSemanticConvention):
                     raise ValidationError.from_yaml_pos(
@@ -468,7 +472,8 @@ class SemanticConventionSet:
                 if include_semconv is None:
                     raise ValidationError.from_yaml_pos(
                         semconv._position,
-                        f"Semantic Convention {semconv.semconv_id} includes {constraint.semconv_id} but the latter cannot be found!",
+                        f"Semantic Convention {semconv.semconv_id} includes "
+                        "{constraint.semconv_id} but the latter cannot be found!",
                     )
                 # We resolve the parent/child relationship of the included semantic convention, if any
                 self._populate_extends_single(

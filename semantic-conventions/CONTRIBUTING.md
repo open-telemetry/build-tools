@@ -2,7 +2,7 @@
 
 This document provides information for contributions specific to the `semantic-convention` tooling.
 
-Read OpenTelemetry project [contributing
+Read the OpenTelemetry project [contributing
 guide](https://github.com/open-telemetry/community/blob/master/CONTRIBUTING.md)
 for general information about the project.
 

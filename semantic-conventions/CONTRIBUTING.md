@@ -1,6 +1,6 @@
 # Semantic Conventions build tools
 
-This document provides `semantic-convention` specific information for contributions.
+This document provides information for contributions specific to the `semantic-convention` tooling.
 
 Read OpenTelemetry project [contributing
 guide](https://github.com/open-telemetry/community/blob/master/CONTRIBUTING.md)

@@ -37,7 +37,7 @@ We use [Docker](https://docs.docker.com/) for deployments. The configuration is 
 ```bash
 # You need to package the code before building the docker image
 python -m pip install -U pip && pip install -U setuptools wheel
-pip wheel --no-deps ./ --wheel-dir ./
+pip wheel --no-deps . --wheel-dir .
 
 docker build -t semconvgen .
 ```

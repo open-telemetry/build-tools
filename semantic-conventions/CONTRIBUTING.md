@@ -15,16 +15,16 @@ for general information about the project.
 
 ### Building
 
-Any changes to the build process should be reflected in this repositiory's `.github/workflows/semconvgen.yml` workflow, in addition to this document and the [CHANGELOG](CHANGELOG.md).
+Any changes to the build process should be reflected in this repositiory's `.github/workflows/semconvgen.yml` workflow, in addition to this document.
 
-For local development, it may be helpful to use an isolated environment such as [venv](https://docs.python.org/3/library/venv.html), or whatever your preferred IDE may offer. Doing so will avoid polluting your system's path with dependencies specific to this project, and allow for more reproducible builds. For detailed instructions setting up python, see [venv setup](#venv-setup)
+For local development, use an isolated environment ([venv](https://docs.python.org/3/library/venv.html)). Doing so will avoid polluting your system's path with dependencies specific to this project, and allow for more reproducible builds. For detailed instructions setting up python, see [venv setup](#venv-setup)
 
-Ensure dependencies are installed and on your `PATH` before building. If you're using a terminal, you can install your dependencies by running
+Ensure dependencies are installed and on your `PATH` before building. If you're using a terminal, you can install your dependencies in your venv by activating it and then running
 
 ```bash
 python -m pip install --upgrade pip
 pip install --upgrade setuptools wheel
-pip install --requirement dev-requirements.txt
+pip install -r dev-requirements.txt
 pip install --upgrade --editable .
 ```
 

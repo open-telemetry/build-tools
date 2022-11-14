@@ -22,7 +22,7 @@ For local development, it may be helpful to use an isolated environment such as 
 Ensure dependencies are installed and on your `PATH` before building. If you're using a terminal, you can install your dependencies by running
 
 ```bash
-pip install --upgrade pip
+python -m pip install --upgrade pip
 pip install --upgrade setuptools wheel
 pip install --requirement dev-requirements.txt
 pip install --upgrade --editable .

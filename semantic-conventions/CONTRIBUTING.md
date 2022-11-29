@@ -28,7 +28,7 @@ pip install -r dev-requirements.txt
 pip install --upgrade --editable .
 ```
 
-### Deployment
+### Building Docker Image
 
 Any changes to the deployment process should be reflected in this repositiory's `.github/workflows/semconvgen.yml` workflow, in addition to this document and the [CHANGELOG](CHANGELOG.md).
 
@@ -46,52 +46,18 @@ docker build -t semconvgen .
 
 _Note:_ `venv` integrations exist for IDEs such as [PyCharm](https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html#python_create_virtual_env) or [VSCode](https://code.visualstudio.com/docs/python/environments). Below describes how to accomplish this setup in a terminal.
 
-Creating a [venv environment](https://docs.python.org/3/library/venv.html) is incredibly simple for newer versions of python. Basically, you run a script, and then you install whatever you want as you normally would with pip.
+See the offical documents for creating and [using](https://docs.python.org/3/tutorial/venv.html) a [venv environment](https://docs.python.org/3/library/venv.html).  All "python" commands listed in this document should be run in an activated `venv`.
 
-To create a venv named `semconvgen`, you can simply run
-
-```bash
-# venv will create a directory with the same name as the given path.
-# Tooling such as mypy or black may conflict with this directory in
-# some scenerios. Storing them
-mkdir -p ~/.venvs/semconvgen
-python3 -m venv ~/.venvs/semconvgen
-```
-
-To "activate" your `venv` for the current tty, source your `VENVNAME/bin/activate` script
 
 ```bash
-# you may want to make an alias for this
-source ~/.venvs/semconvgen/bin/activate
+# note that it's convention to not store your venv in your working directory, lest build tooling "pick up" venv configuration.
+python3 -m venv ../semconvgen
+source ../semconvgen/bin/activate
+# Run your pip/wheel commands as described elsewhere in this documentation here.
+# reset your environment by typing 'deactivate' or by exiting your TTY
 ```
 
-_Note: If that doesn't work, please check the [official documentation](https://docs.python.org/3/tutorial/venv.html). `venv` comes bundled with python since version 3.3._
-
-You can validate your path by inspecting the output of
-
-```bash
-# This should point to the python venv installed
-which python
-# These two should have venv on their paths
-python -c 'import sys; print(sys.path)'
-echo $PATH
-```
-
-If something is missing on your path, ensure you've `source`'d the venv dependency script or manually add them.
-
-Once you've verified your shell environment looks correct, you can use pip as normal to [install dependencies](#building).
-_**Note:** If you have trouble running or importing a newly installed dependency, try `deactivate`ing and `activate`ing venv_
-
-If you wish to restore your original shell environment, you can run the `deactivate` shell function that `venv` automatically registers upon activation, or simply acquire a new shell.
-
-If you want to "reset" your `venv`, simply deactivate, delete, recreate, and activate it.
-
-```bash
-deactivate
-rm -Rf ~/.venvs/semconvgen
-python -m venv ~/.venvs/semconvgen
-source ~/.venvs/semconvgen/bin/activate
-```
+Once you've set up and activated venv, you can use pip as normal to [install dependencies](#building).
 
 ## How to Contribute
 

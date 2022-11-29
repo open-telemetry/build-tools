@@ -4,7 +4,7 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
-- Add definitions for metrics in YAML semconv, plus generation to markdown
+- Add a semantic convention type for Metrics ("metric" and "metric_group") 
   ([#79](https://github.com/open-telemetry/build-tools/pull/79))
 
 ## v0.14.0

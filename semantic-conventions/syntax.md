@@ -181,10 +181,10 @@ The following is only valid if `type` is `event`:
 #### Metric Group semantic convention
 
 Metric group inherits all from the base semantic convention, and does not 
-add any additional fields. Its only requirement is that `type` is `metric_group`. 
+add any additional fields.
 
-The metric group semconv is intended to be a group where metric attributes 
-can be defined and then referenced from other `metric` groups. 
+The metric group semconv is a group where related metric attributes 
+can be defined and then referenced from other `metric` groups using `ref`.
 
 #### Metric semantic convention
 

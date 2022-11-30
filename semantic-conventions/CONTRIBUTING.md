@@ -3,7 +3,7 @@
 This document provides information for contributions specific to the `semantic-convention` tooling.
 
 Read the OpenTelemetry project [contributing
-guide](https://github.com/open-telemetry/community/blob/master/CONTRIBUTING.md)
+guide](https://github.com/open-telemetry/community/blob/main/CONTRIBUTING.md)
 for general information about the project.
 
 ## Development setup
@@ -17,7 +17,7 @@ for general information about the project.
 
 Any changes to the build process should be reflected in this repositiory's `.github/workflows/semconvgen.yml` workflow, in addition to this document.
 
-For local development, use an isolated environment ([venv](https://docs.python.org/3/library/venv.html)). Doing so will avoid polluting your system's path with dependencies specific to this project, and allow for more reproducible builds. For detailed instructions setting up python, see [venv setup](#venv-setup)
+For local development, use an isolated environment ([venv](https://docs.python.org/3/library/venv.html)). Doing so will avoid polluting your system's path with dependencies specific to this project, and allow for more reproducible builds. For detailed instructions setting up python, see [venv setup](#venv-setup).
 
 Ensure dependencies are installed and on your `PATH` before building. If you're using a terminal, you can install your dependencies in your venv by activating it and then running
 
@@ -67,7 +67,7 @@ The normal guidance on creating github issues prior to a PR and writing tests ap
 
 We use [`pip`'s `requirements.txt`](https://pip.pypa.io/en/stable/reference/requirements-file-format/) and [`setuptool`'s `setup.cfg`](https://setuptools.pypa.io/en/latest/userguide/declarative_config.html) for dependency management. Build and Runtime dependencies should be enumerated in the `setup.cfg` file's `install_requires` section. Dependencies exclusive to Development may go in the `dev-requirements.txt` file.
 
-To add a new dependency, add it as a new line in either of the relevant `requirements` files
+To add a new dependency, add it as a new line in either of the relevant `requirements` files.
 
 ### Testing
 
@@ -79,7 +79,7 @@ To run your tests and check your code, execute pytest
 pytest -v
 ```
 
-We use [`mypy`](https://mypy.readthedocs.io/en/latest/) for type checking. `mypy` natively supports python [type hinting](https://docs.python.org/3/library/typing.html), and maintains an excellent [cheat-sheet](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html) for their use. `mypy` options are configured in `mypy.ini`
+We use [`mypy`](https://mypy.readthedocs.io/en/latest/) for type checking. `mypy` natively supports python [type hinting](https://docs.python.org/3/library/typing.html), and maintains an excellent [cheat-sheet](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html) for their use. `mypy` options are configured in `mypy.ini`.
 
 To validate your typing, run mypy on the relevant directory or file.
 

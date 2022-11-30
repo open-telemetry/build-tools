@@ -257,7 +257,7 @@ class MetricSemanticConvention(MetricGroupSemanticConvention):
         "instrument",
     )
 
-    yaml_to_markdown_instrument_repr: Dict[str, str] = {
+    canonical_instrument_name_by_yaml_name: Dict[str, str] = {
         "counter": "Counter",
         "updowncounter": "UpDownCounter",
         "histogram": "Histogram",
@@ -265,7 +265,7 @@ class MetricSemanticConvention(MetricGroupSemanticConvention):
     }
 
     allowed_instruments: Tuple[str, ...] = tuple(
-        yaml_to_markdown_instrument_repr.keys()
+        canonical_instrument_name_by_yaml_name.keys()
     )
 
     def __init__(self, group):
@@ -273,9 +273,6 @@ class MetricSemanticConvention(MetricGroupSemanticConvention):
         self.metric_name = group.get("metric_name")
         self.unit = group.get("unit")
         self.instrument = group.get("instrument")
-        self.instrument_markdown_fmt = self.yaml_to_markdown_instrument_repr.get(
-            self.instrument
-        )
         self.validate()
 
     def validate(self):

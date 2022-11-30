@@ -238,7 +238,7 @@ class MarkdownRenderer:
         output.write(
             "| `{}` | {} | `{}` | {} |\n".format(
                 semconv.metric_name,
-                semconv.instrument_markdown_fmt,
+                MetricSemanticConvention.canonical_instrument_name_by_yaml_name[semconv.instrument],
                 semconv.unit,
                 semconv.brief,
             )

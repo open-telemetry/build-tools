@@ -34,4 +34,4 @@ class ValidationError(Exception):
         self.column = column
 
     def __str__(self):
-        return "{} - @{}:{}".format(self.message, self.line, self.column)
+        return f"{self.message} - @{self.line}:{self.column}"

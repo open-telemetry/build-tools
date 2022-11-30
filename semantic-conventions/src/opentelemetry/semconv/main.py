@@ -33,7 +33,7 @@ def parse_semconv(args, parser) -> SemanticConventionSet:
     find_yaml(args)
     for file in sorted(args.files):
         if not file.endswith(".yaml") and not file.endswith(".yml"):
-            parser.error("{} is not a yaml file.".format(file))
+            parser.error(f"{file} is not a yaml file.")
         semconv.parse(file)
     semconv.finish()
     if semconv.has_error():
@@ -97,8 +97,8 @@ def find_yaml(args):
             exclude_file_list(args.yaml_root if args.yaml_root else "", args.exclude)
         )
         yaml_files = set(
-            glob.glob("{}/**/*.yaml".format(args.yaml_root), recursive=True)
-        ).union(set(glob.glob("{}/**/*.yml".format(args.yaml_root), recursive=True)))
+            glob.glob(f"{args.yaml_root}/**/*.yaml", recursive=True)
+        ).union(set(glob.glob(f"{args.yaml_root}/**/*.yml", recursive=True)))
         file_names = yaml_files - exclude
         args.files.extend(file_names)
 

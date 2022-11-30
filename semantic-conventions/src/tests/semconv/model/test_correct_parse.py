@@ -336,7 +336,7 @@ class TestCorrectParse(unittest.TestCase):
         s = list(semconv.models.values())[0]
         for attr in s.attributes:
             brief = attr.brief
-            self.assertEqual(brief.raw_text, brief.__str__())
+            self.assertEqual(brief.raw_text, str(brief))
 
     # This fails until ONE-36916 is not addressed
     def test_ref(self):

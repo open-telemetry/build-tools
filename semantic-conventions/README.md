@@ -2,6 +2,8 @@
 
 A docker image to process Semantic Convention YAML models.
 
+See [`CONTRIBUTING.md`](../CONTRIBUTING.md) for information on making changes to this repository.
+
 ## Usage
 
 The image can be used to generate Markdown tables or code.

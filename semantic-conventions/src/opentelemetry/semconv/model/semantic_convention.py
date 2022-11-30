@@ -74,16 +74,14 @@ def SemanticConvention(group):
         line = group.lc.data["id"][0] + 1
         doc_url = "https://github.com/open-telemetry/build-tools/blob/main/semantic-conventions/syntax.md#groups"
         print(
-            "Please set the type for group '{}' on line {} - defaulting to type 'span'. See {}".format(
-                group["id"], line, doc_url
-            ),
+            f"Please set the type for group '{group['id']}' on line {line} - defaulting to type 'span'. See {doc_url}",
             file=sys.stderr,
         )
 
     convention_type = parse_semantic_convention_type(type_value)
     if convention_type is None:
         position = group.lc.data["type"] if "type" in group else group.lc.data["id"]
-        msg = "Invalid value for semantic convention type: {}".format(group.get("type"))
+        msg = f"Invalid value for semantic convention type: {group.get('type')}"
         raise ValidationError.from_yaml_pos(position, msg)
 
     # First, validate that the correct fields are available in the yaml
@@ -211,7 +209,7 @@ class SpanSemanticConvention(BaseSemanticConvention):
         self.span_kind = SpanKind.parse(group.get("span_kind"))
         if self.span_kind is None:
             position = group.lc.data["span_kind"]
-            msg = "Invalid value for span_kind: {}".format(group.get("span_kind"))
+            msg = f"Invalid value for span_kind: {group.get('span_kind')}"
             raise ValidationError.from_yaml_pos(position, msg)
 
 
@@ -309,17 +307,15 @@ class SemanticConventionSet:
                 for model in semconv_models:
                     if model.semconv_id in self.models:
                         self.errors = True
-                        print("Error parsing {}\n".format(file), file=sys.stderr)
+                        print(f"Error parsing {file}\n", file=sys.stderr)
                         print(
-                            "Semantic convention '{}' is already defined.".format(
-                                model.semconv_id
-                            ),
+                            f"Semantic convention '{model.semconv_id}' is already defined.",
                             file=sys.stderr,
                         )
                     self.models[model.semconv_id] = model
             except ValidationError as e:
                 self.errors = True
-                print("Error parsing {}\n".format(file), file=sys.stderr)
+                print(f"Error parsing {file}\n", file=sys.stderr)
                 print(e, file=sys.stderr)
 
     def has_error(self):
@@ -333,9 +329,8 @@ class SemanticConventionSet:
                     if attr.fqn in group_by_fqn:
                         self.errors = True
                         print(
-                            "Attribute {} of Semantic convention '{}' is already defined in {}.".format(
-                                attr.fqn, model.semconv_id, group_by_fqn.get(attr.fqn)
-                            ),
+                            f"Attribute {attr.fqn} of Semantic convention '{model.semconv_id}'"
+                            "is already defined in {group_by_fqn.get(attr.fqn)}.",
                             file=sys.stderr,
                         )
                     group_by_fqn[attr.fqn] = model.semconv_id
@@ -393,9 +388,8 @@ class SemanticConventionSet:
             if extended is None:
                 raise ValidationError.from_yaml_pos(
                     semconv._position,
-                    "Semantic Convention {} extends {} but the latter cannot be found!".format(
-                        semconv.semconv_id, semconv.extends
-                    ),
+                    f"Semantic Convention {semconv.semconv_id} extends "
+                    "{semconv.extends} but the latter cannot be found!",
                 )
 
             # Process hierarchy chain
@@ -457,9 +451,8 @@ class SemanticConventionSet:
                         if ref_attr is None:
                             raise ValidationError.from_yaml_pos(
                                 any_of._yaml_src_position[index],
-                                "Any_of attribute '{}' of semantic convention {} does not exists!".format(
-                                    attr_id, semconv.semconv_id
-                                ),
+                                f"Any_of attribute '{attr_id}' of semantic convention "
+                                "{semconv.semconv_id} does not exists!",
                             )
                         constraint_attrs.append(ref_attr)
                     if constraint_attrs:
@@ -473,17 +466,14 @@ class SemanticConventionSet:
                 if event is None:
                     raise ValidationError.from_yaml_pos(
                         semconv._position,
-                        "Semantic Convention {} has {} as event but the latter cannot be found!".format(
-                            semconv.semconv_id, event_id
-                        ),
+                        f"Semantic Convention {semconv.semconv_id} has "
+                        "{event_id} as event but the latter cannot be found!",
                     )
                 if not isinstance(event, EventSemanticConvention):
                     raise ValidationError.from_yaml_pos(
                         semconv._position,
-                        "Semantic Convention {} has {} as event but"
-                        " the latter is not a semantic convention for events!".format(
-                            semconv.semconv_id, event_id
-                        ),
+                        f"Semantic Convention {semconv.semconv_id} has {event_id} as event but"
+                        " the latter is not a semantic convention for events!",
                     )
                 events.append(event)
             semconv.events = events
@@ -499,9 +489,7 @@ class SemanticConventionSet:
                 if not ref_attr:
                     raise ValidationError.from_yaml_pos(
                         semconv._position,
-                        "Semantic Convention {} reference `{}` but it cannot be found!".format(
-                            semconv.semconv_id, attr.ref
-                        ),
+                        f"Semantic Convention {semconv.semconv_id} reference `{attr.ref}` but it cannot be found!",
                     )
                 attr.attr_type = ref_attr.attr_type
                 if not attr.brief:
@@ -526,9 +514,8 @@ class SemanticConventionSet:
                 if include_semconv is None:
                     raise ValidationError.from_yaml_pos(
                         semconv._position,
-                        "Semantic Convention {} includes {} but the latter cannot be found!".format(
-                            semconv.semconv_id, constraint.semconv_id
-                        ),
+                        f"Semantic Convention {semconv.semconv_id} includes "
+                        "{constraint.semconv_id} but the latter cannot be found!",
                     )
                 # We resolve the parent/child relationship of the included semantic convention, if any
                 self._populate_extends_single(
@@ -539,9 +526,7 @@ class SemanticConventionSet:
                     if semconv.contains_attribute(attr):
                         if self.debug:
                             print(
-                                "[Includes] {} already contains attribute {}".format(
-                                    semconv.semconv_id, attr
-                                )
+                                f"[Includes] {semconv.semconv_id} already contains attribute {attr}"
                             )
                         continue
                     # There are changes

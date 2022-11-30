@@ -169,6 +169,12 @@ The following is only valid if `type` is `event`:
   If not specified, the `prefix` is used. If `prefix` is empty (or unspecified),
   `name` is required.
 
+#### Attribute group semantic convention
+
+Attribute group (`attribute_group` type) defines a set of attributes that can be 
+declared once and referenced by semantic conventions for different signals, for example spans and logs.
+Attribute groups don't have specific fields and follow general `semconv` semantics.
+
 ### Attributes
 
 An attribute is defined by:

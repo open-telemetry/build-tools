@@ -127,7 +127,7 @@ def to_html_links(doc_string: typing.Optional[typing.Union[str, TextWithLinks]])
             if isinstance(elm, str):
                 str_list.append(elm)
             else:
-                str_list.append('<a href="{}">{}</a>'.format(elm.url, elm.text))
+                str_list.append(f'<a href="{elm.url}">{elm.text}</a>')
         doc_string = "".join(str_list)
     doc_string = doc_string.strip()
     if doc_string.endswith("."):
@@ -157,7 +157,7 @@ def to_camelcase(name: str, first_upper=False) -> str:
 
 
 class CodeRenderer:
-    pattern = "{{{}}}".format(ID_RE.pattern)
+    pattern = f"{{{ID_RE.pattern}}}"
     matcher = re.compile(pattern)
 
     parameters: typing.Dict[str, str]

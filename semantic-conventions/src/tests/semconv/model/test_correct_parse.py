@@ -218,7 +218,7 @@ class TestCorrectParse(unittest.TestCase):
         expected = {
             "id": "metric.foo.size",
             "prefix": "foo",
-            "extends": "metric.foo",
+            "extends": "",
             "n_constraints": 0,
             "metric_name": "foo.size",
             "unit": "{bars}",

@@ -194,9 +194,7 @@ class MarkdownRenderer:
                 attr_to_print.append(attr)
         if self.render_ctx.group_key is not None and not attr_to_print:
             raise ValueError(
-                "No attributes retained for '{}' filtering by '{}'".format(
-                    semconv.semconv_id, self.render_ctx.group_key
-                )
+                f"No attributes retained for '{semconv.semconv_id}' filtering by '{self.render_ctx.group_key}'"
             )
         if attr_to_print:
             output.write(MarkdownRenderer.table_headers)
@@ -216,9 +214,7 @@ class MarkdownRenderer:
         """
         if not isinstance(semconv, MetricSemanticConvention):
             raise ValueError(
-                "semconv `{}` was specified with `metric_table`, but it is not a metric convention".format(
-                    semconv.semconv_id
-                )
+                f"semconv `{semconv.semconv_id}` was specified with `metric_table`, but it is not a metric convention"
             )
 
         output.write(
@@ -226,6 +222,7 @@ class MarkdownRenderer:
             "| -------- | --------------- | ----------- | -------------- |\n"
         )
         output.write(
+            # pylint: disable=C0209
             "| `{}` | {} | `{}` | {} |\n".format(
                 semconv.metric_name,
                 MetricSemanticConvention.canonical_instrument_name_by_yaml_name[
@@ -478,7 +475,7 @@ class MarkdownRenderer:
             self.to_markdown_metric_table(semconv, output)
         else:
             if isinstance(semconv, EventSemanticConvention):
-                output.write("The event name MUST be `{}`.\n\n".format(semconv.name))
+                output.write(f"The event name MUST be `{semconv.name}`.\n\n")
             self.to_markdown_attribute_table(semconv, output)
 
         self.to_markdown_notes(output)

@@ -284,9 +284,7 @@ class MetricSemanticConvention(MetricGroupSemanticConvention):
         if self.instrument not in self.allowed_instruments:
             raise ValidationError.from_yaml_pos(
                 self._position,
-                "Instrument '{}' is not a valid instrument name".format(
-                    self.instrument
-                ),
+                f"Instrument '{self.instrument}' is not a valid instrument name",
             )
 
 

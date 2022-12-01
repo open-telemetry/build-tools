@@ -173,7 +173,7 @@ The following is only valid if `type` is `event`:
 
 Attribute group (`attribute_group` type) defines a set of attributes that can be 
 declared once and referenced by semantic conventions for different signals, for example spans and logs.
-Attribute groups don't have specific fields and follow general `semconv` semantics.
+Attribute groups don't have any specific fields and follow the general `semconv` semantics.
 
 ### Attributes
 

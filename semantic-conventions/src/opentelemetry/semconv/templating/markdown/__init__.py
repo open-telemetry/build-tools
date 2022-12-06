@@ -217,20 +217,15 @@ class MarkdownRenderer:
                 f"semconv `{semconv.semconv_id}` was specified with `metric_table`, but it is not a metric convention"
             )
 
+        instrument = MetricSemanticConvention.canonical_instrument_name_by_yaml_name[
+            semconv.instrument
+        ]
         output.write(
             "| Name     | Instrument Type | Unit (UCUM) | Description    |\n"
             "| -------- | --------------- | ----------- | -------------- |\n"
         )
         output.write(
-            # pylint: disable=C0209
-            "| `{}` | {} | `{}` | {} |\n".format(
-                semconv.metric_name,
-                MetricSemanticConvention.canonical_instrument_name_by_yaml_name[
-                    semconv.instrument
-                ],
-                semconv.unit,
-                semconv.brief,
-            )
+            f"| `{semconv.metric_name}` | {instrument} | `{semconv.unit}` | {semconv.brief} |\n"
         )
 
     def to_markdown_anyof(self, anyof: AnyOf, output: io.StringIO):

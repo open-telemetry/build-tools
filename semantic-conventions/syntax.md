@@ -45,10 +45,11 @@ semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecate
 id    ::= string
 
 convtype ::= "span" # Default if not specified
-         |   "resource" # see spanspecificfields
-         |   "event"    # see eventspecificfields
+         |   "resource" # see spanfields
+         |   "event"    # see eventfields
          |   "metric"   # (currently non-functional)
-         |   "scope"
+         |   "scope"    # no specific fields defined
+         |   "attribute_group" # no specific fields defined
 
 brief ::= string
 note  ::= string
@@ -167,6 +168,12 @@ The following is only valid if `type` is `event`:
 - `name`, conditionally required string. The name of the event.
   If not specified, the `prefix` is used. If `prefix` is empty (or unspecified),
   `name` is required.
+
+#### Attribute group semantic convention
+
+Attribute group (`attribute_group` type) defines a set of attributes that can be 
+declared once and referenced by semantic conventions for different signals, for example spans and logs.
+Attribute groups don't have any specific fields and follow the general `semconv` semantics.
 
 ### Attributes
 

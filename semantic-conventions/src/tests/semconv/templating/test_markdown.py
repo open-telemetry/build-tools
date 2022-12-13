@@ -129,6 +129,9 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_scope(self):
         self.check("markdown/scope/")
 
+    def test_attribute_group(self):
+        self.check("markdown/attribute_group/")
+
     def check(
         self,
         input_dir: str,

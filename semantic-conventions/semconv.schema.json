@@ -52,7 +52,8 @@
 						"resource",
 						"metric",
 						"event",
-						"scope"
+						"scope",
+						"attribute_group"
 					],
 					"description": "The (signal) type of the semantic convention"
 				},

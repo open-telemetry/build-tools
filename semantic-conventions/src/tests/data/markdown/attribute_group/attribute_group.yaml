@@ -1,0 +1,33 @@
+groups:
+  - id: attributes
+    prefix: "foo"
+    type: attribute_group
+    brief: Attribute group
+    attributes:
+      - id: bar
+        type: string
+        requirement_level: 
+          recommended: if available
+        brief: Attribute 1
+        examples: ['baz']
+
+  - id: derived_attributes
+    type: attribute_group
+    extends: attributes
+    prefix: "foo"
+    brief: Derived attribute group
+    attributes:
+      - id: qux
+        type: int
+        requirement_level: 
+          conditionally_required: if available
+        brief: Attribute 2
+        examples: [42]
+
+  - id: span_attribute_group
+    prefix: ""
+    type: span
+    brief: A span
+    attributes:
+      - ref: foo.bar
+      - ref: foo.qux

@@ -38,6 +38,7 @@ from opentelemetry.semconv.model.semantic_convention import (
 )
 from opentelemetry.semconv.model.utils import ID_RE
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
+
 from .utils import VisualDiffer
 
 _REQUIREMENT_LEVEL_URL = (
@@ -393,12 +394,11 @@ class MarkdownRenderer:
                 output = io.StringIO()
                 self._render_single_file(content, md_filename, output)
             if self.options.check_only:
-                if content != output.getvalue():
-                    sys.exit(
-                        "File "
-                        + md_filename
-                        + " contains a table that would be reformatted."
-                    )
+                output_value = output.getvalue()
+                if content != output_value:
+                    diff = VisualDiffer.visual_diff(content, output_value)
+                    err_msg = f"File {md_filename} contains a table that would be reformatted.\n{diff}"
+                    sys.exit(err_msg)
             else:
                 with open(md_filename, "w", encoding="utf-8") as md_file:
                     md_file.write(output.getvalue())

@@ -38,6 +38,7 @@ from opentelemetry.semconv.model.semantic_convention import (
 )
 from opentelemetry.semconv.model.utils import ID_RE
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
+from .utils import VisualDiffer
 
 _REQUIREMENT_LEVEL_URL = (
     "https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/"

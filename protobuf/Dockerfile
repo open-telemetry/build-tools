@@ -1,5 +1,3 @@
-ARG ALPINE_VERSION=3.14
-ARG GO_VERSION=1.17.1
 # gRPC core version that applies to C++, C#, Objective-C, PhP, Python, Ruby
 ARG GRPC_VERSION=1.41.0
 ARG PROTOBUF_C_VERSION=1.4.0
@@ -15,8 +13,7 @@ ARG GRPC_GATEWAY_VERSION=2.6.0
 ARG PROTOC_GEN_PARQUET_VERSION=0.4.3
 ARG UPX_VERSION=3.96
 
-
-FROM alpine:${ALPINE_VERSION} as protoc_builder
+FROM alpine:3.14 as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
 
 RUN mkdir -p /out
@@ -27,16 +24,16 @@ RUN git clone --recursive --depth=1 -b v${GRPC_VERSION} https://github.com/grpc/
     mkdir -p /grpc/cmake/build && \
     cd /grpc/cmake/build && \
     cmake \
-        -GNinja \
-        -DBUILD_SHARED_LIBS=ON \
-        -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DgRPC_INSTALL=ON \
-        -DgRPC_BUILD_TESTS=OFF \
-        ../.. && \
+    -GNinja \
+    -DBUILD_SHARED_LIBS=ON \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DgRPC_INSTALL=ON \
+    -DgRPC_BUILD_TESTS=OFF \
+    ../.. && \
     cmake --build . --target plugins && \
     cmake --build . --target install && \
-    DESTDIR=/out cmake --build . --target install 
+    DESTDIR=/out cmake --build . --target install
 
 ARG PROTOBUF_C_VERSION
 RUN mkdir -p /protobuf-c && \
@@ -53,11 +50,11 @@ RUN mkdir -p /grpc-java && \
     curl -sSL https://api.github.com/repos/grpc/grpc-java/tarball/v${GRPC_JAVA_VERSION} | tar xz --strip 1 -C /grpc-java && \
     cd /grpc-java && \
     g++ \
-        -I. -I/usr/include \
-        compiler/src/java_plugin/cpp/*.cpp \
-        -L/usr/lib64 \
-        -lprotoc -lprotobuf -lpthread --std=c++0x -s \
-        -o protoc-gen-grpc-java && \
+    -I. -I/usr/include \
+    compiler/src/java_plugin/cpp/*.cpp \
+    -L/usr/lib64 \
+    -lprotoc -lprotobuf -lpthread --std=c++0x -s \
+    -o protoc-gen-grpc-java && \
     install -Ds protoc-gen-grpc-java /out/usr/bin/protoc-gen-grpc-java && \
     rm -Rf /grpc-java && \
     rm -Rf /grpc
@@ -69,7 +66,7 @@ RUN mkdir -p /grpc-web && \
     make install-plugin && \
     install -Ds /usr/local/bin/protoc-gen-grpc-web /out/usr/bin/protoc-gen-grpc-web
 
-FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} as go_builder
+FROM golang:1.17-alpine3.14 as go_builder
 RUN apk add --no-cache build-base curl git
 
 ARG PROTOC_GEN_GO_GRPC_VERSION
@@ -130,7 +127,7 @@ RUN mkdir -p ${GOPATH}/src/github.com/atoulme/protoc-gen-parquet && \
     mkdir -p /out/usr/include/protoc-gen-parquet/options && \
     install -D $(find ./parquet_options -name '*.proto') -t /out/usr/include/protoc-gen-parquet/options
 
-FROM alpine:${ALPINE_VERSION} as packer
+FROM alpine:3.14 as packer
 RUN apk add --no-cache curl
 
 ARG UPX_VERSION
@@ -144,18 +141,18 @@ COPY --from=protoc_builder /out/ /out/
 COPY --from=go_builder /out/ /out/
 
 RUN upx --lzma $(find /out/usr/bin/ \
-        -type f -name 'grpc_*' \
-        -not -name 'grpc_csharp_plugin' \
-        -not -name 'grpc_node_plugin' \
-        -not -name 'grpc_php_plugin' \
-        -not -name 'grpc_ruby_plugin' \
-        -not -name 'grpc_python_plugin' \
-        -or -name 'protoc-gen-*' \
+    -type f -name 'grpc_*' \
+    -not -name 'grpc_csharp_plugin' \
+    -not -name 'grpc_node_plugin' \
+    -not -name 'grpc_php_plugin' \
+    -not -name 'grpc_ruby_plugin' \
+    -not -name 'grpc_python_plugin' \
+    -or -name 'protoc-gen-*' \
     )
 RUN find /out -name "*.a" -delete -or -name "*.la" -delete
 
 
-FROM alpine:${ALPINE_VERSION}
+FROM alpine:3.14
 LABEL maintainer="The OpenTelemetry Authors"
 COPY --from=packer /out/ /
 RUN apk add --no-cache bash libstdc++ && \

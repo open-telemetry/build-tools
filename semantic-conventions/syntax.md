@@ -15,6 +15,9 @@ Then, the semantic of each field is described.
     - [Semantic Convention](#semantic-convention)
       - [Span semantic convention](#span-semantic-convention)
       - [Event semantic convention](#event-semantic-convention)
+      - [Metric Group semantic convention](#metric-group-semantic-convention)
+      - [Metric semantic convention](#metric-semantic-convention)
+      - [Attribute group semantic convention](#attribute-group-semantic-convention)
     - [Attributes](#attributes)
       - [Examples (for examples)](#examples-for-examples)
       - [Ref](#ref)
@@ -50,6 +53,7 @@ convtype ::= "span" # Default if not specified
          |   "metric"   # see metricfields
          |   "metric_group"
          |   "scope"
+         |   "attribute_group" # no specific fields defined
 
 brief ::= string
 note  ::= string
@@ -197,6 +201,12 @@ The following is only valid if `type` is `metric`:
   For more details: [Metrics semantic conventions - Instrument types](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-types).
   - `unit`, required, the unit in which the metric is measured, which should adhere to 
     [the guidelines](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-units). 
+
+#### Attribute group semantic convention
+
+Attribute group (`attribute_group` type) defines a set of attributes that can be 
+declared once and referenced by semantic conventions for different signals, for example spans and logs.
+Attribute groups don't have any specific fields and follow the general `semconv` semantics.
 
 ### Attributes
 

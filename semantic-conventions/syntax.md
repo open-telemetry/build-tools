@@ -15,6 +15,9 @@ Then, the semantic of each field is described.
     - [Semantic Convention](#semantic-convention)
       - [Span semantic convention](#span-semantic-convention)
       - [Event semantic convention](#event-semantic-convention)
+      - [Metric Group semantic convention](#metric-group-semantic-convention)
+      - [Metric semantic convention](#metric-semantic-convention)
+      - [Attribute group semantic convention](#attribute-group-semantic-convention)
     - [Attributes](#attributes)
       - [Examples (for examples)](#examples-for-examples)
       - [Ref](#ref)
@@ -45,10 +48,11 @@ semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecate
 id    ::= string
 
 convtype ::= "span" # Default if not specified
-         |   "resource" # see spanfields
-         |   "event"    # see eventfields
-         |   "metric"   # (currently non-functional)
-         |   "scope"    # no specific fields defined
+         |   "resource" # see spanspecificfields
+         |   "event"    # see eventspecificfields
+         |   "metric"   # see metricfields
+         |   "metric_group"
+         |   "scope"
          |   "attribute_group" # no specific fields defined
 
 brief ::= string
@@ -108,6 +112,7 @@ include ::= id
 
 specificfields ::= spanfields
                |   eventfields
+               |   metricfields
 
 spanfields ::= [events] [span_kind]
 eventfields ::= [name]
@@ -122,6 +127,14 @@ events ::= id {id} # MUST point to an existing event group
 
 name ::= string
 
+metricfields ::= metric_name instrument unit
+
+metric_name ::= string
+instrument ::=  "counter" 
+            | "histogram" 
+            | "gauge" 
+            | "updowncounter" 
+unit ::= string
 ```
 
 ## Semantics
@@ -168,6 +181,26 @@ The following is only valid if `type` is `event`:
 - `name`, conditionally required string. The name of the event.
   If not specified, the `prefix` is used. If `prefix` is empty (or unspecified),
   `name` is required.
+
+#### Metric Group semantic convention
+
+Metric group inherits all from the base semantic convention, and does not 
+add any additional fields.
+
+The metric group semconv is a group where related metric attributes 
+can be defined and then referenced from other `metric` groups using `ref`.
+
+#### Metric semantic convention
+
+The following is only valid if `type` is `metric`:
+
+  - `metric_name`, required, the metric name as described by the [OpenTelemetry Specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/data-model.md#timeseries-model). 
+  - `instrument`, required, the [instrument type]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/api.md#instrument) 
+  that should be used to record the metric. Note that the semantic conventions must be written 
+  using the names of the synchronous instrument types (`counter`, `gauge`, `updowncounter` and `histogram`).
+  For more details: [Metrics semantic conventions - Instrument types](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-types).
+  - `unit`, required, the unit in which the metric is measured, which should adhere to 
+    [the guidelines](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-units). 
 
 #### Attribute group semantic convention
 

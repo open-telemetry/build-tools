@@ -1,0 +1,40 @@
+groups:
+  - id: metric.foo
+    prefix: bar
+    type: metric_group
+    brief: "This document defines foo."
+    note: >
+        Details about foo.
+    attributes: 
+      - id: egg.type
+        type: string
+        brief: 'Type of egg.'
+        examples: ["chicken", "emu", "dragon"]
+
+  - id: metric.foo.size
+    prefix: foo
+    type: metric
+    metric_name: foo.size
+    brief: "Measures the size of foo."
+    instrument: histogram
+    unit: "{bars}"
+    attributes:
+      - ref: http.method
+        requirement_level: required
+      - ref: http.status_code
+        requirement_level:
+          conditionally_required: "if and only if one was received/sent."
+
+  - id: metric.foo.active_eggs
+    prefix: foo
+    type: metric
+    metric_name: foo.active_eggs
+    brief: "Measures how many eggs are currently active."
+    instrument: updowncounter
+    unit: "{cartons}"
+    attributes: 
+      - ref: http.method
+        requirement_level: optional
+      - ref: bar.egg.type
+        requirement_level: 
+          conditionally_required: "if available to instrumentation."

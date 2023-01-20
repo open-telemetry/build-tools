@@ -16,7 +16,7 @@ import sys
 import typing
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Tuple, Union
+from typing import Dict, Tuple, Union
 
 from ruamel.yaml import YAML
 
@@ -246,10 +246,50 @@ class UnitSemanticConvention(BaseSemanticConvention):
         self.members = UnitMember.parse(group.get("members"))
 
 
-class MetricSemanticConvention(BaseSemanticConvention):
+class MetricGroupSemanticConvention(BaseSemanticConvention):
+    GROUP_TYPE_NAME = "metric_group"
+
+
+class MetricSemanticConvention(MetricGroupSemanticConvention):
     GROUP_TYPE_NAME = "metric"
 
-    allowed_keys = ()
+    allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + (
+        "metric_name",
+        "unit",
+        "instrument",
+    )
+
+    canonical_instrument_name_by_yaml_name: Dict[str, str] = {
+        "counter": "Counter",
+        "updowncounter": "UpDownCounter",
+        "histogram": "Histogram",
+        "gauge": "Gauge",
+    }
+
+    allowed_instruments: Tuple[str, ...] = tuple(
+        canonical_instrument_name_by_yaml_name.keys()
+    )
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.metric_name = group.get("metric_name")
+        self.unit = group.get("unit")
+        self.instrument = group.get("instrument")
+        self.validate()
+
+    def validate(self):
+        val_tuple = (self.metric_name, self.unit, self.instrument)
+        if not all(val_tuple):
+            raise ValidationError.from_yaml_pos(
+                self._position,
+                "All of metric_name, units, and instrument must be defined",
+            )
+
+        if self.instrument not in self.allowed_instruments:
+            raise ValidationError.from_yaml_pos(
+                self._position,
+                f"Instrument '{self.instrument}' is not a valid instrument name",
+            )
 
 
 @dataclass
@@ -532,6 +572,7 @@ CONVENTION_CLS_BY_GROUP_TYPE = {
         SpanSemanticConvention,
         ResourceSemanticConvention,
         EventSemanticConvention,
+        MetricGroupSemanticConvention,
         MetricSemanticConvention,
         UnitSemanticConvention,
         ScopeSemanticConvention,

@@ -14,11 +14,13 @@
 
 import os
 import unittest
+from typing import List, cast
 
 from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import StabilityLevel
 from opentelemetry.semconv.model.semantic_convention import (
     EventSemanticConvention,
+    MetricSemanticConvention,
     SemanticConventionSet,
     SpanSemanticConvention,
 )
@@ -192,6 +194,44 @@ class TestCorrectParse(unittest.TestCase):
             "attributes": ["http.server_name"],
         }
         self.semantic_convention_check(list(semconv.models.values())[2], expected)
+
+    def test_metrics(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("yaml/metrics.yaml"))
+        self.assertEqual(len(semconv.models), 3)
+        semconv.parse(self.load_file("yaml/general.yaml"))
+        semconv.parse(self.load_file("yaml/http.yaml"))
+
+        metric_semconvs = cast(
+            List[MetricSemanticConvention], list(semconv.models.values())[:2]
+        )
+
+        expected = {
+            "id": "metric.foo",
+            "prefix": "bar",
+            "extends": "",
+            "n_constraints": 0,
+            "attributes": ["bar.egg.type"],
+        }
+        self.semantic_convention_check(metric_semconvs[0], expected)
+
+        expected = {
+            "id": "metric.foo.size",
+            "prefix": "foo",
+            "extends": "",
+            "n_constraints": 0,
+            "metric_name": "foo.size",
+            "unit": "{bars}",
+            "instrument": "histogram",
+            "attributes": [
+                "http.method",
+                "http.status_code",
+            ],
+        }
+        self.semantic_convention_check(metric_semconvs[1], expected)
+        self.assertEqual(metric_semconvs[1].unit, expected["unit"])
+        self.assertEqual(metric_semconvs[1].instrument, expected["instrument"])
+        self.assertEqual(metric_semconvs[1].metric_name, expected["metric_name"])
 
     def test_resource(self):
         semconv = SemanticConventionSet(debug=False)

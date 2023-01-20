@@ -16,6 +16,9 @@
 					},
 					{
 						"allOf": [{"$ref": "#/definitions/EventSemanticConvention"}]
+					},
+					{
+						"allOf": [{"$ref": "#/definitions/MetricSemanticConvention"}]
 					}
 				]
 			}
@@ -51,6 +54,7 @@
 						"span",
 						"resource",
 						"metric",
+						"metric_group",
 						"event",
 						"scope",
 						"attribute_group"
@@ -164,6 +168,49 @@
 				{"required": ["prefix"]},
 				{"required": ["name"]}
 			]
+		},
+		"MetricGroupSemanticConvention": {
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"required": ["type"],
+			"properties": {
+				"type": {
+					"type": "string",
+					"const": "metric_group"
+				}
+			}
+		},
+		"MetricSemanticConvention": {
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"required": [
+				"type",
+				"metric_name",
+				"instrument",
+				"unit"
+			],
+			"properties": {
+				"instrument": {
+					"type": "string",
+					"description": "The instrument used to record the metric.",
+					"enum": [
+						"counter",
+						"gauge",
+						"histogram",
+						"updowncounter"
+					]
+				},
+				"metric_name": {
+					"type": "string",
+					"description": "The name of the metric."
+				},
+				"type": {
+					"type": "string",
+					"const": "metric"
+				},
+				"unit": {
+					"type": "string",
+					"description": "The unit in which the metric is measured in."
+				}
+			}
 		},
 		"SemanticConvention": {
 			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],

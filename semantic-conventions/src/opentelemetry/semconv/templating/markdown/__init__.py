@@ -203,11 +203,11 @@ class MarkdownRenderer:
         attr_sampling_relevant = [
             attr for attr in attr_to_print if attr.sampling_relevant
         ]
+        self.to_markdown_notes(output)
         self.to_creation_time_attributes(attr_sampling_relevant, output)
 
-    @staticmethod
     def to_markdown_metric_table(
-        semconv: MetricSemanticConvention, output: io.StringIO
+        self, semconv: MetricSemanticConvention, output: io.StringIO
     ):
         """
         This method renders metrics as markdown table entry
@@ -227,6 +227,7 @@ class MarkdownRenderer:
         output.write(
             f"| `{semconv.metric_name}` | {instrument} | `{semconv.unit}` | {semconv.brief} |\n"
         )
+        self.to_markdown_notes(output)
 
     def to_markdown_anyof(self, anyof: AnyOf, output: io.StringIO):
         """
@@ -473,7 +474,6 @@ class MarkdownRenderer:
                 output.write(f"The event name MUST be `{semconv.name}`.\n\n")
             self.to_markdown_attribute_table(semconv, output)
 
-        self.to_markdown_notes(output)
         if not self.render_ctx.is_remove_constraint:
             for cnst in semconv.constraints:
                 self.to_markdown_constraint(cnst, output)

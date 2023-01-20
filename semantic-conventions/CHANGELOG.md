@@ -4,6 +4,11 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+## v0.15.1
+
+- Move footnotes back together with the rendered table in Markdown
+  ([#131](https://github.com/open-telemetry/build-tools/pull/131))
+
 ## v0.15.0
 
 - Add a semantic convention type for Metrics ("metric" and "metric_group") 

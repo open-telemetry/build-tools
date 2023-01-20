@@ -12,6 +12,9 @@ groups:
       - id: url
         type: string
         brief: .
+        note: >
+          `http.url` MUST NOT contain credentials passed via URL in form of `https://username:password@www.example.com/`.
+          In such case the attribute's value should be `https://www.example.com/`.
         sampling_relevant: true
         examples: ['.']
       - id: target

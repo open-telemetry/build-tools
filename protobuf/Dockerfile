@@ -1,20 +1,20 @@
-ARG ALPINE_VERSION=3.14
-ARG GO_VERSION=1.17.1
-# gRPC core version that applies to C++, C#, Objective-C, PhP, Python, Ruby
-ARG GRPC_VERSION=1.41.0
-ARG PROTOBUF_C_VERSION=1.4.0
-ARG GRPC_WEB_VERSION=1.3.0
+ARG ALPINE_VERSION=3.15
+ARG GO_VERSION=1.18
 
-ARG PROTOC_GEN_GO_VERSION=1.5.2
-ARG PROTOC_GEN_GO_GRPC_VERSION=1.41.0
-ARG GRPC_JAVA_VERSION=1.41.0
+# gRPC core version that applies to C++, C#, Objective-C, PhP, Python, Ruby
+ARG GRPC_VERSION=1.46.3
+ARG GRPC_WEB_VERSION=1.3.1
+
+ARG PROTOC_GEN_GO_VERSION=1.28.0
+ARG PROTOC_GEN_GO_GRPC_VERSION=1.46.2
+ARG GRPC_JAVA_VERSION=1.46.0
+
 # v1.3.2, using the version directly does not work: "tar: invalid magic"
 ARG PROTOC_GEN_GOGO_VERSION=b03c65ea87cdc3521ede29f62fe3ce239267c1bc
 ARG PROTOC_GEN_LINT_VERSION=0.2.4
-ARG GRPC_GATEWAY_VERSION=2.6.0
+ARG GRPC_GATEWAY_VERSION=2.10.3
 ARG PROTOC_GEN_PARQUET_VERSION=0.4.3
 ARG UPX_VERSION=3.96
-
 
 FROM alpine:${ALPINE_VERSION} as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
@@ -37,16 +37,6 @@ RUN git clone --recursive --depth=1 -b v${GRPC_VERSION} https://github.com/grpc/
     cmake --build . --target plugins && \
     cmake --build . --target install && \
     DESTDIR=/out cmake --build . --target install 
-
-ARG PROTOBUF_C_VERSION
-RUN mkdir -p /protobuf-c && \
-    curl -sSL https://api.github.com/repos/protobuf-c/protobuf-c/tarball/v${PROTOBUF_C_VERSION} | tar xz --strip 1 -C /protobuf-c && \
-    cd /protobuf-c && \
-    export LD_LIBRARY_PATH=/usr/lib:/usr/lib64 && \
-    export PKG_CONFIG_PATH=/usr/lib64/pkgconfig && \
-    ./autogen.sh && \
-    ./configure --prefix=/usr && \
-    make && make install DESTDIR=/out
 
 ARG GRPC_JAVA_VERSION
 RUN mkdir -p /grpc-java && \
@@ -80,10 +70,10 @@ RUN mkdir -p ${GOPATH}/src/github.com/grpc/grpc-go && \
     install -Ds /golang-protobuf-out/protoc-gen-go-grpc /out/usr/bin/protoc-gen-go-grpc
 
 ARG PROTOC_GEN_GO_VERSION
-RUN mkdir -p ${GOPATH}/src/github.com/golang/protobuf && \
-    curl -sSL https://api.github.com/repos/golang/protobuf/tarball/v${PROTOC_GEN_GO_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/golang/protobuf &&\
-    cd ${GOPATH}/src/github.com/golang/protobuf && \
-    go build -ldflags '-w -s' -o /golang-protobuf-out/protoc-gen-go ./protoc-gen-go && \
+RUN mkdir -p ${GOPATH}/src/google.golang.org/protobuf && \
+    curl -sSL https://api.github.com/repos/protocolbuffers/protobuf-go/tarball/v${PROTOC_GEN_GO_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/google.golang.org/protobuf &&\
+    cd ${GOPATH}/src/google.golang.org/protobuf && \
+    go build -ldflags '-w -s' -o /golang-protobuf-out/protoc-gen-go ./cmd/protoc-gen-go && \
     install -Ds /golang-protobuf-out/protoc-gen-go /out/usr/bin/protoc-gen-go
 
 ARG PROTOC_GEN_GOGO_VERSION

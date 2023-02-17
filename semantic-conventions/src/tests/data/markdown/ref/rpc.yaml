@@ -23,7 +23,7 @@ groups:
         requirement_level: required
         brief: 'It describes the server port the client is connecting to'
       - ref: net.peer.name
-        requirement_level: optional
+        requirement_level: opt_in
         brief: override brief.
         note: override note.
       - ref: net.sock.peer.addr

@@ -27,5 +27,5 @@
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `bar.egg.type` | string | Type of egg. | `chicken`; `emu`; `dragon` | Conditionally Required: if available to instrumentation. |
-| `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | Optional |
+| `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | Opt-In |
 <!-- endsemconv -->

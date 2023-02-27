@@ -4,6 +4,10 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+## v0.16.0
+
+- No changes.
+
 ## v0.15.1
 
 - Move footnotes back together with the rendered table in Markdown

@@ -16,7 +16,8 @@ please make sure to add an entry for your change in the "Unreleased" section.
 ## Release instructions for maintainers
 
 1. Add new desired version number in all `CHANGELOG.md` files (instead of "Unreleased") and ensure no (relevant) entries are missing
-   - This currently only applies to [semantic-conventions/CHANGELOG.md](./semantic-conventions/CHANGELOG.md)
+   - This currently applies to [semantic-conventions/CHANGELOG.md](./semantic-conventions/CHANGELOG.md)
+     and [schemas/CHANGELOG.md](./schemas/CHANGELOG.md).
 2. Create the release at <https://github.com/open-telemetry/build-tools/releases/new>
    1. Tag: `v0.xx.y`
    2. Title: `Release version 0.xx.y`

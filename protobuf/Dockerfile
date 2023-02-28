@@ -68,7 +68,7 @@ RUN mkdir -p /grpc-web && \
     make install-plugin && \
     install -Ds /usr/local/bin/protoc-gen-grpc-web /out/usr/bin/protoc-gen-grpc-web
 
-FROM golang:1.17-alpine3.14 as go_builder
+FROM golang:1.18-alpine3.14 as go_builder
 RUN apk add --no-cache build-base curl git
 
 ARG PROTOC_GEN_GO_GRPC_VERSION

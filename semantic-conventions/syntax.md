@@ -94,7 +94,7 @@ member ::= id value [brief] [note]
 requirement_level ::= "required"
          |   "conditionally_required" <condition>
          |   "recommended" [condition] # Default if not specified
-         |   "optional"
+         |   "opt_in"
 
 # EXPERIMENTAL: Using this is NOT ALLOWED in the specification currently.
 sampling_relevant ::= boolean
@@ -231,7 +231,7 @@ An attribute is defined by:
    It carries no particular semantic meaning but can be used e.g. for filtering
    in the markdown generator.
 - `requirement_level`, optional, specifies if the attribute is mandatory.
-   Can be "required", "conditionally_required", "recommended" or "optional". When omitted, the attribute is "recommended".
+   Can be "required", "conditionally_required", "recommended" or "opt_in". When omitted, the attribute is "recommended".
    When set to "conditionally_required", the string provided as `<condition>` MUST specify
    the conditions under which the attribute is required.
 - `sampling_relevant`, optional EXPERIMENTAL boolean,

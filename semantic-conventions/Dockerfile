@@ -1,7 +1,4 @@
-ARG ALPINE_VERSION=3.12
-ARG PYTHON_VERSION=3.8.5
-
-FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
+FROM python:3.9.5-alpine3.12
 LABEL maintainer="The OpenTelemetry Authors"
 ADD *.whl /semconvgen/
 WORKDIR /semconvgen

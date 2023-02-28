@@ -32,7 +32,7 @@ class RequirementLevel(Enum):
     REQUIRED = 1
     CONDITIONALLY_REQUIRED = 2
     RECOMMENDED = 3
-    OPTIONAL = 4
+    OPT_IN = 4
 
 
 class StabilityLevel(Enum):
@@ -137,7 +137,7 @@ class SemanticAttribute:
                 "required": RequirementLevel.REQUIRED,
                 "conditionally_required": RequirementLevel.CONDITIONALLY_REQUIRED,
                 "recommended": RequirementLevel.RECOMMENDED,
-                "optional": RequirementLevel.OPTIONAL,
+                "opt_in": RequirementLevel.OPT_IN,
             }
             requirement_level_msg = ""
             requirement_level_val = attribute.get("requirement_level", "")

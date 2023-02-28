@@ -4,6 +4,11 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+## v0.17.0
+
+- Rename Optional attribute requirement level to Opt-In
+  ([#135](https://github.com/open-telemetry/build-tools/pull/135))
+
 ## v0.16.0
 
 - No changes.

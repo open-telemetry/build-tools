@@ -13,7 +13,7 @@ ARG GRPC_GATEWAY_VERSION=2.6.0
 ARG PROTOC_GEN_PARQUET_VERSION=0.4.3
 ARG UPX_VERSION=3.96
 
-FROM alpine:3.14 as protoc_builder
+FROM alpine:3.17 as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
 
 RUN mkdir -p /out
@@ -127,7 +127,7 @@ RUN mkdir -p ${GOPATH}/src/github.com/atoulme/protoc-gen-parquet && \
     mkdir -p /out/usr/include/protoc-gen-parquet/options && \
     install -D $(find ./parquet_options -name '*.proto') -t /out/usr/include/protoc-gen-parquet/options
 
-FROM alpine:3.14 as packer
+FROM alpine:3.17 as packer
 RUN apk add --no-cache curl
 
 ARG UPX_VERSION
@@ -152,7 +152,7 @@ RUN upx --lzma $(find /out/usr/bin/ \
 RUN find /out -name "*.a" -delete -or -name "*.la" -delete
 
 
-FROM alpine:3.14
+FROM alpine:3.17
 LABEL maintainer="The OpenTelemetry Authors"
 COPY --from=packer /out/ /
 RUN apk add --no-cache bash libstdc++ && \

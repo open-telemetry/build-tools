@@ -341,7 +341,7 @@
 				{
 					"properties": {
 						"requirement_level": {
-							"description": "specifies the attribute requirement level. Can be 'required', 'conditionally_required', 'recommended', or 'optional'. When omitted, the attribute is 'recommended'. When set to 'conditionally_required', the string provided as <condition> MUST specify the conditions under which the attribute is required.",
+							"description": "specifies the attribute requirement level. Can be 'required', 'conditionally_required', 'recommended', or 'opt_in'. When omitted, the attribute is 'recommended'. When set to 'conditionally_required', the string provided as <condition> MUST specify the conditions under which the attribute is required.",
 							"oneOf": [
 								{
 									"const": "required"
@@ -378,7 +378,7 @@
 									]
 								},
 								{
-									"const": "optional"
+									"const": "opt_in"
 								}
 							]
 						},

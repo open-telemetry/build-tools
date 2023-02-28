@@ -1,5 +1,3 @@
-ARG ALPINE_VERSION=3.17
-ARG GO_VERSION=1.20
 # gRPC core version that applies to C++, C#, Objective-C, PhP, Python, Ruby
 ARG GRPC_VERSION=1.52.0
 ARG PROTOBUF_C_VERSION=1.4.1

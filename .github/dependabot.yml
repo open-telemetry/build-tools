@@ -5,6 +5,26 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/protobuf"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/cpp_format_tools"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/schemas"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/schemas"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/semantic-conventions"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/semantic-conventions"
     schedule:
       interval: "weekly"

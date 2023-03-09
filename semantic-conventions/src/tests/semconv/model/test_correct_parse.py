@@ -727,6 +727,70 @@ class TestCorrectParse(unittest.TestCase):
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
 
+    def test_reference_only_ref(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("yaml/http.yaml"))
+        self.assertEqual(len(semconv.models), 3)
+        semconv.parse(self.load_file("yaml/general.yaml"), True)
+        semconv.finish()
+
+        self.assertEqual(len(semconv.models), 3)
+        
+    def test_reference_only_extends(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("yaml/extends/child.http.yaml"))
+        self.assertEqual(len(semconv.models), 1)
+        semconv.parse(self.load_file("yaml/http.yaml"), True)
+        semconv.parse(self.load_file("yaml/general.yaml"), True)
+        semconv.finish()
+
+        self.assertEqual(len(semconv.models), 1)
+        expected = {
+            "id": "child.http.server",
+            "prefix": "child.http",
+            "extends": "http.server",
+            "n_constraints": 1,
+            "attributes": [
+                "http.server_name",
+            ],
+        }
+        self.semantic_convention_check(list(semconv.models.values())[0], expected)
+
+    def test_reference_only_include(self):
+        semconv = SemanticConventionSet(debug=False)
+        semconv.parse(self.load_file("yaml/http.yaml"), True)
+        semconv.parse(self.load_file("yaml/faas.yaml"))
+        semconv.parse(self.load_file("yaml/general.yaml"), True)
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 5)
+
+        faas_http = [s for s in semconv.models.values() if s.semconv_id == "faas.http"][
+            0
+        ]
+        expected = {
+            "id": "faas.http",
+            "prefix": "faas",
+            "extends": "faas",
+            "n_constraints": 2,
+            "attributes": [
+                # Parent
+                "faas.trigger",
+                "faas.execution",
+                # Include
+                "http.method",
+                "http.url",
+                "http.target",
+                "http.host",
+                "http.scheme",
+                "http.status_code",
+                "http.status_text",
+                "http.flavor",
+                "http.user_agent",
+                "http.server_name",
+            ],
+        }
+        self.semantic_convention_check(faas_http, expected)
+
     _TEST_DIR = os.path.dirname(__file__)
 
     def load_file(self, filename):

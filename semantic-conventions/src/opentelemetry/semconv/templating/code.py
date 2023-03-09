@@ -244,6 +244,7 @@ class CodeRenderer:
                 template.stream(data).dump(output_name)
         else:
             data = self.get_data_single_file(semconvset, template_path)
+            print (data)
             template = env.get_template(file_name, globals=data)
             template.globals["now"] = datetime.datetime.utcnow()
             template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")

@@ -32,16 +32,24 @@ def parse_semconv(args, parser) -> SemanticConventionSet:
     semconv = SemanticConventionSet(args.debug)
     find_yaml(args)
     for file in sorted(args.files):
-        if not file.endswith(".yaml") and not file.endswith(".yml"):
+        if not is_yaml_file(file):
             parser.error(f"{file} is not a yaml file.")
         semconv.parse(file)
+
+    if args.reference_only is not None:
+        reference_files = [f for f in glob_file_list(args.yaml_root, args.reference_only) if is_yaml_file(f)]
+        for file in sorted(reference_files):
+            semconv.parse(file, True)
+
     semconv.finish()
     if semconv.has_error():
         sys.exit(1)
     return semconv
 
+def is_yaml_file(file: str) -> bool:
+    return file.endswith(".yaml") or file.endswith(".yml")
 
-def exclude_file_list(folder: str, pattern: str) -> List[str]:
+def glob_file_list(folder: str, pattern: str) -> List[str]:
     if not pattern:
         return []
     sep = "/"
@@ -85,7 +93,7 @@ def process_markdown(semconv, args):
         enable_deprecated=args.md_enable_deprecated,
         use_badge=args.md_use_badges,
         break_count=args.md_break_conditional,
-        exclude_files=exclude_file_list(args.markdown_root, args.exclude),
+        exclude_files=glob_file_list(args.markdown_root, args.exclude),
     )
     md_renderer = MarkdownRenderer(args.markdown_root, semconv, options)
     md_renderer.render_md()
@@ -94,8 +102,13 @@ def process_markdown(semconv, args):
 def find_yaml(args):
     if args.yaml_root is not None:
         exclude = set(
-            exclude_file_list(args.yaml_root if args.yaml_root else "", args.exclude)
+            glob_file_list(args.yaml_root if args.yaml_root else "", args.exclude)
         )
+        reference_only = set(
+            glob_file_list(args.yaml_root if args.yaml_root else "", args.reference_only)
+        )
+        exclude.update(reference_only) 
+
         yaml_files = set(
             glob.glob(f"{args.yaml_root}/**/*.yaml", recursive=True)
         ).union(set(glob.glob(f"{args.yaml_root}/**/*.yml", recursive=True)))
@@ -222,6 +235,9 @@ def setup_parser():
     )
     parser.add_argument(
         "--exclude", "-e", help="Exclude the matching files using GLOB syntax", type=str
+    )
+    parser.add_argument(
+        "--reference-only", "-r", help="Additional files to resolve references only (and extends) using GLOB syntax", type=str
     )
     parser.add_argument(
         "files",

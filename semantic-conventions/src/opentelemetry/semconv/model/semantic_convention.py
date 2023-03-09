@@ -300,9 +300,10 @@ class SemanticConventionSet:
 
     debug: bool
     models: typing.Dict[str, BaseSemanticConvention] = field(default_factory=dict)
+    extended_models: typing.Dict[str, BaseSemanticConvention] = field(default_factory=dict)
     errors: bool = False
 
-    def parse(self, file):
+    def parse(self, file, ref_only=False):
         with open(file, "r", encoding="utf-8") as yaml_file:
             try:
                 semconv_models = parse_semantic_convention_groups(yaml_file)
@@ -314,7 +315,10 @@ class SemanticConventionSet:
                             f"Semantic convention '{model.semconv_id}' is already defined.",
                             file=sys.stderr,
                         )
-                    self.models[model.semconv_id] = model
+                    if not ref_only:
+                        self.models[model.semconv_id] = model
+
+                    self.extended_models[model.semconv_id] = model
             except ValidationError as e:
                 self.errors = True
                 print(f"Error parsing {file}\n", file=sys.stderr)
@@ -325,7 +329,7 @@ class SemanticConventionSet:
 
     def check_unique_fqns(self):
         group_by_fqn: typing.Dict[str, str] = {}
-        for model in self.models.values():
+        for model in self.extended_models.values():
             for attr in model.attributes:
                 if not attr.ref:
                     if attr.fqn in group_by_fqn:
@@ -351,7 +355,7 @@ class SemanticConventionSet:
             fixpoint = True
             if index > 0:
                 self.debug = False
-            for semconv in self.models.values():
+            for semconv in self.extended_models.values():
                 # Ref first, extends and includes after!
                 fixpoint_ref = self.resolve_ref(semconv)
                 fixpoint_inc = self.resolve_include(semconv)
@@ -370,7 +374,7 @@ class SemanticConventionSet:
         This internal method goes through every semantic convention to resolve parent/child relationships.
         :return: None
         """
-        unprocessed = self.models.copy()
+        unprocessed = self.extended_models.copy()
         # Iterate through the list and remove the semantic conventions that have been processed.
         while len(unprocessed) > 0:
             semconv = next(iter(unprocessed.values()))
@@ -386,7 +390,7 @@ class SemanticConventionSet:
         """
         # Resolve parent of current Semantic Convention
         if semconv.extends:
-            extended = self.models.get(semconv.extends)
+            extended = self.extended_models.get(semconv.extends)
             if extended is None:
                 raise ValidationError.from_yaml_pos(
                     semconv._position,
@@ -398,7 +402,7 @@ class SemanticConventionSet:
             not_yet_processed = extended.extends in unprocessed
             if extended.extends and not_yet_processed:
                 # Recursion on parent if was not already processed
-                parent_extended = self.models.get(extended.extends)
+                parent_extended = self.extended_models.get(extended.extends)
                 self._populate_extends_single(parent_extended, unprocessed)
 
             # inherit prefix and constraints
@@ -442,7 +446,7 @@ class SemanticConventionSet:
 
     def _populate_anyof_attributes(self):
         any_of: AnyOf
-        for semconv in self.models.values():
+        for semconv in self.extended_models.values():
             for any_of in semconv.constraints:
                 if not isinstance(any_of, AnyOf):
                     continue
@@ -461,10 +465,10 @@ class SemanticConventionSet:
                         any_of.add_attributes(constraint_attrs)
 
     def _populate_events(self):
-        for semconv in self.models.values():
+        for semconv in self.extended_models.values():
             events: typing.List[EventSemanticConvention] = []
             for event_id in semconv.events:
-                event = self.models.get(event_id)
+                event = self.extended_models.get(event_id)
                 if event is None:
                     raise ValidationError.from_yaml_pos(
                         semconv._position,
@@ -511,7 +515,7 @@ class SemanticConventionSet:
         fixpoint_inc = True
         for constraint in semconv.constraints:
             if isinstance(constraint, Include):
-                include_semconv = self.models.get(constraint.semconv_id)
+                include_semconv = self.extended_models.get(constraint.semconv_id)
                 # include required attributes and constraints
                 if include_semconv is None:
                     raise ValidationError.from_yaml_pos(
@@ -552,7 +556,7 @@ class SemanticConventionSet:
         return next(
             (
                 attr
-                for model in self.models.values()
+                for model in self.extended_models.values()
                 for attr in model.attributes
                 if attr.fqn == attr_id and attr.ref is None
             ),

@@ -735,7 +735,7 @@ class TestCorrectParse(unittest.TestCase):
         semconv.finish()
 
         self.assertEqual(len(semconv.models), 3)
-        
+
     def test_reference_only_extends(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("yaml/extends/child.http.yaml"))
@@ -750,9 +750,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "child.http",
             "extends": "http.server",
             "n_constraints": 1,
-            "attributes": [
-                "http.server_name",
-            ],
+            "attributes": ["http.server_name"],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
 

@@ -37,7 +37,11 @@ def parse_semconv(args, parser) -> SemanticConventionSet:
         semconv.parse(file)
 
     if args.reference_only is not None:
-        reference_files = [f for f in glob_file_list(args.yaml_root, args.reference_only) if is_yaml_file(f)]
+        reference_files = [
+            f
+            for f in glob_file_list(args.yaml_root, args.reference_only)
+            if is_yaml_file(f)
+        ]
         for file in sorted(reference_files):
             semconv.parse(file, True)
 
@@ -46,8 +50,10 @@ def parse_semconv(args, parser) -> SemanticConventionSet:
         sys.exit(1)
     return semconv
 
+
 def is_yaml_file(file: str) -> bool:
     return file.endswith(".yaml") or file.endswith(".yml")
+
 
 def glob_file_list(folder: str, pattern: str) -> List[str]:
     if not pattern:
@@ -105,9 +111,11 @@ def find_yaml(args):
             glob_file_list(args.yaml_root if args.yaml_root else "", args.exclude)
         )
         reference_only = set(
-            glob_file_list(args.yaml_root if args.yaml_root else "", args.reference_only)
+            glob_file_list(
+                args.yaml_root if args.yaml_root else "", args.reference_only
+            )
         )
-        exclude.update(reference_only) 
+        exclude.update(reference_only)
 
         yaml_files = set(
             glob.glob(f"{args.yaml_root}/**/*.yaml", recursive=True)
@@ -237,7 +245,10 @@ def setup_parser():
         "--exclude", "-e", help="Exclude the matching files using GLOB syntax", type=str
     )
     parser.add_argument(
-        "--reference-only", "-r", help="Additional files to resolve references only (and extends) using GLOB syntax", type=str
+        "--reference-only",
+        "-r",
+        help="Additional files to resolve references only (and extends) using GLOB syntax",
+        type=str,
     )
     parser.add_argument(
         "files",

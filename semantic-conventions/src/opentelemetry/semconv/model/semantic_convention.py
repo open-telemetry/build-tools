@@ -300,7 +300,9 @@ class SemanticConventionSet:
 
     debug: bool
     models: typing.Dict[str, BaseSemanticConvention] = field(default_factory=dict)
-    extended_models: typing.Dict[str, BaseSemanticConvention] = field(default_factory=dict)
+    extended_models: typing.Dict[str, BaseSemanticConvention] = field(
+        default_factory=dict
+    )
     errors: bool = False
 
     def parse(self, file, ref_only=False):

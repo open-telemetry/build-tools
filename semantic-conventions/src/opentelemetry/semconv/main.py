@@ -51,12 +51,12 @@ def exclude_file_list(folder: str, pattern: str) -> List[str]:
     return file_names
 
 
-def filter_semconv(semconv, type_filter):
-    if type_filter:
+def filter_semconv(semconv, types_filter):
+    if types_filter:
         semconv.models = {
             id: model
             for id, model in semconv.models.items()
-            if model.GROUP_TYPE_NAME == type_filter
+            if model.GROUP_TYPE_NAME in types_filter
         }
 
 
@@ -65,6 +65,7 @@ def main():
     args = parser.parse_args()
     check_args(args, parser)
     semconv = parse_semconv(args, parser)
+
     filter_semconv(semconv, args.only)
     if len(semconv.models) == 0:
         parser.error("No semantic convention model found!")
@@ -211,7 +212,9 @@ def setup_parser():
     parser.add_argument(
         "--only",
         choices=list(CONVENTION_CLS_BY_GROUP_TYPE.keys()),
-        help="Process only semantic conventions of the specified type.",
+        type=str,
+        nargs="+",
+        help="Process only semantic conventions of the specified types.",
     )
     parser.add_argument(
         "--yaml-root",

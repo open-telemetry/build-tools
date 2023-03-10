@@ -53,7 +53,7 @@ def exclude_file_list(folder: str, pattern: str) -> List[str]:
 
 def filter_semconv(semconv, types_filter):
     if types_filter:
-        types = types_filter.replace(" ", "").split(',')
+        types = types_filter.replace(" ", "").split(",")
         semconv.models = {
             id: model
             for id, model in semconv.models.items()
@@ -217,11 +217,13 @@ def setup_parser():
         To generate multiple conventions at once, pass comma-separated list of
         convention names, e.g. '--only span,event'.
 
-        The `--only` flag filters the output and does not apply to input. 
+        The `--only` flag filters the output and does not apply to input.
         Resolution of referenced attributes (using `ref`), or semantic conventions
         (using `exclude` or `include`) is done against all semantic convention
         files provided as input using `--yaml-root` or `YAML_FILE` options.
-        """.format(', '.join(CONVENTION_CLS_BY_GROUP_TYPE.keys())),
+        """.format(
+            ", ".join(CONVENTION_CLS_BY_GROUP_TYPE.keys())
+        ),
     )
     parser.add_argument(
         "--yaml-root",

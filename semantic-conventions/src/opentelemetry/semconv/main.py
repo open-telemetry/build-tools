@@ -65,7 +65,6 @@ def main():
     args = parser.parse_args()
     check_args(args, parser)
     semconv = parse_semconv(args, parser)
-
     filter_semconv(semconv, args.only)
     if len(semconv.models) == 0:
         parser.error("No semantic convention model found!")

@@ -250,7 +250,7 @@ class MetricGroupSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "metric_group"
 
 
-class gitMetricSemanticConvention(MetricGroupSemanticConvention):
+class MetricSemanticConvention(MetricGroupSemanticConvention):
     GROUP_TYPE_NAME = "metric"
 
     allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + (

@@ -213,7 +213,9 @@ def setup_parser():
     parser.add_argument(
         "--only",
         type=str,
-        help="""Generates semantic conventions of the specified types only ({0}).
+        help=f"""Generates semantic conventions of the specified types only
+        ({", ".join(CONVENTION_CLS_BY_GROUP_TYPE.keys())}).
+
         To generate multiple conventions at once, pass comma-separated list of
         convention names, e.g. '--only span,event'.
 
@@ -221,9 +223,7 @@ def setup_parser():
         Resolution of referenced attributes (using `ref`), or semantic conventions
         (using `exclude` or `include`) is done against all semantic convention
         files provided as input using `--yaml-root` or `YAML_FILE` options.
-        """.format(
-            ", ".join(CONVENTION_CLS_BY_GROUP_TYPE.keys())
-        ),
+        """,
     )
     parser.add_argument(
         "--yaml-root",

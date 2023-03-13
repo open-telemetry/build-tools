@@ -51,22 +51,21 @@ def exclude_file_list(folder: str, pattern: str) -> List[str]:
     return file_names
 
 
-def filter_semconv(semconv, types_filter):
-    if types_filter:
-        types = types_filter.replace(" ", "").split(",")
+def filter_semconv(semconv, types):
+    if types:
         semconv.models = {
             id: model
             for id, model in semconv.models.items()
             if model.GROUP_TYPE_NAME in types
         }
 
-
 def main():
     parser = setup_parser()
     args = parser.parse_args()
     check_args(args, parser)
+    semconv_filter = parse_only_filter(args, parser)
     semconv = parse_semconv(args, parser)
-    filter_semconv(semconv, args.only)
+    filter_semconv(semconv, semconv_filter)
     if len(semconv.models) == 0:
         parser.error("No semantic convention model found!")
     if args.flavor == "code":
@@ -108,6 +107,18 @@ def check_args(arguments, parser):
     files = arguments.yaml_root is None and len(arguments.files) == 0
     if files:
         parser.error("Either --yaml-root or YAML_FILE must be present")
+
+
+def parse_only_filter(arguments, parser):
+    if not arguments.only:
+        return None
+
+    types = [t.strip() for t in arguments.only.split(",")]        
+    unknown_types = [t for t in types if t not in CONVENTION_CLS_BY_GROUP_TYPE.keys()]
+    if unknown_types:
+        parser.error(f"Unknown semconv names in `--only` option: '{', '.join(unknown_types)}'")
+        sys.exit(1)
+    return types
 
 
 def add_code_parser(subparsers):

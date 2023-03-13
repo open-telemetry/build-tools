@@ -59,12 +59,13 @@ def filter_semconv(semconv, types):
             if model.GROUP_TYPE_NAME in types
         }
 
+
 def main():
     parser = setup_parser()
     args = parser.parse_args()
     check_args(args, parser)
-    semconv_filter = parse_only_filter(args, parser)
     semconv = parse_semconv(args, parser)
+    semconv_filter = parse_only_filter(args, parser)
     filter_semconv(semconv, semconv_filter)
     if len(semconv.models) == 0:
         parser.error("No semantic convention model found!")
@@ -113,10 +114,12 @@ def parse_only_filter(arguments, parser):
     if not arguments.only:
         return None
 
-    types = [t.strip() for t in arguments.only.split(",")]        
+    types = [t.strip() for t in arguments.only.split(",")]
     unknown_types = [t for t in types if t not in CONVENTION_CLS_BY_GROUP_TYPE.keys()]
     if unknown_types:
-        parser.error(f"Unknown semconv names in `--only` option: '{', '.join(unknown_types)}'")
+        parser.error(
+            f"Unknown semconv names in `--only` option: '{', '.join(unknown_types)}'"
+        )
         sys.exit(1)
     return types
 
@@ -220,7 +223,6 @@ def setup_parser():
     parser.add_argument(
         "--debug", "-d", help="Enable debug output", action="store_true"
     )
-
     parser.add_argument(
         "--only",
         type=str,

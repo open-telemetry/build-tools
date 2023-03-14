@@ -12,11 +12,16 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        TARGETARCH: [amd64]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: docker build protobuf/. -t build-protobuf
+      env:
+        TARGETARCH: ${{ matrix.TARGETARCH }}
     - name: Push the Docker image
       if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
       run: |
@@ -32,3 +37,5 @@ jobs:
         else
           tag_and_push "${GITHUB_REF#"refs/tags/"}"
         fi
+      env:
+        TARGETARCH: ${{ matrix.TARGETARCH }}

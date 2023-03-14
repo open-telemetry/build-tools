@@ -156,8 +156,8 @@ class MarkdownRenderer:
                 # We put the condition in the notes after the table
                 self.render_ctx.add_note(attribute.requirement_level_msg)
                 required = f"Conditionally Required: [{ len(self.render_ctx.notes)}]"
-        elif attribute.requirement_level == RequirementLevel.OPTIONAL:
-            required = "Optional"
+        elif attribute.requirement_level == RequirementLevel.OPT_IN:
+            required = "Opt-In"
         else:  # attribute.requirement_level == Required.RECOMMENDED or None
             # check if there are any notes
             if (

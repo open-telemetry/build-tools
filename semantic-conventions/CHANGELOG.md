@@ -4,6 +4,11 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+## v0.18.0
+
+- Allow multiple semconv in --only flag
+  ([#157](https://github.com/open-telemetry/build-tools/pull/157))
+  
 ## v0.17.0
 
 - Rename Optional attribute requirement level to Opt-In

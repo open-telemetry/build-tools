@@ -27,4 +27,4 @@ groups:
         type: boolean
         requirement_level: required
         stability: frozen
-        brief: ""
+        brief: Frozen attribute brief

@@ -22,12 +22,12 @@ groups:
       - id: def_stability
         type: boolean
         requirement_level: required
-        brief: ""
+        brief:
       - id: frozen_attr
         type: boolean
         requirement_level: required
         stability: frozen
-        brief: ""
+        brief: Frozen attribute brief
 
   - id: parent_default
     type: span

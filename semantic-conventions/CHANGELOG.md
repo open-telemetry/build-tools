@@ -4,6 +4,9 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- Support `frozen` stability level and change default stability level from `stable` to `experimental`
+  ([#TODO](https://github.com/open-telemetry/build-tools/pull/TODO))
+
 ## v0.18.0
 
 - Allow multiple semconv in --only flag

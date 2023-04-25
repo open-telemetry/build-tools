@@ -65,6 +65,7 @@ extends ::= string
 stability ::= "deprecated"
           |   "experimental"
           |   "stable"
+          |   "frozen"
 
 deprecated ::= <description>
 

@@ -37,7 +37,7 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.check("markdown/stability/", expected_name="labels_expected.md")
         self.check(
             "markdown/stability/",
-            MarkdownOptions(enable_stable=True, use_badge=True),
+            MarkdownOptions(enable_stable=True, enable_frozen=True, use_badge=True),
             expected_name="badges_expected.md",
         )
 

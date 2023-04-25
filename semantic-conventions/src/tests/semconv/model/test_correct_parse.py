@@ -472,7 +472,7 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(len(semconv.models), 6)
 
         model = list(semconv.models.values())[0]
-        self.assertEqual(len(model.attributes), 4)
+        self.assertEqual(len(model.attributes), 5)
         self.assertEqual(model.stability, None)
 
         attr = model.attributes[0]
@@ -489,7 +489,11 @@ class TestCorrectParse(unittest.TestCase):
 
         attr = model.attributes[3]
         self.assertEqual(attr.attr_id, "def_stability")
-        self.assertEqual(attr.stability, StabilityLevel.STABLE)
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
+
+        attr = model.attributes[4]
+        self.assertEqual(attr.attr_id, "frozen_attr")
+        self.assertEqual(attr.stability, StabilityLevel.FROZEN)
 
         model = list(semconv.models.values())[1]
         self.assertEqual(len(model.attributes), 2)

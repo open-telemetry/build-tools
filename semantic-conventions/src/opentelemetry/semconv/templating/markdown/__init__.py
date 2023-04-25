@@ -121,6 +121,12 @@ class MarkdownRenderer:
             and self.options.enable_experimental
         ):
             description = f"{self.options.md_snippet_by_stability_level[StabilityLevel.EXPERIMENTAL]}<br>"
+        elif (
+            attribute.stability == StabilityLevel.FROZEN
+            and self.options.enable_frozen
+        ):
+            description = f"{self.options.md_snippet_by_stability_level[StabilityLevel.FROZEN]}<br>"
+
         description += attribute.brief
         if attribute.note:
             self.render_ctx.add_note(attribute.note)

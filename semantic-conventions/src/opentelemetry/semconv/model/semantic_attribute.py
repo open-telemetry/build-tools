@@ -39,6 +39,7 @@ class StabilityLevel(Enum):
     STABLE = 1
     EXPERIMENTAL = 2
     DEPRECATED = 3
+    FROZEN = 4
 
 
 def unique_attributes(attributes):
@@ -192,7 +193,7 @@ class SemanticAttribute:
                 )
                 msg = f"Semantic convention stability set to deprecated but attribute '{attr_id}' is {stability}"
                 raise ValidationError.from_yaml_pos(position, msg)
-            stability = stability or semconv_stability or StabilityLevel.STABLE
+            stability = stability or semconv_stability or StabilityLevel.EXPERIMENTAL
             sampling_relevant = (
                 AttributeType.to_bool("sampling_relevant", attribute)
                 if attribute.get("sampling_relevant")
@@ -314,6 +315,7 @@ class SemanticAttribute:
             "deprecated": StabilityLevel.DEPRECATED,
             "experimental": StabilityLevel.EXPERIMENTAL,
             "stable": StabilityLevel.STABLE,
+            "frozen": StabilityLevel.FROZEN,
         }
         val = stability_value_map.get(stability_value)
         if val is not None:

@@ -23,3 +23,8 @@ groups:
         type: boolean
         requirement_level: required
         brief: ""
+      - id: frozen_attr
+        type: boolean
+        requirement_level: required
+        stability: frozen
+        brief: ""

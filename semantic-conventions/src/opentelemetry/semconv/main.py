@@ -82,7 +82,7 @@ def process_markdown(semconv, args):
     options = MarkdownOptions(
         check_only=args.md_check,
         enable_stable=args.md_stable,
-        enable_frozen=args.md_frozen,        
+        enable_frozen=args.md_frozen,
         enable_experimental=args.md_experimental,
         enable_deprecated=args.md_enable_deprecated,
         use_badge=args.md_use_badges,
@@ -206,7 +206,7 @@ def add_md_parser(subparsers):
         help="Add labels to attributes marked as frozen.",
         required=False,
         action="store_true",
-    )    
+    )
     parser.add_argument(
         "--md-experimental",
         help="Add labels to attributes marked as experimental.",

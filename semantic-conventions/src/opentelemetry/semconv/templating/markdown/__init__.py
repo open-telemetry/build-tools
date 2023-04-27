@@ -122,8 +122,7 @@ class MarkdownRenderer:
         ):
             description = f"{self.options.md_snippet_by_stability_level[StabilityLevel.EXPERIMENTAL]}<br>"
         elif (
-            attribute.stability == StabilityLevel.FROZEN
-            and self.options.enable_frozen
+            attribute.stability == StabilityLevel.FROZEN and self.options.enable_frozen
         ):
             description = f"{self.options.md_snippet_by_stability_level[StabilityLevel.FROZEN]}<br>"
 

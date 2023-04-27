@@ -25,7 +25,7 @@ class MarkdownOptions:
         StabilityLevel.DEPRECATED: "![Deprecated](https://img.shields.io/badge/-deprecated-red)",
         StabilityLevel.EXPERIMENTAL: "![Experimental](https://img.shields.io/badge/-experimental-blue)",
         StabilityLevel.STABLE: "![Stable](https://img.shields.io/badge/-stable-lightgreen)",
-        StabilityLevel.FROZEN: "![Frozen](https://img.shields.io/badge/-frozen-yellow)"
+        StabilityLevel.FROZEN: "![Frozen](https://img.shields.io/badge/-frozen-yellow)",
     }
 
     _label_map = {
@@ -37,7 +37,7 @@ class MarkdownOptions:
 
     check_only: bool = False
     enable_stable: bool = False
-    enable_frozen: bool = False    
+    enable_frozen: bool = False
     enable_experimental: bool = False
     enable_deprecated: bool = True
     use_badge: bool = False

@@ -3,7 +3,7 @@ module github.com/open-telemetry/build-tools/schemas
 go 1.17
 
 require (
-	github.com/Masterminds/semver/v3 v3.2.0
+	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/stretchr/testify v1.8.2
 	go.opentelemetry.io/otel/schema v0.0.4-0.20230227163841-071d31739445
 )

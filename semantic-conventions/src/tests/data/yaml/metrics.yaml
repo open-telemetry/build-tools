@@ -10,6 +10,8 @@ groups:
         type: string
         brief: 'Type of egg.'
         examples: ["chicken", "emu", "dragon"]
+        note: >
+          Some notes on attribute
 
   - id: metric.foo.size
     prefix: foo
@@ -18,6 +20,8 @@ groups:
     brief: "Measures the size of foo."
     instrument: histogram
     unit: "{bars}"
+    note: >
+      Some notes on metric.foo.size
     attributes:
       - ref: http.method
         requirement_level: required
@@ -32,6 +36,8 @@ groups:
     brief: "Measures how many eggs are currently active."
     instrument: updowncounter
     unit: "{cartons}"
+    note: >
+      Some notes on metric.foo.active_eggs
     attributes: 
       - ref: http.method
         requirement_level: opt_in

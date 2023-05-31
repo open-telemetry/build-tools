@@ -233,7 +233,6 @@ class MarkdownRenderer:
         output.write(
             f"| `{semconv.metric_name}` | {instrument} | `{semconv.unit}` | {description} |\n"
         )
-
         self.to_markdown_notes(output)
 
     def to_markdown_anyof(self, anyof: AnyOf, output: io.StringIO):

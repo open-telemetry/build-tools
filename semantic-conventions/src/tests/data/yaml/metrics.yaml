@@ -36,8 +36,6 @@ groups:
     brief: "Measures how many eggs are currently active."
     instrument: updowncounter
     unit: "{cartons}"
-    note: >
-      Some notes on metric.foo.active_eggs
     attributes: 
       - ref: http.method
         requirement_level: opt_in

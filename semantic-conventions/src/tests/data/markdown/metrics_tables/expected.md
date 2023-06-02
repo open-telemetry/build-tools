@@ -4,7 +4,9 @@
 <!-- semconv metric.foo.size(metric_table) -->
 | Name     | Instrument Type | Unit (UCUM) | Description    |
 | -------- | --------------- | ----------- | -------------- |
-| `foo.size` | Histogram | `{bars}` | Measures the size of foo. |
+| `foo.size` | Histogram | `{bars}` | Measures the size of foo. [1] |
+
+**[1]:** Some notes on metric.foo.size
 <!-- endsemconv -->
 
 **Attributes for `foo.size`**
@@ -26,6 +28,8 @@
 <!-- semconv metric.foo.active_eggs -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `bar.egg.type` | string | Type of egg. | `chicken`; `emu`; `dragon` | Conditionally Required: if available to instrumentation. |
+| `bar.egg.type` | string | Type of egg. [1] | `chicken`; `emu`; `dragon` | Conditionally Required: if available to instrumentation. |
 | `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | Opt-In |
+
+**[1]:** Some notes on attribute
 <!-- endsemconv -->

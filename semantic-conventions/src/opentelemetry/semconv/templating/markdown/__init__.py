@@ -224,8 +224,14 @@ class MarkdownRenderer:
             "| Name     | Instrument Type | Unit (UCUM) | Description    |\n"
             "| -------- | --------------- | ----------- | -------------- |\n"
         )
+
+        description = semconv.brief
+        if semconv.note:
+            self.render_ctx.add_note(semconv.note)
+            description += f" [{len(self.render_ctx.notes)}]"
+
         output.write(
-            f"| `{semconv.metric_name}` | {instrument} | `{semconv.unit}` | {semconv.brief} |\n"
+            f"| `{semconv.metric_name}` | {instrument} | `{semconv.unit}` | {description} |\n"
         )
         self.to_markdown_notes(output)
 

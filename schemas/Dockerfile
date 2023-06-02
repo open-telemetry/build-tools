@@ -1,6 +1,6 @@
 ## Build
 ##
-FROM golang:1.17-alpine AS build
+FROM golang:1.20-alpine AS build
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN go build -o /schemas-tool
 
 ## Run
 ##
-FROM alpine:3.17
+FROM alpine:3.18
 
 WORKDIR /
 

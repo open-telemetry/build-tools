@@ -4,6 +4,11 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+## v0.19.0
+
+- Render notes on metric semconv tables
+  ([#177](https://github.com/open-telemetry/build-tools/pull/177))
+
 ## v0.18.0
 
 - Allow multiple semconv in --only flag

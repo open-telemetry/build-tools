@@ -23,6 +23,7 @@ from ruamel.yaml import YAML
 from opentelemetry.semconv.model.constraints import AnyOf, Include, parse_constraints
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
+    AttributeType,
     RequirementLevel,
     SemanticAttribute,
     unique_attributes,
@@ -111,6 +112,30 @@ class BaseSemanticConvention(ValidatableYamlNode):
 
     @property
     def attributes(self):
+        if not hasattr(self, "attrs_by_name"):
+            return []
+
+        return list(
+            filter(
+                lambda attr: not AttributeType.is_template_type(attr.attr_type),
+                list(self.attrs_by_name.values()),
+            )
+        )
+
+    @property
+    def attribute_templates(self):
+        if not hasattr(self, "attrs_by_name"):
+            return []
+
+        return list(
+            filter(
+                lambda attr: AttributeType.is_template_type(attr.attr_type),
+                list(self.attrs_by_name.values()),
+            )
+        )
+
+    @property
+    def attributes_and_templates(self):
         if not hasattr(self, "attrs_by_name"):
             return []
 

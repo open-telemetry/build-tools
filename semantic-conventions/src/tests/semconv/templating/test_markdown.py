@@ -142,6 +142,9 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_attribute_group(self):
         self.check("markdown/attribute_group/")
 
+    def test_attribute_templates(self):
+        self.check("markdown/attribute_templates/")
+
     def check(
         self,
         input_dir: str,

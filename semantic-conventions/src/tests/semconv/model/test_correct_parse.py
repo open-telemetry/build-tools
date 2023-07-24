@@ -489,7 +489,7 @@ class TestCorrectParse(unittest.TestCase):
 
         attr = model.attributes[3]
         self.assertEqual(attr.attr_id, "def_stability")
-        self.assertEqual(attr.stability, StabilityLevel.STABLE)
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
         model = list(semconv.models.values())[1]
         self.assertEqual(len(model.attributes), 2)

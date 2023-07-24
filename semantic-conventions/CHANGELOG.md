@@ -7,6 +7,11 @@ Please update the changelog as part of any significant pull request.
 - Support `frozen` stability level and change default stability level from `stable` to `experimental`
   ([#170](https://github.com/open-telemetry/build-tools/pull/170))
 
+## v0.19.0
+
+- Render notes on metric semconv tables
+  ([#177](https://github.com/open-telemetry/build-tools/pull/177))
+
 ## v0.18.0
 
 - Allow multiple semconv in --only flag

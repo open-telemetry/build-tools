@@ -40,10 +40,15 @@ here in `syntax.md` should be considered more authoritative though. Please keep
 All attributes are lower case.
 
 ```ebnf
-groups ::= semconv
-       | semconv groups
+groups ::= group {group}
+       | group {group} groups
 
-semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields]
+group ::= semconv
+      | namespace
+
+namespace ::= id brief [note] prefix [stability] [deprecated] attribute_definitions
+
+semconv ::= id [convtype] brief [note] [extends] [stability] [deprecated] attributes [constraints] [specificfields]
 
 id    ::= string
 
@@ -68,7 +73,13 @@ stability ::= "deprecated"
 
 deprecated ::= <description>
 
-attributes ::= (id type brief examples | ref [brief] [examples]) [tag] [stability] [deprecated] [required] [sampling_relevant] [note]
+attribute_definitions ::= attribute_definition {attribute_definition}
+
+attribute_definition ::= id type brief examples [tag] [stability] [deprecated] [sampling_relevant] [note]
+
+attributes ::= attribute {attribute}
+
+attribute ::= ref [brief] [examples] [tag] [stability] [deprecated] [requirement_level] [sampling_relevant] [note]
 
 # ref MUST point to an existing attribute id
 ref ::= id

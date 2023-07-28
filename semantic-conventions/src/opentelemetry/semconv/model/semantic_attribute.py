@@ -77,6 +77,14 @@ class SemanticAttribute:
         return replace(self, inherited=True)
 
     @property
+    def core_type(self):
+        return (
+            AttributeType.get_core_template_type(self.attr_type)
+            if AttributeType.is_template_type(self.attr_type)
+            else self.attr_type
+        )
+
+    @property
     def is_local(self):
         return not self.imported and not self.inherited
 

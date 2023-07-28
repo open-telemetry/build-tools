@@ -1,0 +1,25 @@
+groups:  
+  - id: test
+    type: attribute_group
+    brief: 'brief'
+    attributes:
+      - id: attribute_template_one
+        tag: tag-one
+        type: template[string]
+        brief: >
+          this is the description of
+          the first attribute template
+        examples: 'This is a good example of the first attribute template'
+      - id: attribute_template_two
+        tag: tag-two
+        type: template[int]
+        brief: >
+          this is the description of
+          the second attribute template. It's a number.
+        examples: [1000, 10, 1]
+      - id: attribute_three
+        tag: tag-three
+        type: boolean
+        brief: >
+          this is the description of
+          the second attribute template. It's a boolean.

@@ -590,6 +590,12 @@ class SemanticConventionSet:
             output.extend(semconv.attributes)
         return output
 
+    def attribute_templates(self):
+        output = []
+        for semconv in self.models.values():
+            output.extend(semconv.attribute_templates)
+        return output
+
 
 CONVENTION_CLS_BY_GROUP_TYPE = {
     cls.GROUP_TYPE_NAME: cls

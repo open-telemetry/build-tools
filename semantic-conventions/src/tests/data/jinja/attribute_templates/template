@@ -1,0 +1,62 @@
+{%- macro to_java_return_type(type) -%}
+  {%- if type == "string" -%}
+    String
+  {%- elif type == "string[]" -%}
+    List<String>
+  {%- elif type == "boolean" -%}
+    boolean
+  {%- elif type == "int" -%}
+    long
+  {%- elif type == "double" -%}
+    double
+  {%- else -%}
+    {{type}}
+  {%- endif -%}
+{%- endmacro %}
+{%- macro to_java_key_type(type) -%}
+  {%- if type == "string" -%}
+    stringKey
+  {%- elif type == "string[]" -%}
+    stringArrayKey
+  {%- elif type == "boolean" -%}
+    booleanKey
+  {%- elif type == "int" -%}
+    longKey
+  {%- elif type == "double" -%}
+    doubleKey
+  {%- else -%}
+    {{lowerFirst(type)}}Key
+  {%- endif -%}
+{%- endmacro %}
+{%- macro print_value(type, value) -%}
+  {{ "\"" if type == "String"}}{{value}}{{ "\"" if type == "String"}}
+{%- endmacro %}
+{%- macro upFirst(text) -%}
+  {{ text[0]|upper}}{{text[1:] }}
+{%- endmacro %}
+{%- macro lowerFirst(text) -%}
+  {{ text[0]|lower}}{{text[1:] }}
+{%- endmacro %}
+package io.opentelemetry.instrumentation.api.attributetemplates;
+
+class AttributesTemplate {
+{%- for attribute_template in attribute_templates if attribute_template.is_local and not attribute_template.ref %}
+
+  /**
+  * {{attribute_template.brief | render_markdown(code="{{@code {0}}}", paragraph="{0}")}}
+    {%- if attribute_template.note %}
+  *
+  * <p>Notes:
+    <ul> {{attribute_template.note | render_markdown(code="{{@code {0}}}", paragraph="<li>{0}</li>", list="{0}")}} </ul>
+    {%- endif %}
+    {%- if (attribute_template.stability | string())  == "StabilityLevel.DEPRECATED" %}
+  *
+  * @deprecated {{attribute_template.brief | to_doc_brief}}.
+    {%- endif %}
+  */
+    {%- if (attribute_template.stability | string()) == "StabilityLevel.DEPRECATED"  %}
+  @Deprecated
+    {%- endif %}
+  public static final AttributeKey<{{upFirst(to_java_return_type(attribute_template.core_type | string))}}> {{attribute_template.fqn | to_const_name}} = {{to_java_key_type(attribute_template.core_type | string)}}("{{attribute_template.fqn}}");
+  {%- endfor %}
+}

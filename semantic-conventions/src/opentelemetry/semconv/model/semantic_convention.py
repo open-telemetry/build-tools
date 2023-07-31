@@ -408,7 +408,7 @@ class SemanticConventionSet:
                 raise ValidationError.from_yaml_pos(
                     semconv._position,
                     f"Semantic Convention {semconv.semconv_id} extends "
-                    "{semconv.extends} but the latter cannot be found!",
+                    f"{semconv.extends} but the latter cannot be found!",
                 )
 
             # Process hierarchy chain

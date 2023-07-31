@@ -16,7 +16,7 @@ import sys
 import typing
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 from ruamel.yaml import YAML
 
@@ -112,34 +112,26 @@ class BaseSemanticConvention(ValidatableYamlNode):
 
     @property
     def attributes(self):
-        if not hasattr(self, "attrs_by_name"):
-            return []
-
-        return list(
-            filter(
-                lambda attr: not AttributeType.is_template_type(attr.attr_type),
-                list(self.attrs_by_name.values()),
-            )
-        )
+        return self._get_attributes(False)
 
     @property
     def attribute_templates(self):
-        if not hasattr(self, "attrs_by_name"):
-            return []
-
-        return list(
-            filter(
-                lambda attr: AttributeType.is_template_type(attr.attr_type),
-                list(self.attrs_by_name.values()),
-            )
-        )
+        return self._get_attributes(True)
 
     @property
     def attributes_and_templates(self):
+        return self._get_attributes(None)
+
+    def _get_attributes(self, templates: Optional[bool]):
         if not hasattr(self, "attrs_by_name"):
             return []
 
-        return list(self.attrs_by_name.values())
+        return [
+            attr
+            for attr in self.attrs_by_name.values()
+            if templates is None
+            or templates == AttributeType.is_template_type(attr.attr_type)
+        ]
 
     def __init__(self, group):
         super().__init__(group)

@@ -57,6 +57,25 @@ class AttributesTemplate {
     {%- if (attribute_template.stability | string()) == "StabilityLevel.DEPRECATED"  %}
   @Deprecated
     {%- endif %}
-  public static final AttributeKey<{{upFirst(to_java_return_type(attribute_template.core_type | string))}}> {{attribute_template.fqn | to_const_name}} = {{to_java_key_type(attribute_template.core_type | string)}}("{{attribute_template.fqn}}");
-  {%- endfor %}
+  public static final AttributeKey<{{upFirst(to_java_return_type(attribute_template.instantiated_type | string))}}> {{attribute_template.fqn | to_const_name}} = {{to_java_key_type(attribute_template.instantiated_type | string)}}("{{attribute_template.fqn}}");
+{%- endfor %}
+{%- for attribute in attributes if attribute.is_local and not attribute.ref %}
+
+  /**
+  * {{attribute.brief | render_markdown(code="{{@code {0}}}", paragraph="{0}")}}
+    {%- if attribute.note %}
+  *
+  * <p>Notes:
+    <ul> {{attribute.note | render_markdown(code="{{@code {0}}}", paragraph="<li>{0}</li>", list="{0}")}} </ul>
+    {%- endif %}
+    {%- if (attribute.stability | string())  == "StabilityLevel.DEPRECATED" %}
+  *
+  * @deprecated {{attribute.brief | to_doc_brief}}.
+    {%- endif %}
+  */
+    {%- if (attribute.stability | string()) == "StabilityLevel.DEPRECATED"  %}
+  @Deprecated
+    {%- endif %}
+  public static final AttributeKey<{{upFirst(to_java_return_type(attribute.instantiated_type | string))}}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");
+{%- endfor %}
 }

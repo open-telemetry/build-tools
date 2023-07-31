@@ -86,7 +86,7 @@ simple_type ::= "string"
      |   "double[]"
      |   "boolean[]"
 
-template_type ::= "template[" simple_type "]"
+template_type ::= "template[" simple_type "]" # As a single string
 
 enum ::= [allow_custom_values] members
 
@@ -229,7 +229,7 @@ An attribute is defined by:
     * `"int[]"`: Array of integer attributes.
     * `"double[]"`: Array of double attributes.
     * `"boolean[]"`: Array of booleans attributes.
-  * _template type as string literal:_ `"template[<PRIMITIVE_OR_ARRAY_TYPE>]"` (See later)
+  * _template type as string literal:_ `"template[<PRIMITIVE_OR_ARRAY_TYPE>]"` (See [below](#template-type))
 
   See the [specification of Attributes](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) for the definition of the value types.
 - `ref`, optional string, reference an existing attribute, see [below](#ref).
@@ -343,11 +343,11 @@ array of booleans, a template type or an enumeration.
 
 ##### Template type
 
-A template type attribute represents a _key-value set_ of attributes with a common attribute name prefix. The syntax for defining template type attributes is the following:
+A template type attribute represents a _dictionary_ of attributes with a common attribute name prefix. The syntax for defining template type attributes is the following:
 
 `type: template[<PRIMITIVE_OR_ARRAY_TYPE>]`
 
-The `<PRIMITIVE_OR_ARRAY_TYPE>` is one of the above-mentioned primitive or array types (_not_ an enumeration) and specifies the type of the `value` in the key-value pairs. 
+The `<PRIMITIVE_OR_ARRAY_TYPE>` is one of the above-mentioned primitive or array types (_not_ an enum) and specifies the type of the `value` in the dictionary. 
 
 The following is an example for defining a template type attribute and it's resolution:
 
@@ -360,13 +360,13 @@ groups:
       - id: http.request.header
         type: template[string[]]
         brief: >
-          HTTP request headers, `<key>` being the normalized HTTP Header name (lowercase, with `-` characters replaced by `_`), the value being the header values.
+          HTTP request headers, the key being the normalized HTTP header name (lowercase, with `-` characters replaced by `_`), the value being the header values.
         examples: ['http.request.header.content_type=["application/json"]', 'http.request.header.x_forwarded_for=["1.2.3.4", "1.2.3.5"]']
         note: |
           ...
 ```
 
-In this example the definition will be resolved into a key-value set of attributes `http.request.header.<key>` where `<key>` will be replaced by the actual HTTP header name, and the value of the attributes is of type `string[]` that carries the HTTP header value. 
+In this example the definition will be resolved into a dictionary of attributes `http.request.header.<key>` where `<key>` will be replaced by the actual HTTP header name, and the value of the attributes is of type `string[]` that carries the HTTP header value. 
 
 ##### Enumeration
 

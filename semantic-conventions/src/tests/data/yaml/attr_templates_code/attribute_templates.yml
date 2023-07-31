@@ -22,4 +22,4 @@ groups:
         type: boolean
         brief: >
           this is the description of
-          the second attribute template. It's a boolean.
+          the third attribute template. It's a boolean.

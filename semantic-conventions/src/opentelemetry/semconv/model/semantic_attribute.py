@@ -27,7 +27,8 @@ from opentelemetry.semconv.model.utils import (
     validate_values,
 )
 
-TEMPLATE_TYPE_RE = re.compile("template\\[([a-z\\[\\]]+)\\]")
+TEMPLATE_PREFIX = "template["
+TEMPLATE_SUFFIX = "]"
 
 
 class RequirementLevel(Enum):
@@ -77,12 +78,8 @@ class SemanticAttribute:
         return replace(self, inherited=True)
 
     @property
-    def core_type(self):
-        return (
-            AttributeType.get_core_template_type(self.attr_type)
-            if AttributeType.is_template_type(self.attr_type)
-            else self.attr_type
-        )
+    def instantiated_type(self):
+        return AttributeType.get_instantiated_type(self.attr_type)
 
     @property
     def is_local(self):
@@ -382,17 +379,24 @@ class AttributeType:
     def is_template_type(attr_type: str):
         if not isinstance(attr_type, str):
             return False
-        matchObj = TEMPLATE_TYPE_RE.fullmatch(attr_type)
-        if matchObj is not None:
-            return AttributeType.is_simple_type(matchObj.group(1))
-        return False
+
+        return (
+            attr_type.startswith(TEMPLATE_PREFIX)
+            and attr_type.endswith(TEMPLATE_SUFFIX)
+            and AttributeType.is_simple_type(
+                attr_type[len(TEMPLATE_PREFIX) : len(attr_type) - len(TEMPLATE_SUFFIX)]
+            )
+        )
 
     @staticmethod
-    def get_core_template_type(attr_type: str):
-        matchObj = TEMPLATE_TYPE_RE.fullmatch(attr_type)
-        if matchObj is not None:
-            return matchObj.group(1)
-        raise ValidationError(0, 0, f"Cannot retrieve core type from type: {attr_type}")
+    def get_instantiated_type(attr_type: str):
+        if AttributeType.is_template_type(attr_type):
+            return attr_type[
+                len(TEMPLATE_PREFIX) : len(attr_type) - len(TEMPLATE_SUFFIX)
+            ]
+        if AttributeType.is_simple_type(attr_type):
+            return attr_type
+        return "enum"
 
     @staticmethod
     def type_mapper(attr_type: str):

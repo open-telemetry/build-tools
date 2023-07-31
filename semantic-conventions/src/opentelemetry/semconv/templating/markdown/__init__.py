@@ -102,10 +102,8 @@ class MarkdownRenderer:
         attr_type = (
             "enum"
             if isinstance(attribute.attr_type, EnumAttributeType)
-            else attribute.attr_type
+            else AttributeType.get_instantiated_type(attribute.attr_type)
         )
-        if AttributeType.is_template_type(attr_type):
-            attr_type = AttributeType.get_core_template_type(attr_type)
         description = ""
         if attribute.deprecated and self.options.enable_deprecated:
             if "deprecated" in attribute.deprecated.lower():
@@ -331,13 +329,13 @@ class MarkdownRenderer:
                 output.write("\n")
 
     def render_fqn_for_attribute(self, attribute):
-        diff = self.get_attr_reference_diff(attribute.fqn)
+        rel_path = self.get_attr_reference_relative_path(attribute.fqn)
         name = attribute.fqn
         if AttributeType.is_template_type(attribute.attr_type):
             name = f"{attribute.fqn}.<key>"
 
-        if diff is not None:
-            return f"[`{name}`]({diff})"
+        if rel_path is not None:
+            return f"[`{name}`]({rel_path})"
         return f"`{name}`"
 
     def render_attribute_id(self, attribute_id):
@@ -345,19 +343,21 @@ class MarkdownRenderer:
         Method to render in markdown an attribute id. If the id points to an attribute in another rendered table, a
         markdown link is introduced.
         """
-        diff = self.get_attr_reference_diff(attribute_id)
-        if diff is not None:
-            return f"[`{attribute_id}`]({diff})"
+        rel_path = self.get_attr_reference_relative_path(attribute_id)
+        if rel_path is not None:
+            return f"[`{attribute_id}`]({rel_path})"
         return f"`{attribute_id}`"
 
-    def get_attr_reference_diff(self, attribute_id):
+    def get_attr_reference_relative_path(self, attribute_id):
         md_file = self.filename_for_attr_fqn.get(attribute_id)
         if md_file:
             path = PurePath(self.render_ctx.current_md)
             if path.as_posix() != PurePath(md_file).as_posix():
-                diff = PurePath(os.path.relpath(md_file, start=path.parent)).as_posix()
-                if diff != ".":
-                    return diff
+                rel_path = PurePath(
+                    os.path.relpath(md_file, start=path.parent)
+                ).as_posix()
+                if rel_path != ".":
+                    return rel_path
         return None
 
     def to_markdown_constraint(

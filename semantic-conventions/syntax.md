@@ -40,8 +40,8 @@ here in `syntax.md` should be considered more authoritative though. Please keep
 All attributes are lower case.
 
 ```ebnf
-groups ::= group {group}
-       | group {group} groups
+groups ::= group
+       | group groups
 
 group ::= semconv
       | namespace

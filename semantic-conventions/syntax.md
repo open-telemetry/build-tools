@@ -73,7 +73,11 @@ attributes ::= (id type brief examples | ref [brief] [examples]) [tag] [stabilit
 # ref MUST point to an existing attribute id
 ref ::= id
 
-type ::= "string"
+type ::= simple_type
+     |   template_type
+     |   enum
+
+simple_type ::= "string"
      |   "int"
      |   "double"
      |   "boolean"
@@ -81,7 +85,8 @@ type ::= "string"
      |   "int[]"
      |   "double[]"
      |   "boolean[]"
-     |   enum
+
+template_type ::= "template[" simple_type "]" # As a single string
 
 enum ::= [allow_custom_values] members
 
@@ -213,17 +218,18 @@ Attribute groups don't have any specific fields and follow the general `semconv`
 An attribute is defined by:
 
 - `id`, string that uniquely identifies the attribute.
-- `type`, either a string literal denoting the type or an enum definition (See later).
+- `type`, either a string literal denoting the type as a primitive or an array type, a template type or an enum definition (See later).
    The accepted string literals are:
-
-  * `"string"`: String attributes.
-  * `"int"`: Integer attributes.
-  * `"double"`: Double attributes.
-  * `"boolean"`: Boolean attributes.
-  * `"string[]"`: Array of strings attributes.
-  * `"int[]"`: Array of integer attributes.
-  * `"double[]"`: Array of double attributes.
-  * `"boolean[]"`: Array of booleans attributes.
+  * _primitive and array types as string literals:_
+    * `"string"`: String attributes.
+    * `"int"`: Integer attributes.
+    * `"double"`: Double attributes.
+    * `"boolean"`: Boolean attributes.
+    * `"string[]"`: Array of strings attributes.
+    * `"int[]"`: Array of integer attributes.
+    * `"double[]"`: Array of double attributes.
+    * `"boolean[]"`: Array of booleans attributes.
+  * _template type as string literal:_ `"template[<PRIMITIVE_OR_ARRAY_TYPE>]"` (See [below](#template-type))
 
   See the [specification of Attributes](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) for the definition of the value types.
 - `ref`, optional string, reference an existing attribute, see [below](#ref).
@@ -333,7 +339,38 @@ fields are present in the current attribute definition, they override the inheri
 #### Type
 
 An attribute type can either be a string, int, double, boolean, array of strings, array of int, array of double,
-array of booleans, or an enumeration. If it is an enumeration, additional fields are required:
+array of booleans, a template type or an enumeration. 
+
+##### Template type
+
+A template type attribute represents a _dictionary_ of attributes with a common attribute name prefix. The syntax for defining template type attributes is the following:
+
+`type: template[<PRIMITIVE_OR_ARRAY_TYPE>]`
+
+The `<PRIMITIVE_OR_ARRAY_TYPE>` is one of the above-mentioned primitive or array types (_not_ an enum) and specifies the type of the `value` in the dictionary. 
+
+The following is an example for defining a template type attribute and it's resolution:
+
+```yaml
+groups:
+  - id: trace.http.common
+    type: attribute_group
+    brief: "..."
+    attributes:
+      - id: http.request.header
+        type: template[string[]]
+        brief: >
+          HTTP request headers, the key being the normalized HTTP header name (lowercase, with `-` characters replaced by `_`), the value being the header values.
+        examples: ['http.request.header.content_type=["application/json"]', 'http.request.header.x_forwarded_for=["1.2.3.4", "1.2.3.5"]']
+        note: |
+          ...
+```
+
+In this example the definition will be resolved into a dictionary of attributes `http.request.header.<key>` where `<key>` will be replaced by the actual HTTP header name, and the value of the attributes is of type `string[]` that carries the HTTP header value. 
+
+##### Enumeration
+
+If the type is an enumeration, additional fields are required:
 
 - `allow_custom_values`, optional boolean, set to false to not accept values
      other than the specified members. It defaults to `true`.

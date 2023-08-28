@@ -287,7 +287,15 @@
 								"string[]",
 								"int[]",
 								"double[]",
-								"boolean[]"
+								"boolean[]",
+								"template[string]",
+								"template[int]",
+								"template[double]",
+								"template[boolean]",
+								"template[string[]]",
+								"template[int[]]",
+								"template[double[]]",
+								"template[boolean[]]"
 							],
 							"description": "literal denoting the type"
 						},

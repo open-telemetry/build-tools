@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+import re
+
 from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute
 
 
@@ -49,3 +51,44 @@ def test_parse_deprecated(load_yaml):
     assert list(attributes.keys()) == ["deprecated_attribute"]
 
     assert attributes["deprecated_attribute"].deprecated == "don't use this one anymore"
+
+
+def test_parse_regex():
+    TEMPLATE_TYPE_RE = re.compile("template\\[([a-z\\[\\]]+)\\]")
+    matchObj = TEMPLATE_TYPE_RE.fullmatch("template[string[]]")
+    assert matchObj is not None
+    assert matchObj.group(1) == "string[]"
+
+
+def test_parse_attribute_templates(load_yaml):
+    yaml = load_yaml("attribute_templates.yml")
+    attribute_templates = SemanticAttribute.parse("prefix", "", yaml.get("attributes"))
+
+    assert len(attribute_templates) == 3
+
+    expected_keys = sorted(
+        [
+            "prefix.attribute_template_one",
+            "prefix.attribute_template_two",
+            "prefix.attribute_three",
+        ]
+    )
+    actual_keys = sorted(list(attribute_templates.keys()))
+
+    assert actual_keys == expected_keys
+
+    first_attribute = attribute_templates["prefix.attribute_template_one"]
+    assert first_attribute.fqn == "prefix.attribute_template_one"
+    assert first_attribute.tag == "tag-one"
+    assert first_attribute.ref is None
+    assert first_attribute.attr_type == "template[string]"
+    assert (
+        first_attribute.brief
+        == "this is the description of the first attribute template"
+    )
+    assert first_attribute.examples == [
+        "This is a good example of the first attribute template"
+    ]
+
+    second_attribute = attribute_templates["prefix.attribute_template_two"]
+    assert second_attribute.fqn == "prefix.attribute_template_two"

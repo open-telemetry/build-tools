@@ -4,6 +4,9 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- Render template-type attributes from yaml files
+  ([#186](https://github.com/open-telemetry/build-tools/pull/186))
+
 ## v0.20.0
 
 - Change default stability level to experimental

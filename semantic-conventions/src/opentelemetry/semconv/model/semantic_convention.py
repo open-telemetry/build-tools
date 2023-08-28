@@ -16,13 +16,14 @@ import sys
 import typing
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 from ruamel.yaml import YAML
 
 from opentelemetry.semconv.model.constraints import AnyOf, Include, parse_constraints
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
+    AttributeType,
     RequirementLevel,
     SemanticAttribute,
     unique_attributes,
@@ -111,10 +112,26 @@ class BaseSemanticConvention(ValidatableYamlNode):
 
     @property
     def attributes(self):
+        return self._get_attributes(False)
+
+    @property
+    def attribute_templates(self):
+        return self._get_attributes(True)
+
+    @property
+    def attributes_and_templates(self):
+        return self._get_attributes(None)
+
+    def _get_attributes(self, templates: Optional[bool]):
         if not hasattr(self, "attrs_by_name"):
             return []
 
-        return list(self.attrs_by_name.values())
+        return [
+            attr
+            for attr in self.attrs_by_name.values()
+            if templates is None
+            or templates == AttributeType.is_template_type(attr.attr_type)
+        ]
 
     def __init__(self, group):
         super().__init__(group)
@@ -563,6 +580,12 @@ class SemanticConventionSet:
         output = []
         for semconv in self.models.values():
             output.extend(semconv.attributes)
+        return output
+
+    def attribute_templates(self):
+        output = []
+        for semconv in self.models.values():
+            output.extend(semconv.attribute_templates)
         return output
 
 

@@ -9,32 +9,16 @@
 			"items": {
 				"anyOf": [
 					{
-						"allOf": [
-							{
-								"$ref": "#/definitions/SemanticConvention"
-							}
-						]
+						"allOf": [{"$ref": "#/definitions/SemanticConvention"}]
 					},
 					{
-						"allOf": [
-							{
-								"$ref": "#/definitions/SpanSemanticConvention"
-							}
-						]
+						"allOf": [{"$ref": "#/definitions/SpanSemanticConvention"}]
 					},
 					{
-						"allOf": [
-							{
-								"$ref": "#/definitions/EventSemanticConvention"
-							}
-						]
+						"allOf": [{"$ref": "#/definitions/EventSemanticConvention"}]
 					},
 					{
-						"allOf": [
-							{
-								"$ref": "#/definitions/MetricSemanticConvention"
-							}
-						]
+						"allOf": [{"$ref": "#/definitions/MetricSemanticConvention"}]
 					}
 				]
 			}
@@ -149,11 +133,7 @@
 			}
 		},
 		"SpanSemanticConvention": {
-			"allOf": [
-				{
-					"$ref": "#/definitions/SemanticConventionBase"
-				}
-			],
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
 			"properties": {
 				"type": {
 					"type": "string",
@@ -173,11 +153,7 @@
 			}
 		},
 		"EventSemanticConvention": {
-			"allOf": [
-				{
-					"$ref": "#/definitions/SemanticConventionBase"
-				}
-			],
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
 			"properties": {
 				"type": {
 					"type": "string",
@@ -189,27 +165,13 @@
 				}
 			},
 			"anyOf": [
-				{
-					"required": [
-						"prefix"
-					]
-				},
-				{
-					"required": [
-						"name"
-					]
-				}
+				{"required": ["prefix"]},
+				{"required": ["name"]}
 			]
 		},
 		"MetricGroupSemanticConvention": {
-			"allOf": [
-				{
-					"$ref": "#/definitions/SemanticConventionBase"
-				}
-			],
-			"required": [
-				"type"
-			],
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"required": ["type"],
 			"properties": {
 				"type": {
 					"type": "string",
@@ -218,11 +180,7 @@
 			}
 		},
 		"MetricSemanticConvention": {
-			"allOf": [
-				{
-					"$ref": "#/definitions/SemanticConventionBase"
-				}
-			],
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
 			"required": [
 				"type",
 				"metric_name",
@@ -255,22 +213,13 @@
 			}
 		},
 		"SemanticConvention": {
-			"allOf": [
-				{
-					"$ref": "#/definitions/SemanticConventionBase"
-				}
-			],
-			"required": [
-				"type"
-			],
+			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"required": ["type"],
 			"properties": {
 				"type": {
 					"type": "string",
 					"not": {
-						"enum": [
-							"span",
-							"event"
-						]
+						"enum": ["span", "event"]
 					}
 				}
 			}
@@ -456,14 +405,10 @@
 						},
 						"examples": {
 							"anyOf": [
-								{
-									"$ref": "#/definitions/ValueType"
-								},
+								{ "$ref": "#/definitions/ValueType" },
 								{
 									"type": "array",
-									"items": {
-										"$ref": "#/definitions/ValueType"
-									}
+									"items": { "$ref": "#/definitions/ValueType" }
 								}
 							],
 							"description": "sequence/dictionary of example values for the attribute. They are optional for boolean, int, double, and enum attributes. Example values must be of the same type of the attribute. If only a single example is provided, it can directly be reported without encapsulating it into a sequence/dictionary."

@@ -6,6 +6,8 @@ Please update the changelog as part of any significant pull request.
 
 - Render template-type attributes from yaml files
   ([#186](https://github.com/open-telemetry/build-tools/pull/186))
+- Fix conditionally_required definition in semconv.schema.json
+  ([#201](https://github.com/open-telemetry/build-tools/pull/201))
 
 ## v0.20.0
 

@@ -133,6 +133,9 @@ class TestCorrectMarkdown(unittest.TestCase):
             ],
         )
 
+    def test_omit_requirement_level(self):
+        self.check("markdown/omit_requirement_level/")
+
     def testSamplingRelevant(self):
         self.check("markdown/sampling_relevant/")
 

@@ -45,6 +45,7 @@ class RenderContext:
         self.is_full = False
         self.is_remove_constraint = False
         self.is_metric_table = False
+        self.is_omit_requirement_level = False
         self.group_key = ""
         self.enums = []
         self.notes = []
@@ -70,10 +71,19 @@ class MarkdownRenderer:
     )
     p_end = re.compile("<!--\\s*endsemconv\\s*-->")
     default_break_conditional_labels = 50
-    valid_parameters = ["tag", "full", "remove_constraints", "metric_table"]
+    valid_parameters = [
+        "tag",
+        "full",
+        "remove_constraints",
+        "metric_table",
+        "omit_requirement_level",
+    ]
 
     prelude = "<!-- semconv {} -->\n"
     table_headers = "| Attribute  | Type | Description  | Examples  | Requirement Level |\n|---|---|---|---|---|\n"
+    table_headers_omitting_req_level = (
+        "| Attribute  | Type | Description  | Examples  |\n|---|---|---|---|\n"
+    )
 
     def __init__(
         self, md_folder, semconvset: SemanticConventionSet, options=MarkdownOptions()
@@ -148,6 +158,16 @@ class MarkdownRenderer:
                 examples = "`[" + ", ".join(f"{ex}" for ex in example_list) + "]`"
             else:
                 examples = "; ".join(f"`{ex}`" for ex in example_list)
+
+        if self.render_ctx.is_omit_requirement_level:
+            output.write(f"| {name} | {attr_type} | {description} | {examples} |\n")
+        else:
+            required = self.derive_requirement_level(attribute)
+            output.write(
+                f"| {name} | {attr_type} | {description} | {examples} | {required} |\n"
+            )
+
+    def derive_requirement_level(self, attribute: SemanticAttribute):
         if attribute.requirement_level == RequirementLevel.REQUIRED:
             required = "Required"
         elif attribute.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED:
@@ -175,10 +195,13 @@ class MarkdownRenderer:
                     # We put the condition in the notes after the table
                     self.render_ctx.add_note(attribute.requirement_level_msg)
                     required = f"Recommended: [{len(self.render_ctx.notes)}]"
+        return required
 
-        output.write(
-            f"| {name} | {attr_type} | {description} | {examples} | {required} |\n"
-        )
+    def write_table_header(self, output: io.StringIO):
+        if self.render_ctx.is_omit_requirement_level:
+            output.write(MarkdownRenderer.table_headers_omitting_req_level)
+        else:
+            output.write(MarkdownRenderer.table_headers)
 
     def to_markdown_attribute_table(
         self, semconv: BaseSemanticConvention, output: io.StringIO
@@ -200,7 +223,7 @@ class MarkdownRenderer:
                 f"No attributes retained for '{semconv.semconv_id}' filtering by '{self.render_ctx.group_key}'"
             )
         if attr_to_print:
-            output.write(MarkdownRenderer.table_headers)
+            self.write_table_header(output)
             for attr in attr_to_print:
                 self.to_markdown_attr(attr, output)
         attr_sampling_relevant = [
@@ -495,6 +518,9 @@ class MarkdownRenderer:
         self.render_ctx.group_key = parameters.get("tag")
         self.render_ctx.is_full = "full" in parameters
         self.render_ctx.is_metric_table = "metric_table" in parameters
+        self.render_ctx.is_omit_requirement_level = (
+            "omit_requirement_level" in parameters
+        )
 
         if self.render_ctx.is_metric_table:
             self.to_markdown_metric_table(semconv, output)

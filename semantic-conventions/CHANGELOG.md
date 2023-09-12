@@ -4,8 +4,12 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+## v0.21.0
+
 - Render template-type attributes from yaml files
   ([#186](https://github.com/open-telemetry/build-tools/pull/186))
+- Added `omit_requirement_level` option for markdown table rendering
+  ([#190](https://github.com/open-telemetry/build-tools/pull/190))
 - Fix conditionally_required definition in semconv.schema.json
   ([#201](https://github.com/open-telemetry/build-tools/pull/201))
 

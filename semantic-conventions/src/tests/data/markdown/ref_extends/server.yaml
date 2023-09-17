@@ -1,0 +1,10 @@
+groups:
+  - id: server
+    type: attribute_group
+    prefix: server
+    brief: 'This document defines semantic conventions for common server attributes.'
+    attributes:
+      - id: address
+        type: string
+        brief: 'Domain name.'
+        examples: 'foo'

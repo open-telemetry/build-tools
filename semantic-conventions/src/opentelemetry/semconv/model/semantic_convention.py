@@ -502,6 +502,7 @@ class SemanticConventionSet:
         attr: SemanticAttribute
         for attr in semconv.attributes:
             if attr.ref is not None and attr.attr_id is None:
+                attr = self._fill_inherited_attribute(attr, semconv)
                 # There are changes
                 fixpoint_ref = False
                 ref_attr = self._lookup_attribute(attr.ref)
@@ -510,19 +511,34 @@ class SemanticConventionSet:
                         semconv._position,
                         f"Semantic Convention {semconv.semconv_id} reference `{attr.ref}` but it cannot be found!",
                     )
-                attr.attr_type = ref_attr.attr_type
-                if not attr.brief:
-                    attr.brief = ref_attr.brief
-                if not attr.requirement_level:
-                    attr.requirement_level = ref_attr.requirement_level
-                    if not attr.requirement_level_msg:
-                        attr.requirement_level_msg = ref_attr.requirement_level_msg
-                if not attr.note:
-                    attr.note = ref_attr.note
-                if attr.examples is None:
-                    attr.examples = ref_attr.examples
-                attr.attr_id = attr.ref
+                attr = self._merge_attribute(attr, ref_attr)
         return fixpoint_ref
+
+    def _fill_inherited_attribute(self, attr, semconv):
+        if attr.attr_id is not None:
+            return attr
+
+        if attr.ref in semconv.attrs_by_name.keys():
+            attr = self._merge_attribute(attr, semconv.attrs_by_name[attr.ref])
+        if semconv.extends in self.models:
+            attr = self._fill_inherited_attribute(attr, self.models[semconv.extends])
+        return attr
+
+
+    def _merge_attribute(self, child, parent):
+        child.attr_type = parent.attr_type
+        if not child.brief:
+            child.brief = parent.brief
+        if not child.requirement_level:
+            child.requirement_level = parent.requirement_level
+            if not child.requirement_level_msg:
+                child.requirement_level_msg = parent.requirement_level_msg
+        if not child.note:
+            child.note = parent.note
+        if child.examples is None:
+            child.examples = parent.examples
+        child.attr_id = parent.attr_id
+        return child
 
     def resolve_include(self, semconv):
         fixpoint_inc = True

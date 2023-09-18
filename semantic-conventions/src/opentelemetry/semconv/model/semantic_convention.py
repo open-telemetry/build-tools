@@ -524,7 +524,6 @@ class SemanticConventionSet:
             attr = self._fill_inherited_attribute(attr, self.models[semconv.extends])
         return attr
 
-
     def _merge_attribute(self, child, parent):
         child.attr_type = parent.attr_type
         if not child.brief:

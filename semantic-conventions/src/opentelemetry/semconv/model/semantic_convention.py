@@ -360,6 +360,7 @@ class SemanticConventionSet:
         """
         # Before resolving attributes, we verify that no duplicate exists.
         self.check_unique_fqns()
+
         fixpoint = False
         index = 0
         tmp_debug = self.debug
@@ -431,12 +432,13 @@ class SemanticConventionSet:
             parent_attributes = {}
             for ext_attr in extended.attributes:
                 parent_attributes[ext_attr.fqn] = ext_attr.inherit_attribute()
+            parent_attributes.update(semconv.attrs_by_name)
+
             # By induction, parent semconv is already correctly sorted
-            parent_attributes.update(
-                SemanticConventionSet._sort_attributes_dict(semconv.attrs_by_name)
-            )
+            # but the combination of parent and current attributes is not
             if parent_attributes or semconv.attributes:
-                semconv.attrs_by_name = parent_attributes
+                semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(parent_attributes)
+
         elif semconv.attributes:  # No parent, sort of current attributes
             semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(
                 semconv.attrs_by_name
@@ -454,7 +456,7 @@ class SemanticConventionSet:
         :return: A sorted dictionary of attributes
         """
         return dict(
-            sorted(attributes.items(), key=lambda kv: 0 if kv[1].imported else 1)
+            sorted(attributes.items())
         )
 
     def _populate_anyof_attributes(self):

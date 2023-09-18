@@ -65,6 +65,9 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testExtendConstraint(self):
         self.check("markdown/extend_constraint/")
 
+    def test_extend_grandparent(self):
+        self.check("markdown/extend_grandparent/")
+
     def test_error_missing_end(self):
         ex = self.check("markdown/missing_end_tag/", assert_raises=ValueError)
         self.assertEqual("Missing ending <!-- endsemconv --> tag", ex.args[0])

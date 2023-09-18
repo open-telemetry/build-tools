@@ -360,7 +360,6 @@ class SemanticConventionSet:
         """
         # Before resolving attributes, we verify that no duplicate exists.
         self.check_unique_fqns()
-
         fixpoint = False
         index = 0
         tmp_debug = self.debug

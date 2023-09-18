@@ -437,7 +437,9 @@ class SemanticConventionSet:
             # By induction, parent semconv is already correctly sorted
             # but the combination of parent and current attributes is not
             if parent_attributes or semconv.attributes:
-                semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(parent_attributes)
+                semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(
+                    parent_attributes
+                )
 
         elif semconv.attributes:  # No parent, sort of current attributes
             semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(
@@ -455,9 +457,7 @@ class SemanticConventionSet:
         :param attributes: Dictionary of attributes to sort
         :return: A sorted dictionary of attributes
         """
-        return dict(
-            sorted(attributes.items())
-        )
+        return dict(sorted(attributes.items()))
 
     def _populate_anyof_attributes(self):
         any_of: AnyOf

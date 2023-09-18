@@ -464,7 +464,9 @@ class TestCorrectParse(unittest.TestCase):
             method_attr.deprecated,
             "Use attribute `nonDepecrated`.",
         )
-        self.assertIsNone(list(semconv.models.values())[0].attrs_by_name["http.target"].deprecated)
+        self.assertIsNone(
+            list(semconv.models.values())[0].attrs_by_name["http.target"].deprecated
+        )
 
     def test_stability(self):
         semconv = SemanticConventionSet(debug=False)

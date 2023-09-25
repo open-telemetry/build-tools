@@ -3,7 +3,9 @@
 <!-- semconv http.client.spans(full) -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| [`server.address`](input_server.md) | string | Server component of Host header. | `foo` | Required |
+| [`server.address`](input_server.md) | string | Server component of Host header. (overridden brief) [1] | `foo.io` | Required |
+
+**[1]:** Note on the overridden attribute definition.
 
 Following attributes MUST be provided **at span creation time** (when provided at all), so they can be considered for sampling decisions:
 
@@ -21,5 +23,7 @@ Following attributes MUST be provided **at span creation time** (when provided a
 <!-- semconv http.client.request.duration.metric(full) -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| [`server.address`](input_server.md) | string | Server component of Host header. | `foo` | Required |
+| [`server.address`](input_server.md) | string | Server component of Host header. (overridden brief) [1] | `foo.io` | Required |
+
+**[1]:** Note on the overridden attribute definition.
 <!-- endsemconv -->

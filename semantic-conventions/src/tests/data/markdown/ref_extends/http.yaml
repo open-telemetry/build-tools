@@ -5,7 +5,9 @@ groups:
     attributes:
       - ref: server.address
         requirement_level: required
-        brief: Server component of Host header.
+        brief: 'Server component of Host header. (overridden brief)'
+        note: 'Note on the overridden attribute definition.'
+        examples: ['foo.io']
 
   - id: http.client.spans
     type: span

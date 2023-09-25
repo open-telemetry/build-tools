@@ -6,5 +6,6 @@ groups:
     attributes:
       - id: address
         type: string
-        brief: 'Domain name.'
+        brief: 'Domain name. (original brief)'
         examples: 'foo'
+        note: 'Note on the original attribute definition.'

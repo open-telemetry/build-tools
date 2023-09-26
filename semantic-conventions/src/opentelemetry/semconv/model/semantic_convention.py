@@ -431,32 +431,14 @@ class SemanticConventionSet:
             parent_attributes = {}
             for ext_attr in extended.attributes:
                 parent_attributes[ext_attr.fqn] = ext_attr.inherit_attribute()
+
             parent_attributes.update(semconv.attrs_by_name)
+            semconv.attrs_by_name = parent_attributes
 
-            # By induction, parent semconv is already correctly sorted
-            # but the combination of parent and current attributes is not
-            if parent_attributes or semconv.attributes:
-                semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(
-                    parent_attributes
-                )
+        semconv.attrs_by_name = dict(sorted((semconv.attrs_by_name.items())))
 
-        elif semconv.attributes:  # No parent, sort of current attributes
-            semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(
-                semconv.attrs_by_name
-            )
         # delete from remaining semantic conventions to process
         del unprocessed[semconv.semconv_id]
-
-    @staticmethod
-    def _sort_attributes_dict(
-        attributes: typing.Dict[str, SemanticAttribute]
-    ) -> typing.Dict[str, SemanticAttribute]:
-        """
-        First  imported, and then defined attributes.
-        :param attributes: Dictionary of attributes to sort
-        :return: A sorted dictionary of attributes
-        """
-        return dict(sorted(attributes.items()))
 
     def _populate_anyof_attributes(self):
         any_of: AnyOf

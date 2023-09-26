@@ -4,8 +4,7 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
-- Inherit referenced attribute properties from `extend`
-  hierarchy before falling back to original attribute definition.
+- When an attribute is referenced using `ref:` from a group that already inherits the attribute with `extends:`, resolve the reference to the closest inherited attribute instead of the primary definition. This makes a difference in case the inherited reference overwrites any properties.
   ([#204](https://github.com/open-telemetry/build-tools/pull/204))
 
 ## v0.21.0

@@ -153,7 +153,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
         )
 
     def contains_attribute(self, attr: "SemanticAttribute"):
-        for local_attr in self.attributes:
+        for local_attr in self.attributes_and_templates:
             if local_attr.attr_id is not None:
                 if local_attr.fqn == attr.fqn:
                     return True
@@ -162,24 +162,26 @@ class BaseSemanticConvention(ValidatableYamlNode):
         return False
 
     def all_attributes(self):
-        return unique_attributes(self.attributes + self.conditional_attributes())
+        return unique_attributes(
+            self.attributes_and_templates + self.conditional_attributes()
+        )
 
     def sampling_attributes(self):
         return unique_attributes(
-            attr for attr in self.attributes if attr.sampling_relevant
+            attr for attr in self.attributes_and_templates if attr.sampling_relevant
         )
 
     def required_attributes(self):
         return unique_attributes(
             attr
-            for attr in self.attributes
+            for attr in self.attributes_and_templates
             if attr.requirement_level == RequirementLevel.REQUIRED
         )
 
     def conditional_attributes(self):
         return unique_attributes(
             attr
-            for attr in self.attributes
+            for attr in self.attributes_and_templates
             if attr.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED
         )
 
@@ -343,7 +345,7 @@ class SemanticConventionSet:
     def check_unique_fqns(self):
         group_by_fqn: typing.Dict[str, str] = {}
         for model in self.models.values():
-            for attr in model.attributes:
+            for attr in model.attributes_and_templates:
                 if not attr.ref:
                     if attr.fqn in group_by_fqn:
                         self.errors = True
@@ -429,7 +431,7 @@ class SemanticConventionSet:
                     semconv.constraints += (constraint.inherit_anyof(),)
             # Attributes
             parent_attributes = {}
-            for ext_attr in extended.attributes:
+            for ext_attr in extended.attributes_and_templates:
                 parent_attributes[ext_attr.fqn] = ext_attr.inherit_attribute()
             # By induction, parent semconv is already correctly sorted
             parent_attributes.update(
@@ -556,7 +558,7 @@ class SemanticConventionSet:
                     include_semconv, {include_semconv.semconv_id: include_semconv}
                 )
                 attr: SemanticAttribute
-                for attr in include_semconv.attributes:
+                for attr in include_semconv.attributes_and_templates:
                     if semconv.contains_attribute(attr):
                         if self.debug:
                             print(
@@ -585,7 +587,7 @@ class SemanticConventionSet:
             (
                 attr
                 for model in self.models.values()
-                for attr in model.attributes
+                for attr in model.attributes_and_templates
                 if attr.fqn == attr_id and attr.ref is None
             ),
             None,

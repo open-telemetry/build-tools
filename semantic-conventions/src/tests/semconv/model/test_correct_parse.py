@@ -334,7 +334,7 @@ class TestCorrectParse(unittest.TestCase):
         semconv.finish()
         self.assertEqual(len(semconv.models), 1)
         s = list(semconv.models.values())[0]
-        for attr in s.attributes:
+        for attr in s.attributes_and_templates:
             brief = attr.brief
             self.assertEqual(brief.raw_text, str(brief))
 
@@ -348,11 +348,11 @@ class TestCorrectParse(unittest.TestCase):
 
         client = list(semconv.models.values())[1]
         server = list(semconv.models.values())[2]
-        self.assertIsNotNone(client.attributes[1].ref)
-        self.assertIsNotNone(client.attributes[1].attr_type)
+        self.assertIsNotNone(client.attributes_and_templates[1].ref)
+        self.assertIsNotNone(client.attributes_and_templates[1].attr_type)
 
-        self.assertIsNotNone(server.attributes[1].ref)
-        self.assertIsNotNone(server.attributes[1].attr_type)
+        self.assertIsNotNone(server.attributes_and_templates[1].ref)
+        self.assertIsNotNone(server.attributes_and_templates[1].attr_type)
 
     def test_extends(self):
         semconv = SemanticConventionSet(debug=False)
@@ -458,12 +458,16 @@ class TestCorrectParse(unittest.TestCase):
         semconv.finish()
         self.assertEqual(len(semconv.models), 1)
 
-        self.assertIsNotNone(list(semconv.models.values())[0].attributes[0].deprecated)
+        self.assertIsNotNone(
+            list(semconv.models.values())[0].attributes_and_templates[0].deprecated
+        )
         self.assertEqual(
-            list(semconv.models.values())[0].attributes[0].deprecated,
+            list(semconv.models.values())[0].attributes_and_templates[0].deprecated,
             "Use attribute `nonDepecrated`.",
         )
-        self.assertIsNone(list(semconv.models.values())[0].attributes[3].deprecated)
+        self.assertIsNone(
+            list(semconv.models.values())[0].attributes_and_templates[3].deprecated
+        )
 
     def test_stability(self):
         semconv = SemanticConventionSet(debug=False)
@@ -472,42 +476,42 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(len(semconv.models), 6)
 
         model = list(semconv.models.values())[0]
-        self.assertEqual(len(model.attributes), 4)
+        self.assertEqual(len(model.attributes_and_templates), 4)
         self.assertEqual(model.stability, None)
 
-        attr = model.attributes[0]
+        attr = model.attributes_and_templates[0]
         self.assertEqual(attr.attr_id, "exp_attr")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes[1]
+        attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "stable_attr")
         self.assertEqual(attr.stability, StabilityLevel.STABLE)
 
-        attr = model.attributes[2]
+        attr = model.attributes_and_templates[2]
         self.assertEqual(attr.attr_id, "deprecated_attr")
         self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
 
-        attr = model.attributes[3]
+        attr = model.attributes_and_templates[3]
         self.assertEqual(attr.attr_id, "def_stability")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
         model = list(semconv.models.values())[1]
-        self.assertEqual(len(model.attributes), 2)
+        self.assertEqual(len(model.attributes_and_templates), 2)
         self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes[0]
+        attr = model.attributes_and_templates[0]
         self.assertEqual(attr.attr_id, "test_attr")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes[1]
+        attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "dep")
         self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
 
         model = list(semconv.models.values())[2]
-        self.assertEqual(len(model.attributes), 1)
+        self.assertEqual(len(model.attributes_and_templates), 1)
         self.assertEqual(model.stability, StabilityLevel.DEPRECATED)
 
-        attr = model.attributes[0]
+        attr = model.attributes_and_templates[0]
         self.assertEqual(attr.attr_id, "test_attr")
         self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
 
@@ -546,7 +550,7 @@ class TestCorrectParse(unittest.TestCase):
         models = sorted(semconv.models.values(), key=lambda m: m.semconv_id)
         self.assertEqual(len(models), 6)
         # HTTP
-        attrs = models[0].attributes
+        attrs = models[0].attributes_and_templates
         self.assertEqual(models[0].semconv_id, "http")
         self.assertEqual(len(attrs), 2)
 
@@ -561,7 +565,7 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[1].ref, "net.peer.port")
 
         # Network
-        attrs = models[1].attributes
+        attrs = models[1].attributes_and_templates
         self.assertEqual(models[1].semconv_id, "network")
         self.assertEqual(len(attrs), 3)
 
@@ -582,7 +586,7 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[2].ref, None)
 
         # Base - rpc
-        attrs = models[2].attributes
+        attrs = models[2].attributes_and_templates
         self.assertEqual(models[2].semconv_id, "rpc")
         self.assertEqual(len(attrs), 4)
         # Included attributes
@@ -608,7 +612,7 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[3].ref, None)
 
         # Extended - rpc.client
-        attrs = models[3].attributes
+        attrs = models[3].attributes_and_templates
         self.assertEqual(models[3].semconv_id, "rpc.client")
         self.assertEqual(len(attrs), 6)
         # Parent attributes
@@ -645,7 +649,7 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[5].ref, None)
 
         # Include on Extended - zother
-        attrs = models[4].attributes
+        attrs = models[4].attributes_and_templates
         self.assertEqual(models[4].semconv_id, "zother")
         self.assertEqual(len(attrs), 1)
         # Defined attributes
@@ -655,7 +659,7 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[0].ref, None)
 
         # Include on Extended - zz.rpc.client
-        attrs = models[5].attributes
+        attrs = models[5].attributes_and_templates
         self.assertEqual(models[5].semconv_id, "zz.rpc.client")
         self.assertEqual(len(attrs), 8)
         # Parent attributes

@@ -154,6 +154,9 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_attribute_templates(self):
         self.check("markdown/attribute_templates/")
 
+    def test_sorting(self):
+        self.check("markdown/sorting/")
+
     def check(
         self,
         input_dir: str,

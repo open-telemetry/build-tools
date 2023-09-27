@@ -126,12 +126,12 @@ class BaseSemanticConvention(ValidatableYamlNode):
         if not hasattr(self, "attrs_by_name"):
             return []
 
-        return [
+        return sorted([
             attr
             for attr in self.attrs_by_name.values()
             if templates is None
             or templates == AttributeType.is_template_type(attr.attr_type)
-        ]
+        ], key=lambda attr: attr.fqn)
 
     def __init__(self, group):
         super().__init__(group)
@@ -434,8 +434,6 @@ class SemanticConventionSet:
 
             parent_attributes.update(semconv.attrs_by_name)
             semconv.attrs_by_name = parent_attributes
-
-        semconv.attrs_by_name = dict(sorted((semconv.attrs_by_name.items())))
 
         # delete from remaining semantic conventions to process
         del unprocessed[semconv.semconv_id]

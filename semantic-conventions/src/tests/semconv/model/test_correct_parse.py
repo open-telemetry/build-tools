@@ -65,9 +65,9 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 1,
             "attributes": [
-                "db.type",
                 "db.instance",
                 "db.statement",
+                "db.type",
                 "db.url",
                 "db.user",
             ],
@@ -84,7 +84,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "faas",
             "extends": "",
             "n_constraints": 0,
-            "attributes": ["faas.trigger", "faas.execution"],
+            "attributes": ["faas.execution", "faas.trigger"],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
         expected = {
@@ -94,9 +94,9 @@ class TestCorrectParse(unittest.TestCase):
             "n_constraints": 0,
             "attributes": [
                 "faas.document.collection",
+                "faas.document.name",
                 "faas.document.operation",
                 "faas.document.time",
-                "faas.document.name",
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[1], expected)
@@ -121,7 +121,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "faas",
             "extends": "faas",
             "n_constraints": 0,
-            "attributes": ["faas.time", "faas.cron"],
+            "attributes": ["faas.cron", "faas.time"],
         }
         self.semantic_convention_check(list(semconv.models.values())[4], expected)
 
@@ -136,13 +136,13 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
-                "net.transport",
-                "net.peer.ip",
-                "net.peer.port",
-                "net.peer.name",
                 "net.host.ip",
-                "net.host.port",
                 "net.host.name",
+                "net.host.port",
+                "net.peer.ip",
+                "net.peer.name",
+                "net.peer.port",
+                "net.transport",
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
@@ -166,14 +166,14 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
-                "http.method",
-                "http.url",
-                "http.target",
+                "http.flavor",
                 "http.host",
+                "http.method",
                 "http.scheme",
                 "http.status_code",
                 "http.status_text",
-                "http.flavor",
+                "http.target",
+                "http.url",
                 "http.user_agent",
             ],
         }
@@ -244,8 +244,8 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
-                "cloud.provider",
                 "cloud.account.id",
+                "cloud.provider",
                 "cloud.region",
                 "cloud.zone",
             ],

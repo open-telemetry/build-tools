@@ -209,7 +209,7 @@ class MarkdownRenderer:
         attr_to_print = []
         for attr in sorted(
             semconv.attributes_and_templates,
-            key=lambda a: "" if a.ref is None else a.ref,
+            key=lambda a: a.fqn,
         ):
             if self.render_ctx.group_key is not None:
                 if attr.tag == self.render_ctx.group_key:

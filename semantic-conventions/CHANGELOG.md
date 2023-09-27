@@ -4,6 +4,9 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- When an attribute is referenced using `ref:` from a group that already inherits the attribute with `extends:`, resolve the reference to the closest inherited attribute instead of the primary definition. This makes a difference in case the inherited reference overwrites any properties.
+  ([#204](https://github.com/open-telemetry/build-tools/pull/204))
+
 ## v0.21.0
 
 - Render template-type attributes from yaml files
@@ -27,7 +30,7 @@ Please update the changelog as part of any significant pull request.
 
 - Allow multiple semconv in --only flag
   ([#157](https://github.com/open-telemetry/build-tools/pull/157))
-  
+
 ## v0.17.0
 
 - Rename Optional attribute requirement level to Opt-In
@@ -44,7 +47,7 @@ Please update the changelog as part of any significant pull request.
 
 ## v0.15.0
 
-- Add a semantic convention type for Metrics ("metric" and "metric_group") 
+- Add a semantic convention type for Metrics ("metric" and "metric_group")
   ([#79](https://github.com/open-telemetry/build-tools/pull/79))
 - Add a semantic convention type for generic attribute group ("attribute_group")
   ([#124](https://github.com/open-telemetry/build-tools/pull/124)).

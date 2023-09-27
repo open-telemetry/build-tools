@@ -27,6 +27,9 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testRef(self):
         self.check("markdown/ref/")
 
+    def testRefExtends(self):
+        self.check("markdown/ref_extends/")
+
     def testInclude(self):
         self.check("markdown/include/")
 

@@ -1,0 +1,4 @@
+# General
+
+<!-- semconv server -->
+<!-- endsemconv -->

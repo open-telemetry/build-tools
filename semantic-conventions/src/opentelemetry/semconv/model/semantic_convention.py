@@ -24,9 +24,7 @@ from opentelemetry.semconv.model.constraints import AnyOf, Include, parse_constr
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
     AttributeType,
-    RequirementLevel,
     SemanticAttribute,
-    unique_attributes,
 )
 from opentelemetry.semconv.model.unit_member import UnitMember
 from opentelemetry.semconv.model.utils import ValidatableYamlNode, validate_id
@@ -160,35 +158,6 @@ class BaseSemanticConvention(ValidatableYamlNode):
             if local_attr == attr:
                 return True
         return False
-
-    def all_attributes(self):
-        return unique_attributes(self.attributes + self.conditional_attributes())
-
-    def sampling_attributes(self):
-        return unique_attributes(
-            attr for attr in self.attributes if attr.sampling_relevant
-        )
-
-    def required_attributes(self):
-        return unique_attributes(
-            attr
-            for attr in self.attributes
-            if attr.requirement_level == RequirementLevel.REQUIRED
-        )
-
-    def conditional_attributes(self):
-        return unique_attributes(
-            attr
-            for attr in self.attributes
-            if attr.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED
-        )
-
-    def any_of(self):
-        result = []
-        for constraint in self.constraints:
-            if isinstance(constraint, AnyOf):
-                result.append(constraint)
-        return result
 
     def has_attribute_constraint(self, attr):
         return any(

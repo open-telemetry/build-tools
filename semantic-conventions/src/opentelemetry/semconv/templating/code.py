@@ -158,7 +158,6 @@ def to_camelcase(name: str, first_upper=False) -> str:
 
 class CodeRenderer:
     pattern = f"{{{ID_RE.pattern}}}"
-    matcher = re.compile(pattern)
 
     parameters: typing.Dict[str, str]
     trim_whitespace: bool

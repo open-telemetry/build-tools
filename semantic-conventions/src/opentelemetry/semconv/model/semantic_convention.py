@@ -126,12 +126,15 @@ class BaseSemanticConvention(ValidatableYamlNode):
         if not hasattr(self, "attrs_by_name"):
             return []
 
-        return sorted([
-            attr
-            for attr in self.attrs_by_name.values()
-            if templates is None
-            or templates == AttributeType.is_template_type(attr.attr_type)
-        ], key=lambda attr: attr.fqn)
+        return sorted(
+            [
+                attr
+                for attr in self.attrs_by_name.values()
+                if templates is None
+                or templates == AttributeType.is_template_type(attr.attr_type)
+            ],
+            key=lambda attr: attr.fqn,
+        )
 
     def __init__(self, group):
         super().__init__(group)

@@ -115,7 +115,7 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.assertIn("already defined", msg)
 
     def test_units(self):
-        self.check("markdown/metrics_unit/", extra_yaml_dirs=["yaml/metrics/"])
+        self.check("markdown/metrics_unit/", extra_yaml_dirs=["yaml/units/"])
 
     def test_event(self):
         self.check("markdown/event/")

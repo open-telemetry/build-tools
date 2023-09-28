@@ -6,10 +6,27 @@ from opentelemetry.semconv.templating.code import CodeRenderer
 
 def test_codegen_units(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
-    semconv.parse(test_file_path("yaml", "metrics", "units.yaml"))
+    semconv.parse(test_file_path("yaml", "units", "units.yaml"))
     semconv.finish()
 
-    template_path = test_file_path("jinja", "metrics", "units_template")
+    template_path = test_file_path("jinja", "units", "units_template")
+    renderer = CodeRenderer({}, trim_whitespace=False)
+
+    output = io.StringIO()
+    renderer.render(semconv, template_path, output, None)
+    result = output.getvalue()
+
+    expected = read_test_file("jinja", "units", "expected.java")
+
+    assert result == expected
+
+
+def test_codegen_metrics(test_file_path, read_test_file):
+    semconv = SemanticConventionSet(debug=False)
+    semconv.parse(test_file_path("yaml", "metrics", "metrics.yaml"))
+    semconv.finish()
+
+    template_path = test_file_path("jinja", "metrics", "metrics_template")
     renderer = CodeRenderer({}, trim_whitespace=False)
 
     output = io.StringIO()
@@ -20,15 +37,14 @@ def test_codegen_units(test_file_path, read_test_file):
 
     assert result == expected
 
-
 def test_strip_blocks_enabled(test_file_path, read_test_file):
     """Tests that the Jinja whitespace control params are fed to the Jinja environment"""
     semconv = SemanticConventionSet(debug=False)
-    semconv.parse(test_file_path("yaml", "metrics", "units.yaml"))
+    semconv.parse(test_file_path("yaml", "units", "units.yaml"))
     semconv.finish()
 
     template_path = test_file_path(
-        "jinja", "metrics", "units_template_trim_whitespace_enabled"
+        "jinja", "units", "units_template_trim_whitespace_enabled"
     )
     renderer = CodeRenderer({}, trim_whitespace=True)
 
@@ -37,7 +53,7 @@ def test_strip_blocks_enabled(test_file_path, read_test_file):
     result = output.getvalue()
 
     expected = read_test_file(
-        "jinja", "metrics", "expected_trim_whitespace_enabled.java"
+        "jinja", "units", "expected_trim_whitespace_enabled.java"
     )
 
     assert result == expected

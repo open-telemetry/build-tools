@@ -1,0 +1,38 @@
+groups:
+  - id: metric_attributes.http.server
+    type: attribute_group
+    brief: "server attributes."
+    attributes:
+      - id: http.request.method
+        type: string
+        brief: "The HTTP request method."
+        examples: 'GET'
+      - id: http.response.status_code
+        type: string
+        brief: "The HTTP response status code."
+        examples: '200'
+
+  - id: metric.http.server.request.duration
+    type: metric
+    metric_name: http.server.request.duration
+    brief: "Measures the duration of inbound HTTP requests."
+    instrument: histogram
+    unit: "s"
+    extends: metric_attributes.http.server
+
+  - id: metric.http.server.active_requests
+    type: metric
+    metric_name: http.server.active_requests
+    brief: "Measures the number of concurrent HTTP requests that are currently in-flight."
+    instrument: updowncounter
+    unit: "{request}"
+    attributes:
+      - ref: http.request.method
+
+  - id: metric.http.server.request.body.size
+    type: metric
+    metric_name: http.server.request.body.size
+    brief: "Measures the size of HTTP request messages."
+    instrument: histogram
+    unit: "By"
+    extends: metric_attributes.http.server

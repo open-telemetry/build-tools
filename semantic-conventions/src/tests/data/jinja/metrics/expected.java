@@ -1,23 +1,29 @@
 package io.opentelemetry.instrumentation.api.metric;
 
-class Units {
+class Metrics {
 
     /**
-    * Use this unit for Metric Instruments recording values
-    * representing fraction of a total.
-    **/
-    public static final String PERCENT = "%";
+     * Measures the duration of inbound HTTP requests
+     *
+     * Instrument: histogram
+     * Unit: s
+     */
+    public static final String HTTP_SERVER_REQUEST_DURATION = "http.server.request.duration";
 
     /**
-    * Use this unit for Metric Instruments recording values
-    * representing time.
-    **/
-    public static final String NANOSECOND = "NS";
+     * Measures the number of concurrent HTTP requests that are currently in-flight
+     *
+     * Instrument: updowncounter
+     * Unit: {request}
+     */
+    public static final String HTTP_SERVER_ACTIVE_REQUESTS = "http.server.active_requests";
 
     /**
-    * Use this unit for Metric Instruments recording values
-    * representing connections.
-    **/
-    public static final String CONNECTIONS = "{connections}";
+     * Measures the size of HTTP request messages
+     *
+     * Instrument: histogram
+     * Unit: By
+     */
+    public static final String HTTP_SERVER_REQUEST_BODY_SIZE = "http.server.request.body.size";
 
 }

@@ -1,0 +1,14 @@
+package io.opentelemetry.instrumentation.api.metric;
+
+class Metrics {
+{% for id in semconvs %}{%- if semconvs[id].GROUP_TYPE_NAME == 'metric' %}{% set metric = semconvs[id] %}
+    /**
+     * {{metric.brief | to_doc_brief}}
+     *
+     * Instrument: {{metric.instrument }}
+     * Unit: {{metric.unit }}
+     */
+    public static final String {{metric.metric_name | to_const_name}} = "{{metric.metric_name}}";
+{# Extra line #}
+{%- endif %}{% endfor %}
+}

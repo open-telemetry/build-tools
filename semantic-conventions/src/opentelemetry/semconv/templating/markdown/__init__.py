@@ -207,10 +207,7 @@ class MarkdownRenderer:
         self, semconv: BaseSemanticConvention, output: io.StringIO
     ):
         attr_to_print = []
-        for attr in sorted(
-            semconv.attributes_and_templates,
-            key=lambda a: "" if a.ref is None else a.ref,
-        ):
+        for attr in semconv.attributes_and_templates:
             if self.render_ctx.group_key is not None:
                 if attr.tag == self.render_ctx.group_key:
                     attr_to_print.append(attr)

@@ -1,0 +1,35 @@
+groups:
+  - id: database.common_attributes
+    prefix: db
+    type: attribute_group
+    brief: These attributes describe database calls.
+    attributes:
+      - id: name
+        brief: Database name.
+        type: string
+        examples: [ 'the_shop' ]
+
+  - id: database.foo.attributes
+    prefix: db.foo
+    type: attribute_group
+    brief: These attributes describe database Foo calls.
+    extends: database.common_attributes
+    attributes:
+      - id: bar
+        brief: Some property.
+        type: string
+        examples: [ 'baz' ]
+
+  - id: database.foo.span
+    prefix: db.foo
+    type: span
+    brief: These attributes describe database Foo spans.
+    extends: database.foo.attributes
+
+  - id: database.foo.duration.metric
+    type: metric
+    metric_name: db.foo.duration
+    instrument: histogram
+    unit: s
+    brief: Measures the duration of database Foo calls.
+    extends: database.foo.attributes

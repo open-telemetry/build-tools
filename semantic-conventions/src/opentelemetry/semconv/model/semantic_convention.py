@@ -24,9 +24,7 @@ from opentelemetry.semconv.model.constraints import AnyOf, Include, parse_constr
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
     AttributeType,
-    RequirementLevel,
     SemanticAttribute,
-    unique_attributes,
 )
 from opentelemetry.semconv.model.unit_member import UnitMember
 from opentelemetry.semconv.model.utils import ValidatableYamlNode, validate_id
@@ -126,12 +124,15 @@ class BaseSemanticConvention(ValidatableYamlNode):
         if not hasattr(self, "attrs_by_name"):
             return []
 
-        return [
-            attr
-            for attr in self.attrs_by_name.values()
-            if templates is None
-            or templates == AttributeType.is_template_type(attr.attr_type)
-        ]
+        return sorted(
+            [
+                attr
+                for attr in self.attrs_by_name.values()
+                if templates is None
+                or templates == AttributeType.is_template_type(attr.attr_type)
+            ],
+            key=lambda attr: attr.fqn,
+        )
 
     def __init__(self, group):
         super().__init__(group)
@@ -153,42 +154,13 @@ class BaseSemanticConvention(ValidatableYamlNode):
         )
 
     def contains_attribute(self, attr: "SemanticAttribute"):
-        for local_attr in self.attributes:
+        for local_attr in self.attributes_and_templates:
             if local_attr.attr_id is not None:
                 if local_attr.fqn == attr.fqn:
                     return True
             if local_attr == attr:
                 return True
         return False
-
-    def all_attributes(self):
-        return unique_attributes(self.attributes + self.conditional_attributes())
-
-    def sampling_attributes(self):
-        return unique_attributes(
-            attr for attr in self.attributes if attr.sampling_relevant
-        )
-
-    def required_attributes(self):
-        return unique_attributes(
-            attr
-            for attr in self.attributes
-            if attr.requirement_level == RequirementLevel.REQUIRED
-        )
-
-    def conditional_attributes(self):
-        return unique_attributes(
-            attr
-            for attr in self.attributes
-            if attr.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED
-        )
-
-    def any_of(self):
-        result = []
-        for constraint in self.constraints:
-            if isinstance(constraint, AnyOf):
-                result.append(constraint)
-        return result
 
     def has_attribute_constraint(self, attr):
         return any(
@@ -343,7 +315,7 @@ class SemanticConventionSet:
     def check_unique_fqns(self):
         group_by_fqn: typing.Dict[str, str] = {}
         for model in self.models.values():
-            for attr in model.attributes:
+            for attr in model.attributes_and_templates:
                 if not attr.ref:
                     if attr.fqn in group_by_fqn:
                         self.errors = True
@@ -429,33 +401,14 @@ class SemanticConventionSet:
                     semconv.constraints += (constraint.inherit_anyof(),)
             # Attributes
             parent_attributes = {}
-            for ext_attr in extended.attributes:
+            for ext_attr in extended.attributes_and_templates:
                 parent_attributes[ext_attr.fqn] = ext_attr.inherit_attribute()
-            # By induction, parent semconv is already correctly sorted
-            parent_attributes.update(
-                SemanticConventionSet._sort_attributes_dict(semconv.attrs_by_name)
-            )
-            if parent_attributes or semconv.attributes:
-                semconv.attrs_by_name = parent_attributes
-        elif semconv.attributes:  # No parent, sort of current attributes
-            semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(
-                semconv.attrs_by_name
-            )
+
+            parent_attributes.update(semconv.attrs_by_name)
+            semconv.attrs_by_name = parent_attributes
+
         # delete from remaining semantic conventions to process
         del unprocessed[semconv.semconv_id]
-
-    @staticmethod
-    def _sort_attributes_dict(
-        attributes: typing.Dict[str, SemanticAttribute]
-    ) -> typing.Dict[str, SemanticAttribute]:
-        """
-        First  imported, and then defined attributes.
-        :param attributes: Dictionary of attributes to sort
-        :return: A sorted dictionary of attributes
-        """
-        return dict(
-            sorted(attributes.items(), key=lambda kv: 0 if kv[1].imported else 1)
-        )
 
     def _populate_anyof_attributes(self):
         any_of: AnyOf
@@ -556,7 +509,7 @@ class SemanticConventionSet:
                     include_semconv, {include_semconv.semconv_id: include_semconv}
                 )
                 attr: SemanticAttribute
-                for attr in include_semconv.attributes:
+                for attr in include_semconv.attributes_and_templates:
                     if semconv.contains_attribute(attr):
                         if self.debug:
                             print(
@@ -585,7 +538,7 @@ class SemanticConventionSet:
             (
                 attr
                 for model in self.models.values()
-                for attr in model.attributes
+                for attr in model.attributes_and_templates
                 if attr.fqn == attr_id and attr.ref is None
             ),
             None,

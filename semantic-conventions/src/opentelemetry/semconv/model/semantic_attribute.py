@@ -44,14 +44,6 @@ class StabilityLevel(Enum):
     DEPRECATED = 3
 
 
-def unique_attributes(attributes):
-    output = []
-    for x in attributes:
-        if x.fqn not in [attr.fqn for attr in output]:
-            output.append(x)
-    return output
-
-
 @dataclass
 class SemanticAttribute:
     fqn: str

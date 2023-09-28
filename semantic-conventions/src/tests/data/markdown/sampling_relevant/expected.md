@@ -3,12 +3,12 @@
 <!-- semconv http -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `http.method` | string | . | `GET` | Required |
-| `http.url` | string | . [1] | `.` | Recommended |
-| `http.target` | string | . | `.` | Recommended |
 | `http.host` | string | . | `.` | Recommended |
+| `http.method` | string | . | `GET` | Required |
 | `http.scheme` | string | . | `http` | Recommended |
 | `http.status_code` | int | . |  | Conditionally Required: <condition> |
+| `http.target` | string | . | `.` | Recommended |
+| `http.url` | string | . [1] | `.` | Recommended |
 | `http.user_agent` | string | . | `.` | Recommended |
 | [`net.peer.ip`](span-general.md) | string | . | `.` | Recommended |
 | [`net.peer.name`](span-general.md) | string | . | `.` | Recommended |
@@ -18,11 +18,11 @@
 
 Following attributes MUST be provided **at span creation time** (when provided at all), so they can be considered for sampling decisions:
 
-* `http.method`
-* `http.url`
-* `http.target`
 * `http.host`
+* `http.method`
 * `http.scheme`
+* `http.target`
+* `http.url`
 * [`net.peer.ip`](span-general.md)
 * [`net.peer.name`](span-general.md)
 * [`net.peer.port`](span-general.md)

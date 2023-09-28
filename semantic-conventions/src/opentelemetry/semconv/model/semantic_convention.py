@@ -126,12 +126,15 @@ class BaseSemanticConvention(ValidatableYamlNode):
         if not hasattr(self, "attrs_by_name"):
             return []
 
-        return [
-            attr
-            for attr in self.attrs_by_name.values()
-            if templates is None
-            or templates == AttributeType.is_template_type(attr.attr_type)
-        ]
+        return sorted(
+            [
+                attr
+                for attr in self.attrs_by_name.values()
+                if templates is None
+                or templates == AttributeType.is_template_type(attr.attr_type)
+            ],
+            key=lambda attr: attr.fqn,
+        )
 
     def __init__(self, group):
         super().__init__(group)
@@ -431,31 +434,12 @@ class SemanticConventionSet:
             parent_attributes = {}
             for ext_attr in extended.attributes:
                 parent_attributes[ext_attr.fqn] = ext_attr.inherit_attribute()
-            # By induction, parent semconv is already correctly sorted
-            parent_attributes.update(
-                SemanticConventionSet._sort_attributes_dict(semconv.attrs_by_name)
-            )
-            if parent_attributes or semconv.attributes:
-                semconv.attrs_by_name = parent_attributes
-        elif semconv.attributes:  # No parent, sort of current attributes
-            semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(
-                semconv.attrs_by_name
-            )
+
+            parent_attributes.update(semconv.attrs_by_name)
+            semconv.attrs_by_name = parent_attributes
+
         # delete from remaining semantic conventions to process
         del unprocessed[semconv.semconv_id]
-
-    @staticmethod
-    def _sort_attributes_dict(
-        attributes: typing.Dict[str, SemanticAttribute]
-    ) -> typing.Dict[str, SemanticAttribute]:
-        """
-        First  imported, and then defined attributes.
-        :param attributes: Dictionary of attributes to sort
-        :return: A sorted dictionary of attributes
-        """
-        return dict(
-            sorted(attributes.items(), key=lambda kv: 0 if kv[1].imported else 1)
-        )
 
     def _populate_anyof_attributes(self):
         any_of: AnyOf

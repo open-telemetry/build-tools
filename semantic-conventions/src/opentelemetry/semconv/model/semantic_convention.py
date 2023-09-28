@@ -154,7 +154,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
         )
 
     def contains_attribute(self, attr: "SemanticAttribute"):
-        for local_attr in self.attributes:
+        for local_attr in self.attributes_and_templates:
             if local_attr.attr_id is not None:
                 if local_attr.fqn == attr.fqn:
                     return True
@@ -315,7 +315,7 @@ class SemanticConventionSet:
     def check_unique_fqns(self):
         group_by_fqn: typing.Dict[str, str] = {}
         for model in self.models.values():
-            for attr in model.attributes:
+            for attr in model.attributes_and_templates:
                 if not attr.ref:
                     if attr.fqn in group_by_fqn:
                         self.errors = True
@@ -401,7 +401,7 @@ class SemanticConventionSet:
                     semconv.constraints += (constraint.inherit_anyof(),)
             # Attributes
             parent_attributes = {}
-            for ext_attr in extended.attributes:
+            for ext_attr in extended.attributes_and_templates:
                 parent_attributes[ext_attr.fqn] = ext_attr.inherit_attribute()
 
             parent_attributes.update(semconv.attrs_by_name)
@@ -509,7 +509,7 @@ class SemanticConventionSet:
                     include_semconv, {include_semconv.semconv_id: include_semconv}
                 )
                 attr: SemanticAttribute
-                for attr in include_semconv.attributes:
+                for attr in include_semconv.attributes_and_templates:
                     if semconv.contains_attribute(attr):
                         if self.debug:
                             print(
@@ -538,7 +538,7 @@ class SemanticConventionSet:
             (
                 attr
                 for model in self.models.values()
-                for attr in model.attributes
+                for attr in model.attributes_and_templates
                 if attr.fqn == attr_id and attr.ref is None
             ),
             None,

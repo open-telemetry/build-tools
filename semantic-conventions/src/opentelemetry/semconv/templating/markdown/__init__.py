@@ -46,6 +46,8 @@ class RenderContext:
         self.is_remove_constraint = False
         self.is_metric_table = False
         self.is_omit_requirement_level = False
+        self.is_render_group_brief = False
+        self.is_render_group_note = False
         self.group_key = ""
         self.enums = []
         self.notes = []
@@ -77,6 +79,8 @@ class MarkdownRenderer:
         "remove_constraints",
         "metric_table",
         "omit_requirement_level",
+        "render_group_brief",
+        "render_group_note",
     ]
 
     prelude = "<!-- semconv {} -->\n"
@@ -206,6 +210,12 @@ class MarkdownRenderer:
     def to_markdown_attribute_table(
         self, semconv: BaseSemanticConvention, output: io.StringIO
     ):
+        if self.render_ctx.is_render_group_brief:
+            output.write(semconv.brief + "\n\n")
+
+        if self.render_ctx.is_render_group_note:
+            output.write(semconv.note + "\n\n")
+
         attr_to_print = []
         for attr in semconv.attributes_and_templates:
             if self.render_ctx.group_key is not None:
@@ -517,6 +527,12 @@ class MarkdownRenderer:
         self.render_ctx.is_metric_table = "metric_table" in parameters
         self.render_ctx.is_omit_requirement_level = (
             "omit_requirement_level" in parameters
+        )
+        self.render_ctx.is_render_group_brief = (
+            "render_group_brief" in parameters
+        )
+        self.render_ctx.is_render_group_note = (
+            "render_group_note" in parameters
         )
 
         if self.render_ctx.is_metric_table:

@@ -2,7 +2,7 @@ groups:
   - id: attributes
     prefix: "foo"
     type: attribute_group
-    brief: Attribute group
+    brief: Attribute group brief.
     attributes:
       - id: bar
         type: string
@@ -16,6 +16,7 @@ groups:
     extends: attributes
     prefix: "foo"
     brief: Derived attribute group
+    note: This is a groupt note.
     attributes:
       - id: qux
         type: int

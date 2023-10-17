@@ -6,6 +6,8 @@ Please update the changelog as part of any significant pull request.
 
 - BREAKING: Make stability and deprecation independent properties.
   ([#244](https://github.com/open-telemetry/build-tools/pull/244))
+- Add link to requirement levels from Markdown table title.
+  ([#513](https://github.com/open-telemetry/build-tools/pull/513))
 
 ## v0.23.0
 

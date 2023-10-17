@@ -101,7 +101,6 @@ class MarkdownRenderer:
         attribute_req_level_url = f"https://github.com/open-telemetry/opentelemetry-specification/blob/{options.specification_repo_tag}/specification/common/attribute-requirement-level.md"
         self.table_headers = f"| Attribute  | Type | Description  | Examples  | [Requirement Level]({attribute_req_level_url}) |\n|---|---|---|---|---|\n"
 
-
     def to_markdown_attr(
         self,
         attribute: SemanticAttribute,

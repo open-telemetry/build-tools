@@ -18,14 +18,14 @@
 | `net.peer.port` | int | Remote port number. | `80`; `8080`; `443` | Recommended |
 | `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | Recommended |
 
-`net.host.connection.subtype` has the following list of well-known values. If one of them applies, then the respective value MUST be used, otherwise a custom value MAY be used.
+`net.host.connection.subtype` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
 
 | Value  | Description |
 |---|---|
 | `1G` | 1G |
 | `2G` | 2G |
 
-`net.host.connection.type` has the following list of well-known values. If one of them applies, then the respective value MUST be used, otherwise a custom value MAY be used.
+`net.host.connection.type` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
 
 | Value  | Description |
 |---|---|

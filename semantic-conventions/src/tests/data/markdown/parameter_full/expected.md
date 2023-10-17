@@ -6,12 +6,12 @@
 | `faas.execution` | string | The execution id of the current function execution. | `af9d5aa4-a685-4c5f-a22b-444f80b3cc28` | Recommended |
 | `faas.trigger` | string | Type of the trigger on which the function is executed. | `datasource` | Required |
 | [`http.client_ip`](http.md) | string | The IP address of the original client behind all proxies, if known (e.g. from [X-Forwarded-For](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For)). [1] | `83.164.160.102` | Recommended |
-| `http.host` | string | The value of the [HTTP host header](https://tools.ietf.org/html/rfc7230#section-5.4). When the header is empty or not present, this attribute should be the same. | `www.example.org` | Conditionally Required: <condition> |
+| `http.host` | string | The value of the [HTTP host header](https://tools.ietf.org/html/rfc7230#section-5.4). When the header is empty or not present, this attribute should be the same. | `www.example.org` | Conditionally Required <condition> |
 | `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | Required |
 | [`http.route`](http.md) | string | The matched route (path template). | `/users/:userID?` | Recommended |
 | `http.scheme` | string | The URI scheme identifying the used protocol. | `http`; `https` | See below |
-| [`http.server_name`](http.md) | string | The primary server name of the matched virtual host. [2] | `example.com` | Conditionally Required: [3] |
-| `http.status_code` | int | [HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6). | `200` | Conditionally Required: if and only if one was received/sent. |
+| [`http.server_name`](http.md) | string | The primary server name of the matched virtual host. [2] | `example.com` | Conditionally Required [3] |
+| `http.status_code` | int | [HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6). | `200` | Conditionally Required if and only if one was received/sent. |
 | `http.status_text` | string | [HTTP reason phrase](https://tools.ietf.org/html/rfc7230#section-3.1.2). | `OK` | Recommended |
 | `http.target` | string | The full request target as passed in a HTTP request line or equivalent. | `/path/12314/?q=ddds#123` | See below |
 | `http.url` | string | Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`. Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless. | `https://www.foo.bar/search?q=OpenTelemetry#SemConv` | See below |

@@ -172,7 +172,7 @@ class MarkdownRenderer:
             required = "Required"
         elif attribute.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED:
             if len(attribute.requirement_level_msg) < self.options.break_count:
-                required = "Conditionally Required: " + attribute.requirement_level_msg
+                required = "Conditionally Required " + attribute.requirement_level_msg
             else:
                 # We put the condition in the notes after the table
                 self.render_ctx.add_note(attribute.requirement_level_msg)
@@ -190,11 +190,11 @@ class MarkdownRenderer:
                 if not attribute.requirement_level_msg:
                     required = "Recommended"
                 elif len(attribute.requirement_level_msg) < self.options.break_count:
-                    required = "Recommended: " + attribute.requirement_level_msg
+                    required = "Recommended " + attribute.requirement_level_msg
                 else:
                     # We put the condition in the notes after the table
                     self.render_ctx.add_note(attribute.requirement_level_msg)
-                    required = f"Recommended: [{len(self.render_ctx.notes)}]"
+                    required = f"Recommended [{len(self.render_ctx.notes)}]"
         return required
 
     def write_table_header(self, output: io.StringIO):
@@ -322,8 +322,8 @@ class MarkdownRenderer:
             if enum.custom_values:
                 output.write(
                     "has the following list of well-known values."
-                    + " If one of them applies, then the respective value MUST be used,"
-                    + " otherwise a custom value MAY be used."
+                    + " If one of them applies, then the respective value MUST be used;"
+                    + " otherwise, a custom value MAY be used."
                 )
             else:
                 output.write("MUST be one of the following:")

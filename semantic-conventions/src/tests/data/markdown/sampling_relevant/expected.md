@@ -6,7 +6,7 @@
 | `http.host` | string | . | `.` | Recommended |
 | `http.method` | string | . | `GET` | Required |
 | `http.scheme` | string | . | `http` | Recommended |
-| `http.status_code` | int | . |  | Conditionally Required: <condition> |
+| `http.status_code` | int | . |  | Conditionally Required <condition> |
 | `http.target` | string | . | `.` | Recommended |
 | `http.url` | string | . [1] | `.` | Recommended |
 | `http.user_agent` | string | . | `.` | Recommended |

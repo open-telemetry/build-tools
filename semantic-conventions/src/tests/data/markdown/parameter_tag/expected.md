@@ -17,7 +17,7 @@
 * `net.peer.name`
 * `net.peer.ip`
 
-`db.type` has the following list of well-known values. If one of them applies, then the respective value MUST be used, otherwise a custom value MAY be used.
+`db.type` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
 
 | Value  | Description |
 |---|---|

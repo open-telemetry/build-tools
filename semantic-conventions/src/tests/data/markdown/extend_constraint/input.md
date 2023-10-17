@@ -41,12 +41,12 @@ Some database systems may allow a connection to switch to a different `db.user`,
 | `db.user` | string | Username for accessing the database. | `readonly_user`<br>`reporting_user` | Recommended |
 | `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | Conditional<br>See below. |
 | `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | Conditional<br>See below. |
-| `net.peer.port` | int | Remote port number. | `80`<br>`8080`<br>`443` | Conditionally Required: [2] |
-| `net.transport` | string enum | Transport protocol used. See note below. | `IP.TCP` | Conditionally Required: [3] |
+| `net.peer.port` | int | Remote port number. | `80`<br>`8080`<br>`443` | Conditionally Required [2] |
+| `net.transport` | string enum | Transport protocol used. See note below. | `IP.TCP` | Conditionally Required [3] |
 
 **[1]:** It is recommended to remove embedded credentials.
 
-**[2]:** Conditionally Required: if using a port other than the default port for this DBMS.
+**[2]:** Conditionally Required if using a port other than the default port for this DBMS.
 
 **[3]:** Recommended in general, required for in-process databases (`"inproc"`).
 
@@ -55,7 +55,7 @@ At least one of the following is required:
 * `net.peer.name`
 * `net.peer.ip`
 
-`db.system` has the following list of well-known values. If one of them applies, then the respective value MUST be used, otherwise a custom value MAY be used.
+`db.system` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
 
 | Value  | Description |
 |---|---|
@@ -141,9 +141,9 @@ Usually only one `db.name` will be used per connection though.
 <!-- semconv db(tag=call-level,remove_constraints) -->
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
-| `db.name` | string | If no tech-specific attribute is defined, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [1] | `customers`<br>`main` | Conditionally Required: [2] |
-| `db.statement` | string | The database statement being executed. [3] | `SELECT * FROM wuser_table`<br>`SET mykey "WuValue"` | Conditional<br>Conditionally Required: if applicable. |
-| `db.operation` | string | The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. [4] | `findAndModify`<br>`HMSET` | Conditional<br>Conditionally Required: if `db.statement` is not applicable. |
+| `db.name` | string | If no tech-specific attribute is defined, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [1] | `customers`<br>`main` | Conditionally Required [2] |
+| `db.statement` | string | The database statement being executed. [3] | `SELECT * FROM wuser_table`<br>`SET mykey "WuValue"` | Conditional<br>Conditionally Required if applicable. |
+| `db.operation` | string | The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. [4] | `findAndModify`<br>`HMSET` | Conditional<br>Conditionally Required if `db.statement` is not applicable. |
 
 **[1]:** In some SQL databases, the database name to be used is called "schema name".
 

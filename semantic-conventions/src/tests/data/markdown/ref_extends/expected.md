@@ -1,9 +1,9 @@
 # Spans
 
 <!-- semconv http.client.spans(full) -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
 |---|---|---|---|---|
-| [`server.address`](input_server.md) | string | Server component of Host header. (overridden brief) [1] | `foo.io` | Required |
+| [`server.address`](input_server.md) | string | Server component of Host header. (overridden brief) [1] | `foo.io` | `Required` |
 
 **[1]:** Note on the overridden attribute definition.
 
@@ -21,9 +21,9 @@ The following attributes can be important for making sampling decisions and SHOU
 <!-- endsemconv -->
 
 <!-- semconv http.client.request.duration.metric(full) -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
 |---|---|---|---|---|
-| [`server.address`](input_server.md) | string | Server component of Host header. (overridden brief) [1] | `foo.io` | Required |
+| [`server.address`](input_server.md) | string | Server component of Host header. (overridden brief) [1] | `foo.io` | `Required` |
 
 **[1]:** Note on the overridden attribute definition.
 <!-- endsemconv -->

@@ -87,6 +87,7 @@ def process_markdown(semconv, args):
         use_badge=args.md_use_badges,
         break_count=args.md_break_conditional,
         exclude_files=exclude_file_list(args.markdown_root, args.exclude),
+        specification_repo_tag=args.specification_repo_tag,
     )
     md_renderer = MarkdownRenderer(args.markdown_root, semconv, options)
     md_renderer.render_md()
@@ -214,7 +215,14 @@ def add_md_parser(subparsers):
         dest="md_enable_deprecated",
         action="store_false",
     )
-
+    parser.add_argument(
+        "--specification-repo-version",
+        help="Set specification repo version (tag) to use in links.",
+        type=str,
+        required=False,
+        default="main",
+        dest="specification_repo_tag"
+    )
 
 def setup_parser():
     parser = argparse.ArgumentParser(

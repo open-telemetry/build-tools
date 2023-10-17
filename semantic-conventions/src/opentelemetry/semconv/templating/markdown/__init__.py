@@ -80,7 +80,6 @@ class MarkdownRenderer:
     ]
 
     prelude = "<!-- semconv {} -->\n"
-    table_headers = "| Attribute  | Type | Description  | Examples  | Requirement Level |\n|---|---|---|---|---|\n"
     table_headers_omitting_req_level = (
         "| Attribute  | Type | Description  | Examples  |\n|---|---|---|---|\n"
     )
@@ -99,6 +98,9 @@ class MarkdownRenderer:
         # We build the dict that maps each attribute that has to be rendered to the latest visited file
         # that contains it
         self.filename_for_attr_fqn = self._create_attribute_location_dict()
+        attribute_req_level_url = f"https://github.com/open-telemetry/opentelemetry-specification/blob/{options.specification_repo_tag}/specification/common/attribute-requirement-level.md"
+        self.table_headers = f"| Attribute  | Type | Description  | Examples  | [Requirement Level]({attribute_req_level_url}) |\n|---|---|---|---|---|\n"
+
 
     def to_markdown_attr(
         self,
@@ -169,14 +171,14 @@ class MarkdownRenderer:
 
     def derive_requirement_level(self, attribute: SemanticAttribute):
         if attribute.requirement_level == RequirementLevel.REQUIRED:
-            required = "Required"
+            required = "`Required`"
         elif attribute.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED:
             if len(attribute.requirement_level_msg) < self.options.break_count:
-                required = "Conditionally Required " + attribute.requirement_level_msg
+                required = "`Conditionally Required` " + attribute.requirement_level_msg
             else:
                 # We put the condition in the notes after the table
                 self.render_ctx.add_note(attribute.requirement_level_msg)
-                required = f"Conditionally Required: [{len(self.render_ctx.notes)}]"
+                required = f"`Conditionally Required` [{len(self.render_ctx.notes)}]"
         elif attribute.requirement_level == RequirementLevel.OPT_IN:
             required = "Opt-In"
         else:  # attribute.requirement_level == Required.RECOMMENDED or None
@@ -188,20 +190,20 @@ class MarkdownRenderer:
                 required = "See below"
             else:
                 if not attribute.requirement_level_msg:
-                    required = "Recommended"
+                    required = "`Recommended`"
                 elif len(attribute.requirement_level_msg) < self.options.break_count:
-                    required = "Recommended " + attribute.requirement_level_msg
+                    required = "`Recommended` " + attribute.requirement_level_msg
                 else:
                     # We put the condition in the notes after the table
                     self.render_ctx.add_note(attribute.requirement_level_msg)
-                    required = f"Recommended [{len(self.render_ctx.notes)}]"
+                    required = f"`Recommended` [{len(self.render_ctx.notes)}]"
         return required
 
     def write_table_header(self, output: io.StringIO):
         if self.render_ctx.is_omit_requirement_level:
             output.write(MarkdownRenderer.table_headers_omitting_req_level)
         else:
-            output.write(MarkdownRenderer.table_headers)
+            output.write(self.table_headers)
 
     def to_markdown_attribute_table(
         self, semconv: BaseSemanticConvention, output: io.StringIO

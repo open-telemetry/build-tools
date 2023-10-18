@@ -98,8 +98,15 @@ class MarkdownRenderer:
         # We build the dict that maps each attribute that has to be rendered to the latest visited file
         # that contains it
         self.filename_for_attr_fqn = self._create_attribute_location_dict()
-        attribute_req_level_url = f"https://github.com/open-telemetry/opentelemetry-specification/blob/{options.specification_repo_tag}/specification/common/attribute-requirement-level.md"
-        self.table_headers = f"| Attribute  | Type | Description  | Examples  | [Requirement Level]({attribute_req_level_url}) |\n|---|---|---|---|---|\n"
+
+        attribute_req_level_url = (
+            f"https://github.com/open-telemetry/opentelemetry-specification/blob/"
+            f"{options.specification_repo_tag}"
+            "/specification/common/attribute-requirement-level.md"
+        )
+        req_level = f"[Requirement Level]({attribute_req_level_url})"
+
+        self.table_headers = f"| Attribute  | Type | Description  | Examples  | {req_level} |\n|---|---|---|---|---|\n"
 
     def to_markdown_attr(
         self,

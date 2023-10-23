@@ -16,7 +16,7 @@ groups:
     extends: attributes
     prefix: "foo"
     brief: Derived attribute group
-    note: This is a groupt note.
+    note: This is a group note.
     attributes:
       - id: qux
         type: int

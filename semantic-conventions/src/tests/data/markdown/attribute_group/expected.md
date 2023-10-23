@@ -16,7 +16,7 @@ Attribute group brief.
 <!-- endsemconv -->
 
 <!-- semconv derived_attributes(render_group_note) -->
-This is a groupt note.
+This is a group note.
 
 | Attribute  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|

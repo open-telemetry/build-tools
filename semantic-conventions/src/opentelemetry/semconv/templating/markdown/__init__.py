@@ -429,7 +429,6 @@ class MarkdownRenderer:
                         raise ValueError(
                             f"Semantic Convention ID {semconv_id} not found"
                         )
-                    a: SemanticAttribute
                     valid_attr = (
                         a
                         for a in semconv.attributes_and_templates

@@ -391,7 +391,7 @@ class MarkdownRenderer:
         if isinstance(obj, AnyOf):
             self.to_markdown_anyof(obj, output)
         elif not isinstance(obj, Include):
-            raise Exception(f"Trying to generate Markdown for a wrong type {type(obj)}")
+            raise TypeError(f"Trying to generate Markdown for a wrong type {type(obj)}")
 
     def render_md(self):
         for md_filename in self.file_names:

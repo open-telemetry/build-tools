@@ -327,7 +327,8 @@ class SemanticConventionSet:
                     group_by_fqn[attr.fqn] = model.semconv_id
 
     def finish(self):
-        """Resolves values referenced from other models using `ref` and `extends` attributes AFTER all models were parsed.
+        """Resolves values referenced from other models using `ref` and `extends` attributes
+        AFTER all models were parsed.
         Here, sanity checks for `ref/extends` attributes are performed.
         """
         # Before resolving attributes, we verify that no duplicate exists.

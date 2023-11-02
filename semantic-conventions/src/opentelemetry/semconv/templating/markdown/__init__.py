@@ -176,7 +176,7 @@ class MarkdownRenderer:
             else:
                 # We put the condition in the notes after the table
                 self.render_ctx.add_note(attribute.requirement_level_msg)
-                required = f"Conditionally Required: [{ len(self.render_ctx.notes)}]"
+                required = f"Conditionally Required: [{len(self.render_ctx.notes)}]"
         elif attribute.requirement_level == RequirementLevel.OPT_IN:
             required = "Opt-In"
         else:  # attribute.requirement_level == Required.RECOMMENDED or None
@@ -391,7 +391,7 @@ class MarkdownRenderer:
         if isinstance(obj, AnyOf):
             self.to_markdown_anyof(obj, output)
         elif not isinstance(obj, Include):
-            raise Exception(f"Trying to generate Markdown for a wrong type {type(obj)}")
+            raise TypeError(f"Trying to generate Markdown for a wrong type {type(obj)}")
 
     def render_md(self):
         for md_filename in self.file_names:
@@ -429,7 +429,6 @@ class MarkdownRenderer:
                         raise ValueError(
                             f"Semantic Convention ID {semconv_id} not found"
                         )
-                    a: SemanticAttribute
                     valid_attr = (
                         a
                         for a in semconv.attributes_and_templates

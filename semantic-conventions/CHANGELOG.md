@@ -4,6 +4,8 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+## v0.23.0
+
 - Rephrase and relax sampling-relevant description
   ([#230](https://github.com/open-telemetry/build-tools/pull/230))
 

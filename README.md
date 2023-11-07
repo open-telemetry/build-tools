@@ -16,5 +16,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
   - See [open-telemetry/semantic-conventions](https://github.com/open-telemetry/semantic-conventions#contributing) for the current list.
 
 _Find more about the maintainer role in [community repository](https://github.com/open-telemetry/community/blob/master/community-membership.md#maintainer)._
-
-[SpecificationVersion]: https://github.com/open-telemetry/opentelemetry-specification/tree/v1.26.0

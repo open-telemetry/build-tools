@@ -4,6 +4,11 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+## v0.23.0
+
+- Rephrase and relax sampling-relevant description
+  ([#230](https://github.com/open-telemetry/build-tools/pull/230))
+
 ## v0.22.0
 
 - When an attribute is referenced using `ref:` from a group that already inherits the attribute with `extends:`, resolve the reference to the closest inherited attribute instead of the primary definition. This makes a difference in case the inherited reference overwrites any properties.

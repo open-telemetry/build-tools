@@ -104,11 +104,17 @@ class MarkdownRenderer:
             f"{spec_root_url}/specification/common/attribute-requirement-level.md"
         )
         req_level = f"[Requirement Level]({attribute_req_level_url})"
-        type = f"[Type]({spec_root_url}/specification/common/README.md#attribute)"
+        attribute_type = (
+            f"[Type]({spec_root_url}/specification/common/README.md#attribute)"
+        )
 
-        self.table_headers = f"| Attribute  | {type} | Description  | Examples  | {req_level} |\n|---|---|---|---|---|\n"
+        self.table_headers = (
+            f"| Attribute  | {attribute_type} | Description  | Examples  | {req_level} |"
+            "\n|---|---|---|---|---|\n"
+        )
         self.table_headers_omitting_req_level = (
-            f"| Attribute  | {type} | Description  | Examples  |\n|---|---|---|---|\n"
+            f"| Attribute  | {attribute_type} | Description  | Examples  |"
+            "\n|---|---|---|---|\n"
         )
 
     def to_markdown_attr(

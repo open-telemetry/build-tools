@@ -7,7 +7,7 @@
 
 **[1]:** Note on the overridden attribute definition.
 
-Following attributes MUST be provided **at span creation time** (when provided at all), so they can be considered for sampling decisions:
+The following attributes can be important for making sampling decisions and SHOULD be provided **at span creation time** (if provided at all):
 
 * [`server.address`](input_server.md)
 <!-- endsemconv -->

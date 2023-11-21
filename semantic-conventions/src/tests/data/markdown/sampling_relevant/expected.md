@@ -16,7 +16,7 @@
 
 **[1]:** `http.url` MUST NOT contain credentials passed via URL in form of `https://username:password@www.example.com/`. In such case the attribute's value should be `https://www.example.com/`.
 
-Following attributes MUST be provided **at span creation time** (when provided at all), so they can be considered for sampling decisions:
+The following attributes can be important for making sampling decisions and SHOULD be provided **at span creation time** (if provided at all):
 
 * `http.host`
 * `http.method`

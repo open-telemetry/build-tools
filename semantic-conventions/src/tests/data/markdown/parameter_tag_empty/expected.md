@@ -1,7 +1,7 @@
 # DB
 
 <!-- semconv db(tag) -->
-| Attribute  | Type | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
+| Attribute  | [Type](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
 |---|---|---|---|---|
 | `db.dbms` | string | An identifier for the DBMS (database management system) product | `mssql` | `Conditionally Required` for `db.type="sql"` |
 | `db.jdbc.driver_classname` | string | The fully-qualified class name of the JDBC driver used to connect. | `org.postgresql.Driver`; `com.microsoft.sqlserver.jdbc.SQLServerDriver` | `Recommended` |

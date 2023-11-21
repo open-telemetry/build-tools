@@ -80,9 +80,6 @@ class MarkdownRenderer:
     ]
 
     prelude = "<!-- semconv {} -->\n"
-    table_headers_omitting_req_level = (
-        "| Attribute  | Type | Description  | Examples  |\n|---|---|---|---|\n"
-    )
 
     def __init__(
         self, md_folder, semconvset: SemanticConventionSet, options=MarkdownOptions()
@@ -99,14 +96,20 @@ class MarkdownRenderer:
         # that contains it
         self.filename_for_attr_fqn = self._create_attribute_location_dict()
 
-        attribute_req_level_url = (
+        spec_root_url = (
             f"https://github.com/open-telemetry/opentelemetry-specification/blob/"
             f"{options.specification_repo_tag}"
-            "/specification/common/attribute-requirement-level.md"
+        )
+        attribute_req_level_url = (
+            f"{spec_root_url}/specification/common/attribute-requirement-level.md"
         )
         req_level = f"[Requirement Level]({attribute_req_level_url})"
+        type = f"[Type]({spec_root_url}/specification/common/README.md#attribute)"
 
-        self.table_headers = f"| Attribute  | Type | Description  | Examples  | {req_level} |\n|---|---|---|---|---|\n"
+        self.table_headers = f"| Attribute  | {type} | Description  | Examples  | {req_level} |\n|---|---|---|---|---|\n"
+        self.table_headers_omitting_req_level = (
+            f"| Attribute  | {type} | Description  | Examples  |\n|---|---|---|---|\n"
+        )
 
     def to_markdown_attr(
         self,
@@ -207,7 +210,7 @@ class MarkdownRenderer:
 
     def write_table_header(self, output: io.StringIO):
         if self.render_ctx.is_omit_requirement_level:
-            output.write(MarkdownRenderer.table_headers_omitting_req_level)
+            output.write(self.table_headers_omitting_req_level)
         else:
             output.write(self.table_headers)
 

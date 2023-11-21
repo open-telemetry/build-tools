@@ -1,7 +1,7 @@
 # Test Markdown
 
 <!-- semconv faas.http(full) -->
-| Attribute  | Type | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
+| Attribute  | [Type](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
 |---|---|---|---|---|
 | `faas.execution` | string | The execution id of the current function execution. | `af9d5aa4-a685-4c5f-a22b-444f80b3cc28` | `Recommended` |
 | `faas.trigger` | string | Type of the trigger on which the function is executed. | `datasource` | `Required` |

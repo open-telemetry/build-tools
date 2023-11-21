@@ -1,7 +1,7 @@
 # Common Attributes
 
 <!-- semconv test -->
-| Attribute  | Type | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
+| Attribute  | [Type](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
 |---|---|---|---|---|
 | [`test.def_stability`](labels_expected.md) | boolean |  |  | `Required` |
 | [`test.deprecated_attr`](labels_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | `Required` |

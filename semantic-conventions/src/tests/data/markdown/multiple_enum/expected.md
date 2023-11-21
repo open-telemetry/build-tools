@@ -2,7 +2,7 @@
 
 <!-- Re-generate TOC with `TODO: ADD cmd` -->
 <!-- semconv network -->
-| Attribute  | Type | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
+| Attribute  | [Type](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
 |---|---|---|---|---|
 | `net.host.carrier.icc` | string | host.carrier.icc | `DE` | `Recommended` |
 | `net.host.carrier.mcc` | string | host.carrier.mcc | `310` | `Recommended` |

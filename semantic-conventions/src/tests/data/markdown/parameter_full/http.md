@@ -1,7 +1,7 @@
 # General
 
 <!-- semconv http.server -->
-| Attribute  | Type | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
+| Attribute  | [Type](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
 |---|---|---|---|---|
 | `http.server_name` | String | The primary server name of the matched virtual host. [1] | `example.com` | `Conditionally Required` [2] |
 | `http.route` | String | The matched route (path template). | `/users/:userID?` | `Recommended` |

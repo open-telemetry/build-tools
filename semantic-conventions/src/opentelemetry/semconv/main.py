@@ -73,7 +73,7 @@ def main():
         renderer = CodeRenderer.from_commandline_params(
             args.parameters, args.trim_whitespace
         )
-        renderer.render(semconv, args.template, args.output, args.pattern)
+        renderer.render2(semconv, args.template, args.output)
     elif args.flavor == "markdown":
         process_markdown(semconv, args)
 

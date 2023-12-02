@@ -15,7 +15,9 @@
 import os
 
 from opentelemetry.semconv.model.semantic_convention import (
-    SpanKind, parse_semantic_convention_groups)
+    SpanKind,
+    parse_semantic_convention_groups,
+)
 
 
 def test_parse_basic(open_test_file):

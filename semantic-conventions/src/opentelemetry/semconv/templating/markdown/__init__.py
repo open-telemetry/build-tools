@@ -21,15 +21,21 @@ import typing
 from pathlib import PurePath
 
 from opentelemetry.semconv.model.constraints import AnyOf, Include
-from opentelemetry.semconv.model.semantic_attribute import (AttributeType,
-                                                            EnumAttributeType,
-                                                            EnumMember,
-                                                            RequirementLevel,
-                                                            SemanticAttribute,
-                                                            StabilityLevel)
+from opentelemetry.semconv.model.semantic_attribute import (
+    AttributeType,
+    EnumAttributeType,
+    EnumMember,
+    RequirementLevel,
+    SemanticAttribute,
+    StabilityLevel,
+)
 from opentelemetry.semconv.model.semantic_convention import (
-    BaseSemanticConvention, EventSemanticConvention, MetricSemanticConvention,
-    SemanticConventionSet, UnitSemanticConvention)
+    BaseSemanticConvention,
+    EventSemanticConvention,
+    MetricSemanticConvention,
+    SemanticConventionSet,
+    UnitSemanticConvention,
+)
 from opentelemetry.semconv.model.utils import ID_RE
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 

@@ -19,8 +19,11 @@ from enum import Enum
 from typing import Dict, List, Optional, Union
 
 from opentelemetry.semconv.model.exceptions import ValidationError
-from opentelemetry.semconv.model.utils import (check_no_missing_keys,
-                                               validate_id, validate_values)
+from opentelemetry.semconv.model.utils import (
+    check_no_missing_keys,
+    validate_id,
+    validate_values,
+)
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 TEMPLATE_PREFIX = "template["

@@ -3,7 +3,9 @@ import os
 import pytest
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_convention import (
-    UnitSemanticConvention, parse_semantic_convention_groups)
+    UnitSemanticConvention,
+    parse_semantic_convention_groups,
+)
 
 
 def test_build_units(open_test_file):

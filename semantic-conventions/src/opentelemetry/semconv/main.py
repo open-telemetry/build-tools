@@ -20,7 +20,9 @@ import sys
 from typing import List
 
 from opentelemetry.semconv.model.semantic_convention import (
-    CONVENTION_CLS_BY_GROUP_TYPE, SemanticConventionSet)
+    CONVENTION_CLS_BY_GROUP_TYPE,
+    SemanticConventionSet,
+)
 from opentelemetry.semconv.templating.code import CodeRenderer
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions

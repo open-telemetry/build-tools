@@ -19,13 +19,14 @@ import typing
 
 import mistune
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from opentelemetry.semconv.model.semantic_attribute import (AttributeType,
-                                                            RequirementLevel,
-                                                            SemanticAttribute,
-                                                            StabilityLevel,
-                                                            TextWithLinks)
-from opentelemetry.semconv.model.semantic_convention import \
-    SemanticConventionSet
+from opentelemetry.semconv.model.semantic_attribute import (
+    AttributeType,
+    RequirementLevel,
+    SemanticAttribute,
+    StabilityLevel,
+    TextWithLinks,
+)
+from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
 from opentelemetry.semconv.model.utils import ID_RE
 
 

@@ -71,14 +71,13 @@ def test_codegen_attribute_v2_experimental(test_file_path, read_test_file):
     )
     semconv.finish()
 
-    template_path = test_file_path("jinja", "attributesv2", "template")
+    template_path = test_file_path("jinja", "attributesv2", "template_all")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
-    renderer.renderv2(semconv, template_path, os.path.join(tmppath, "Attributes.java"), stable=False)
+    renderer.renderv2(semconv, template_path, os.path.join(tmppath, "Attributes.java"))
     with open(os.path.join(tmppath, "FirstAttributes.java")) as first:
         data = first.read()
-        print(data)
         expected = read_test_file("jinja", "attributesv2", "FirstAttributes.java")
         assert data == expected
 
@@ -87,7 +86,11 @@ def test_codegen_attribute_v2_experimental(test_file_path, read_test_file):
         expected = read_test_file("jinja", "attributesv2", "SecondAttributes.java")
         assert data == expected
 
-    assert not os.path.isfile(os.path.join(tmppath, "ThirdAttributes.java"))
+    with open(os.path.join(tmppath, "ThirdAttributes.java")) as second:
+        data = second.read()
+        expected = read_test_file("jinja", "attributesv2", "ThirdAttributesAll.java")
+        assert data == expected
+
 
 def test_codegen_attribute_v2_stable(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
@@ -96,15 +99,15 @@ def test_codegen_attribute_v2_stable(test_file_path, read_test_file):
     )
     semconv.finish()
 
-    template_path = test_file_path("jinja", "attributesv2", "template")
+    template_path = test_file_path("jinja", "attributesv2", "template_only_stable")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
-    renderer.renderv2(semconv, template_path, os.path.join(tmppath, "Attributes.java"), stable=True)
+    renderer.renderv2(semconv, template_path, os.path.join(tmppath, "Attributes.java"))
 
     with open(os.path.join(tmppath, "ThirdAttributes.java")) as second:
         data = second.read()
-        expected = read_test_file("jinja", "attributesv2", "ThirdAttributes.java")
+        expected = read_test_file("jinja", "attributesv2", "ThirdAttributesStable.java")
         assert data == expected
 
     assert not os.path.isfile(os.path.join(tmppath, "FirstAttributes.java"))
@@ -117,11 +120,11 @@ def test_codegen_attribute_v2_no_group_prefix(test_file_path, read_test_file):
     )
     semconv.finish()
 
-    template_path = test_file_path("jinja", "attributesv2", "template")
+    template_path = test_file_path("jinja", "attributesv2", "template_all")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
-    renderer.renderv2(semconv, template_path, os.path.join(tmppath, "Attributes.java"), stable=False)
+    renderer.renderv2(semconv, template_path, os.path.join(tmppath, "Attributes.java"))
     with open(os.path.join(tmppath, "FooAttributes.java")) as foo:
         data = foo.read()
         expected = read_test_file("jinja", "attributesv2", "FooAttributes.java")

@@ -73,7 +73,12 @@ def main():
         renderer = CodeRenderer.from_commandline_params(
             args.parameters, args.trim_whitespace
         )
-        renderer.render2(semconv, args.template, args.output)
+        renderer.render(semconv, args.template, args.output, args.pattern)
+    if args.flavor == "code_easy":
+        renderer = CodeRenderer.from_commandline_params(
+            args.parameters, args.trim_whitespace
+        )
+        renderer.renderv2(semconv, args.template, args.output)
     elif args.flavor == "markdown":
         process_markdown(semconv, args)
 
@@ -146,6 +151,38 @@ def add_code_parser(subparsers):
         help="Each Semantic Convention is processed by the template and store in a different file. PATTERN is expected "
         "to be the name of a SemanticConvention field and is prepended as a prefix to the output argument",
         type=str,
+    )
+    parser.add_argument(
+        "--parameters",
+        "-D",
+        dest="parameters",
+        action="append",
+        help="List of key=value pairs separated by comma. These values are fed into the template as is.",
+        type=str,
+    )
+    parser.add_argument(
+        "--trim-whitespace",
+        help="Allow customising whitespace control in Jinja templates."
+        " Providing the flag will enable both `lstrip_blocks` and `trim_blocks`",
+        required=False,
+        action="store_true",
+    )
+
+def add_code_easy_parser(subparsers):
+    parser = subparsers.add_parser("code_easy")
+    parser.add_argument(
+        "--output",
+        "-o",
+        help="Specify the output file for the code generation.",
+        type=str,
+        required=True,
+    )
+    parser.add_argument(
+        "--template",
+        "-t",
+        help="Specify the template to use for code generation",
+        type=str,
+        required=True,
     )
     parser.add_argument(
         "--parameters",
@@ -257,6 +294,7 @@ def setup_parser():
     )
     subparsers = parser.add_subparsers(dest="flavor")
     add_code_parser(subparsers)
+    add_code_easy_parser(subparsers)
     add_md_parser(subparsers)
 
     return parser

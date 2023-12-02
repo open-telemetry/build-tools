@@ -159,8 +159,11 @@ def to_camelcase(name: str, first_upper=False) -> str:
 def is_stable(attribute: SemanticAttribute) -> bool:
     return attribute.stability == StabilityLevel.STABLE
 
+def is_deprecated(attribute: SemanticAttribute) -> bool:
+    return attribute.stability == StabilityLevel.DEPRECATED
+
 def is_definition(attribute: SemanticAttribute) -> bool:
-    return attribute.ref is None
+    return attribute.is_local and attribute.ref is None
 
 class CodeRenderer:
     pattern = f"{{{ID_RE.pattern}}}"
@@ -215,8 +218,11 @@ class CodeRenderer:
         env.filters["to_html_links"] = to_html_links
         env.filters["regex_replace"] = regex_replace
         env.filters["render_markdown"] = render_markdown
-        env.filters["is_stable"] = is_stable
+        env.filters["is_deprecated"] = is_deprecated
         env.filters["is_definition"] = is_definition
+        env.filters["is_stable"] = is_stable
+        env.tests["is_stable"] = is_stable
+        env.tests["is_definition"] = is_definition
         env.trim_blocks = trim_whitespace
         env.lstrip_blocks = trim_whitespace
 
@@ -268,8 +274,7 @@ class CodeRenderer:
         self,
         semconvset: SemanticConventionSet,
         template_path: str,
-        output_file,
-        stable: bool
+        output_file
     ):
         file_name = os.path.basename(template_path)
         folder = os.path.dirname(template_path)
@@ -279,13 +284,13 @@ class CodeRenderer:
         )
         self.setup_environment(env, self.trim_whitespace)
 
-        for group in self._get_all_groups(semconvset, stable):
+        for group in self._get_all_groups(semconvset):
             output_name = self.prefix_output_filev2(str(output_file), group)
 
             data = {
                 "template": template_path,
-                "attributes": self._filter_attributes(semconvset, group, stable),
-                "attribute_templates": self._filter_attribute_templates(semconvset, group, stable),
+                "attributes": self._filter_attributes(semconvset, group),
+                "attribute_templates": self._filter_attribute_templates(semconvset, group),
                 "group": group}
             data.update(self.parameters)
 
@@ -293,32 +298,37 @@ class CodeRenderer:
             template.globals["now"] = datetime.datetime.utcnow()
             template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
             template.globals["RequirementLevel"] = RequirementLevel
-            template.stream(data).dump(output_name)
+            content = template.render(data)
+            if (content == ""):
+                continue
+
+            with open(output_name, "w") as f:
+                f.write(content)
 
     def _get_root_namespace(self, attr):
         namespaces = attr.fqn.split(".")
         return namespaces[0] if len(namespaces) > 1 else "other"
 
-    def _get_all_groups(self, semconvset, stable):
+    def _get_all_groups(self, semconvset):
         groups = set()
         for semconv in semconvset.models.values():
-            for attr in filter(lambda a: self._filter(a, stable), semconv.attributes_and_templates):
+            for attr in filter(lambda a: self._filter(a), semconv.attributes_and_templates):
                 groups.add(self._get_root_namespace(attr))
         return groups
 
-    def _filter(self, attr, stable):
-        return stable == is_stable(attr) and attr.is_local and attr.ref is None
+    def _filter(self, attr):
+        return attr.is_local and attr.ref is None
 
-    def _filter_attributes(self, semconvset, group, stable):
+    def _filter_attributes(self, semconvset, group):
         attr_in_group = []
         for semconv in semconvset.models.values():
-            for attr in filter(lambda a: self._filter(a, stable) and self._get_root_namespace(a) == group, semconv.attributes):
+            for attr in filter(lambda a: self._filter(a) and self._get_root_namespace(a) == group, semconv.attributes):
                 attr_in_group.append(attr)
         return attr_in_group
 
-    def _filter_attribute_templates(self, semconvset, group, stable):
+    def _filter_attribute_templates(self, semconvset, group):
         templates_in_group = []
         for semconv in semconvset.models.values():
-            for attr_template in filter(lambda a: self._filter(a, stable) and self._get_root_namespace(a) == group, semconv.attribute_templates):
+            for attr_template in filter(lambda a: self._filter(a) and self._get_root_namespace(a) == group, semconv.attribute_templates):
                 templates_in_group.append(attr_template)
         return templates_in_group

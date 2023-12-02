@@ -47,7 +47,6 @@ groups:
         brief: >
           this is the description of attribute template
         examples: 'example'
-        stability: stable
   - id: forth_group_id
     brief: forth description
     attributes:

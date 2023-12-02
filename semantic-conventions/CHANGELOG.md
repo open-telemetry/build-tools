@@ -4,7 +4,7 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
-- Added code-generation mode that groups attributes by the root namespace and ability to wring each group into individual file.
+- Added code-generation mode that groups attributes by the root namespace and ability to write each group into individual file.
   [BREAKING] The `--file-per-group <pattern>` that used to create multiple directories (like `output/<pattern>/file`) now generates
   multiple files (`output/<pattern>file`) instead.
   ([#243](https://github.com/open-telemetry/build-tools/pull/243))

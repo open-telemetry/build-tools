@@ -131,8 +131,26 @@ def test_codegen_attribute_root_ns_no_group_prefix(test_file_path, read_test_fil
     other = read_test_file("jinja", test_path, "OtherAttributes.java")
     check_file(tmppath, "OtherAttributes.java", other)
 
+def test_codegen_attribute_root_ns_single_file(test_file_path, read_test_file):
+    semconv = SemanticConventionSet(debug=False)
+
+    semconv.parse(
+        test_file_path("jinja", "attributes_root_ns", "attributes.yml")
+    )
+    semconv.finish()
+
+    test_path = os.path.join("attributes_root_ns", "single_file")
+    template_path = test_file_path("jinja", test_path, "template_single_file")
+    renderer = CodeRenderer({}, trim_whitespace=True)
+
+    tmppath = tempfile.mkdtemp()
+    renderer.render(semconv, template_path, os.path.join(tmppath, "AllAttributes.java"), None)
+
+    all = read_test_file("jinja", test_path, "AllAttributes.java")
+    check_file(tmppath, "AllAttributes.java", all)
 
 def check_file(tmppath, actual_filename, expected_content):
     with open(os.path.join(tmppath, actual_filename)) as f:
         actual = f.read()
+        print(actual)
         assert actual == expected_content

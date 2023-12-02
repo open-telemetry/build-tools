@@ -1,0 +1,65 @@
+{%- macro to_java_return_type(type) -%}
+  {%- if type == "string" -%}
+    String
+  {%- elif type == "string[]" -%}
+    List<String>
+  {%- elif type == "boolean" -%}
+    boolean
+  {%- elif type == "int" -%}
+    long
+  {%- elif type == "double" -%}
+    double
+  {%- else -%}
+    {{type}}
+  {%- endif -%}
+{%- endmacro %}
+{%- macro to_java_key_type(type) -%}
+  {%- if type == "string" -%}
+    stringKey
+  {%- elif type == "string[]" -%}
+    stringArrayKey
+  {%- elif type == "boolean" -%}
+    booleanKey
+  {%- elif type == "int" -%}
+    longKey
+  {%- elif type == "double" -%}
+    doubleKey
+  {%- else -%}
+    {{ type | to_camelcase(False)}}Key
+  {%- endif -%}
+{%- endmacro %}
+package io.opentelemetry.instrumentation.api.semconv;
+
+class AllAttributes {
+{%- for root_ns in attributes_and_templates %}
+
+  {% if root_ns != "" %}
+  class {{root_ns | first_up}}Attributes {
+    {%- for attribute in attributes_and_templates[root_ns] %}
+
+    /**
+    * {{attribute.brief | render_markdown(code="{{@code {0}}}", paragraph="{0}")}}
+    */
+      {% if attribute | is_template %}
+    public static final AttributeKeyTemplate<{{ to_java_return_type(attribute.instantiated_type | string) | first_up}}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");
+      {% else %}
+    public static final AttributeKey<{{ to_java_return_type(attribute.instantiated_type | string) | first_up }}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");
+      {% endif %}
+
+    {%- endfor %}
+  }
+  {%- endif %}
+{%- endfor %}
+  {# non-namespaced attributes #}
+  {%- for attribute in attributes_and_templates[""] %}
+  /**
+  * {{attribute.brief | render_markdown(code="{{@code {0}}}", paragraph="{0}")}}
+  */
+    {% if attribute | is_template %}
+  public static final AttributeKeyTemplate<{{ to_java_return_type(attribute.instantiated_type | string) | first_up}}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");
+    {% else %}
+  public static final AttributeKey<{{ to_java_return_type(attribute.instantiated_type | string) | first_up }}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");
+    {% endif %}
+
+  {%- endfor %}
+}

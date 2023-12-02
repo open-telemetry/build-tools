@@ -303,7 +303,7 @@ class CodeRenderer:
 
             data = {
                 "template": template_path,
-                "attributes_and_templates": sorted(root_namespaces[ns], key=lambda a: a.fqn),
+                "attributes_and_templates": root_namespaces[ns],
                 "root_namespace": sanitized_ns}
             data.update(self.parameters)
 
@@ -317,6 +317,9 @@ class CodeRenderer:
                 if attr.root_namespace not in root_namespaces:
                     root_namespaces[attr.root_namespace] = []
                 root_namespaces[attr.root_namespace].append(attr)
+
+        for ns in root_namespaces:
+            root_namespaces[ns] = sorted(root_namespaces[ns], key=lambda a: a.fqn)
         return root_namespaces
 
     def _write_template_to_file(self, template, data, output_name):

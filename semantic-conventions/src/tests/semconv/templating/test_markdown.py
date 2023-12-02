@@ -18,7 +18,8 @@ import unittest
 from pathlib import Path
 from typing import Optional, Sequence
 
-from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
+from opentelemetry.semconv.model.semantic_convention import \
+    SemanticConventionSet
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 

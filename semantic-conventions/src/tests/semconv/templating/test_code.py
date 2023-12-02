@@ -1,8 +1,8 @@
-import io
 import os
 import tempfile
 
-from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
+from opentelemetry.semconv.model.semantic_convention import \
+    SemanticConventionSet
 from opentelemetry.semconv.templating.code import CodeRenderer
 
 
@@ -69,9 +69,7 @@ def test_codegen_attribute_templates(test_file_path, read_test_file):
 def test_codegen_attribute_root_ns(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
 
-    semconv.parse(
-        test_file_path("jinja", "attributes_root_ns", "attributes.yml")
-    )
+    semconv.parse(test_file_path("jinja", "attributes_root_ns", "attributes.yml"))
     semconv.finish()
 
     template_path = test_file_path("jinja", "attributes_root_ns", "template_all")
@@ -79,7 +77,12 @@ def test_codegen_attribute_root_ns(test_file_path, read_test_file):
 
     test_path = os.path.join("attributes_root_ns", "all")
     tmppath = tempfile.mkdtemp()
-    renderer.render(semconv, template_path, os.path.join(tmppath, "Attributes.java"), "root_namespace")
+    renderer.render(
+        semconv,
+        template_path,
+        os.path.join(tmppath, "Attributes.java"),
+        "root_namespace",
+    )
 
     first = read_test_file("jinja", test_path, "FirstAttributes.java")
     check_file(tmppath, "FirstAttributes.java", first)
@@ -87,15 +90,13 @@ def test_codegen_attribute_root_ns(test_file_path, read_test_file):
     second = read_test_file("jinja", test_path, "SecondAttributes.java")
     check_file(tmppath, "SecondAttributes.java", second)
 
-    third = read_test_file("jinja",test_path, "ThirdAttributes.java")
+    third = read_test_file("jinja", test_path, "ThirdAttributes.java")
     check_file(tmppath, "ThirdAttributes.java", third)
 
 
 def test_codegen_attribute_root_ns_stable(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
-    semconv.parse(
-        test_file_path("jinja", "attributes_root_ns", "attributes.yml")
-    )
+    semconv.parse(test_file_path("jinja", "attributes_root_ns", "attributes.yml"))
     semconv.finish()
 
     test_path = os.path.join("attributes_root_ns", "stable")
@@ -103,27 +104,36 @@ def test_codegen_attribute_root_ns_stable(test_file_path, read_test_file):
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
-    renderer.render(semconv, template_path, os.path.join(tmppath, "Attributes.java"), "root_namespace")
+    renderer.render(
+        semconv,
+        template_path,
+        os.path.join(tmppath, "Attributes.java"),
+        "root_namespace",
+    )
 
     thirdStable = read_test_file("jinja", test_path, "ThirdAttributesStable.java")
     check_file(tmppath, "ThirdAttributes.java", thirdStable)
     assert not os.path.isfile(os.path.join(tmppath, "FirstAttributes.java"))
     assert not os.path.isfile(os.path.join(tmppath, "SecondAttributes.java"))
 
+
 def test_codegen_attribute_root_ns_no_group_prefix(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
 
     test_path = os.path.join("attributes_root_ns", "no_group_prefix")
-    semconv.parse(
-        test_file_path("jinja", test_path, "attributes_no_group_prefix.yml")
-    )
+    semconv.parse(test_file_path("jinja", test_path, "attributes_no_group_prefix.yml"))
     semconv.finish()
 
     template_path = test_file_path("jinja", "attributes_root_ns", "template_all")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
-    renderer.render(semconv, template_path, os.path.join(tmppath, "Attributes.java"), "root_namespace")
+    renderer.render(
+        semconv,
+        template_path,
+        os.path.join(tmppath, "Attributes.java"),
+        "root_namespace",
+    )
 
     foo = read_test_file("jinja", test_path, "FooAttributes.java")
     check_file(tmppath, "FooAttributes.java", foo)
@@ -131,12 +141,11 @@ def test_codegen_attribute_root_ns_no_group_prefix(test_file_path, read_test_fil
     other = read_test_file("jinja", test_path, "OtherAttributes.java")
     check_file(tmppath, "OtherAttributes.java", other)
 
+
 def test_codegen_attribute_root_ns_single_file(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
 
-    semconv.parse(
-        test_file_path("jinja", "attributes_root_ns", "attributes.yml")
-    )
+    semconv.parse(test_file_path("jinja", "attributes_root_ns", "attributes.yml"))
     semconv.finish()
 
     test_path = os.path.join("attributes_root_ns", "single_file")
@@ -144,10 +153,13 @@ def test_codegen_attribute_root_ns_single_file(test_file_path, read_test_file):
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
-    renderer.render(semconv, template_path, os.path.join(tmppath, "AllAttributes.java"), None)
+    renderer.render(
+        semconv, template_path, os.path.join(tmppath, "AllAttributes.java"), None
+    )
 
     all = read_test_file("jinja", test_path, "AllAttributes.java")
     check_file(tmppath, "AllAttributes.java", all)
+
 
 def check_file(tmppath, actual_filename, expected_content):
     with open(os.path.join(tmppath, actual_filename)) as f:

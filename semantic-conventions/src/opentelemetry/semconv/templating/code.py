@@ -19,15 +19,13 @@ import typing
 
 import mistune
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-
-from opentelemetry.semconv.model.semantic_attribute import (
-    AttributeType,
-    RequirementLevel,
-    SemanticAttribute,
-    StabilityLevel,
-    TextWithLinks,
-)
-from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
+from opentelemetry.semconv.model.semantic_attribute import (AttributeType,
+                                                            RequirementLevel,
+                                                            SemanticAttribute,
+                                                            StabilityLevel,
+                                                            TextWithLinks)
+from opentelemetry.semconv.model.semantic_convention import \
+    SemanticConventionSet
 from opentelemetry.semconv.model.utils import ID_RE
 
 
@@ -147,8 +145,10 @@ def regex_replace(text: str, pattern: str, replace: str):
 def merge(elems: typing.List, elm):
     return elems.extend(elm)
 
+
 def to_const_name(name: str) -> str:
     return name.upper().replace(".", "_").replace("-", "_")
+
 
 def to_camelcase(name: str, first_upper=False) -> str:
     first, *rest = name.replace("_", ".").split(".")
@@ -156,23 +156,30 @@ def to_camelcase(name: str, first_upper=False) -> str:
         first = first.capitalize()
     return first + "".join(word.capitalize() for word in rest)
 
+
 def first_up(name: str) -> str:
     return name[0].upper() + name[1:]
+
 
 def is_stable(attribute: SemanticAttribute) -> bool:
     return attribute.stability == StabilityLevel.STABLE
 
+
 def is_deprecated(attribute: SemanticAttribute) -> bool:
     return attribute.stability == StabilityLevel.DEPRECATED
+
 
 def is_experimental(attribute: SemanticAttribute) -> bool:
     return attribute.stability == StabilityLevel.EXPERIMENTAL
 
+
 def is_definition(attribute: SemanticAttribute) -> bool:
     return attribute.is_local and attribute.ref is None
 
+
 def is_template(attribute: SemanticAttribute) -> bool:
     return AttributeType.is_template_type(attribute.attr_type)
+
 
 class CodeRenderer:
     pattern = f"{{{ID_RE.pattern}}}"
@@ -263,14 +270,17 @@ class CodeRenderer:
         )
         self.setup_environment(env, self.trim_whitespace)
         if pattern == "root_namespace":
-            self._render_group_by_root_namespace(semconvset, template_path, file_name, output_file, env)
+            self._render_group_by_root_namespace(
+                semconvset, template_path, file_name, output_file, env
+            )
         elif pattern is not None:
-            self._render_by_pattern(semconvset, template_path, file_name, output_file, pattern, env)
+            self._render_by_pattern(
+                semconvset, template_path, file_name, output_file, pattern, env
+            )
         else:
             data = self.get_data_single_file(semconvset, template_path)
             template = env.get_template(file_name, globals=data)
             self._write_template_to_file(template, data, output_file)
-
 
     def _render_by_pattern(
         self,
@@ -304,7 +314,8 @@ class CodeRenderer:
             data = {
                 "template": template_path,
                 "attributes_and_templates": root_namespaces[ns],
-                "root_namespace": sanitized_ns}
+                "root_namespace": sanitized_ns,
+            }
             data.update(self.parameters)
 
             template = env.get_template(file_name, globals=data)
@@ -313,7 +324,9 @@ class CodeRenderer:
     def _grouped_attribute_definitions(self, semconvset):
         root_namespaces = {}
         for semconv in semconvset.models.values():
-            for attr in filter(lambda a: is_definition(a), semconv.attributes_and_templates):
+            for attr in filter(
+                lambda a: is_definition(a), semconv.attributes_and_templates
+            ):
                 if attr.root_namespace not in root_namespaces:
                     root_namespaces[attr.root_namespace] = []
                 root_namespaces[attr.root_namespace].append(attr)
@@ -328,6 +341,6 @@ class CodeRenderer:
         template.globals["RequirementLevel"] = RequirementLevel
 
         content = template.render(data)
-        if (content != ""):
+        if content != "":
             with open(output_name, "w") as f:
                 f.write(content)

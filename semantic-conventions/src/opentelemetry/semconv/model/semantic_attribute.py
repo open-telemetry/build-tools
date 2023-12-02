@@ -18,14 +18,10 @@ from dataclasses import dataclass, replace
 from enum import Enum
 from typing import Dict, List, Optional, Union
 
-from ruamel.yaml.comments import CommentedMap, CommentedSeq
-
 from opentelemetry.semconv.model.exceptions import ValidationError
-from opentelemetry.semconv.model.utils import (
-    check_no_missing_keys,
-    validate_id,
-    validate_values,
-)
+from opentelemetry.semconv.model.utils import (check_no_missing_keys,
+                                               validate_id, validate_values)
+from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 TEMPLATE_PREFIX = "template["
 TEMPLATE_SUFFIX = "]"
@@ -343,6 +339,7 @@ class SemanticAttribute:
         elif self == other:
             return True
         return False
+
 
 class AttributeType:
 

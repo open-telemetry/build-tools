@@ -15,13 +15,10 @@
 import os
 import unittest
 
-from ruamel.yaml.constructor import DuplicateKeyError
-
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_convention import (
-    SemanticConventionSet,
-    parse_semantic_convention_groups,
-)
+    SemanticConventionSet, parse_semantic_convention_groups)
+from ruamel.yaml.constructor import DuplicateKeyError
 
 
 class TestCorrectErrorDetection(unittest.TestCase):

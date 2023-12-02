@@ -18,16 +18,14 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, Optional, Tuple, Union
 
-from ruamel.yaml import YAML
-
-from opentelemetry.semconv.model.constraints import AnyOf, Include, parse_constraints
+from opentelemetry.semconv.model.constraints import (AnyOf, Include,
+                                                     parse_constraints)
 from opentelemetry.semconv.model.exceptions import ValidationError
-from opentelemetry.semconv.model.semantic_attribute import (
-    AttributeType,
-    SemanticAttribute,
-)
+from opentelemetry.semconv.model.semantic_attribute import (AttributeType,
+                                                            SemanticAttribute)
 from opentelemetry.semconv.model.unit_member import UnitMember
 from opentelemetry.semconv.model.utils import ValidatableYamlNode, validate_id
+from ruamel.yaml import YAML
 
 
 class SpanKind(Enum):

@@ -12,7 +12,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 import pytest
-
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.utils import validate_id, validate_values
 

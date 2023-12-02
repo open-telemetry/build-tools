@@ -4,6 +4,11 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- Added code-generation mode that groups attributes by the root namespace and ability to wring each group into individual file.
+  [BREAKING] The `--file-per-group <pattern>` that used to create multiple directories (like `output/<pattern>/file`) now generates
+  multiple files (`output/<pattern>file`) instead.
+  ([#TODO](https://github.com/open-telemetry/build-tools/pull/TODO))
+
 ## v0.23.0
 
 - Rephrase and relax sampling-relevant description
@@ -17,7 +22,7 @@ Please update the changelog as part of any significant pull request.
   ([#205](https://github.com/open-telemetry/build-tools/pull/205))
 - Fix referencing template attributes
   ([#206](https://github.com/open-telemetry/build-tools/pull/206))
-  
+
 ## v0.21.0
 
 - Render template-type attributes from yaml files

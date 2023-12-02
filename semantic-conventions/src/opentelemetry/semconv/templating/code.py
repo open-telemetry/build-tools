@@ -21,6 +21,7 @@ import mistune
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from opentelemetry.semconv.model.semantic_attribute import (
+    AttributeType,
     RequirementLevel,
     SemanticAttribute,
     StabilityLevel,
@@ -149,12 +150,14 @@ def merge(elems: typing.List, elm):
 def to_const_name(name: str) -> str:
     return name.upper().replace(".", "_").replace("-", "_")
 
-
 def to_camelcase(name: str, first_upper=False) -> str:
     first, *rest = name.replace("_", ".").split(".")
     if first_upper:
         first = first.capitalize()
     return first + "".join(word.capitalize() for word in rest)
+
+def first_up(name: str) -> str:
+    return name[0].upper() + name[1:]
 
 def is_stable(attribute: SemanticAttribute) -> bool:
     return attribute.stability == StabilityLevel.STABLE
@@ -162,8 +165,14 @@ def is_stable(attribute: SemanticAttribute) -> bool:
 def is_deprecated(attribute: SemanticAttribute) -> bool:
     return attribute.stability == StabilityLevel.DEPRECATED
 
+def is_experimental(attribute: SemanticAttribute) -> bool:
+    return attribute.stability == StabilityLevel.EXPERIMENTAL
+
 def is_definition(attribute: SemanticAttribute) -> bool:
     return attribute.is_local and attribute.ref is None
+
+def is_template(attribute: SemanticAttribute) -> bool:
+    return AttributeType.is_template_type(attribute.attr_type)
 
 class CodeRenderer:
     pattern = f"{{{ID_RE.pattern}}}"
@@ -197,6 +206,7 @@ class CodeRenderer:
             "semconvs": semconvset.models,
             "attributes": semconvset.attributes(),
             "attribute_templates": semconvset.attribute_templates(),
+            "attributes_and_templates": self._grouped_attribute_definitions(semconvset),
         }
         data.update(self.parameters)
         return data
@@ -215,26 +225,25 @@ class CodeRenderer:
         env.filters["to_const_name"] = to_const_name
         env.filters["merge"] = merge
         env.filters["to_camelcase"] = to_camelcase
+        env.filters["first_up"] = first_up
         env.filters["to_html_links"] = to_html_links
         env.filters["regex_replace"] = regex_replace
         env.filters["render_markdown"] = render_markdown
         env.filters["is_deprecated"] = is_deprecated
         env.filters["is_definition"] = is_definition
         env.filters["is_stable"] = is_stable
+        env.filters["is_experimental"] = is_experimental
+        env.filters["is_template"] = is_template
         env.tests["is_stable"] = is_stable
+        env.tests["is_experimental"] = is_experimental
+        env.tests["is_deprecated"] = is_deprecated
         env.tests["is_definition"] = is_definition
+        env.tests["is_template"] = is_template
         env.trim_blocks = trim_whitespace
         env.lstrip_blocks = trim_whitespace
 
     @staticmethod
-    def prefix_output_file(file_name, pattern, semconv):
-        basename = os.path.basename(file_name)
-        dirname = os.path.dirname(file_name)
-        value = getattr(semconv, pattern)
-        return os.path.join(dirname, to_camelcase(value, True), basename)
-
-    @staticmethod
-    def prefix_output_filev2(file_name, prefix):
+    def prefix_output_file(file_name, prefix):
         basename = os.path.basename(file_name)
         dirname = os.path.dirname(file_name)
         return os.path.join(dirname, to_camelcase(prefix, True) + basename)
@@ -253,82 +262,69 @@ class CodeRenderer:
             autoescape=select_autoescape([""]),
         )
         self.setup_environment(env, self.trim_whitespace)
-        if pattern:
-            for semconv in semconvset.models.values():
-                output_name = self.prefix_output_file(output_file, pattern, semconv)
-                data = self.get_data_multiple_files(semconv, template_path)
-                template = env.get_template(file_name, globals=data)
-                template.globals["now"] = datetime.datetime.utcnow()
-                template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
-                template.globals["RequirementLevel"] = RequirementLevel
-                template.stream(data).dump(output_name)
+        if pattern == "root_namespace":
+            self._render_group_by_root_namespace(semconvset, template_path, file_name, output_file, env)
+        elif pattern is not None:
+            self._render_by_pattern(semconvset, template_path, file_name, output_file, pattern, env)
         else:
             data = self.get_data_single_file(semconvset, template_path)
             template = env.get_template(file_name, globals=data)
-            template.globals["now"] = datetime.datetime.utcnow()
-            template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
-            template.globals["RequirementLevel"] = RequirementLevel
-            template.stream(data).dump(output_file)
+            self._write_template_to_file(template, data, output_file)
 
-    def renderv2(
+
+    def _render_by_pattern(
         self,
         semconvset: SemanticConventionSet,
         template_path: str,
-        output_file
+        file_name: str,
+        output_file: str,
+        pattern: str,
+        env: Environment,
     ):
-        file_name = os.path.basename(template_path)
-        folder = os.path.dirname(template_path)
-        env = Environment(
-            loader=FileSystemLoader(searchpath=folder),
-            autoescape=select_autoescape([""]),
-        )
-        self.setup_environment(env, self.trim_whitespace)
+        for semconv in semconvset.models.values():
+            prefix = getattr(semconv, pattern)
+            output_name = self.prefix_output_file(output_file, prefix)
+            data = self.get_data_multiple_files(semconv, template_path)
+            template = env.get_template(file_name, globals=data)
+            self._write_template_to_file(template, data, output_name)
 
-        for group in self._get_all_groups(semconvset):
-            output_name = self.prefix_output_filev2(str(output_file), group)
+    def _render_group_by_root_namespace(
+        self,
+        semconvset: SemanticConventionSet,
+        template_path: str,
+        file_name: str,
+        output_file: str,
+        env: Environment,
+    ):
+        root_namespaces = self._grouped_attribute_definitions(semconvset)
+        for ns in root_namespaces:
+            sanitized_ns = ns if ns != "" else "other"
+            output_name = self.prefix_output_file(output_file, sanitized_ns)
 
             data = {
                 "template": template_path,
-                "attributes": self._filter_attributes(semconvset, group),
-                "attribute_templates": self._filter_attribute_templates(semconvset, group),
-                "group": group}
+                "attributes_and_templates": sorted(root_namespaces[ns], key=lambda a: a.fqn),
+                "root_namespace": sanitized_ns}
             data.update(self.parameters)
 
             template = env.get_template(file_name, globals=data)
-            template.globals["now"] = datetime.datetime.utcnow()
-            template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
-            template.globals["RequirementLevel"] = RequirementLevel
-            content = template.render(data)
-            if (content == ""):
-                continue
+            self._write_template_to_file(template, data, output_name)
 
+    def _grouped_attribute_definitions(self, semconvset):
+        root_namespaces = {}
+        for semconv in semconvset.models.values():
+            for attr in filter(lambda a: is_definition(a), semconv.attributes_and_templates):
+                if attr.root_namespace not in root_namespaces:
+                    root_namespaces[attr.root_namespace] = []
+                root_namespaces[attr.root_namespace].append(attr)
+        return root_namespaces
+
+    def _write_template_to_file(self, template, data, output_name):
+        template.globals["now"] = datetime.datetime.utcnow()
+        template.globals["version"] = os.environ.get("ARTIFACT_VERSION", "dev")
+        template.globals["RequirementLevel"] = RequirementLevel
+
+        content = template.render(data)
+        if (content != ""):
             with open(output_name, "w") as f:
                 f.write(content)
-
-    def _get_root_namespace(self, attr):
-        namespaces = attr.fqn.split(".")
-        return namespaces[0] if len(namespaces) > 1 else "other"
-
-    def _get_all_groups(self, semconvset):
-        groups = set()
-        for semconv in semconvset.models.values():
-            for attr in filter(lambda a: self._filter(a), semconv.attributes_and_templates):
-                groups.add(self._get_root_namespace(attr))
-        return groups
-
-    def _filter(self, attr):
-        return attr.is_local and attr.ref is None
-
-    def _filter_attributes(self, semconvset, group):
-        attr_in_group = []
-        for semconv in semconvset.models.values():
-            for attr in filter(lambda a: self._filter(a) and self._get_root_namespace(a) == group, semconv.attributes):
-                attr_in_group.append(attr)
-        return attr_in_group
-
-    def _filter_attribute_templates(self, semconvset, group):
-        templates_in_group = []
-        for semconv in semconvset.models.values():
-            for attr_template in filter(lambda a: self._filter(a) and self._get_root_namespace(a) == group, semconv.attribute_templates):
-                templates_in_group.append(attr_template)
-        return templates_in_group

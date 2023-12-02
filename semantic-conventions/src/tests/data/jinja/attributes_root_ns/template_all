@@ -30,21 +30,16 @@
 {%- endmacro %}
 package io.opentelemetry.instrumentation.api.semconv;
 
-class {{ group | to_camelcase(True) }}Attributes {
-{%- for attribute in attributes %}
+class {{ root_namespace | to_camelcase(True) }}Attributes {
+{%- for attribute in attributes_and_templates %}
 
   /**
   * {{attribute.brief | render_markdown(code="{{@code {0}}}", paragraph="{0}")}}
   */
-  public static final AttributeKey<{{ to_java_return_type(attribute.instantiated_type | string) | to_camelcase(True) }}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");
-{# Extra line #}
-{%- endfor %}
-{%- for attribute_template in attribute_templates %}
-
-  /**
-  * {{attribute_template.brief | render_markdown(code="{{@code {0}}}", paragraph="{0}")}}
-  */
-  public static final AttributeKey<{{ to_java_return_type(attribute_template.instantiated_type | string) | to_camelcase(True)}}> {{attribute_template.fqn | to_const_name}} = {{to_java_key_type(attribute_template.instantiated_type | string)}}("{{attribute_template.fqn}}");
-{# Extra line #}
-{%- endfor %}
+  {% if attribute | is_template %}
+  public static final AttributeKeyTemplate<{{ to_java_return_type(attribute.instantiated_type | string) | first_up}}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");
+  {% else %}
+  public static final AttributeKey<{{ to_java_return_type(attribute.instantiated_type | string) | first_up }}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");
+  {% endif %}
+{% endfor %}
 }

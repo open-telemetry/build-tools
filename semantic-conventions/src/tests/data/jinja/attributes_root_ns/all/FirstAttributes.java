@@ -14,5 +14,5 @@ class FirstAttributes {
   /**
   * this is the description of attribute template
   */
-  public static final AttributeKey<String> FIRST_ATTR_TEMPLATE_ONE = stringKey("first.attr_template_one");
+  public static final AttributeKeyTemplate<String> FIRST_ATTR_TEMPLATE_ONE = stringKey("first.attr_template_one");
 }

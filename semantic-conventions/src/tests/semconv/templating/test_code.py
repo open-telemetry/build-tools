@@ -14,9 +14,10 @@ def test_codegen_units(test_file_path, read_test_file):
     template_path = test_file_path("jinja", "metrics", "units_template")
     renderer = CodeRenderer({}, trim_whitespace=False)
 
-    output = io.StringIO()
-    renderer.render(semconv, template_path, output, None)
-    result = output.getvalue()
+    filename = os.path.join(tempfile.mkdtemp(), "Attributes.java")
+    renderer.render(semconv, template_path, filename, None)
+    with open(filename) as f:
+        result = f.read()
 
     expected = read_test_file("jinja", "metrics", "expected.java")
 
@@ -34,9 +35,10 @@ def test_strip_blocks_enabled(test_file_path, read_test_file):
     )
     renderer = CodeRenderer({}, trim_whitespace=True)
 
-    output = io.StringIO()
-    renderer.render(semconv, template_path, output, None)
-    result = output.getvalue()
+    filename = os.path.join(tempfile.mkdtemp(), "Attributes.java")
+    renderer.render(semconv, template_path, filename, None)
+    with open(filename) as f:
+        result = f.read()
 
     expected = read_test_file(
         "jinja", "metrics", "expected_trim_whitespace_enabled.java"
@@ -55,82 +57,82 @@ def test_codegen_attribute_templates(test_file_path, read_test_file):
     template_path = test_file_path("jinja", "attribute_templates", "template")
     renderer = CodeRenderer({}, trim_whitespace=False)
 
-    output = io.StringIO()
-    renderer.render(semconv, template_path, output, None)
-    result = output.getvalue()
-
+    filename = os.path.join(tempfile.mkdtemp(), "Attributes.java")
+    renderer.render(semconv, template_path, filename, None)
+    with open(filename) as f:
+        result = f.read()
     expected = read_test_file("jinja", "attribute_templates", "expected.java")
 
     assert result == expected
 
 
-def test_codegen_attribute_v2_experimental(test_file_path, read_test_file):
+def test_codegen_attribute_root_ns(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
+
     semconv.parse(
-        test_file_path("jinja", "attributesv2", "attributes.yml")
+        test_file_path("jinja", "attributes_root_ns", "attributes.yml")
     )
     semconv.finish()
 
-    template_path = test_file_path("jinja", "attributesv2", "template_all")
+    template_path = test_file_path("jinja", "attributes_root_ns", "template_all")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
+    test_path = os.path.join("attributes_root_ns", "all")
     tmppath = tempfile.mkdtemp()
-    renderer.renderv2(semconv, template_path, os.path.join(tmppath, "Attributes.java"))
-    with open(os.path.join(tmppath, "FirstAttributes.java")) as first:
-        data = first.read()
-        expected = read_test_file("jinja", "attributesv2", "FirstAttributes.java")
-        assert data == expected
+    renderer.render(semconv, template_path, os.path.join(tmppath, "Attributes.java"), "root_namespace")
 
-    with open(os.path.join(tmppath, "SecondAttributes.java")) as second:
-        data = second.read()
-        expected = read_test_file("jinja", "attributesv2", "SecondAttributes.java")
-        assert data == expected
+    first = read_test_file("jinja", test_path, "FirstAttributes.java")
+    check_file(tmppath, "FirstAttributes.java", first)
 
-    with open(os.path.join(tmppath, "ThirdAttributes.java")) as second:
-        data = second.read()
-        expected = read_test_file("jinja", "attributesv2", "ThirdAttributesAll.java")
-        assert data == expected
+    second = read_test_file("jinja", test_path, "SecondAttributes.java")
+    check_file(tmppath, "SecondAttributes.java", second)
+
+    third = read_test_file("jinja",test_path, "ThirdAttributes.java")
+    check_file(tmppath, "ThirdAttributes.java", third)
 
 
-def test_codegen_attribute_v2_stable(test_file_path, read_test_file):
+def test_codegen_attribute_root_ns_stable(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
     semconv.parse(
-        test_file_path("jinja", "attributesv2", "attributes.yml")
+        test_file_path("jinja", "attributes_root_ns", "attributes.yml")
     )
     semconv.finish()
 
-    template_path = test_file_path("jinja", "attributesv2", "template_only_stable")
+    test_path = os.path.join("attributes_root_ns", "stable")
+    template_path = test_file_path("jinja", test_path, "template_only_stable")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
-    renderer.renderv2(semconv, template_path, os.path.join(tmppath, "Attributes.java"))
+    renderer.render(semconv, template_path, os.path.join(tmppath, "Attributes.java"), "root_namespace")
 
-    with open(os.path.join(tmppath, "ThirdAttributes.java")) as second:
-        data = second.read()
-        expected = read_test_file("jinja", "attributesv2", "ThirdAttributesStable.java")
-        assert data == expected
-
+    thirdStable = read_test_file("jinja", test_path, "ThirdAttributesStable.java")
+    check_file(tmppath, "ThirdAttributes.java", thirdStable)
     assert not os.path.isfile(os.path.join(tmppath, "FirstAttributes.java"))
     assert not os.path.isfile(os.path.join(tmppath, "SecondAttributes.java"))
 
-def test_codegen_attribute_v2_no_group_prefix(test_file_path, read_test_file):
+def test_codegen_attribute_root_ns_no_group_prefix(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
+
+    test_path = os.path.join("attributes_root_ns", "no_group_prefix")
     semconv.parse(
-        test_file_path("jinja", "attributesv2", "attributes_no_group_prefix.yml")
+        test_file_path("jinja", test_path, "attributes_no_group_prefix.yml")
     )
     semconv.finish()
 
-    template_path = test_file_path("jinja", "attributesv2", "template_all")
+    template_path = test_file_path("jinja", "attributes_root_ns", "template_all")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
-    renderer.renderv2(semconv, template_path, os.path.join(tmppath, "Attributes.java"))
-    with open(os.path.join(tmppath, "FooAttributes.java")) as foo:
-        data = foo.read()
-        expected = read_test_file("jinja", "attributesv2", "FooAttributes.java")
-        assert data == expected
+    renderer.render(semconv, template_path, os.path.join(tmppath, "Attributes.java"), "root_namespace")
 
-    with open(os.path.join(tmppath, "OtherAttributes.java")) as other:
-        data = other.read()
-        expected = read_test_file("jinja", "attributesv2", "OtherAttributes.java")
-        assert data == expected
+    foo = read_test_file("jinja", test_path, "FooAttributes.java")
+    check_file(tmppath, "FooAttributes.java", foo)
+
+    other = read_test_file("jinja", test_path, "OtherAttributes.java")
+    check_file(tmppath, "OtherAttributes.java", other)
+
+
+def check_file(tmppath, actual_filename, expected_content):
+    with open(os.path.join(tmppath, actual_filename)) as f:
+        actual = f.read()
+        assert actual == expected_content

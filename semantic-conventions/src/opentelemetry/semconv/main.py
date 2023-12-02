@@ -129,7 +129,8 @@ def add_code_parser(subparsers):
     parser.add_argument(
         "--output",
         "-o",
-        help="Specify the output file name for the code generation. See also --file-per-group on how to generate multiple files.",
+        help="Specify the output file name for the code generation. "
+        "See also `--file-per-group` on how to generate multiple files.",
         type=str,
         required=True,
     )

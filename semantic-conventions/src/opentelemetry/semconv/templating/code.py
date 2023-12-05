@@ -26,7 +26,7 @@ from opentelemetry.semconv.model.semantic_attribute import (
     StabilityLevel,
     TextWithLinks,
 )
-from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
+from opentelemetry.semconv.model.semantic_convention import BaseSemanticConvention, MetricSemanticConvention, SemanticConventionSet
 from opentelemetry.semconv.model.utils import ID_RE
 
 
@@ -182,6 +182,10 @@ def is_template(attribute: SemanticAttribute) -> bool:
     return AttributeType.is_template_type(attribute.attr_type)
 
 
+def is_metric(semconv: BaseSemanticConvention) -> bool:
+    return isinstance(semconv, MetricSemanticConvention)
+
+
 class CodeRenderer:
     pattern = f"{{{ID_RE.pattern}}}"
 
@@ -242,11 +246,13 @@ class CodeRenderer:
         env.filters["is_stable"] = is_stable
         env.filters["is_experimental"] = is_experimental
         env.filters["is_template"] = is_template
+        env.filters["is_metric"] = is_metric
         env.tests["is_stable"] = is_stable
         env.tests["is_experimental"] = is_experimental
         env.tests["is_deprecated"] = is_deprecated
         env.tests["is_definition"] = is_definition
         env.tests["is_template"] = is_template
+        env.tests["is_metric"] = is_metric
         env.trim_blocks = trim_whitespace
         env.lstrip_blocks = trim_whitespace
 
@@ -307,14 +313,16 @@ class CodeRenderer:
         output_file: str,
         env: Environment,
     ):
-        root_namespaces = self._grouped_attribute_definitions(semconvset)
-        for ns in root_namespaces:
+        attribute_and_templates = self._grouped_attribute_definitions(semconvset)
+        metrics = self._grouped_metric_definitions(semconvset)
+        for ns in attribute_and_templates.keys():
             sanitized_ns = ns if ns != "" else "other"
             output_name = self.prefix_output_file(output_file, sanitized_ns)
 
             data = {
                 "template": template_path,
-                "attributes_and_templates": root_namespaces[ns],
+                "attributes_and_templates": attribute_and_templates[ns],
+                "metrics": metrics.get(ns) or [],
                 "root_namespace": sanitized_ns,
             }
             data.update(self.parameters)
@@ -323,18 +331,30 @@ class CodeRenderer:
             self._write_template_to_file(template, data, output_name)
 
     def _grouped_attribute_definitions(self, semconvset):
-        root_namespaces = {}
+        grouped_attributes = {}
         for semconv in semconvset.models.values():
             for attr in filter(
                 lambda a: is_definition(a), semconv.attributes_and_templates
             ):
-                if attr.root_namespace not in root_namespaces:
-                    root_namespaces[attr.root_namespace] = []
-                root_namespaces[attr.root_namespace].append(attr)
+                if attr.root_namespace not in grouped_attributes:
+                    grouped_attributes[attr.root_namespace] = []
+                grouped_attributes[attr.root_namespace].append(attr)
 
-        for ns in root_namespaces:
-            root_namespaces[ns] = sorted(root_namespaces[ns], key=lambda a: a.fqn)
-        return root_namespaces
+        for ns in grouped_attributes:
+            grouped_attributes[ns] = sorted(grouped_attributes[ns], key=lambda a: a.fqn)
+        return grouped_attributes
+
+    def _grouped_metric_definitions(self, semconvset):
+        grouped_metrics = {}
+        for semconv in filter(lambda s: is_metric(s), semconvset.models.values()):
+            if semconv.root_namespace not in grouped_metrics:
+                grouped_metrics[semconv.root_namespace] = []
+
+            grouped_metrics[semconv.root_namespace].append(semconv)
+
+        for ns in grouped_metrics:
+            grouped_metrics[ns] = sorted(grouped_metrics[ns], key=lambda a: a.metric_name)
+        return grouped_metrics
 
     def _write_template_to_file(self, template, data, output_name):
         template.globals["now"] = datetime.datetime.utcnow()

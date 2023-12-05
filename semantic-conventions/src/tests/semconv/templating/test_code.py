@@ -68,13 +68,13 @@ def test_codegen_attribute_templates(test_file_path, read_test_file):
 def test_codegen_attribute_root_ns(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
 
-    semconv.parse(test_file_path("jinja", "attributes_root_ns", "attributes.yml"))
+    semconv.parse(test_file_path("jinja", "group_by_root_namespace", "attributes.yml"))
     semconv.finish()
 
-    template_path = test_file_path("jinja", "attributes_root_ns", "template_all")
+    template_path = test_file_path("jinja", "group_by_root_namespace", "template_all")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
-    test_path = os.path.join("attributes_root_ns", "all")
+    test_path = os.path.join("group_by_root_namespace", "all")
     tmppath = tempfile.mkdtemp()
     renderer.render(
         semconv,
@@ -95,10 +95,10 @@ def test_codegen_attribute_root_ns(test_file_path, read_test_file):
 
 def test_codegen_attribute_root_ns_stable(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
-    semconv.parse(test_file_path("jinja", "attributes_root_ns", "attributes.yml"))
+    semconv.parse(test_file_path("jinja", "group_by_root_namespace", "attributes.yml"))
     semconv.finish()
 
-    test_path = os.path.join("attributes_root_ns", "stable")
+    test_path = os.path.join("group_by_root_namespace", "stable")
     template_path = test_file_path("jinja", test_path, "template_only_stable")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
@@ -119,11 +119,11 @@ def test_codegen_attribute_root_ns_stable(test_file_path, read_test_file):
 def test_codegen_attribute_root_ns_no_group_prefix(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
 
-    test_path = os.path.join("attributes_root_ns", "no_group_prefix")
+    test_path = os.path.join("group_by_root_namespace", "no_group_prefix")
     semconv.parse(test_file_path("jinja", test_path, "attributes_no_group_prefix.yml"))
     semconv.finish()
 
-    template_path = test_file_path("jinja", "attributes_root_ns", "template_all")
+    template_path = test_file_path("jinja", "group_by_root_namespace", "template_all")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
@@ -144,20 +144,42 @@ def test_codegen_attribute_root_ns_no_group_prefix(test_file_path, read_test_fil
 def test_codegen_attribute_root_ns_single_file(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
 
-    semconv.parse(test_file_path("jinja", "attributes_root_ns", "attributes.yml"))
+    test_path = os.path.join("group_by_root_namespace", "single_file")
+    semconv.parse(test_file_path("jinja", test_path, "semconv.yml"))
     semconv.finish()
 
-    test_path = os.path.join("attributes_root_ns", "single_file")
     template_path = test_file_path("jinja", test_path, "template_single_file")
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
     renderer.render(
-        semconv, template_path, os.path.join(tmppath, "AllAttributes.java"), None
+        semconv, template_path, os.path.join(tmppath, "All.java"), None
     )
 
-    all = read_test_file("jinja", test_path, "AllAttributes.java")
-    check_file(tmppath, "AllAttributes.java", all)
+    all = read_test_file("jinja", test_path, "All.java")
+    check_file(tmppath, "All.java", all)
+
+
+def test_codegen_attribute_root_ns_metrics(test_file_path, read_test_file):
+    semconv = SemanticConventionSet(debug=False)
+
+    test_path = os.path.join("group_by_root_namespace", "attributes_and_metrics")
+    semconv.parse(test_file_path("jinja", test_path, "semconv.yml"))
+    semconv.finish()
+
+    template_path = test_file_path("jinja", test_path, "template")
+    renderer = CodeRenderer({}, trim_whitespace=True)
+
+    tmppath = tempfile.mkdtemp()
+    renderer.render(
+        semconv, template_path, os.path.join(tmppath, ".java"), "root_namespace"
+    )
+
+    first = read_test_file("jinja", test_path, "First.java")
+    check_file(tmppath, "First.java", first)
+
+    second = read_test_file("jinja", test_path, "Second.java")
+    check_file(tmppath, "Second.java", second)
 
 
 def check_file(tmppath, actual_filename, expected_content):

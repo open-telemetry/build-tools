@@ -165,19 +165,19 @@ Processes a single pattern value and is called for each distinct value.
 
 - `semconv` - the instance of parsed `BaseSemanticConvention` being processed.
 
-### Filtering attributes
+### Filtering and mapping
 
 Jinja templates has a notion of [filters](https://jinja.palletsprojects.com/en/2.11.x/templates/#list-of-builtin-filters) allowing to transform objects or filter lists.
 
 Semconvgen supports following additional filters to simplify common operations in templates.
 
-#### Attribute filters
+#### `SemanticAttribute` operations
 
 1. `is_definition` - Checks if the attribute is the original definition of the attribute and not a reference.
 2. `is_deprecated` - Checks if the attribute is deprecated. The same check can also be done with `(attribute.stability | string())  == "StabilityLevel.DEPRECATED"`
 3. `is_experimental` - Checks if the attribute is experimental. The same check can also be done with `(attribute.stability | string())  == "StabilityLevel.EXPERIMENTAL"`
 4. `is_stable` - Checks if the attribute is experimental. The same check can also be done with `(attribute.stability | string())  == "StabilityLevel.STABLE"`
-5. `is_template` - Checks if the attribute is a template attribute. The same check can also be done with `(attribute.stability | string())  == "StabilityLevel.STABLE"`
+5. `is_template` - Checks if the attribute is a template attribute.
 
 #### String operations
 
@@ -188,3 +188,7 @@ Semconvgen supports following additional filters to simplify common operations i
 4. `to_const_name` - Converts a string to Python or Java constant name (SNAKE_CASE) replacing `.` or `-` with `_`. E.g.
    `foo.bAR-baz` becomes `FOO_BAR_BAZ`.
 5. `to_doc_brief` - Trims whitespace and removes dot at the end. E.g. ` Hello world.\t` becomes `Hello world`
+
+#### `BaseSemanticConvention` operations
+
+1. `is_metric` - Checks if semantic convention describes a metric.

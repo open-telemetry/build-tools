@@ -50,8 +50,8 @@ class AllAttributes {
   }
   {%- endif %}
 {%- endfor %}
-  {# non-namespaced attributes #}
-  {%- for attribute in attributes_and_templates[""] %}
+{# non-namespaced attributes #}
+{%- for attribute in attributes_and_templates[""] %}
   /**
   * {{attribute.brief | render_markdown(code="{{@code {0}}}", paragraph="{0}")}}
   */
@@ -61,5 +61,14 @@ class AllAttributes {
   public static final AttributeKey<{{ to_java_return_type(attribute.instantiated_type | string) | first_up }}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");
     {% endif %}
 
-  {%- endfor %}
+{%- endfor %}
+{%- for id in semconvs %}
+{%- if semconvs[id] | is_metric %}
+{% set metric = semconvs[id] %}
+  /**
+  * {{metric.brief | to_doc_brief}}
+  */
+  public static final String {{metric.metric_name | to_const_name}} = "{{metric.metric_name}}";
+{% endif %}
+{% endfor %}
 }

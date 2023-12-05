@@ -152,9 +152,7 @@ def test_codegen_attribute_root_ns_single_file(test_file_path, read_test_file):
     renderer = CodeRenderer({}, trim_whitespace=True)
 
     tmppath = tempfile.mkdtemp()
-    renderer.render(
-        semconv, template_path, os.path.join(tmppath, "All.java"), None
-    )
+    renderer.render(semconv, template_path, os.path.join(tmppath, "All.java"), None)
 
     all = read_test_file("jinja", test_path, "All.java")
     check_file(tmppath, "All.java", all)

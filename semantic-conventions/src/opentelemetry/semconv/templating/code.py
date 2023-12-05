@@ -19,6 +19,7 @@ import typing
 
 import mistune
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+
 from opentelemetry.semconv.model.semantic_attribute import (
     AttributeType,
     RequirementLevel,
@@ -26,7 +27,11 @@ from opentelemetry.semconv.model.semantic_attribute import (
     StabilityLevel,
     TextWithLinks,
 )
-from opentelemetry.semconv.model.semantic_convention import BaseSemanticConvention, MetricSemanticConvention, SemanticConventionSet
+from opentelemetry.semconv.model.semantic_convention import (
+    BaseSemanticConvention,
+    MetricSemanticConvention,
+    SemanticConventionSet,
+)
 from opentelemetry.semconv.model.utils import ID_RE
 
 
@@ -353,7 +358,9 @@ class CodeRenderer:
             grouped_metrics[semconv.root_namespace].append(semconv)
 
         for ns in grouped_metrics:
-            grouped_metrics[ns] = sorted(grouped_metrics[ns], key=lambda a: a.metric_name)
+            grouped_metrics[ns] = sorted(
+                grouped_metrics[ns], key=lambda a: a.metric_name
+            )
         return grouped_metrics
 
     def _write_template_to_file(self, template, data, output_name):

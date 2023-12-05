@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_convention import (
     UnitSemanticConvention,

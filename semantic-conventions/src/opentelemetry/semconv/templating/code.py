@@ -184,7 +184,7 @@ def is_definition(attribute: SemanticAttribute) -> bool:
 
 
 def is_template(attribute: SemanticAttribute) -> bool:
-    return AttributeType.is_template_type(attribute.attr_type)
+    return AttributeType.is_template_type(str(attribute.attr_type))
 
 
 def is_metric(semconv: BaseSemanticConvention) -> bool:
@@ -320,13 +320,13 @@ class CodeRenderer:
     ):
         attribute_and_templates = self._grouped_attribute_definitions(semconvset)
         metrics = self._grouped_metric_definitions(semconvset)
-        for ns in attribute_and_templates.keys():
+        for ns, attribute_and_templates in attribute_and_templates.items():
             sanitized_ns = ns if ns != "" else "other"
             output_name = self.prefix_output_file(output_file, sanitized_ns)
 
             data = {
                 "template": template_path,
-                "attributes_and_templates": attribute_and_templates[ns],
+                "attributes_and_templates": attribute_and_templates,
                 "metrics": metrics.get(ns) or [],
                 "root_namespace": sanitized_ns,
             }
@@ -338,9 +338,9 @@ class CodeRenderer:
     def _grouped_attribute_definitions(self, semconvset):
         grouped_attributes = {}
         for semconv in semconvset.models.values():
-            for attr in filter(
-                lambda a: is_definition(a), semconv.attributes_and_templates
-            ):
+            for attr in semconv.attributes_and_templates:
+                if not is_definition(attr):  # skip references
+                    continue
                 if attr.root_namespace not in grouped_attributes:
                     grouped_attributes[attr.root_namespace] = []
                 grouped_attributes[attr.root_namespace].append(attr)
@@ -351,7 +351,10 @@ class CodeRenderer:
 
     def _grouped_metric_definitions(self, semconvset):
         grouped_metrics = {}
-        for semconv in filter(lambda s: is_metric(s), semconvset.models.values()):
+        for semconv in semconvset.models.values():
+            if not is_metric(semconv):
+                continue
+
             if semconv.root_namespace not in grouped_metrics:
                 grouped_metrics[semconv.root_namespace] = []
 
@@ -370,5 +373,5 @@ class CodeRenderer:
 
         content = template.render(data)
         if content != "":
-            with open(output_name, "w") as f:
+            with open(output_name, "w", encoding="utf-8") as f:
                 f.write(content)

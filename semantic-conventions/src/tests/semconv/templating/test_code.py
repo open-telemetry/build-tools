@@ -15,7 +15,7 @@ def test_codegen_units(test_file_path, read_test_file):
 
     filename = os.path.join(tempfile.mkdtemp(), "Attributes.java")
     renderer.render(semconv, template_path, filename, None)
-    with open(filename) as f:
+    with open(filename, "r", encoding="utf-8") as f:
         result = f.read()
 
     expected = read_test_file("jinja", "metrics", "expected.java")
@@ -36,7 +36,7 @@ def test_strip_blocks_enabled(test_file_path, read_test_file):
 
     filename = os.path.join(tempfile.mkdtemp(), "Attributes.java")
     renderer.render(semconv, template_path, filename, None)
-    with open(filename) as f:
+    with open(filename, "r", encoding="utf-8") as f:
         result = f.read()
 
     expected = read_test_file(
@@ -58,7 +58,7 @@ def test_codegen_attribute_templates(test_file_path, read_test_file):
 
     filename = os.path.join(tempfile.mkdtemp(), "Attributes.java")
     renderer.render(semconv, template_path, filename, None)
-    with open(filename) as f:
+    with open(filename, "r", encoding="utf-8") as f:
         result = f.read()
     expected = read_test_file("jinja", "attribute_templates", "expected.java")
 
@@ -134,8 +134,8 @@ def test_codegen_attribute_root_ns_no_group_prefix(test_file_path, read_test_fil
         "root_namespace",
     )
 
-    foo = read_test_file("jinja", test_path, "FooAttributes.java")
-    check_file(tmppath, "FooAttributes.java", foo)
+    res = read_test_file("jinja", test_path, "FooAttributes.java")
+    check_file(tmppath, "FooAttributes.java", res)
 
     other = read_test_file("jinja", test_path, "OtherAttributes.java")
     check_file(tmppath, "OtherAttributes.java", other)
@@ -154,8 +154,8 @@ def test_codegen_attribute_root_ns_single_file(test_file_path, read_test_file):
     tmppath = tempfile.mkdtemp()
     renderer.render(semconv, template_path, os.path.join(tmppath, "All.java"), None)
 
-    all = read_test_file("jinja", test_path, "All.java")
-    check_file(tmppath, "All.java", all)
+    result = read_test_file("jinja", test_path, "All.java")
+    check_file(tmppath, "All.java", result)
 
 
 def test_codegen_attribute_root_ns_metrics(test_file_path, read_test_file):
@@ -181,7 +181,6 @@ def test_codegen_attribute_root_ns_metrics(test_file_path, read_test_file):
 
 
 def check_file(tmppath, actual_filename, expected_content):
-    with open(os.path.join(tmppath, actual_filename)) as f:
+    with open(os.path.join(tmppath, actual_filename), "r", encoding="utf-8") as f:
         actual = f.read()
-        print(actual)
         assert actual == expected_content

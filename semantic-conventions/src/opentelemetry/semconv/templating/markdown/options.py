@@ -15,8 +15,6 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from opentelemetry.semconv.model.semantic_attribute import StabilityLevel
-
 
 @dataclass()
 class MarkdownOptions:

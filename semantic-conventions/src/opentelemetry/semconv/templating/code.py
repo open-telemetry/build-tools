@@ -26,7 +26,7 @@ from opentelemetry.semconv.model.semantic_attribute import (
     TextWithLinks,
 )
 from opentelemetry.semconv.model.semantic_convention import (
-    SemanticConvention,
+    BaseSemanticConvention,
     SemanticConventionSet,
 )
 from opentelemetry.semconv.model.utils import ID_RE
@@ -160,7 +160,7 @@ def to_camelcase(name: str, first_upper=False) -> str:
     return first + "".join(word.capitalize() for word in rest)
 
 
-def is_deprecated(obj: typing.Union[SemanticAttribute, SemanticConvention]) -> bool:
+def is_deprecated(obj: typing.Union[SemanticAttribute, BaseSemanticConvention]) -> bool:
     return obj.deprecated is not None
 
 

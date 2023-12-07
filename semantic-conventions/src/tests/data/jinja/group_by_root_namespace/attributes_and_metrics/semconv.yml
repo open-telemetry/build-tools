@@ -10,19 +10,20 @@ groups:
 
   - id: first_metric_id
     brief: first metric description
-    metric_name: first.metric.name
+    metric_name: first.metric
     instrument: counter
     type: metric
     unit: "{one}"
+    stability: stable
     extends: first_group_id
 
   - id: second_group_id
     brief: second metric description
-    metric_name: second.metric.name
+    metric_name: second_group.metric
     type: metric
     instrument: histogram
     unit: "s"
-    prefix: second
+    prefix: second_group
     attributes:
       - id: attr_two
         type: int

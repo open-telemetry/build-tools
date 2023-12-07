@@ -13,7 +13,7 @@
 #   limitations under the License.
 
 import re
-from typing import Tuple  # noqa: F401
+from typing import Tuple
 
 from opentelemetry.semconv.model.exceptions import ValidationError
 

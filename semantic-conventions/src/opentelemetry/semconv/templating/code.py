@@ -167,16 +167,18 @@ def first_up(name: str) -> str:
     return name[0].upper() + name[1:]
 
 
-def is_stable(attribute: SemanticAttribute) -> bool:
-    return attribute.stability == StabilityLevel.STABLE
+def is_stable(obj: typing.Union[SemanticAttribute, BaseSemanticConvention]) -> bool:
+    return obj.stability == StabilityLevel.STABLE
 
 
-def is_deprecated(attribute: SemanticAttribute) -> bool:
-    return attribute.stability == StabilityLevel.DEPRECATED
+def is_deprecated(obj: typing.Union[SemanticAttribute, BaseSemanticConvention]) -> bool:
+    return obj.stability == StabilityLevel.DEPRECATED
 
 
-def is_experimental(attribute: SemanticAttribute) -> bool:
-    return attribute.stability == StabilityLevel.EXPERIMENTAL
+def is_experimental(
+    obj: typing.Union[SemanticAttribute, BaseSemanticConvention]
+) -> bool:
+    return obj.stability == StabilityLevel.EXPERIMENTAL
 
 
 def is_definition(attribute: SemanticAttribute) -> bool:

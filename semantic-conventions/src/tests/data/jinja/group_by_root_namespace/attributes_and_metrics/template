@@ -28,7 +28,31 @@
     {{ type | to_camelcase(False)}}Key
   {%- endif -%}
 {%- endmacro %}
+{%- macro to_java_instrument_builder_factory(instrument) -%}
+  {%- if instrument == "counter" -%}
+    counterBuilder
+  {%- elif instrument == "histogram" -%}
+    histogramBuilder
+  {%- elif instrument == "updowncounter" -%}
+    upDownCounterBuilder
+  {%- elif instrument == "gauge" -%}
+    gaugeBuilder
+  {%- endif -%}
+{%- endmacro %}
+{%- macro to_java_instrument_builder_type(instrument) -%}
+  {%- if instrument == "counter" -%}
+    LongCounterBuilder
+  {%- elif instrument == "histogram" -%}
+    DoubleHistogramBuilder
+  {%- elif instrument == "updowncounter" -%}
+    LongUpDownCounterBuilder
+  {%- elif instrument == "gauge" -%}
+    DoubleGaugeBuilder
+  {%- endif -%}
+{%- endmacro %}
 package io.opentelemetry.instrumentation.api.semconv;
+
+import io.opentelemetry.api.metrics.Meter;
 
 class {{ root_namespace | to_camelcase(True) }} {
 {%- for attribute in attributes_and_templates %}
@@ -41,10 +65,12 @@ class {{ root_namespace | to_camelcase(True) }} {
 {%- for metric in metrics %}
   /**
   * {{metric.brief | to_doc_brief}}
-  *
-  * Instrument: {{metric.instrument }}
-  * Unit: {{metric.unit }}
+  * Experimental: {{ metric | is_experimental }}
   */
-  public static final String {{metric.metric_name | to_const_name}} = "{{metric.metric_name}}";
+  public static final {{ to_java_instrument_builder_type(metric.instrument) }} create{{metric.metric_name | to_camelcase(True)}}(Meter meter) {
+    return meter.{{to_java_instrument_builder_factory(metric.instrument)}}("{{ metric.metric_name }}")
+            .setDescription("{{ metric.brief }}")
+            .setUnit("{{ metric.unit }}");
+  }
 {% endfor %}
 }

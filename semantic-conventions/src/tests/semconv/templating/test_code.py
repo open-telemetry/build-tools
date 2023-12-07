@@ -176,8 +176,8 @@ def test_codegen_attribute_root_ns_metrics(test_file_path, read_test_file):
     first = read_test_file("jinja", test_path, "First.java")
     check_file(tmppath, "First.java", first)
 
-    second = read_test_file("jinja", test_path, "Second.java")
-    check_file(tmppath, "Second.java", second)
+    second = read_test_file("jinja", test_path, "SecondGroup.java")
+    check_file(tmppath, "SecondGroup.java", second)
 
 
 def check_file(tmppath, actual_filename, expected_content):

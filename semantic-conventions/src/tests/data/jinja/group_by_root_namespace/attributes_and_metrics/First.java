@@ -1,5 +1,7 @@
 package io.opentelemetry.instrumentation.api.semconv;
 
+import io.opentelemetry.api.metrics.Meter;
+
 class First {
   /**
   * short description of attr_one
@@ -7,9 +9,11 @@ class First {
   public static final AttributeKey<Boolean> FIRST_ATTR_ONE = booleanKey("first.attr_one");
   /**
   * first metric description
-  *
-  * Instrument: counter
-  * Unit: {one}
+  * Experimental: False
   */
-  public static final String FIRST_METRIC_NAME = "first.metric.name";
+  public static final LongCounterBuilder createFirstMetric(Meter meter) {
+    return meter.counterBuilder("first.metric")
+            .setDescription("first metric description")
+            .setUnit("{one}");
+  }
 }

@@ -131,7 +131,7 @@ class MarkdownRenderer:
             attribute.stability == StabilityLevel.EXPERIMENTAL
             and self.options.enable_experimental
         ):
-            description = f"{self.options.experimental_md_snippet}<br>"
+            description = f"{self.options.experimental_md_snippet()}<br>"
         description += attribute.brief
         if attribute.note:
             self.render_ctx.add_note(attribute.note)

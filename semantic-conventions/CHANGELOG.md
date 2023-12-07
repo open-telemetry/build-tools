@@ -4,8 +4,8 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
-- BREAKING: Make stability and deprecation independent attribute and semantic convention properties.
-  ([#](https://github.com/open-telemetry/build-tools/pull/TODO))
+- BREAKING: Make stability and deprecation independent properties.
+  ([#244](https://github.com/open-telemetry/build-tools/pull/244))
 
 ## v0.23.0
 

@@ -4,6 +4,9 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- BREAKING: Make stability and deprecation independent attribute and semantic convention properties.
+  ([#](https://github.com/open-telemetry/build-tools/pull/TODO))
+
 ## v0.23.0
 
 - Rephrase and relax sampling-relevant description
@@ -17,7 +20,7 @@ Please update the changelog as part of any significant pull request.
   ([#205](https://github.com/open-telemetry/build-tools/pull/205))
 - Fix referencing template attributes
   ([#206](https://github.com/open-telemetry/build-tools/pull/206))
-  
+
 ## v0.21.0
 
 - Render template-type attributes from yaml files

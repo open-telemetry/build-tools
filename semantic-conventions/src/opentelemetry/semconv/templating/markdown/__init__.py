@@ -119,19 +119,19 @@ class MarkdownRenderer:
             if "deprecated" in attribute.deprecated.lower():
                 description = f"**{attribute.deprecated}**<br>"
             else:
-                deprecated_msg = self.options.md_snippet_by_stability_level[
-                    StabilityLevel.DEPRECATED
-                ].format(attribute.deprecated)
+                deprecated_msg = self.options.deprecated_md_snippet().format(
+                    attribute.deprecated
+                )
                 description = f"{deprecated_msg}<br>"
         elif (
             attribute.stability == StabilityLevel.STABLE and self.options.enable_stable
         ):
-            description = f"{self.options.md_snippet_by_stability_level[StabilityLevel.STABLE]}<br>"
+            description = f"{self.options.stable_md_snippet()}<br>"
         elif (
             attribute.stability == StabilityLevel.EXPERIMENTAL
             and self.options.enable_experimental
         ):
-            description = f"{self.options.md_snippet_by_stability_level[StabilityLevel.EXPERIMENTAL]}<br>"
+            description = f"{self.options.experimental_md_snippet}<br>"
         description += attribute.brief
         if attribute.note:
             self.render_ctx.add_note(attribute.note)

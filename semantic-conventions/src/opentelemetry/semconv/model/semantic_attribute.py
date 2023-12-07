@@ -41,7 +41,6 @@ class RequirementLevel(Enum):
 class StabilityLevel(Enum):
     STABLE = 1
     EXPERIMENTAL = 2
-    DEPRECATED = 3
 
 
 @dataclass
@@ -82,9 +81,7 @@ class SemanticAttribute:
         return isinstance(self.attr_type, EnumAttributeType)
 
     @staticmethod
-    def parse(
-        prefix, semconv_stability, yaml_attributes
-    ) -> "Dict[str, SemanticAttribute]":
+    def parse(prefix, yaml_attributes) -> "Dict[str, SemanticAttribute]":
         """This method parses the yaml representation for semantic attributes
         creating the respective SemanticAttribute objects.
         """
@@ -179,21 +176,13 @@ class SemanticAttribute:
                 raise ValidationError.from_yaml_pos(position, msg)
 
             tag = attribute.get("tag", "").strip()
-            stability, deprecated = SemanticAttribute.parse_stability_deprecated(
-                attribute.get("stability"), attribute.get("deprecated"), position_data
+            stability = SemanticAttribute.parse_stability(
+                attribute.get("stability"), position_data
             )
-            if (
-                semconv_stability == StabilityLevel.DEPRECATED
-                and stability is not StabilityLevel.DEPRECATED
-            ):
-                position = (
-                    position_data["stability"]
-                    if "stability" in position_data
-                    else position_data["deprecated"]
-                )
-                msg = f"Semantic convention stability set to deprecated but attribute '{attr_id}' is {stability}"
-                raise ValidationError.from_yaml_pos(position, msg)
-            stability = stability or semconv_stability or StabilityLevel.EXPERIMENTAL
+            deprecated = SemanticAttribute.parse_deprecated(
+                attribute.get("deprecated"), position_data
+            )
+
             sampling_relevant = (
                 AttributeType.to_bool("sampling_relevant", attribute)
                 if attribute.get("sampling_relevant")
@@ -291,44 +280,31 @@ class SemanticAttribute:
         return attr_type, str(brief), examples
 
     @staticmethod
-    def parse_stability_deprecated(stability, deprecated, position_data):
-        if deprecated is not None and stability is None:
-            stability = "deprecated"
+    def parse_stability(stability, position_data):
+        if stability is None:
+            return StabilityLevel.EXPERIMENTAL
+
+        stability_value_map = {
+            "experimental": StabilityLevel.EXPERIMENTAL,
+            "stable": StabilityLevel.STABLE,
+        }
+        val = stability_value_map.get(stability)
+        if val is not None:
+            return val
+        msg = f"Value '{stability}' is not allowed as a stability marker"
+        raise ValidationError.from_yaml_pos(position_data["stability"], msg)
+
+    @staticmethod
+    def parse_deprecated(deprecated, position_data):
         if deprecated is not None:
-            if stability is not None and stability != "deprecated":
-                position = position_data["deprecated"]
-                msg = f"There is a deprecation message but the stability is set to '{stability}'"
-                raise ValidationError.from_yaml_pos(position, msg)
             if AttributeType.get_type(deprecated) != "string" or deprecated == "":
-                position = position_data["deprecated"]
                 msg = (
                     "Deprecated field expects a string that specifies why the attribute is deprecated and/or what"
                     " to use instead! "
                 )
-                raise ValidationError.from_yaml_pos(position, msg)
-            deprecated = deprecated.strip()
-        if stability is not None:
-            stability = SemanticAttribute.check_stability(
-                stability,
-                position_data["stability"]
-                if "stability" in position_data
-                else position_data["deprecated"],
-            )
-        return stability, deprecated
-
-    @staticmethod
-    def check_stability(stability_value, position):
-
-        stability_value_map = {
-            "deprecated": StabilityLevel.DEPRECATED,
-            "experimental": StabilityLevel.EXPERIMENTAL,
-            "stable": StabilityLevel.STABLE,
-        }
-        val = stability_value_map.get(stability_value)
-        if val is not None:
-            return val
-        msg = f"Value '{stability_value}' is not allowed as a stability marker"
-        raise ValidationError.from_yaml_pos(position, msg)
+                raise ValidationError.from_yaml_pos(position_data["deprecated"], msg)
+            return deprecated.strip()
+        return None
 
     def equivalent_to(self, other: "SemanticAttribute"):
         if self.attr_id is not None:

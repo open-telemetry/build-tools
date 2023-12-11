@@ -320,7 +320,7 @@ class SemanticAttribute:
                 if "stability" in position_data
                 else position_data["deprecated"],
             )
-        return stability or StabilityLevel.EXPERIMENTAL, deprecated
+        return stability, deprecated
 
     @staticmethod
     def check_stability(stability_value, position):

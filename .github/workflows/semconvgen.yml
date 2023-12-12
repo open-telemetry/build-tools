@@ -69,10 +69,12 @@ jobs:
           tag_and_push "${GITHUB_REF#"refs/tags/"}"
         fi
     - name: Push the Dev Docker image
-      if: startsWith(github.ref, 'refs/pull/243')
+      if: startsWith(github.ref, 'refs/heads/feature/')
       run: |
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
         function tag_and_push {
           docker tag semconvgen "otel/semconvgen:${1}" && docker push "otel/semconvgen:${1}"
         }
-        tag_and_push "0.24.0-dev-pr-243"
+        TAG="${GITHUB_REF#"refs/heads/"}"
+        TAG="${TAG/"/"/"-"}"
+        tag_and_push "${TAG}"

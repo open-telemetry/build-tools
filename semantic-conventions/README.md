@@ -136,7 +136,7 @@ The image also supports customizing
 [Whitespace Control in Jinja templates](https://jinja.palletsprojects.com/en/3.1.x/templates/#whitespace-control)
 via the additional flag `--trim-whitespace`. Providing the flag will enable both `lstrip_blocks` and `trim_blocks`.
 
-### Accessing Semantic Conventions in the templated
+### Accessing Semantic Conventions in the template
 
 When template is processed, it has access to a set of variables that depends on the `--file-per-group` value (or lack of it).
 You can access properties of these variables and call Jinja or Python functions defined on them.

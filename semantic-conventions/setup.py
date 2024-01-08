@@ -14,8 +14,16 @@ with open(VERSION_FILENAME, encoding="utf-8") as f:
 VERSION_SUFFIX = os.environ.get("SEMCONGEN_VERSION_SUFFIX")
 PUBLIC_VERSION = PACKAGE_INFO["__version__"]
 
+# long description
+README_FILENAME = os.path.join(BASE_DIR, "README.rst")
+LONG_DESCRIPTION = ""
+with open(README_FILENAME, encoding="utf-8") as f:
+    LONG_DESCRIPTION = f.read()
+
 setuptools.setup(
     version=PUBLIC_VERSION
     if not VERSION_SUFFIX
-    else PUBLIC_VERSION + "+" + VERSION_SUFFIX
+    else PUBLIC_VERSION + "+" + VERSION_SUFFIX,
+    long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/x-rst",
 )

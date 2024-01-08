@@ -155,7 +155,8 @@ def add_code_parser(subparsers):
     parser.add_argument(
         "--output",
         "-o",
-        help="Specify the output file for the code generation.",
+        help="Specify the output file name for the code generation. "
+        "See also `--file-per-group` on how to generate multiple files.",
         type=str,
         required=True,
     )
@@ -169,8 +170,10 @@ def add_code_parser(subparsers):
     parser.add_argument(
         "--file-per-group",
         dest="pattern",
-        help="Each Semantic Convention is processed by the template and store in a different file. PATTERN is expected "
-        "to be the name of a SemanticConvention field and is prepended as a prefix to the output argument",
+        help="Semantic conventions are processed by the template and stored in a different file. "
+        "File names start with a 'pattern' and end with the name specified in the 'output' argument. "
+        "The 'pattern' can either match 'root_namespace' to group attributes by the root namespace or "
+        "match a name of Semantic Convention property which value will be used as a file name prefix.",
         type=str,
     )
     parser.add_argument(

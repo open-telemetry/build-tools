@@ -13,7 +13,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     defaults:
-      run: 
+      run:
         working-directory: semantic-conventions/
     steps:
     - uses: actions/checkout@v4
@@ -69,3 +69,13 @@ jobs:
         else
           tag_and_push "${GITHUB_REF#"refs/tags/"}"
         fi
+    - name: Push the Dev Docker image
+      if: startsWith(github.ref, 'refs/heads/feature/')
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        function tag_and_push {
+          docker tag semconvgen "otel/semconvgen:${1}" && docker push "otel/semconvgen:${1}"
+        }
+        TAG="${GITHUB_REF#"refs/heads/"}"
+        TAG="${TAG/"/"/"-"}"
+        tag_and_push "${TAG}"

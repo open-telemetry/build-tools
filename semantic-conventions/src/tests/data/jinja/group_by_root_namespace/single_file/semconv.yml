@@ -1,0 +1,51 @@
+groups:
+  - id: first_group_id
+    type: attribute_group
+    brief: first description
+    prefix: first
+    attributes:
+      - id: attr_one
+        type: boolean
+        brief: short description of attr_one
+      - id: attr_template_one
+        type: template[string]
+        brief: >
+          this is the description of attribute template
+        examples: 'example'
+
+  - id: second_group_id
+    brief: second description
+    prefix: second
+    span_kind: client
+    extends: first_group_id
+    attributes:
+      - id: attr_two
+        type: string
+        brief: short description of attr_two
+        examples: ['example_one', 'example_two']
+
+  - id: first_group_part_two
+    type: resource
+    brief: first_a description
+    prefix: first
+    attributes:
+      - id: attr_one_a
+        type: int
+        brief: short description of attr_one_a
+      - ref: second.attr_two
+
+  - id: forth_group_id
+    brief: forth description
+    attributes:
+      - id: attr_four
+        type: string
+        brief: short description of attr_four
+        examples: "4"
+
+  - id: first_metric_id
+    brief: first metric description
+    metric_name: first.metric.name
+    instrument: counter
+    type: metric
+    unit: "{one}"
+    extends: first_group_id

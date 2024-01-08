@@ -1,0 +1,56 @@
+groups:
+  - id: first_group_id
+    type: attribute_group
+    brief: first description
+    prefix: first
+    attributes:
+      - id: attr_one
+        type: boolean
+        brief: short description of attr_one
+      - id: attr_template_one
+        type: template[string]
+        brief: >
+          this is the description of attribute template
+        examples: 'example'
+
+  - id: second_group_id
+    brief: second description
+    prefix: second
+    span_kind: client
+    extends: first_group_id
+    attributes:
+      - id: attr_two
+        type: string
+        brief: short description of attr_two
+        examples: ['example_one', 'example_two']
+  - id: first_group_part_two
+    type: resource
+    brief: first_a description
+    prefix: first
+    attributes:
+      - id: attr_one_a
+        type: int
+        brief: short description of attr_one_a
+      - ref: second.attr_two
+      - ref: third.attr_template_three
+  - id: third_group_id
+    brief: third description
+    prefix: third
+    attributes:
+      - id: attr_three
+        type: string
+        brief: short description of attr_three
+        examples: "3"
+        stability: stable
+      - id: attr_template_three
+        type: template[string]
+        brief: >
+          this is the description of attribute template
+        examples: 'example'
+  - id: forth_group_id
+    brief: forth description
+    attributes:
+      - id: attr_four
+        type: string
+        brief: short description of attr_four
+        examples: "4"

@@ -85,8 +85,8 @@ convention that have the tag `network`.
 `<!-- semconv http.server(tag=network, full) -->` will print the constraints and attributes of both `http` and `http.server`
 semantic conventions that have the tag `network`.
 
-`<!-- semconv metric.http.server.active_requests(metric_table) -->` will print a table describing a single metric 
-`http.server.active_requests`. 
+`<!-- semconv metric.http.server.active_requests(metric_table) -->` will print a table describing a single metric
+`http.server.active_requests`.
 
 ## Code Generator
 
@@ -125,12 +125,70 @@ This way, multiple files are generated. The value of `pattern` can be one of the
 - `semconv_id`: The id of the semantic convention.
 - `prefix`: The prefix with which all attributes starts with.
 - `extends`: The id of the parent semantic convention.
+- `root_namespace`: The root namespace of attribute to group by.
 
 Finally, additional value can be passed to the template in form of `key=value` pairs separated by
 comma using the `--parameters [{key=value},]+` or `-D` flag.
 
 ### Customizing Jinja's Whitespace Control
 
-The image also supports customising
+The image also supports customizing
 [Whitespace Control in Jinja templates](https://jinja.palletsprojects.com/en/3.1.x/templates/#whitespace-control)
 via the additional flag `--trim-whitespace`. Providing the flag will enable both `lstrip_blocks` and `trim_blocks`.
+
+### Accessing Semantic Conventions in the template
+
+When template is processed, it has access to a set of variables that depends on the `--file-per-group` value (or lack of it).
+You can access properties of these variables and call Jinja or Python functions defined on them.
+
+#### Single file (no `--file-per-group` pattern is provided)
+
+Processes all parsed semantic conventions
+
+- `semconvs` - the dictionary containing parsed `BaseSemanticConvention` instances with semconv `id` as a key
+- `attributes_and_templates` - the dictionary containing all attributes (including template ones) grouped by their root namespace.
+  Each element in the dictionary is a list of attributes that share the same root namespace. Attributes that don't have a namespace
+  appear under `""` key.
+- `attributes` - the list of all attributes from all parsed semantic conventions. Does not include template attributes.
+- `attribute_templates` - the list of all attribute templates from all parsed semantic conventions.
+
+#### The `root_namespace` pattern
+
+Processes a single namespace and is called for each namespace detected.
+
+- `attributes_and_templates` - the list containing all attributes (including template ones) in the given root namespace.
+- `root_namespace` - the root namespace being processed.
+
+#### Other patterns
+
+Processes a single pattern value and is called for each distinct value.
+
+- `semconv` - the instance of parsed `BaseSemanticConvention` being processed.
+
+### Filtering and mapping
+
+Jinja templates has a notion of [filters](https://jinja.palletsprojects.com/en/2.11.x/templates/#list-of-builtin-filters) allowing to transform objects or filter lists.
+
+Semconvgen supports following additional filters to simplify common operations in templates.
+
+#### `SemanticAttribute` operations
+
+1. `is_definition` - Checks if the attribute is the original definition of the attribute and not a reference.
+2. `is_deprecated` - Checks if the attribute is deprecated. The same check can also be done with `(attribute.stability | string())  == "StabilityLevel.DEPRECATED"`
+3. `is_experimental` - Checks if the attribute is experimental. The same check can also be done with `(attribute.stability | string())  == "StabilityLevel.EXPERIMENTAL"`
+4. `is_stable` - Checks if the attribute is experimental. The same check can also be done with `(attribute.stability | string())  == "StabilityLevel.STABLE"`
+5. `is_template` - Checks if the attribute is a template attribute.
+
+#### String operations
+
+1. `first_up` - Upper-cases the first character in the string. Does not modify anything else
+2. `regex_replace(text, pattern, replace)` - Makes regex-based replace in `text` string using `pattern``
+3. `to_camelcase` - Converts a string to camel case (using `.` and `_` as words delimiter in the original string).
+   The first character of every word is upper-cased, other characters are lower-cased. E.g. `foo.bAR_baz` becomes `fooBarBaz`
+4. `to_const_name` - Converts a string to Python or Java constant name (SNAKE_CASE) replacing `.` or `-` with `_`. E.g.
+   `foo.bAR-baz` becomes `FOO_BAR_BAZ`.
+5. `to_doc_brief` - Trims whitespace and removes dot at the end. E.g. ` Hello world.\t` becomes `Hello world`
+
+#### `BaseSemanticConvention` operations
+
+1. `is_metric` - Checks if semantic convention describes a metric.

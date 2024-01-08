@@ -264,6 +264,9 @@ class MetricSemanticConvention(MetricGroupSemanticConvention):
         self.metric_name = group.get("metric_name")
         self.unit = group.get("unit")
         self.instrument = group.get("instrument")
+
+        namespaces = self.metric_name.split(".")
+        self.root_namespace = namespaces[0] if len(namespaces) > 1 else ""
         self.validate()
 
     def validate(self):

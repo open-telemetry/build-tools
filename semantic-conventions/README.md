@@ -92,7 +92,7 @@ semantic conventions that have the tag `network`.
 
 The image supports [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates to generate code from the models.
 
-For example, opentelemetry-java [generates typed constants for semantic conventions]. Refer to https://github.com/open-telemetry/semantic-conventions-java for all semantic conventions. 
+For example, opentelemetry-java generates typed constants for semantic conventions. Refer to https://github.com/open-telemetry/semantic-conventions-java for all semantic conventions.
 
 The commands used to generate that are
 [here in the opentelemetry-java repo](https://github.com/open-telemetry/semantic-conventions-java)

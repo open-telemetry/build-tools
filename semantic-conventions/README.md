@@ -96,7 +96,6 @@ For example, opentelemetry-java generates typed constants for semantic conventio
 
 The commands used to generate that are
 [here in the opentelemetry-java repo](https://github.com/open-telemetry/semantic-conventions-java)
-Note especially the `docker run` commands. For example to generate the aforementioned `SemanticAttributes.java`,
 Note especially the `docker run` commands. For example to generate a constants file called `SemanticAttributes.java`,
 the following command is used:
 

@@ -96,23 +96,6 @@ For example, opentelemetry-java generates typed constants for semantic conventio
 
 The commands used to generate that are
 [here in the semantic-conventions-java repo](https://github.com/open-telemetry/semantic-conventions-java/blob/2be178a7fd62d1073fa9b4f0f0520772a6496e0b/build.gradle.kts#L96-L141)
-Note especially the `docker run` commands. For example to generate a constants file called `SemanticAttributes.java`,
-the following command is used:
-
-```bash
-docker run --rm \
-  -v ${SCRIPT_DIR}/opentelemetry-specification/semantic_conventions/trace:/source \
-  -v ${SCRIPT_DIR}/templates:/templates \
-  -v ${ROOT_DIR}/semconv/src/main/java/io/opentelemetry/semconv/trace/attributes/:/output \
-  otel/semconvgen:$GENERATOR_VERSION \
-  --yaml-root /source \
-  code \
-  --template /templates/SemanticAttributes.java.j2 \
-  --output /output/SemanticAttributes.java \
-  -Dclass=SemanticAttributes \
-  -DschemaUrl=$SCHEMA_URL \
-  -Dpkg=io.opentelemetry.semconv.trace.attributes
-```
 
 By default, all models are fed into the specified template at once, i.e. only a single file is generated.
 This is helpful to generate constants for the semantic attributes, [example from opentelemetry-java](https://github.com/open-telemetry/opentelemetry-java/tree/main/buildscripts/semantic-convention).

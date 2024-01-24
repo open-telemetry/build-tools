@@ -95,7 +95,7 @@ The image supports [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templat
 For example, opentelemetry-java generates typed constants for semantic conventions. Refer to https://github.com/open-telemetry/semantic-conventions-java for all semantic conventions.
 
 The commands used to generate that are
-[here in the opentelemetry-java repo](https://github.com/open-telemetry/semantic-conventions-java)
+[here in the semantic-conventions-java repo](https://github.com/open-telemetry/semantic-conventions-java/blob/2be178a7fd62d1073fa9b4f0f0520772a6496e0b/build.gradle.kts#L96-L141)
 Note especially the `docker run` commands. For example to generate a constants file called `SemanticAttributes.java`,
 the following command is used:
 

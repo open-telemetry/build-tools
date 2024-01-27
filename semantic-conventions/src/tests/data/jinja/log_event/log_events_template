@@ -1,0 +1,11 @@
+package io.opentelemetry.instrumentation.api.log_events;
+
+class LogEvents {
+{% for member in semconvs['client.exception.event'].members.values() %}{% set constant_name = member.id.upper() %}
+    /**
+    * Use this unit for Metric Instruments recording values
+    * representing {{member.brief}}.
+    **/
+    public static final String {{constant_name}} = "{{member.value}}";
+{% endfor %}
+}

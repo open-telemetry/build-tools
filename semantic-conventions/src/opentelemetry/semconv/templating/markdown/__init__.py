@@ -32,6 +32,7 @@ from opentelemetry.semconv.model.semantic_attribute import (
 from opentelemetry.semconv.model.semantic_convention import (
     BaseSemanticConvention,
     EventSemanticConvention,
+    LogEventSemanticConvention,
     MetricSemanticConvention,
     SemanticConventionSet,
     UnitSemanticConvention,
@@ -197,11 +198,17 @@ class MarkdownRenderer:
                     required = f"Recommended: [{len(self.render_ctx.notes)}]"
         return required
 
-    def write_table_header(self, output: io.StringIO):
+    def write_table_header(self, output: io.StringIO, attribute_name: str = None):
+        header: str = ""
         if self.render_ctx.is_omit_requirement_level:
-            output.write(MarkdownRenderer.table_headers_omitting_req_level)
+            header = MarkdownRenderer.table_headers_omitting_req_level
         else:
-            output.write(MarkdownRenderer.table_headers)
+            header = MarkdownRenderer.table_headers
+
+        if attribute_name:
+            header = header.replace("Attribute", attribute_name)
+
+        output.write(header)
 
     def to_markdown_attribute_table(
         self, semconv: BaseSemanticConvention, output: io.StringIO
@@ -228,6 +235,30 @@ class MarkdownRenderer:
         ]
         self.to_markdown_notes(output)
         self.to_creation_time_attributes(attr_sampling_relevant, output)
+
+    def to_markdown_payload_attribute_table(
+        self, semconv: BaseSemanticConvention, output: io.StringIO
+    ):
+        attr_to_print = []
+        for attr in semconv.payload_and_templates:
+            if self.render_ctx.group_key is not None:
+                if attr.tag == self.render_ctx.group_key:
+                    attr_to_print.append(attr)
+                continue
+            if self.render_ctx.is_full or attr.is_local:
+                attr_to_print.append(attr)
+
+        if self.render_ctx.group_key is not None and not attr_to_print:
+            raise ValueError(
+                f"No attributes retained for '{semconv.semconv_id}' filtering by '{self.render_ctx.group_key}'"
+            )
+        if attr_to_print:
+            self.write_table_header(output, "Payload Field")
+            for attr in attr_to_print:
+                self.to_markdown_attr(attr, output)
+        else:
+            output.write("No event payload defined.\n")
+        output.write("\n")
 
     def to_markdown_metric_table(
         self, semconv: MetricSemanticConvention, output: io.StringIO
@@ -521,8 +552,14 @@ class MarkdownRenderer:
         if self.render_ctx.is_metric_table:
             self.to_markdown_metric_table(semconv, output)
         else:
-            if isinstance(semconv, EventSemanticConvention):
+            if isinstance(semconv, EventSemanticConvention) or isinstance(semconv, LogEventSemanticConvention):
                 output.write(f"The event name MUST be `{semconv.name}`.\n\n")
+
+            # Render the payload table
+            if (isinstance(semconv, LogEventSemanticConvention)):
+                self.to_markdown_payload_attribute_table(semconv, output)
+
+            # Render the attribute table
             self.to_markdown_attribute_table(semconv, output)
 
         if not self.render_ctx.is_remove_constraint:

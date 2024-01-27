@@ -129,6 +129,21 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_event_renamed(self):
         self.check("markdown/event_renamed/")
 
+    def test_log_event_empty(self):
+        self.check("markdown/log_event_empty/")
+
+    def test_log_event_payload(self):
+        self.check("markdown/log_event_payload/")
+
+    def test_log_event_attribute(self):
+        self.check("markdown/log_event_attribute/")
+
+    def test_log_event_attribute_only(self):
+        self.check("markdown/log_event_attributes_only/")
+
+    def test_log_event_device_app_lifecycle(self):
+        self.check("markdown/log_event_device_app_lifecycle/")
+
     def test_metric_tables(self):
         self.check(
             "markdown/metrics_tables",
@@ -202,7 +217,10 @@ class TestCorrectMarkdown(unittest.TestCase):
             return ex.exception
         do_render()
         result = output.getvalue()
-        assert result == (dirpath / expected_name).read_text(encoding="utf-8")
+        the_expected = (dirpath / expected_name).read_text(encoding="utf-8")
+        if result != the_expected:
+            self.fail("Result:" + result)
+        assert result == the_expected
         return None
 
     _TEST_DIR = os.path.dirname(__file__)

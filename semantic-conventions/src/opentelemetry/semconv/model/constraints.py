@@ -95,3 +95,21 @@ def parse_constraints(yaml_constraints):
             any_of._yaml_src_position = constraint.get("any_of").lc.data
             constraints += (any_of,)
     return constraints
+
+def populate_anyof_attributes(parent_id, constraints, lookup_attribute):
+    any_of: AnyOf
+    for any_of in constraints:
+        if isinstance(any_of, AnyOf):
+            for index, attr_ids in enumerate(any_of.choice_list_ids):
+                constraint_attrs = []
+                for attr_id in attr_ids:
+                    ref_attr = lookup_attribute(attr_id)
+                    if ref_attr is None:
+                        raise ValidationError.from_yaml_pos(
+                            any_of._yaml_src_position[index],
+                            f"Any_of attribute '{attr_id}' of semantic convention "
+                            f"{parent_id} does not exists!",
+                        )
+                    constraint_attrs.append(ref_attr)
+                if constraint_attrs:
+                    any_of.add_attributes(constraint_attrs)

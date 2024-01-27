@@ -17,12 +17,13 @@ import unittest
 from typing import List, cast
 
 from opentelemetry.semconv.model.constraints import AnyOf, Include
-from opentelemetry.semconv.model.semantic_attribute import StabilityLevel
+from opentelemetry.semconv.model.semantic_attribute import StabilityLevel, EnumAttributeType
 from opentelemetry.semconv.model.semantic_convention import (
     EventSemanticConvention,
     MetricSemanticConvention,
     SemanticConventionSet,
     SpanSemanticConvention,
+    LogEventSemanticConvention,
 )
 
 
@@ -730,6 +731,181 @@ class TestCorrectParse(unittest.TestCase):
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
+
+    def test_log_event_name_only(self):
+        semconv = SemanticConventionSet(debug=True)
+        semconv.parse(self.load_file("yaml/log_events/name_only.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 1)
+        semconvs = list(semconv.models.values())
+        self.assertTrue(isinstance(semconvs[0], LogEventSemanticConvention))
+        event = list(semconv.models.values())[0]
+        expected = {
+            "id": "client.ping.event",
+            "prefix": "",
+            "type": "log_event",
+            "extends": "",
+            "brief": "This document defines a log event that has no payload or attributes.",
+            "n_constraints": 0,
+            "attributes": [],
+            "payload": [],
+            "n_payload_constraints": 0,
+        }
+        self.semantic_convention_check(event, expected)
+        self.assertEqual("client.ping.event", event.name)
+        self.assertEqual(expected["payload"], [a.fqn for a in event.payload])
+        self.assertEqual(expected["brief"], event.brief)
+        self.assertEqual(expected["n_payload_constraints"], len(event.payload_constraints))
+
+    def test_log_event_client_exception(self):
+        semconv = SemanticConventionSet(debug=True)
+        semconv.parse(self.load_file("yaml/log_events/client_exception.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 1)
+        semconvs = list(semconv.models.values())
+        self.assertTrue(isinstance(semconvs[0], LogEventSemanticConvention))
+        event = list(semconv.models.values())[0]
+        expected = {
+            "id": "client.exception.event",
+            "prefix": "",
+            "type": "log_event",
+            "extends": "",
+            "brief": "This document defines the log event used to report a client exception.",
+            "n_constraints": 0,
+            "attributes": [
+                "client.name"
+            ],
+            "payload": [
+                "escaped",
+                "message",
+                "stacktrace",
+                "type",
+            ],
+            "n_payload_constraints": 1,
+        }
+        self.semantic_convention_check(event, expected)
+        self.assertEqual("client.exception.event", event.name)
+        self.assertEqual(expected["payload"], [a.fqn for a in event.payload])
+        self.assertEqual(expected["brief"], event.brief)
+        self.assertEqual(expected["n_payload_constraints"], len(event.payload_constraints))
+        constraint = event.payload_constraints[0]
+        self.assertIsInstance(constraint, AnyOf)
+        constraint: AnyOf
+        for choice_index, attr_list in enumerate(constraint.choice_list_ids):
+            for attr_index, attr in enumerate(attr_list):
+                self.assertEqual(
+                    event.payload_by_name.get(attr),
+                    constraint.choice_list_attributes[choice_index][attr_index],
+                )
+
+    def test_log_event_device_app_lifecycle(self):
+        semconv = SemanticConventionSet(debug=True)
+        semconv.parse(self.load_file("yaml/log_events/device_app_lifecycle.yaml"))
+        semconv.finish()
+        self.assertEqual(len(semconv.models), 1)
+        semconvs = list(semconv.models.values())
+        self.assertTrue(isinstance(semconvs[0], LogEventSemanticConvention))
+        event = list(semconv.models.values())[0]
+        expected = {
+            "id": "device.app.lifecycle",
+            "prefix": "",
+            "type": "log_event",
+            "extends": "",
+            "brief": "This event represents an occurrence of a lifecycle transition on Android or iOS platform.",
+            "n_constraints": 0,
+            "attributes": [],
+            "payload": [
+                "android.state",
+                "ios.state",
+            ],
+            "n_payload_constraints": 1,
+        }
+        self.semantic_convention_check(event, expected)
+        self.assertEqual(event.name, "device.app.lifecycle")
+        self.assertEqual(expected["payload"], [a.fqn for a in event.payload])
+        self.assertEqual(expected["brief"], event.brief)
+        self.assertEqual(expected["n_payload_constraints"], len(event.payload_constraints))
+        constraint = event.payload_constraints[0]
+        self.assertIsInstance(constraint, AnyOf)
+        self.assertEqual(len(constraint.choice_list_ids), 2)
+        self.assertEqual(len(constraint.choice_list_attributes), 2)
+        for choice_index, attr_list in enumerate(constraint.choice_list_ids):
+            for attr_index, attr in enumerate(attr_list):
+                self.assertEqual(
+                    event.payload_by_name.get(attr),
+                    constraint.choice_list_attributes[choice_index][attr_index]
+                )
+
+    def test_log_event_browser_pageview_ref(self):
+        semconv = SemanticConventionSet(debug=True)
+        semconv.parse(self.load_file("yaml/log_events/browser_pageview_ref.yaml"))
+        semconv.parse(self.load_file("yaml/session.yaml"))
+        semconv.parse(self.load_file("yaml/browser.yaml"))
+        semconv.parse(self.load_file("yaml/http.yaml"))
+        semconv.parse(self.load_file("yaml/general.yaml"))
+        semconv.finish()
+        semconvs = list(semconv.models.values())
+        self.assertTrue(isinstance(semconvs[0], LogEventSemanticConvention))
+        event = list(semconv.models.values())[0]
+        expected = {
+            "id": "browser.pageview",
+            "prefix": "",
+            "type": "log_event",
+            "extends": "",
+            "n_constraints": 0,
+            "attributes": [ "browser.platform", "session.id" ],
+            "payload": [
+                "referrer",
+                "title",
+                "type",
+                "url",
+            ],
+        }
+        self.semantic_convention_check(event, expected)
+        self.assertEqual(event.name, "browser.pageview")
+        self.assertEqual(expected["payload"], [a.fqn for a in event.payload])
+        self.assertEqual(len(event.constraints), 0  )
+        
+        http_url = semconv._lookup_attribute("http.url")
+        self.assertIsNotNone(http_url)
+
+        # Make sure the payload fields where not added to the global attributes
+        self.assertIsNone(semconv._lookup_attribute("referrer"))
+        self.assertIsNone(semconv._lookup_attribute("url"))
+        self.assertIsNone(semconv._lookup_attribute("title"))
+        self.assertIsNone(semconv._lookup_attribute("type"))
+
+        # Make sure the payload fields where added to the event definition
+        self.assertEqual(event.payload_by_name["referrer"].fqn, "referrer")
+        self.assertEqual(event.payload_by_name["referrer"].ref, "http.url")
+        self.assertEqual(event.payload_by_name["referrer"].attr_id, "referrer")
+        self.assertEqual(event.payload_by_name["referrer"].attr_type, "string")
+        self.assertEqual(event.payload_by_name["referrer"].examples, http_url.examples)
+        self.assertEqual(event.payload_by_name["referrer"].imported, False)
+        self.assertEqual(event.payload_by_name["referrer"].inherited, False)
+
+        self.assertEqual(event.payload_by_name["title"].fqn, "title")
+        self.assertEqual(event.payload_by_name["title"].ref, None)
+        self.assertEqual(event.payload_by_name["title"].attr_id, "title")
+        self.assertEqual(event.payload_by_name["title"].attr_type, "string")
+        self.assertEqual(event.payload_by_name["title"].imported, False)
+        self.assertEqual(event.payload_by_name["title"].inherited, False)
+
+        self.assertEqual(event.payload_by_name["type"].fqn, "type")
+        self.assertEqual(event.payload_by_name["type"].ref, None)
+        self.assertEqual(event.payload_by_name["type"].attr_id, "type")
+        self.assertEqual(event.payload_by_name["type"].imported, False)
+        self.assertEqual(event.payload_by_name["type"].inherited, False)
+        self.assertIsInstance(event.payload_by_name["type"].attr_type, EnumAttributeType)
+        self.assertEqual(["physical_page", "virtual_page"], [m.member_id for m in event.payload_by_name["type"].attr_type.members])
+        self.assertEqual(["0", "1"], [m.value for m in event.payload_by_name["type"].attr_type.members])
+
+        self.assertEqual(event.payload_by_name["url"].fqn, "url")
+        self.assertEqual(event.payload_by_name["url"].ref, "http.url")
+        self.assertEqual(event.payload_by_name["url"].attr_id, "url")
+        self.assertEqual(event.payload_by_name["url"].attr_type, "string")
+        self.assertEqual(event.payload_by_name["url"].imported, False)
+        self.assertEqual(event.payload_by_name["url"].inherited, False)
 
     _TEST_DIR = os.path.dirname(__file__)
 

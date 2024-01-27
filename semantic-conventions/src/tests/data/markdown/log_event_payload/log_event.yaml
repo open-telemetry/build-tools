@@ -1,0 +1,11 @@
+groups:
+  - id: log_event_payload
+    name: browser.pageview
+    type: log_event
+    brief: brief
+    payload:
+      attributes:
+        - id: payloadattr
+          type: string
+          brief: payloadattrbrief
+          examples: ['payloadattr']

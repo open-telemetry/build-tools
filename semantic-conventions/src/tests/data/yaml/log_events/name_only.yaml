@@ -1,0 +1,6 @@
+groups:
+  - id: client.ping.event
+    name: client.ping.event
+    type: log_event
+    brief: >
+      This document defines a log event that has no payload or attributes.

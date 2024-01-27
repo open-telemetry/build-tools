@@ -12,6 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+import sys
 import re
 from typing import Tuple  # noqa: F401
 
@@ -41,6 +42,19 @@ def validate_values(yaml, keys, mandatory=()):
     if mandatory:
         check_no_missing_keys(yaml, mandatory)
 
+def validate_unique_attribute_fqns(semconv_id, group_by_fqn, attributes_and_templates):
+    has_errors = False
+    for attr in attributes_and_templates:
+        if not attr.ref:
+            if attr.fqn in group_by_fqn:
+                has_errors = True
+                print(
+                    f"Attribute {attr.fqn} of Semantic convention '{semconv_id}'"
+                    "is already defined in {group_by_fqn.get(attr.fqn)}.",
+                    file=sys.stderr,
+                )
+            group_by_fqn[attr.fqn] = semconv_id
+    return not has_errors
 
 def check_no_missing_keys(yaml, mandatory):
     missing = list(set(mandatory) - set(yaml))
@@ -48,7 +62,6 @@ def check_no_missing_keys(yaml, mandatory):
         position = (yaml.lc.line, yaml.lc.col)
         msg = f"Missing keys: {missing}"
         raise ValidationError.from_yaml_pos(position, msg)
-
 
 class ValidatableYamlNode:
 

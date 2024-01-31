@@ -98,7 +98,7 @@ The commands used to generate that are
 [here in the semantic-conventions-java repo](https://github.com/open-telemetry/semantic-conventions-java/blob/2be178a7fd62d1073fa9b4f0f0520772a6496e0b/build.gradle.kts#L96-L141)
 
 By default, all models are fed into the specified template at once, i.e. only a single file is generated.
-This is helpful to generate constants for the semantic attributes, [example from opentelemetry-java](https://github.com/open-telemetry/opentelemetry-java/tree/main/buildscripts/semantic-convention).
+This is helpful to generate constants for the semantic attributes, [example from opentelemetry-java](https://github.com/open-telemetry/semantic-conventions-java#generating-semantic-conventions).
 
 If the parameter `--file-per-group {pattern}` is set, a single yaml model is fed into the template
 and the value of `pattern` is resolved from the model and attached as prefix to the output argument.

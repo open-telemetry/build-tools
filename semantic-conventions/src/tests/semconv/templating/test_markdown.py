@@ -132,8 +132,8 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_log_event_empty(self):
         self.check("markdown/log_event_empty/")
 
-    def test_log_event_payload(self):
-        self.check("markdown/log_event_payload/")
+    def test_log_event_body(self):
+        self.check("markdown/log_event_body/")
 
     def test_log_event_attribute(self):
         self.check("markdown/log_event_attribute/")

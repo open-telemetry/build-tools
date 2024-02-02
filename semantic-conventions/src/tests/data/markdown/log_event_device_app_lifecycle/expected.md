@@ -3,7 +3,7 @@
 <!-- semconv device.app.lifecycle -->
 The event name MUST be `device.app.lifecycle`.
 
-| Payload Field  | Type | Description  | Examples  | Requirement Level |
+| Body Field  | Type | Description  | Examples  | Requirement Level |
 |---|---|---|---|---|
 | `android.state` | string | This attribute represents the state the application has transitioned into at the occurrence of the event. [1] | `created` | Recommended |
 | `ios.state` | string | This attribute represents the state the application has transitioned into at the occurrence of the event. [2] | `active` | Recommended |

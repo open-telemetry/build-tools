@@ -15,7 +15,7 @@
 						"allOf": [{"$ref": "#/definitions/SpanSemanticConvention"}]
 					},
 					{
-						"allOf": [{"$ref": "#/definitions/EventSemanticConvention"}]
+						"allOf": [{"$ref": "#/definitions/SpanEventSemanticConvention"}]
 					},
 					{
 						"allOf": [{"$ref": "#/definitions/MetricSemanticConvention"}]
@@ -255,7 +255,7 @@
 				}
 			}
 		},
-		"EventSemanticConvention": {
+		"SpanEventSemanticConvention": {
 			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
 			"properties": {
 				"type": {
@@ -283,14 +283,14 @@
 					"type": "string",
 					"description": "The name of the event. Required if no prefix is given."
 				},
-				"payload": {
+				"body": {
 					"type": "object",
 					"required": [
-						"attributes",
+						"fields",
 						"brief"
 					],
 					"properties": {
-						"attributes": {
+						"fields": {
 							"type": "array",
 							"items": {
 								"$ref": "#/definitions/Attribute"

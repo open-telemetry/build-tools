@@ -31,7 +31,7 @@ from opentelemetry.semconv.model.semantic_attribute import (
 )
 from opentelemetry.semconv.model.semantic_convention import (
     BaseSemanticConvention,
-    EventSemanticConvention,
+    SpanEventSemanticConvention,
     LogEventSemanticConvention,
     MetricSemanticConvention,
     SemanticConventionSet,
@@ -236,11 +236,11 @@ class MarkdownRenderer:
         self.to_markdown_notes(output)
         self.to_creation_time_attributes(attr_sampling_relevant, output)
 
-    def to_markdown_payload_attribute_table(
+    def to_markdown_body_field_table(
         self, semconv: BaseSemanticConvention, output: io.StringIO
     ):
         attr_to_print = []
-        for attr in semconv.payload_and_templates:
+        for attr in semconv.body_and_templates:
             if self.render_ctx.group_key is not None:
                 if attr.tag == self.render_ctx.group_key:
                     attr_to_print.append(attr)
@@ -253,11 +253,11 @@ class MarkdownRenderer:
                 f"No attributes retained for '{semconv.semconv_id}' filtering by '{self.render_ctx.group_key}'"
             )
         if attr_to_print:
-            self.write_table_header(output, "Payload Field")
+            self.write_table_header(output, "Body Field")
             for attr in attr_to_print:
                 self.to_markdown_attr(attr, output)
         else:
-            output.write("No event payload defined.\n")
+            output.write("No event body defined.\n")
         output.write("\n")
 
     def to_markdown_metric_table(
@@ -552,12 +552,12 @@ class MarkdownRenderer:
         if self.render_ctx.is_metric_table:
             self.to_markdown_metric_table(semconv, output)
         else:
-            if isinstance(semconv, EventSemanticConvention) or isinstance(semconv, LogEventSemanticConvention):
+            if isinstance(semconv, SpanEventSemanticConvention) or isinstance(semconv, LogEventSemanticConvention):
                 output.write(f"The event name MUST be `{semconv.name}`.\n\n")
 
-            # Render the payload table
+            # Render the body table
             if (isinstance(semconv, LogEventSemanticConvention)):
-                self.to_markdown_payload_attribute_table(semconv, output)
+                self.to_markdown_body_field_table(semconv, output)
 
             # Render the attribute table
             self.to_markdown_attribute_table(semconv, output)

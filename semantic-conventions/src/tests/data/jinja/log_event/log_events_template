@@ -1,11 +1,23 @@
 package io.opentelemetry.instrumentation.api.log_events;
 
-class LogEvents {
-{% for member in semconvs['client.exception.event'].members.values() %}{% set constant_name = member.id.upper() %}
-    /**
-    * Use this unit for Metric Instruments recording values
-    * representing {{member.brief}}.
-    **/
-    public static final String {{constant_name}} = "{{member.value}}";
-{% endfor %}
+interface ClientExceptionEvent {
+{%- for field_template in semconvs['client.exception.event'].body_and_templates %}
+
+  /**
+  * {{field_template.brief | render_markdown(code="{{@code {0}}}", paragraph="{0}")}}
+    {%- if field_template.note %}
+  *
+  * <p>Notes:
+    <ul> {{field_template.note | render_markdown(code="{{@code {0}}}", paragraph="<li>{0}</li>", list="{0}")}} </ul>
+    {%- endif %}
+    {%- if (field_template.stability | string())  == "StabilityLevel.DEPRECATED" %}
+  *
+  * @deprecated {{field_template.brief | to_doc_brief}}.
+    {%- endif %}
+  */
+  {%- if (field_template.stability | string()) == "StabilityLevel.DEPRECATED"  %}
+  @Deprecated
+    {%- endif %}
+  public static final AttributeKey<{{upFirst(to_java_return_type(field_template.instantiated_type | string))}}> {{field_template.fqn | to_const_name}} = {{to_java_key_type(field_template.instantiated_type | string)}}("{{field_template.fqn}}");
+{%- endfor %}
 }

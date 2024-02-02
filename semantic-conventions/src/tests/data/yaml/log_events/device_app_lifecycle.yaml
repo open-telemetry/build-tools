@@ -4,8 +4,8 @@ groups:
     type: log_event
     brief: >
       This event represents an occurrence of a lifecycle transition on Android or iOS platform.
-    payload:
-      attributes:
+    body:
+      fields:
         - id: ios.state
           note: >
             The iOS lifecycle states are defined in the [UIApplicationDelegate documentation](https://developer.apple.com/documentation/uikit/uiapplicationdelegate#1656902),

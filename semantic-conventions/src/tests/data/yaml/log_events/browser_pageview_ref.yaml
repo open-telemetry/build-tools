@@ -7,8 +7,8 @@ groups:
     attributes:
       - ref: session.id
       - ref: browser.platform
-    payload:
-      attributes:
+    body:
+      fields:
         - ref: http.url
           alias: referrer
           note: >

@@ -1,12 +1,8 @@
 groups:
-  - id: browser.pageview
+  - id: log_event_body
     name: browser.pageview
     type: log_event
     brief: brief
-    attributes:
-      - id: attr
-        type: boolean
-        brief: attrbrief
     body:
       fields:
         - id: bodyfield

@@ -206,7 +206,7 @@ class SpanSemanticConvention(BaseSemanticConvention):
             raise ValidationError.from_yaml_pos(position, msg)
 
 
-class EventSemanticConvention(BaseSemanticConvention):
+class SpanEventSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "event"
 
     allowed_keys = BaseSemanticConvention.allowed_keys + ("name",)
@@ -222,59 +222,59 @@ class EventSemanticConvention(BaseSemanticConvention):
 class LogEventSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "log_event"
 
-    allowed_keys = BaseSemanticConvention.allowed_keys + ("name","payload")
-    payload_keys = ("attributes","constraints")
+    allowed_keys = BaseSemanticConvention.allowed_keys + ("name","body")
+    body_keys = ("fields","constraints")
 
     @property
-    def payload(self):
-        return self._get_payload(False)
+    def body(self):
+        return self._get_body(False)
 
     @property
-    def payload_templates(self):
-        return self._get_payload(True)
+    def body_templates(self):
+        return self._get_body(True)
 
     @property
-    def payload_and_templates(self):
-        return self._get_payload(None)
+    def body_and_templates(self):
+        return self._get_body(None)
 
     def finish(self, semconv):
         if hasattr(super(), "finish"):
             super().finish(semconv)
 
-        # Resolve payload references
-        for payload_attr in self.payload_by_name.values():
-            if payload_attr.ref is not None and payload_attr.attr_id is None:
-                ref_attr = semconv._lookup_attribute(payload_attr.ref)
+        # Resolve body references
+        for body_field in self.body_by_name.values():
+            if body_field.ref is not None and body_field.attr_id is None:
+                ref_attr = semconv._lookup_attribute(body_field.ref)
                 if not ref_attr:
                     raise ValidationError.from_yaml_pos(
                         self._position,
-                        f"Semantic Convention {self.semconv_id} payload reference `{payload_attr.ref}` but it cannot be found!",
+                        f"Semantic Convention {self.semconv_id} body reference `{body_field.ref}` but it cannot be found!",
                     )
-                payload_attr = payload_attr.merge_attribute(ref_attr)
-                self.payload_by_name[payload_attr.fqn] = payload_attr
+                body_field = body_field.merge_attribute(ref_attr)
+                self.body_by_name[body_field.fqn] = body_field
 
-        populate_anyof_attributes(self.semconv_id + " payload", self.payload_constraints, self._lookup_payload_attribute)
+        populate_anyof_attributes(self.semconv_id + " body", self.body_constraints, self._lookup_body_field)
 
-        payload_group_by_fqn: typing.Dict[str, str] = {}
-        if not validate_unique_attribute_fqns(self.semconv_id + ".payload", payload_group_by_fqn, self.payload_by_name.values()):
+        body_group_by_fqn: typing.Dict[str, str] = {}
+        if not validate_unique_attribute_fqns(self.semconv_id + ".body", body_group_by_fqn, self.body_by_name.values()):
             self.errors = True
             
-    def _get_payload(self, templates: Optional[bool]):
-        if not hasattr(self, "payload_by_name"):
+    def _get_body(self, templates: Optional[bool]):
+        if not hasattr(self, "body_by_name"):
             return []
 
         return sorted(
             [
                 attr
-                for attr in self.payload_by_name.values()
+                for attr in self.body_by_name.values()
                 if templates is None
                 or templates == AttributeType.is_template_type(attr.attr_type)
             ],
             key=lambda attr: attr.fqn,
         )
 
-    def _lookup_payload_attribute(self, attr_id: str) -> Union[SemanticAttribute, None]:
-        return self.payload_by_name.get(attr_id)
+    def _lookup_body_field(self, attr_id: str) -> Union[SemanticAttribute, None]:
+        return self.body_by_name.get(attr_id)
 
     def __init__(self, group):
         super().__init__(group)
@@ -284,22 +284,22 @@ class LogEventSemanticConvention(BaseSemanticConvention):
                 self._position, "Log Event must define at least one of name or prefix"
             )
 
-        payload = group.get("payload")
+        body = group.get("body")
 
-        # Validate and process the payload
-        if (payload is not None):
-            unwanted = [key for key in payload.keys() if key not in self.payload_keys]
+        # Validate and process the body
+        if (body is not None):
+            unwanted = [key for key in body.keys() if key not in self.body_keys]
             if unwanted:
-                msg = f"Invalid payload keys: {unwanted}"
+                msg = f"Invalid body keys: {unwanted}"
                 raise ValidationError.from_yaml_pos(self._position, msg)
 
-            self.payload_constraints = parse_constraints(payload.get("constraints", ()))
-            self.payload_by_name = SemanticAttribute.parse(
-                self.prefix, self.stability, payload.get("attributes", ()), True
+            self.body_constraints = parse_constraints(body.get("constraints", ()))
+            self.body_by_name = SemanticAttribute.parse(
+                self.prefix, self.stability, body.get("fields", ()), True
             )
         else:
-            self.payload_by_name = {}
-            self.payload_constraints = ()
+            self.body_by_name = {}
+            self.body_constraints = ()
 
 class UnitSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "units"
@@ -498,7 +498,7 @@ class SemanticConventionSet:
 
     def _populate_events(self):
         for semconv in self.models.values():
-            events: typing.List[EventSemanticConvention] = []
+            events: typing.List[SpanEventSemanticConvention] = []
             for event_id in semconv.events:
                 event = self.models.get(event_id)
                 if event is None:
@@ -507,7 +507,7 @@ class SemanticConventionSet:
                         f"Semantic Convention {semconv.semconv_id} has "
                         "{event_id} as event but the latter cannot be found!",
                     )
-                if not isinstance(event, EventSemanticConvention):
+                if not isinstance(event, SpanEventSemanticConvention):
                     raise ValidationError.from_yaml_pos(
                         semconv._position,
                         f"Semantic Convention {semconv.semconv_id} has {event_id} as event but"
@@ -613,7 +613,7 @@ CONVENTION_CLS_BY_GROUP_TYPE = {
     for cls in (
         SpanSemanticConvention,
         ResourceSemanticConvention,
-        EventSemanticConvention,
+        SpanEventSemanticConvention,
         LogEventSemanticConvention,
         MetricGroupSemanticConvention,
         MetricSemanticConvention,

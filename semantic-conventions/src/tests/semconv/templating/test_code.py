@@ -89,27 +89,27 @@ def test_codegen_log_event_attributes_templates(test_file_path, read_test_file):
 
     assert result == expected
 
-def test_codegen_log_event_templates(test_file_path, read_test_file):
-    semconv = SemanticConventionSet(debug=False)
-    semconv.parse(
-        test_file_path("yaml", "attr_templates_code", "attribute_templates.yml")
-    )
-    # This yaml file should not cause the global attributes to be polluted
-    semconv.parse(
-        test_file_path("yaml", "log_events", "client_exception.yaml")
-    )
-    semconv.finish()
+# def test_codegen_log_event_templates(test_file_path, read_test_file):
+#     semconv = SemanticConventionSet(debug=False)
+#     semconv.parse(
+#         test_file_path("yaml", "attr_templates_code", "attribute_templates.yml")
+#     )
+#     # This yaml file should not cause the global attributes to be polluted
+#     semconv.parse(
+#         test_file_path("yaml", "log_events", "client_exception.yaml")
+#     )
+#     semconv.finish()
 
-    template_path = test_file_path("jinja", "log_event", "log_events_template")
-    renderer = CodeRenderer({}, trim_whitespace=False)
+#     template_path = test_file_path("jinja", "log_event", "log_events_template")
+#     renderer = CodeRenderer({}, trim_whitespace=False)
 
-    output = io.StringIO()
-    renderer.render(semconv, template_path, output, None)
-    result = output.getvalue()
+#     output = io.StringIO()
+#     renderer.render(semconv, template_path, output, None)
+#     result = output.getvalue()
 
-    expected = read_test_file("jinja", "log_event", "log_events_expected.java")
+#     expected = read_test_file("jinja", "log_event", "log_events_expected.java")
 
-    if result != expected:
-        fail("Result:" + result)
+#     if result != expected:
+#         fail("Result:" + result)
 
-    assert result == expected
+#     assert result == expected

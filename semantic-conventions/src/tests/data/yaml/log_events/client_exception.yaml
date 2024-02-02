@@ -5,8 +5,8 @@ groups:
     brief: >
       This document defines the log event used to
       report a client exception.
-    payload:
-      attributes:
+    body:
+      fields:
         - id: type
           type: string
           brief: >

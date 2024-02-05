@@ -46,3 +46,4 @@ class MarkdownOptions:
         if self.use_badge:
             return self._badge_map
         return self._label_map
+    

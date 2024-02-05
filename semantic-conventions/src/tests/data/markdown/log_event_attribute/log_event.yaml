@@ -1,0 +1,15 @@
+groups:
+  - id: browser.pageview
+    name: browser.pageview
+    type: log_event
+    brief: brief
+    attributes:
+      - id: attr
+        type: boolean
+        brief: attrbrief
+    body:
+      fields:
+        - id: bodyfield
+          type: string
+          brief: bodyfieldbrief
+          examples: ['bodyfield']

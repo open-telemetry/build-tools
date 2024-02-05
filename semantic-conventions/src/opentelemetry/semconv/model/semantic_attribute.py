@@ -49,6 +49,7 @@ class SemanticAttribute:
     fqn: str
     attr_id: str
     ref: str
+    alias_id: str
     attr_type: Union[str, "EnumAttributeType"]
     brief: str
     examples: List[Union[str, int, bool]]
@@ -69,6 +70,27 @@ class SemanticAttribute:
     def inherit_attribute(self):
         return replace(self, inherited=True)
 
+    def merge_attribute(self, parent):
+        self.attr_type = parent.attr_type
+        if not self.brief:
+            self.brief = parent.brief
+        if not self.requirement_level:
+            self.requirement_level = parent.requirement_level
+            if not self.requirement_level_msg:
+                self.requirement_level_msg = parent.requirement_level_msg
+        if not self.note:
+            self.note = parent.note
+        if self.examples is None:
+            self.examples = parent.examples
+
+        # Only overwrite the attr_id if it is not an alias
+        if self.alias_id is None:
+            self.attr_id = parent.attr_id
+        else:
+            self.attr_id = self.alias_id
+
+        return self
+
     @property
     def instantiated_type(self):
         return AttributeType.get_instantiated_type(self.attr_type)
@@ -83,7 +105,7 @@ class SemanticAttribute:
 
     @staticmethod
     def parse(
-        prefix, semconv_stability, yaml_attributes
+        prefix, semconv_stability, yaml_attributes, allow_alias = False
     ) -> "Dict[str, SemanticAttribute]":
         """This method parses the yaml representation for semantic attributes
         creating the respective SemanticAttribute objects.
@@ -101,7 +123,10 @@ class SemanticAttribute:
             "requirement_level",
             "sampling_relevant",
             "note",
+            "alias"
         )
+        if allow_alias:
+            allowed_keys += ("alias",)
         if not yaml_attributes:
             return attributes
 
@@ -109,6 +134,7 @@ class SemanticAttribute:
             validate_values(attribute, allowed_keys)
             attr_id = attribute.get("id")
             ref = attribute.get("ref")
+            alias_id = attribute.get("alias")
             position_data = attribute.lc.data
             position = position_data[next(iter(attribute))]
             if attr_id is None and ref is None:
@@ -116,6 +142,12 @@ class SemanticAttribute:
                 raise ValidationError.from_yaml_pos(position, msg)
             if attr_id is not None:
                 validate_id(attr_id, position_data["id"])
+
+                # You can't have an alias and an id
+                if alias_id is not None:
+                    msg = f"Attribute '{attr_id}' must not also declare a alias '{alias_id}'"
+                    raise ValidationError.from_yaml_pos(position, msg)
+
                 attr_type, brief, examples = SemanticAttribute.parse_attribute(
                     attribute
                 )
@@ -129,10 +161,18 @@ class SemanticAttribute:
                 if "type" in attribute:
                     msg = f"Ref attribute '{ref}' must not declare a type"
                     raise ValidationError.from_yaml_pos(position, msg)
+                
                 brief = attribute.get("brief")
                 examples = attribute.get("examples")
                 ref = ref.strip()
                 fqn = ref
+
+                if alias_id is not None:
+                    validate_id(alias_id, position_data["ref"])
+                    if prefix:
+                        fqn = f"{prefix}.{alias_id}"
+                    else:
+                        fqn = alias_id
 
             required_value_map = {
                 "required": RequirementLevel.REQUIRED,
@@ -207,6 +247,7 @@ class SemanticAttribute:
                 fqn=fqn,
                 attr_id=attr_id,
                 ref=ref,
+                alias_id=alias_id,
                 attr_type=attr_type,
                 brief=parsed_brief,
                 examples=examples,

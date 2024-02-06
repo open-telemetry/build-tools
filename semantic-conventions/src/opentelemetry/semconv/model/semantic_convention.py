@@ -133,7 +133,12 @@ class BaseSemanticConvention(ValidatableYamlNode):
                 if templates is None
                 or templates == AttributeType.is_template_type(attr.attr_type)
             ],
-            key=lambda attr: (attr.requirement_level.value if attr.requirement_level else RequirementLevel.OPT_IN.value, attr.fqn),
+            key=lambda attr: (
+                attr.requirement_level.value
+                if attr.requirement_level
+                else RequirementLevel.OPT_IN.value,
+                attr.fqn,
+            ),
         )
 
     def __init__(self, group, strict_validation=True):

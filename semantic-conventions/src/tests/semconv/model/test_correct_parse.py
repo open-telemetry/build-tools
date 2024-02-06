@@ -84,7 +84,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "faas",
             "extends": "",
             "n_constraints": 0,
-            "attributes": [ "faas.trigger", "faas.execution" ]
+            "attributes": ["faas.trigger", "faas.execution"],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
         expected = {
@@ -496,11 +496,11 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "faas",
             "n_constraints": 2,
             "attributes": [
-                "faas.trigger", # Parent
+                "faas.trigger",  # Parent
                 "http.method",
                 "http.server_name",
                 "http.status_code",
-                "faas.execution", # Parent
+                "faas.execution",  # Parent
                 "http.flavor",
                 "http.host",
                 "http.scheme",
@@ -779,7 +779,6 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[7].imported, True)
         self.assertEqual(attrs[7].inherited, False)
         self.assertEqual(attrs[7].ref, None)
-
 
     def semantic_convention_check(self, s, expected):
         self.assertEqual(expected["prefix"], s.prefix)

@@ -2,9 +2,13 @@ name: Semantic Convention Generator
 on:
   push:
     tags: [ '**' ]
-    branches: [ main ]
+    branches:
+      - main
+      - 'feature/**'
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - 'feature/**'
     paths:
       - .github/workflows/semconvgen.yml
       - 'semantic-conventions/**'

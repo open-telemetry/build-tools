@@ -39,6 +39,8 @@ jobs:
 
       - name: Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
@@ -62,7 +64,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
-          platforms: "linux/arm64, linux/amd64"
+          platforms: "linux/amd64"
+          # platforms: "linux/arm64, linux/amd64"
           push: true
           pull: true
           sbom: true

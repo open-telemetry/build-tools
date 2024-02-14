@@ -92,6 +92,7 @@ def test_codegen_attribute_root_ns(test_file_path, read_test_file):
     third = read_test_file("jinja", test_path, "ThirdAttributes.java")
     check_file(tmppath, "ThirdAttributes.java", third)
 
+
 def test_codegen_attribute_root_ns_snake_case_file(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
 
@@ -197,7 +198,10 @@ def test_codegen_attribute_root_ns_metrics(test_file_path, read_test_file):
 
     tmppath = tempfile.mkdtemp()
     renderer.render(
-        semconv, template_path, os.path.join(tmppath, "{{pascal_prefix}}.java"), "root_namespace"
+        semconv,
+        template_path,
+        os.path.join(tmppath, "{{pascal_prefix}}.java"),
+        "root_namespace",
     )
 
     first = read_test_file("jinja", test_path, "First.java")

@@ -8,6 +8,8 @@ Please update the changelog as part of any significant pull request.
   [BREAKING] The `--file-per-group <pattern>` that used to create multiple directories (like `output/<pattern>/file`) now generates
   multiple files (`output/<pattern>file`) instead.
   ([#243](https://github.com/open-telemetry/build-tools/pull/243))
+- BREAKING: Make stability and deprecation independent properties.
+  ([#244](https://github.com/open-telemetry/build-tools/pull/244))
 
 ## v0.23.0
 

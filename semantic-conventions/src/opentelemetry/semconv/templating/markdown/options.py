@@ -15,24 +15,9 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from opentelemetry.semconv.model.semantic_attribute import StabilityLevel
-
 
 @dataclass()
 class MarkdownOptions:
-
-    _badge_map = {
-        StabilityLevel.DEPRECATED: "![Deprecated](https://img.shields.io/badge/-deprecated-red)",
-        StabilityLevel.EXPERIMENTAL: "![Experimental](https://img.shields.io/badge/-experimental-blue)",
-        StabilityLevel.STABLE: "![Stable](https://img.shields.io/badge/-stable-lightgreen)",
-    }
-
-    _label_map = {
-        StabilityLevel.DEPRECATED: "**Deprecated: {}**",
-        StabilityLevel.EXPERIMENTAL: "**Experimental**",
-        StabilityLevel.STABLE: "**Stable**",
-    }
-
     check_only: bool = False
     enable_stable: bool = False
     enable_experimental: bool = False
@@ -41,8 +26,17 @@ class MarkdownOptions:
     break_count: int = 50
     exclude_files: List[str] = field(default_factory=list)
 
-    @property
-    def md_snippet_by_stability_level(self):
+    def stable_md_snippet(self):
         if self.use_badge:
-            return self._badge_map
-        return self._label_map
+            return "![Stable](https://img.shields.io/badge/-stable-lightgreen)"
+        return "**Stable**"
+
+    def experimental_md_snippet(self):
+        if self.use_badge:
+            return "![Experimental](https://img.shields.io/badge/-experimental-blue)"
+        return "**Experimental**"
+
+    def deprecated_md_snippet(self):
+        if self.use_badge:
+            return "![Deprecated](https://img.shields.io/badge/-deprecated-red)"
+        return "**Deprecated: {}**"

@@ -140,17 +140,18 @@ class BaseSemanticConvention(ValidatableYamlNode):
         self.semconv_id = self.id
         self.note = group.get("note", "").strip()
         self.prefix = group.get("prefix", "").strip()
-        stability = group.get("stability")
-        deprecated = group.get("deprecated")
         position_data = group.lc.data
-        self.stability, self.deprecated = SemanticAttribute.parse_stability_deprecated(
-            stability, deprecated, position_data
+        self.stability = SemanticAttribute.parse_stability(
+            group.get("stability"), position_data
+        )
+        self.deprecated = SemanticAttribute.parse_deprecated(
+            group.get("deprecated"), position_data
         )
         self.extends = group.get("extends", "").strip()
         self.events = group.get("events", ())
         self.constraints = parse_constraints(group.get("constraints", ()))
         self.attrs_by_name = SemanticAttribute.parse(
-            self.prefix, self.stability, group.get("attributes")
+            self.prefix, group.get("attributes")
         )
 
     def contains_attribute(self, attr: "SemanticAttribute"):

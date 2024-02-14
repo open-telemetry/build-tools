@@ -79,7 +79,7 @@ def test_codegen_attribute_root_ns(test_file_path, read_test_file):
     renderer.render(
         semconv,
         template_path,
-        os.path.join(tmppath, "{{camelcase_prefix}}Attributes.java"),
+        os.path.join(tmppath, "{{pascal_prefix}}Attributes.java"),
         "root_namespace",
     )
 
@@ -91,6 +91,33 @@ def test_codegen_attribute_root_ns(test_file_path, read_test_file):
 
     third = read_test_file("jinja", test_path, "ThirdAttributes.java")
     check_file(tmppath, "ThirdAttributes.java", third)
+
+def test_codegen_attribute_root_ns_snake_case_file(test_file_path, read_test_file):
+    semconv = SemanticConventionSet(debug=False)
+
+    semconv.parse(test_file_path("jinja", "group_by_root_namespace", "attributes.yml"))
+    semconv.finish()
+
+    template_path = test_file_path("jinja", "group_by_root_namespace", "template_all")
+    renderer = CodeRenderer({}, trim_whitespace=True)
+
+    test_path = os.path.join("group_by_root_namespace", "all")
+    tmppath = tempfile.mkdtemp()
+    renderer.render(
+        semconv,
+        template_path,
+        os.path.join(tmppath, "{{snake_prefix}}_attributes.java"),
+        "root_namespace",
+    )
+
+    first = read_test_file("jinja", test_path, "FirstAttributes.java")
+    check_file(tmppath, "first_attributes.java", first)
+
+    second = read_test_file("jinja", test_path, "SecondAttributes.java")
+    check_file(tmppath, "second_attributes.java", second)
+
+    third = read_test_file("jinja", test_path, "ThirdAttributes.java")
+    check_file(tmppath, "third_attributes.java", third)
 
 
 def test_codegen_attribute_root_ns_stable(test_file_path, read_test_file):
@@ -106,7 +133,7 @@ def test_codegen_attribute_root_ns_stable(test_file_path, read_test_file):
     renderer.render(
         semconv,
         template_path,
-        os.path.join(tmppath, "{{camelcase_prefix}}Attributes.java"),
+        os.path.join(tmppath, "{{pascal_prefix}}Attributes.java"),
         "root_namespace",
     )
 
@@ -130,7 +157,7 @@ def test_codegen_attribute_root_ns_no_group_prefix(test_file_path, read_test_fil
     renderer.render(
         semconv,
         template_path,
-        os.path.join(tmppath, "{{camelcase_prefix}}Attributes.java"),
+        os.path.join(tmppath, "{{pascal_prefix}}Attributes.java"),
         "root_namespace",
     )
 
@@ -170,7 +197,7 @@ def test_codegen_attribute_root_ns_metrics(test_file_path, read_test_file):
 
     tmppath = tempfile.mkdtemp()
     renderer.render(
-        semconv, template_path, os.path.join(tmppath, "{{camelcase_prefix}}.java"), "root_namespace"
+        semconv, template_path, os.path.join(tmppath, "{{pascal_prefix}}.java"), "root_namespace"
     )
 
     first = read_test_file("jinja", test_path, "First.java")

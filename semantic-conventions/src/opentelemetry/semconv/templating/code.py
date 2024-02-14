@@ -162,6 +162,11 @@ def to_camelcase(name: str, first_upper=False) -> str:
         first = first.capitalize()
     return first + "".join(word.capitalize() for word in rest)
 
+def to_snake_case(name):
+    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    name = re.sub('__([A-Z])', r'_\1', name)
+    name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
+    return name.lower()
 
 def first_up(name: str) -> str:
     return name[0].upper() + name[1:]
@@ -265,22 +270,20 @@ class CodeRenderer:
 
     @staticmethod
     def prefix_output_file(env, file_name, prefix):
-        # TODO - We treat incoming file names as a pattern.
+        # We treat incoming file names as a pattern.
         # We allow will give them access to the same jinja model as file creation
         # and we'll make sure a few things are available there, specifically:
-        # camelcase_file_name, raw_file_name, ...
+        # pascal case, camel case and snake case
         data={
             "prefix": prefix,
-            "camelcase_prefix": to_camelcase(prefix, True),
-            # TODO Pascal version
-            # TODO snake_case
+            "pascal_prefix": to_camelcase(prefix, True),
+            "camel_prefix": to_camelcase(prefix, False),
+            "snake_prefix": to_snake_case(prefix),
         }
-        print("[JOSH] Creating filename [", file_name, "] with data: ", data, "\n")
         template = env.from_string(file_name)
         full_name = template.render(data)
         dirname = os.path.dirname(full_name)
         basename = os.path.basename(full_name)
-        print("[JOSH] Writing to file: ", os.path.join(dirname, basename), "\n")
         return os.path.join(dirname, basename)
 
     def render(

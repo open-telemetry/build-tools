@@ -119,13 +119,36 @@ By default, all models are fed into the specified template at once, i.e. only a 
 This is helpful to generate constants for the semantic attributes, [example from opentelemetry-java](https://github.com/open-telemetry/opentelemetry-java/tree/main/buildscripts/semantic-convention).
 
 If the parameter `--file-per-group {pattern}` is set, a single yaml model is fed into the template
-and the value of `pattern` is resolved from the model and attached as prefix to the output argument.
+and the value of `pattern` is resolved from the model and may be used in the output argument.
 This way, multiple files are generated. The value of `pattern` can be one of the following:
 
 - `semconv_id`: The id of the semantic convention.
 - `prefix`: The prefix with which all attributes starts with.
 - `extends`: The id of the parent semantic convention.
 - `root_namespace`: The root namespace of attribute to group by.
+
+The `--output` parameter, when `--file-per-group` is used is evaluated as a template. The following variables are provided to output:
+
+- `prefix`: A prefix name for files, determined from the grouping. e.g. `http`, `database`, `user-agent`.
+- `pascal_prefix`: A Pascal-case prefix name for files. e.g. `Http`, `Database`, `UserAgent`.
+- `camel_prefix`: A camel-case prefix name for files. e.g. `http`, `database`, `userAgent`.
+- `snake_prefix`: A snake-case prefix name for files. e.g. `http`, `database`, `user_agent`.
+
+For example, you could do the following:
+
+```bash
+docker run --rm \
+  -v ${SCRIPT_DIR}/opentelemetry-specification/semantic_conventions/trace:/source \
+  -v ${SCRIPT_DIR}/templates:/templates \
+  -v ${ROOT_DIR}/semconv/src/main/java/io/opentelemetry/semconv/trace/attributes/:/output \
+  otel/semconvgen:$GENERATOR_VERSION \
+  --yaml-root /source \
+  code \
+  --template /templates/SemanticAttributes.java.j2 \
+  --file-per-group root_namespace \
+  --output "/output/{{pascal_prefix}}Attributes.java" \
+  ...other parameters...
+```
 
 Finally, additional value can be passed to the template in form of `key=value` pairs separated by
 comma using the `--parameters [{key=value},]+` or `-D` flag.

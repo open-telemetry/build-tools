@@ -163,6 +163,13 @@ def to_camelcase(name: str, first_upper=False) -> str:
     return first + "".join(word.capitalize() for word in rest)
 
 
+def to_snake_case(name):
+    name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+    name = re.sub("__([A-Z])", r"_\1", name)
+    name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", name)
+    return name.lower()
+
+
 def first_up(name: str) -> str:
     return name[0].upper() + name[1:]
 
@@ -264,10 +271,22 @@ class CodeRenderer:
         env.lstrip_blocks = trim_whitespace
 
     @staticmethod
-    def prefix_output_file(file_name, prefix):
-        basename = os.path.basename(file_name)
-        dirname = os.path.dirname(file_name)
-        return os.path.join(dirname, to_camelcase(prefix, True) + basename)
+    def prefix_output_file(env, file_name, prefix):
+        # We treat incoming file names as a pattern.
+        # We allow will give them access to the same jinja model as file creation
+        # and we'll make sure a few things are available there, specifically:
+        # pascal case, camel case and snake case
+        data = {
+            "prefix": prefix,
+            "pascal_prefix": to_camelcase(prefix, True),
+            "camel_prefix": to_camelcase(prefix, False),
+            "snake_prefix": to_snake_case(prefix),
+        }
+        template = env.from_string(file_name)
+        full_name = template.render(data)
+        dirname = os.path.dirname(full_name)
+        basename = os.path.basename(full_name)
+        return os.path.join(dirname, basename)
 
     def render(
         self,
@@ -307,7 +326,7 @@ class CodeRenderer:
     ):
         for semconv in semconvset.models.values():
             prefix = getattr(semconv, pattern)
-            output_name = self.prefix_output_file(output_file, prefix)
+            output_name = self.prefix_output_file(env, output_file, prefix)
             data = self.get_data_multiple_files(semconv, template_path)
             template = env.get_template(file_name, globals=data)
             self._write_template_to_file(template, data, output_name)
@@ -324,7 +343,7 @@ class CodeRenderer:
         metrics = self._grouped_metric_definitions(semconvset)
         for ns, attribute_and_templates in attribute_and_templates.items():
             sanitized_ns = ns if ns != "" else "other"
-            output_name = self.prefix_output_file(output_file, sanitized_ns)
+            output_name = self.prefix_output_file(env, output_file, sanitized_ns)
 
             data = {
                 "template": template_path,

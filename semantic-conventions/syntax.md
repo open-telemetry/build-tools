@@ -62,8 +62,7 @@ prefix ::= string
 
 extends ::= string
 
-stability ::= "deprecated"
-          |   "experimental"
+stability ::= "experimental"
           |   "stable"
 
 deprecated ::= <description>
@@ -135,10 +134,10 @@ name ::= string
 metricfields ::= metric_name instrument unit
 
 metric_name ::= string
-instrument ::=  "counter" 
-            | "histogram" 
-            | "gauge" 
-            | "updowncounter" 
+instrument ::=  "counter"
+            | "histogram"
+            | "gauge"
+            | "updowncounter"
 unit ::= string
 ```
 
@@ -161,13 +160,9 @@ The field `semconv` represents a semantic convention and it is made by:
    It defaults to an empty string.
 - `extends`, optional string, reference another semantic convention `id`.
    It inherits the prefix, constraints, and all attributes defined in the specified semantic convention.
-- `stability`, optional enum, specifies the stability of the semantic convention.
-
-   Note that, if `stability` is missing but `deprecated` is present, it will automatically set the `stability` to `deprecated`.
-   If `deprecated` is present and `stability` differs from `deprecated`, this will result in an error.
-- `deprecated`, optional, specifies if the semantic convention is deprecated.
+- `stability`, optional enum, specifies the stability of the semantic convention. Defaults to `experimental`.
+- `deprecated`, optional, when present marks the semantic convention as deprecated.
    The string provided as `<description>` MUST specify why it's deprecated and/or what to use instead.
-   See also `stability`.
 - `attributes`, list of attributes that belong to the semantic convention.
 - `constraints`, optional list, additional constraints (See later). It defaults to an empty list.
 
@@ -189,27 +184,27 @@ The following is only valid if `type` is `event`:
 
 #### Metric Group semantic convention
 
-Metric group inherits all from the base semantic convention, and does not 
+Metric group inherits all from the base semantic convention, and does not
 add any additional fields.
 
-The metric group semconv is a group where related metric attributes 
+The metric group semconv is a group where related metric attributes
 can be defined and then referenced from other `metric` groups using `ref`.
 
 #### Metric semantic convention
 
 The following is only valid if `type` is `metric`:
 
-  - `metric_name`, required, the metric name as described by the [OpenTelemetry Specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/data-model.md#timeseries-model). 
-  - `instrument`, required, the [instrument type]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/api.md#instrument) 
-  that should be used to record the metric. Note that the semantic conventions must be written 
+  - `metric_name`, required, the metric name as described by the [OpenTelemetry Specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/data-model.md#timeseries-model).
+  - `instrument`, required, the [instrument type]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/api.md#instrument)
+  that should be used to record the metric. Note that the semantic conventions must be written
   using the names of the synchronous instrument types (`counter`, `gauge`, `updowncounter` and `histogram`).
   For more details: [Metrics semantic conventions - Instrument types](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-types).
-  - `unit`, required, the unit in which the metric is measured, which should adhere to 
-    [the guidelines](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-units). 
+  - `unit`, required, the unit in which the metric is measured, which should adhere to
+    [the guidelines](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-units).
 
 #### Attribute group semantic convention
 
-Attribute group (`attribute_group` type) defines a set of attributes that can be 
+Attribute group (`attribute_group` type) defines a set of attributes that can be
 declared once and referenced by semantic conventions for different signals, for example spans and logs.
 Attribute groups don't have any specific fields and follow the general `semconv` semantics.
 
@@ -339,7 +334,7 @@ fields are present in the current attribute definition, they override the inheri
 #### Type
 
 An attribute type can either be a string, int, double, boolean, array of strings, array of int, array of double,
-array of booleans, a template type or an enumeration. 
+array of booleans, a template type or an enumeration.
 
 ##### Template type
 
@@ -347,7 +342,7 @@ A template type attribute represents a _dictionary_ of attributes with a common 
 
 `type: template[<PRIMITIVE_OR_ARRAY_TYPE>]`
 
-The `<PRIMITIVE_OR_ARRAY_TYPE>` is one of the above-mentioned primitive or array types (_not_ an enum) and specifies the type of the `value` in the dictionary. 
+The `<PRIMITIVE_OR_ARRAY_TYPE>` is one of the above-mentioned primitive or array types (_not_ an enum) and specifies the type of the `value` in the dictionary.
 
 The following is an example for defining a template type attribute and it's resolution:
 
@@ -366,7 +361,7 @@ groups:
           ...
 ```
 
-In this example the definition will be resolved into a dictionary of attributes `http.request.header.<key>` where `<key>` will be replaced by the actual HTTP header name, and the value of the attributes is of type `string[]` that carries the HTTP header value. 
+In this example the definition will be resolved into a dictionary of attributes `http.request.header.<key>` where `<key>` will be replaced by the actual HTTP header name, and the value of the attributes is of type `string[]` that carries the HTTP header value.
 
 ##### Enumeration
 

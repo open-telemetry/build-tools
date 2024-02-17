@@ -476,22 +476,18 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(len(semconv.models), 6)
 
         model = list(semconv.models.values())[0]
-        self.assertEqual(len(model.attributes_and_templates), 4)
-        self.assertEqual(model.stability, None)
+        self.assertEqual(len(model.attributes_and_templates), 3)
+        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
 
         attr = model.attributes_and_templates[0]
         self.assertEqual(attr.attr_id, "def_stability")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
         attr = model.attributes_and_templates[1]
-        self.assertEqual(attr.attr_id, "deprecated_attr")
-        self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
-
-        attr = model.attributes_and_templates[2]
         self.assertEqual(attr.attr_id, "exp_attr")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes_and_templates[3]
+        attr = model.attributes_and_templates[2]
         self.assertEqual(attr.attr_id, "stable_attr")
         self.assertEqual(attr.stability, StabilityLevel.STABLE)
 
@@ -501,19 +497,24 @@ class TestCorrectParse(unittest.TestCase):
 
         attr = model.attributes_and_templates[0]
         self.assertEqual(attr.attr_id, "dep")
-        self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
         attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "test_attr")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
         model = list(semconv.models.values())[2]
-        self.assertEqual(len(model.attributes_and_templates), 1)
-        self.assertEqual(model.stability, StabilityLevel.DEPRECATED)
+        self.assertEqual(len(model.attributes_and_templates), 2)
+        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
 
         attr = model.attributes_and_templates[0]
+        self.assertEqual(attr.attr_id, "stable_deprecated_attr")
+        self.assertEqual(attr.stability, StabilityLevel.STABLE)
+        self.assertIsNotNone(attr.deprecated)
+
+        attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "test_attr")
-        self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
     def test_populate_other_attributes(self):
         semconv = SemanticConventionSet(debug=False)

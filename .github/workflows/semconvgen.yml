@@ -16,8 +16,8 @@ jobs:
       run: 
         working-directory: semantic-conventions/
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.x'
     - name: install dev-dependencies
@@ -45,8 +45,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: tests
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
     - name: Build the wheel
       run: |
        pip install -U pip setuptools wheel

@@ -1,0 +1,52 @@
+groups:
+  - id: zzz
+    type: attribute_group
+    prefix: zzz
+    brief: 'Attributes that appear last.'
+    attributes:
+      - id: yyy
+        type: string
+        brief: 'the 6th attribute'
+        examples: 'yyy'
+      - id: xxx
+        type: string
+        brief: 'the 5th attribute'
+        examples: 'xxx'
+
+  - id: aaa
+    type: attribute_group
+    prefix: aaa
+    brief: 'Attributes that appear first.'
+    attributes:
+      - id: aaa
+        type: string
+        brief: 'the 1st attribute'
+        examples: 'aaa'
+
+  - id: nnn
+    type: attribute_group
+    prefix: nnn
+    brief: 'Attributes that appear after `mmm`.'
+    attributes:
+      - id: nnn
+        type: string
+        brief: 'the 4th attribute'
+        examples: 'nnn'
+
+  - id: mmm
+    type: attribute_group
+    prefix: mmm
+    brief: 'Attributes that appear in the middle.'
+    extends: nnn
+    attributes:
+      - id: ccc
+        type: template[string]
+        brief: the 3rd attribute
+        examples: '`mmm.ccc="ccc"`'
+      - id: bbb
+        type: string
+        brief: the 2nd attribute
+        examples: 'bbb'
+      - ref: zzz.yyy
+      - ref: zzz.xxx
+      - ref: aaa.aaa

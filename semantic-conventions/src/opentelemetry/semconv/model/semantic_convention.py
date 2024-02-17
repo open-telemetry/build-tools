@@ -16,16 +16,15 @@ import sys
 import typing
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 from ruamel.yaml import YAML
 
 from opentelemetry.semconv.model.constraints import AnyOf, Include, parse_constraints
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
-    RequirementLevel,
+    AttributeType,
     SemanticAttribute,
-    unique_attributes,
 )
 from opentelemetry.semconv.model.unit_member import UnitMember
 from opentelemetry.semconv.model.utils import ValidatableYamlNode, validate_id
@@ -111,10 +110,29 @@ class BaseSemanticConvention(ValidatableYamlNode):
 
     @property
     def attributes(self):
+        return self._get_attributes(False)
+
+    @property
+    def attribute_templates(self):
+        return self._get_attributes(True)
+
+    @property
+    def attributes_and_templates(self):
+        return self._get_attributes(None)
+
+    def _get_attributes(self, templates: Optional[bool]):
         if not hasattr(self, "attrs_by_name"):
             return []
 
-        return list(self.attrs_by_name.values())
+        return sorted(
+            [
+                attr
+                for attr in self.attrs_by_name.values()
+                if templates is None
+                or templates == AttributeType.is_template_type(attr.attr_type)
+            ],
+            key=lambda attr: attr.fqn,
+        )
 
     def __init__(self, group):
         super().__init__(group)
@@ -122,56 +140,28 @@ class BaseSemanticConvention(ValidatableYamlNode):
         self.semconv_id = self.id
         self.note = group.get("note", "").strip()
         self.prefix = group.get("prefix", "").strip()
-        stability = group.get("stability")
-        deprecated = group.get("deprecated")
         position_data = group.lc.data
-        self.stability, self.deprecated = SemanticAttribute.parse_stability_deprecated(
-            stability, deprecated, position_data
+        self.stability = SemanticAttribute.parse_stability(
+            group.get("stability"), position_data
+        )
+        self.deprecated = SemanticAttribute.parse_deprecated(
+            group.get("deprecated"), position_data
         )
         self.extends = group.get("extends", "").strip()
         self.events = group.get("events", ())
         self.constraints = parse_constraints(group.get("constraints", ()))
         self.attrs_by_name = SemanticAttribute.parse(
-            self.prefix, self.stability, group.get("attributes")
+            self.prefix, group.get("attributes")
         )
 
     def contains_attribute(self, attr: "SemanticAttribute"):
-        for local_attr in self.attributes:
+        for local_attr in self.attributes_and_templates:
             if local_attr.attr_id is not None:
                 if local_attr.fqn == attr.fqn:
                     return True
             if local_attr == attr:
                 return True
         return False
-
-    def all_attributes(self):
-        return unique_attributes(self.attributes + self.conditional_attributes())
-
-    def sampling_attributes(self):
-        return unique_attributes(
-            attr for attr in self.attributes if attr.sampling_relevant
-        )
-
-    def required_attributes(self):
-        return unique_attributes(
-            attr
-            for attr in self.attributes
-            if attr.requirement_level == RequirementLevel.REQUIRED
-        )
-
-    def conditional_attributes(self):
-        return unique_attributes(
-            attr
-            for attr in self.attributes
-            if attr.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED
-        )
-
-    def any_of(self):
-        result = []
-        for constraint in self.constraints:
-            if isinstance(constraint, AnyOf):
-                result.append(constraint)
-        return result
 
     def has_attribute_constraint(self, attr):
         return any(
@@ -326,7 +316,7 @@ class SemanticConventionSet:
     def check_unique_fqns(self):
         group_by_fqn: typing.Dict[str, str] = {}
         for model in self.models.values():
-            for attr in model.attributes:
+            for attr in model.attributes_and_templates:
                 if not attr.ref:
                     if attr.fqn in group_by_fqn:
                         self.errors = True
@@ -338,7 +328,8 @@ class SemanticConventionSet:
                     group_by_fqn[attr.fqn] = model.semconv_id
 
     def finish(self):
-        """Resolves values referenced from other models using `ref` and `extends` attributes AFTER all models were parsed.
+        """Resolves values referenced from other models using `ref` and `extends` attributes
+        AFTER all models were parsed.
         Here, sanity checks for `ref/extends` attributes are performed.
         """
         # Before resolving attributes, we verify that no duplicate exists.
@@ -391,7 +382,7 @@ class SemanticConventionSet:
                 raise ValidationError.from_yaml_pos(
                     semconv._position,
                     f"Semantic Convention {semconv.semconv_id} extends "
-                    "{semconv.extends} but the latter cannot be found!",
+                    f"{semconv.extends} but the latter cannot be found!",
                 )
 
             # Process hierarchy chain
@@ -412,33 +403,14 @@ class SemanticConventionSet:
                     semconv.constraints += (constraint.inherit_anyof(),)
             # Attributes
             parent_attributes = {}
-            for ext_attr in extended.attributes:
+            for ext_attr in extended.attributes_and_templates:
                 parent_attributes[ext_attr.fqn] = ext_attr.inherit_attribute()
-            # By induction, parent semconv is already correctly sorted
-            parent_attributes.update(
-                SemanticConventionSet._sort_attributes_dict(semconv.attrs_by_name)
-            )
-            if parent_attributes or semconv.attributes:
-                semconv.attrs_by_name = parent_attributes
-        elif semconv.attributes:  # No parent, sort of current attributes
-            semconv.attrs_by_name = SemanticConventionSet._sort_attributes_dict(
-                semconv.attrs_by_name
-            )
+
+            parent_attributes.update(semconv.attrs_by_name)
+            semconv.attrs_by_name = parent_attributes
+
         # delete from remaining semantic conventions to process
         del unprocessed[semconv.semconv_id]
-
-    @staticmethod
-    def _sort_attributes_dict(
-        attributes: typing.Dict[str, SemanticAttribute]
-    ) -> typing.Dict[str, SemanticAttribute]:
-        """
-        First  imported, and then defined attributes.
-        :param attributes: Dictionary of attributes to sort
-        :return: A sorted dictionary of attributes
-        """
-        return dict(
-            sorted(attributes.items(), key=lambda kv: 0 if kv[1].imported else 1)
-        )
 
     def _populate_anyof_attributes(self):
         any_of: AnyOf
@@ -485,6 +457,7 @@ class SemanticConventionSet:
         attr: SemanticAttribute
         for attr in semconv.attributes:
             if attr.ref is not None and attr.attr_id is None:
+                attr = self._fill_inherited_attribute(attr, semconv)
                 # There are changes
                 fixpoint_ref = False
                 ref_attr = self._lookup_attribute(attr.ref)
@@ -493,19 +466,33 @@ class SemanticConventionSet:
                         semconv._position,
                         f"Semantic Convention {semconv.semconv_id} reference `{attr.ref}` but it cannot be found!",
                     )
-                attr.attr_type = ref_attr.attr_type
-                if not attr.brief:
-                    attr.brief = ref_attr.brief
-                if not attr.requirement_level:
-                    attr.requirement_level = ref_attr.requirement_level
-                    if not attr.requirement_level_msg:
-                        attr.requirement_level_msg = ref_attr.requirement_level_msg
-                if not attr.note:
-                    attr.note = ref_attr.note
-                if attr.examples is None:
-                    attr.examples = ref_attr.examples
-                attr.attr_id = attr.ref
+                attr = self._merge_attribute(attr, ref_attr)
         return fixpoint_ref
+
+    def _fill_inherited_attribute(self, attr, semconv):
+        if attr.attr_id is not None:
+            return attr
+
+        if attr.ref in semconv.attrs_by_name.keys():
+            attr = self._merge_attribute(attr, semconv.attrs_by_name[attr.ref])
+        if semconv.extends in self.models:
+            attr = self._fill_inherited_attribute(attr, self.models[semconv.extends])
+        return attr
+
+    def _merge_attribute(self, child, parent):
+        child.attr_type = parent.attr_type
+        if not child.brief:
+            child.brief = parent.brief
+        if not child.requirement_level:
+            child.requirement_level = parent.requirement_level
+            if not child.requirement_level_msg:
+                child.requirement_level_msg = parent.requirement_level_msg
+        if not child.note:
+            child.note = parent.note
+        if child.examples is None:
+            child.examples = parent.examples
+        child.attr_id = parent.attr_id
+        return child
 
     def resolve_include(self, semconv):
         fixpoint_inc = True
@@ -524,7 +511,7 @@ class SemanticConventionSet:
                     include_semconv, {include_semconv.semconv_id: include_semconv}
                 )
                 attr: SemanticAttribute
-                for attr in include_semconv.attributes:
+                for attr in include_semconv.attributes_and_templates:
                     if semconv.contains_attribute(attr):
                         if self.debug:
                             print(
@@ -553,7 +540,7 @@ class SemanticConventionSet:
             (
                 attr
                 for model in self.models.values()
-                for attr in model.attributes
+                for attr in model.attributes_and_templates
                 if attr.fqn == attr_id and attr.ref is None
             ),
             None,
@@ -563,6 +550,12 @@ class SemanticConventionSet:
         output = []
         for semconv in self.models.values():
             output.extend(semconv.attributes)
+        return output
+
+    def attribute_templates(self):
+        output = []
+        for semconv in self.models.values():
+            output.extend(semconv.attribute_templates)
         return output
 
 

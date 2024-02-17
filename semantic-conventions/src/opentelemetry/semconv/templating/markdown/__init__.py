@@ -22,6 +22,7 @@ from pathlib import PurePath
 
 from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import (
+    AttributeType,
     EnumAttributeType,
     EnumMember,
     RequirementLevel,
@@ -44,6 +45,7 @@ class RenderContext:
         self.is_full = False
         self.is_remove_constraint = False
         self.is_metric_table = False
+        self.is_omit_requirement_level = False
         self.group_key = ""
         self.enums = []
         self.notes = []
@@ -69,10 +71,19 @@ class MarkdownRenderer:
     )
     p_end = re.compile("<!--\\s*endsemconv\\s*-->")
     default_break_conditional_labels = 50
-    valid_parameters = ["tag", "full", "remove_constraints", "metric_table"]
+    valid_parameters = [
+        "tag",
+        "full",
+        "remove_constraints",
+        "metric_table",
+        "omit_requirement_level",
+    ]
 
     prelude = "<!-- semconv {} -->\n"
     table_headers = "| Attribute  | Type | Description  | Examples  | Requirement Level |\n|---|---|---|---|---|\n"
+    table_headers_omitting_req_level = (
+        "| Attribute  | Type | Description  | Examples  |\n|---|---|---|---|\n"
+    )
 
     def __init__(
         self, md_folder, semconvset: SemanticConventionSet, options=MarkdownOptions()
@@ -97,30 +108,30 @@ class MarkdownRenderer:
         """
         This method renders attributes as markdown table entry
         """
-        name = self.render_attribute_id(attribute.fqn)
+        name = self.render_fqn_for_attribute(attribute)
         attr_type = (
             "enum"
             if isinstance(attribute.attr_type, EnumAttributeType)
-            else attribute.attr_type
+            else AttributeType.get_instantiated_type(attribute.attr_type)
         )
         description = ""
         if attribute.deprecated and self.options.enable_deprecated:
             if "deprecated" in attribute.deprecated.lower():
                 description = f"**{attribute.deprecated}**<br>"
             else:
-                deprecated_msg = self.options.md_snippet_by_stability_level[
-                    StabilityLevel.DEPRECATED
-                ].format(attribute.deprecated)
+                deprecated_msg = self.options.deprecated_md_snippet().format(
+                    attribute.deprecated
+                )
                 description = f"{deprecated_msg}<br>"
         elif (
             attribute.stability == StabilityLevel.STABLE and self.options.enable_stable
         ):
-            description = f"{self.options.md_snippet_by_stability_level[StabilityLevel.STABLE]}<br>"
+            description = f"{self.options.stable_md_snippet()}<br>"
         elif (
             attribute.stability == StabilityLevel.EXPERIMENTAL
             and self.options.enable_experimental
         ):
-            description = f"{self.options.md_snippet_by_stability_level[StabilityLevel.EXPERIMENTAL]}<br>"
+            description = f"{self.options.experimental_md_snippet()}<br>"
         description += attribute.brief
         if attribute.note:
             self.render_ctx.add_note(attribute.note)
@@ -147,6 +158,16 @@ class MarkdownRenderer:
                 examples = "`[" + ", ".join(f"{ex}" for ex in example_list) + "]`"
             else:
                 examples = "; ".join(f"`{ex}`" for ex in example_list)
+
+        if self.render_ctx.is_omit_requirement_level:
+            output.write(f"| {name} | {attr_type} | {description} | {examples} |\n")
+        else:
+            required = self.derive_requirement_level(attribute)
+            output.write(
+                f"| {name} | {attr_type} | {description} | {examples} | {required} |\n"
+            )
+
+    def derive_requirement_level(self, attribute: SemanticAttribute):
         if attribute.requirement_level == RequirementLevel.REQUIRED:
             required = "Required"
         elif attribute.requirement_level == RequirementLevel.CONDITIONALLY_REQUIRED:
@@ -155,7 +176,7 @@ class MarkdownRenderer:
             else:
                 # We put the condition in the notes after the table
                 self.render_ctx.add_note(attribute.requirement_level_msg)
-                required = f"Conditionally Required: [{ len(self.render_ctx.notes)}]"
+                required = f"Conditionally Required: [{len(self.render_ctx.notes)}]"
         elif attribute.requirement_level == RequirementLevel.OPT_IN:
             required = "Opt-In"
         else:  # attribute.requirement_level == Required.RECOMMENDED or None
@@ -174,30 +195,32 @@ class MarkdownRenderer:
                     # We put the condition in the notes after the table
                     self.render_ctx.add_note(attribute.requirement_level_msg)
                     required = f"Recommended: [{len(self.render_ctx.notes)}]"
+        return required
 
-        output.write(
-            f"| {name} | {attr_type} | {description} | {examples} | {required} |\n"
-        )
+    def write_table_header(self, output: io.StringIO):
+        if self.render_ctx.is_omit_requirement_level:
+            output.write(MarkdownRenderer.table_headers_omitting_req_level)
+        else:
+            output.write(MarkdownRenderer.table_headers)
 
     def to_markdown_attribute_table(
         self, semconv: BaseSemanticConvention, output: io.StringIO
     ):
         attr_to_print = []
-        for attr in sorted(
-            semconv.attributes, key=lambda a: "" if a.ref is None else a.ref
-        ):
+        for attr in semconv.attributes_and_templates:
             if self.render_ctx.group_key is not None:
                 if attr.tag == self.render_ctx.group_key:
                     attr_to_print.append(attr)
                 continue
             if self.render_ctx.is_full or attr.is_local:
                 attr_to_print.append(attr)
+
         if self.render_ctx.group_key is not None and not attr_to_print:
             raise ValueError(
                 f"No attributes retained for '{semconv.semconv_id}' filtering by '{self.render_ctx.group_key}'"
             )
         if attr_to_print:
-            output.write(MarkdownRenderer.table_headers)
+            self.write_table_header(output)
             for attr in attr_to_print:
                 self.to_markdown_attr(attr, output)
         attr_sampling_relevant = [
@@ -270,12 +293,12 @@ class MarkdownRenderer:
         """
         if sampling_relevant_attrs:
             output.write(
-                "\nFollowing attributes MUST be provided **at span creation time** (when provided at all), "
-                + "so they can be considered for sampling decisions:\n\n"
+                "\nThe following attributes can be important for making sampling decisions "
+                + "and SHOULD be provided **at span creation time** (if provided at all):\n\n"
             )
 
             for attr in sampling_relevant_attrs:
-                output.write("* " + self.render_attribute_id(attr.fqn) + "\n")
+                output.write("* " + self.render_fqn_for_attribute(attr) + "\n")
 
     @staticmethod
     def to_markdown_unit_table(members, output: io.StringIO):
@@ -325,19 +348,37 @@ class MarkdownRenderer:
             if notes:
                 output.write("\n")
 
+    def render_fqn_for_attribute(self, attribute):
+        rel_path = self.get_attr_reference_relative_path(attribute.fqn)
+        name = attribute.fqn
+        if AttributeType.is_template_type(attribute.attr_type):
+            name = f"{attribute.fqn}.<key>"
+
+        if rel_path is not None:
+            return f"[`{name}`]({rel_path})"
+        return f"`{name}`"
+
     def render_attribute_id(self, attribute_id):
         """
         Method to render in markdown an attribute id. If the id points to an attribute in another rendered table, a
         markdown link is introduced.
         """
+        rel_path = self.get_attr_reference_relative_path(attribute_id)
+        if rel_path is not None:
+            return f"[`{attribute_id}`]({rel_path})"
+        return f"`{attribute_id}`"
+
+    def get_attr_reference_relative_path(self, attribute_id):
         md_file = self.filename_for_attr_fqn.get(attribute_id)
         if md_file:
             path = PurePath(self.render_ctx.current_md)
             if path.as_posix() != PurePath(md_file).as_posix():
-                diff = PurePath(os.path.relpath(md_file, start=path.parent)).as_posix()
-                if diff != ".":
-                    return f"[`{attribute_id}`]({diff})"
-        return f"`{attribute_id}`"
+                rel_path = PurePath(
+                    os.path.relpath(md_file, start=path.parent)
+                ).as_posix()
+                if rel_path != ".":
+                    return rel_path
+        return None
 
     def to_markdown_constraint(
         self,
@@ -350,7 +391,7 @@ class MarkdownRenderer:
         if isinstance(obj, AnyOf):
             self.to_markdown_anyof(obj, output)
         elif not isinstance(obj, Include):
-            raise Exception(f"Trying to generate Markdown for a wrong type {type(obj)}")
+            raise TypeError(f"Trying to generate Markdown for a wrong type {type(obj)}")
 
     def render_md(self):
         for md_filename in self.file_names:
@@ -388,9 +429,10 @@ class MarkdownRenderer:
                         raise ValueError(
                             f"Semantic Convention ID {semconv_id} not found"
                         )
-                    a: SemanticAttribute
                     valid_attr = (
-                        a for a in semconv.attributes if a.is_local and not a.ref
+                        a
+                        for a in semconv.attributes_and_templates
+                        if a.is_local and not a.ref
                     )
                     for attr in valid_attr:
                         m[attr.fqn] = md
@@ -472,6 +514,9 @@ class MarkdownRenderer:
         self.render_ctx.group_key = parameters.get("tag")
         self.render_ctx.is_full = "full" in parameters
         self.render_ctx.is_metric_table = "metric_table" in parameters
+        self.render_ctx.is_omit_requirement_level = (
+            "omit_requirement_level" in parameters
+        )
 
         if self.render_ctx.is_metric_table:
             self.to_markdown_metric_table(semconv, output)

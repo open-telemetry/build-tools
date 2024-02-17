@@ -62,8 +62,7 @@ prefix ::= string
 
 extends ::= string
 
-stability ::= "deprecated"
-          |   "experimental"
+stability ::= "experimental"
           |   "stable"
 
 deprecated ::= <description>
@@ -73,7 +72,11 @@ attributes ::= (id type brief examples | ref [brief] [examples]) [tag] [stabilit
 # ref MUST point to an existing attribute id
 ref ::= id
 
-type ::= "string"
+type ::= simple_type
+     |   template_type
+     |   enum
+
+simple_type ::= "string"
      |   "int"
      |   "double"
      |   "boolean"
@@ -81,7 +84,8 @@ type ::= "string"
      |   "int[]"
      |   "double[]"
      |   "boolean[]"
-     |   enum
+
+template_type ::= "template[" simple_type "]" # As a single string
 
 enum ::= [allow_custom_values] members
 
@@ -130,10 +134,10 @@ name ::= string
 metricfields ::= metric_name instrument unit
 
 metric_name ::= string
-instrument ::=  "counter" 
-            | "histogram" 
-            | "gauge" 
-            | "updowncounter" 
+instrument ::=  "counter"
+            | "histogram"
+            | "gauge"
+            | "updowncounter"
 unit ::= string
 ```
 
@@ -156,13 +160,9 @@ The field `semconv` represents a semantic convention and it is made by:
    It defaults to an empty string.
 - `extends`, optional string, reference another semantic convention `id`.
    It inherits the prefix, constraints, and all attributes defined in the specified semantic convention.
-- `stability`, optional enum, specifies the stability of the semantic convention.
-
-   Note that, if `stability` is missing but `deprecated` is present, it will automatically set the `stability` to `deprecated`.
-   If `deprecated` is present and `stability` differs from `deprecated`, this will result in an error.
-- `deprecated`, optional, specifies if the semantic convention is deprecated.
+- `stability`, optional enum, specifies the stability of the semantic convention. Defaults to `experimental`.
+- `deprecated`, optional, when present marks the semantic convention as deprecated.
    The string provided as `<description>` MUST specify why it's deprecated and/or what to use instead.
-   See also `stability`.
 - `attributes`, list of attributes that belong to the semantic convention.
 - `constraints`, optional list, additional constraints (See later). It defaults to an empty list.
 
@@ -184,27 +184,27 @@ The following is only valid if `type` is `event`:
 
 #### Metric Group semantic convention
 
-Metric group inherits all from the base semantic convention, and does not 
+Metric group inherits all from the base semantic convention, and does not
 add any additional fields.
 
-The metric group semconv is a group where related metric attributes 
+The metric group semconv is a group where related metric attributes
 can be defined and then referenced from other `metric` groups using `ref`.
 
 #### Metric semantic convention
 
 The following is only valid if `type` is `metric`:
 
-  - `metric_name`, required, the metric name as described by the [OpenTelemetry Specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/data-model.md#timeseries-model). 
-  - `instrument`, required, the [instrument type]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/api.md#instrument) 
-  that should be used to record the metric. Note that the semantic conventions must be written 
+  - `metric_name`, required, the metric name as described by the [OpenTelemetry Specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/data-model.md#timeseries-model).
+  - `instrument`, required, the [instrument type]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/api.md#instrument)
+  that should be used to record the metric. Note that the semantic conventions must be written
   using the names of the synchronous instrument types (`counter`, `gauge`, `updowncounter` and `histogram`).
   For more details: [Metrics semantic conventions - Instrument types](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-types).
-  - `unit`, required, the unit in which the metric is measured, which should adhere to 
-    [the guidelines](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-units). 
+  - `unit`, required, the unit in which the metric is measured, which should adhere to
+    [the guidelines](https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/metrics/semantic_conventions#instrument-units).
 
 #### Attribute group semantic convention
 
-Attribute group (`attribute_group` type) defines a set of attributes that can be 
+Attribute group (`attribute_group` type) defines a set of attributes that can be
 declared once and referenced by semantic conventions for different signals, for example spans and logs.
 Attribute groups don't have any specific fields and follow the general `semconv` semantics.
 
@@ -213,17 +213,18 @@ Attribute groups don't have any specific fields and follow the general `semconv`
 An attribute is defined by:
 
 - `id`, string that uniquely identifies the attribute.
-- `type`, either a string literal denoting the type or an enum definition (See later).
+- `type`, either a string literal denoting the type as a primitive or an array type, a template type or an enum definition (See later).
    The accepted string literals are:
-
-  * `"string"`: String attributes.
-  * `"int"`: Integer attributes.
-  * `"double"`: Double attributes.
-  * `"boolean"`: Boolean attributes.
-  * `"string[]"`: Array of strings attributes.
-  * `"int[]"`: Array of integer attributes.
-  * `"double[]"`: Array of double attributes.
-  * `"boolean[]"`: Array of booleans attributes.
+  * _primitive and array types as string literals:_
+    * `"string"`: String attributes.
+    * `"int"`: Integer attributes.
+    * `"double"`: Double attributes.
+    * `"boolean"`: Boolean attributes.
+    * `"string[]"`: Array of strings attributes.
+    * `"int[]"`: Array of integer attributes.
+    * `"double[]"`: Array of double attributes.
+    * `"boolean[]"`: Array of booleans attributes.
+  * _template type as string literal:_ `"template[<PRIMITIVE_OR_ARRAY_TYPE>]"` (See [below](#template-type))
 
   See the [specification of Attributes](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) for the definition of the value types.
 - `ref`, optional string, reference an existing attribute, see [below](#ref).
@@ -333,7 +334,38 @@ fields are present in the current attribute definition, they override the inheri
 #### Type
 
 An attribute type can either be a string, int, double, boolean, array of strings, array of int, array of double,
-array of booleans, or an enumeration. If it is an enumeration, additional fields are required:
+array of booleans, a template type or an enumeration.
+
+##### Template type
+
+A template type attribute represents a _dictionary_ of attributes with a common attribute name prefix. The syntax for defining template type attributes is the following:
+
+`type: template[<PRIMITIVE_OR_ARRAY_TYPE>]`
+
+The `<PRIMITIVE_OR_ARRAY_TYPE>` is one of the above-mentioned primitive or array types (_not_ an enum) and specifies the type of the `value` in the dictionary.
+
+The following is an example for defining a template type attribute and it's resolution:
+
+```yaml
+groups:
+  - id: trace.http.common
+    type: attribute_group
+    brief: "..."
+    attributes:
+      - id: http.request.header
+        type: template[string[]]
+        brief: >
+          HTTP request headers, the key being the normalized HTTP header name (lowercase, with `-` characters replaced by `_`), the value being the header values.
+        examples: ['http.request.header.content_type=["application/json"]', 'http.request.header.x_forwarded_for=["1.2.3.4", "1.2.3.5"]']
+        note: |
+          ...
+```
+
+In this example the definition will be resolved into a dictionary of attributes `http.request.header.<key>` where `<key>` will be replaced by the actual HTTP header name, and the value of the attributes is of type `string[]` that carries the HTTP header value.
+
+##### Enumeration
+
+If the type is an enumeration, additional fields are required:
 
 - `allow_custom_values`, optional boolean, set to false to not accept values
      other than the specified members. It defaults to `true`.

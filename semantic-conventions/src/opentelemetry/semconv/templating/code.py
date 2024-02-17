@@ -22,9 +22,13 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from opentelemetry.semconv.model.semantic_attribute import (
     RequirementLevel,
+    SemanticAttribute,
     TextWithLinks,
 )
-from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
+from opentelemetry.semconv.model.semantic_convention import (
+    BaseSemanticConvention,
+    SemanticConventionSet,
+)
 from opentelemetry.semconv.model.utils import ID_RE
 
 
@@ -156,9 +160,12 @@ def to_camelcase(name: str, first_upper=False) -> str:
     return first + "".join(word.capitalize() for word in rest)
 
 
+def is_deprecated(obj: typing.Union[SemanticAttribute, BaseSemanticConvention]) -> bool:
+    return obj.deprecated is not None
+
+
 class CodeRenderer:
     pattern = f"{{{ID_RE.pattern}}}"
-    matcher = re.compile(pattern)
 
     parameters: typing.Dict[str, str]
     trim_whitespace: bool
@@ -188,6 +195,7 @@ class CodeRenderer:
             "template": template_path,
             "semconvs": semconvset.models,
             "attributes": semconvset.attributes(),
+            "attribute_templates": semconvset.attribute_templates(),
         }
         data.update(self.parameters)
         return data
@@ -209,6 +217,8 @@ class CodeRenderer:
         env.filters["to_html_links"] = to_html_links
         env.filters["regex_replace"] = regex_replace
         env.filters["render_markdown"] = render_markdown
+        env.filters["is_deprecated"] = is_deprecated
+        env.tests["is_deprecated"] = is_deprecated
         env.trim_blocks = trim_whitespace
         env.lstrip_blocks = trim_whitespace
 

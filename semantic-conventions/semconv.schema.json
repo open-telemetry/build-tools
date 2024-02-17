@@ -287,7 +287,15 @@
 								"string[]",
 								"int[]",
 								"double[]",
-								"boolean[]"
+								"boolean[]",
+								"template[string]",
+								"template[int]",
+								"template[double]",
+								"template[boolean]",
+								"template[string[]]",
+								"template[int[]]",
+								"template[double[]]",
+								"template[boolean[]]"
 							],
 							"description": "literal denoting the type"
 						},
@@ -341,7 +349,7 @@
 				{
 					"properties": {
 						"requirement_level": {
-							"description": "specifies the attribute requirement level. Can be 'required', 'conditionally_required', 'recommended', or 'opt_in'. When omitted, the attribute is 'recommended'. When set to 'conditionally_required', the string provided as <condition> MUST specify the conditions under which the attribute is required.",
+							"description": "specifies the attribute requirement level. Can be 'required', 'conditionally_required', 'recommended', or 'opt_in'. When omitted, the attribute is 'recommended'. When set to 'conditionally_required', the string provided MUST specify the conditions under which the attribute is required.",
 							"oneOf": [
 								{
 									"const": "required"
@@ -353,7 +361,7 @@
 										"conditionally_required"
 									],
 									"properties": {
-										"condition": {
+										"conditionally_required": {
 											"type": "string"
 										}
 									}

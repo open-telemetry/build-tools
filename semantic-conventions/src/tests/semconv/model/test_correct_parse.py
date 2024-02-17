@@ -65,9 +65,9 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 1,
             "attributes": [
-                "db.type",
                 "db.instance",
                 "db.statement",
+                "db.type",
                 "db.url",
                 "db.user",
             ],
@@ -84,7 +84,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "faas",
             "extends": "",
             "n_constraints": 0,
-            "attributes": ["faas.trigger", "faas.execution"],
+            "attributes": ["faas.execution", "faas.trigger"],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
         expected = {
@@ -94,9 +94,9 @@ class TestCorrectParse(unittest.TestCase):
             "n_constraints": 0,
             "attributes": [
                 "faas.document.collection",
+                "faas.document.name",
                 "faas.document.operation",
                 "faas.document.time",
-                "faas.document.name",
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[1], expected)
@@ -121,7 +121,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "faas",
             "extends": "faas",
             "n_constraints": 0,
-            "attributes": ["faas.time", "faas.cron"],
+            "attributes": ["faas.cron", "faas.time"],
         }
         self.semantic_convention_check(list(semconv.models.values())[4], expected)
 
@@ -136,13 +136,13 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
-                "net.transport",
-                "net.peer.ip",
-                "net.peer.port",
-                "net.peer.name",
                 "net.host.ip",
-                "net.host.port",
                 "net.host.name",
+                "net.host.port",
+                "net.peer.ip",
+                "net.peer.name",
+                "net.peer.port",
+                "net.transport",
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
@@ -166,14 +166,14 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
-                "http.method",
-                "http.url",
-                "http.target",
+                "http.flavor",
                 "http.host",
+                "http.method",
                 "http.scheme",
                 "http.status_code",
                 "http.status_text",
-                "http.flavor",
+                "http.target",
+                "http.url",
                 "http.user_agent",
             ],
         }
@@ -244,8 +244,8 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
-                "cloud.provider",
                 "cloud.account.id",
+                "cloud.provider",
                 "cloud.region",
                 "cloud.zone",
             ],
@@ -264,10 +264,10 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 1,
             "attributes": [
-                "exception.type",
+                "exception.escaped",
                 "exception.message",
                 "exception.stacktrace",
-                "exception.escaped",
+                "exception.type",
             ],
         }
         self.semantic_convention_check(event, expected)
@@ -334,7 +334,7 @@ class TestCorrectParse(unittest.TestCase):
         semconv.finish()
         self.assertEqual(len(semconv.models), 1)
         s = list(semconv.models.values())[0]
-        for attr in s.attributes:
+        for attr in s.attributes_and_templates:
             brief = attr.brief
             self.assertEqual(brief.raw_text, str(brief))
 
@@ -348,11 +348,12 @@ class TestCorrectParse(unittest.TestCase):
 
         client = list(semconv.models.values())[1]
         server = list(semconv.models.values())[2]
-        self.assertIsNotNone(client.attributes[1].ref)
-        self.assertIsNotNone(client.attributes[1].attr_type)
 
-        self.assertIsNotNone(server.attributes[1].ref)
-        self.assertIsNotNone(server.attributes[1].attr_type)
+        self.assertIsNotNone(client.attrs_by_name["net.peer.port"].ref)
+        self.assertIsNotNone(client.attrs_by_name["net.peer.port"].attr_type)
+
+        self.assertIsNotNone(server.attrs_by_name["net.peer.port"].ref)
+        self.assertIsNotNone(server.attrs_by_name["net.peer.port"].attr_type)
 
     def test_extends(self):
         semconv = SemanticConventionSet(debug=False)
@@ -367,14 +368,14 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
-                "http.method",
-                "http.url",
-                "http.target",
+                "http.flavor",
                 "http.host",
+                "http.method",
                 "http.scheme",
                 "http.status_code",
                 "http.status_text",
-                "http.flavor",
+                "http.target",
+                "http.url",
                 "http.user_agent",
             ],
         }
@@ -385,14 +386,14 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "http",
             "n_constraints": 1,
             "attributes": [
-                "http.method",
-                "http.url",
-                "http.target",
+                "http.flavor",
                 "http.host",
+                "http.method",
                 "http.scheme",
                 "http.status_code",
                 "http.status_text",
-                "http.flavor",
+                "http.target",
+                "http.url",
                 "http.user_agent",
             ],
         }
@@ -403,16 +404,16 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "http",
             "n_constraints": 1,
             "attributes": [
-                "http.method",
-                "http.url",
-                "http.target",
+                "http.flavor",
                 "http.host",
+                "http.method",
                 "http.scheme",
+                "http.server_name",
                 "http.status_code",
                 "http.status_text",
-                "http.flavor",
+                "http.target",
+                "http.url",
                 "http.user_agent",
-                "http.server_name",
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[2], expected)
@@ -435,19 +436,19 @@ class TestCorrectParse(unittest.TestCase):
             "n_constraints": 2,
             "attributes": [
                 # Parent
-                "faas.trigger",
                 "faas.execution",
+                "faas.trigger",
                 # Include
-                "http.method",
-                "http.url",
-                "http.target",
+                "http.flavor",
                 "http.host",
+                "http.method",
                 "http.scheme",
+                "http.server_name",
                 "http.status_code",
                 "http.status_text",
-                "http.flavor",
+                "http.target",
+                "http.url",
                 "http.user_agent",
-                "http.server_name",
             ],
         }
         self.semantic_convention_check(faas_http, expected)
@@ -458,12 +459,15 @@ class TestCorrectParse(unittest.TestCase):
         semconv.finish()
         self.assertEqual(len(semconv.models), 1)
 
-        self.assertIsNotNone(list(semconv.models.values())[0].attributes[0].deprecated)
+        method_attr = list(semconv.models.values())[0].attrs_by_name["http.method"]
+        self.assertIsNotNone(method_attr.deprecated)
         self.assertEqual(
-            list(semconv.models.values())[0].attributes[0].deprecated,
+            method_attr.deprecated,
             "Use attribute `nonDepecrated`.",
         )
-        self.assertIsNone(list(semconv.models.values())[0].attributes[3].deprecated)
+        self.assertIsNone(
+            list(semconv.models.values())[0].attrs_by_name["http.target"].deprecated
+        )
 
     def test_stability(self):
         semconv = SemanticConventionSet(debug=False)
@@ -472,44 +476,45 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(len(semconv.models), 6)
 
         model = list(semconv.models.values())[0]
-        self.assertEqual(len(model.attributes), 4)
-        self.assertEqual(model.stability, None)
+        self.assertEqual(len(model.attributes_and_templates), 3)
+        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes[0]
+        attr = model.attributes_and_templates[0]
+        self.assertEqual(attr.attr_id, "def_stability")
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
+
+        attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "exp_attr")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes[1]
+        attr = model.attributes_and_templates[2]
         self.assertEqual(attr.attr_id, "stable_attr")
         self.assertEqual(attr.stability, StabilityLevel.STABLE)
 
-        attr = model.attributes[2]
-        self.assertEqual(attr.attr_id, "deprecated_attr")
-        self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
-
-        attr = model.attributes[3]
-        self.assertEqual(attr.attr_id, "def_stability")
-        self.assertEqual(attr.stability, StabilityLevel.STABLE)
-
         model = list(semconv.models.values())[1]
-        self.assertEqual(len(model.attributes), 2)
+        self.assertEqual(len(model.attributes_and_templates), 2)
         self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes[0]
+        attr = model.attributes_and_templates[0]
+        self.assertEqual(attr.attr_id, "dep")
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
+
+        attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "test_attr")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes[1]
-        self.assertEqual(attr.attr_id, "dep")
-        self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
-
         model = list(semconv.models.values())[2]
-        self.assertEqual(len(model.attributes), 1)
-        self.assertEqual(model.stability, StabilityLevel.DEPRECATED)
+        self.assertEqual(len(model.attributes_and_templates), 2)
+        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes[0]
+        attr = model.attributes_and_templates[0]
+        self.assertEqual(attr.attr_id, "stable_deprecated_attr")
+        self.assertEqual(attr.stability, StabilityLevel.STABLE)
+        self.assertIsNotNone(attr.deprecated)
+
+        attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "test_attr")
-        self.assertEqual(attr.stability, StabilityLevel.DEPRECATED)
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
     def test_populate_other_attributes(self):
         semconv = SemanticConventionSet(debug=False)
@@ -546,7 +551,7 @@ class TestCorrectParse(unittest.TestCase):
         models = sorted(semconv.models.values(), key=lambda m: m.semconv_id)
         self.assertEqual(len(models), 6)
         # HTTP
-        attrs = models[0].attributes
+        attrs = models[0].attributes_and_templates
         self.assertEqual(models[0].semconv_id, "http")
         self.assertEqual(len(attrs), 2)
 
@@ -561,7 +566,7 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[1].ref, "net.peer.port")
 
         # Network
-        attrs = models[1].attributes
+        attrs = models[1].attributes_and_templates
         self.assertEqual(models[1].semconv_id, "network")
         self.assertEqual(len(attrs), 3)
 
@@ -570,134 +575,134 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[0].inherited, False)
         self.assertEqual(attrs[0].ref, None)
 
-        self.assertEqual(attrs[1].fqn, "net.peer.port")
+        self.assertEqual(attrs[1].fqn, "net.peer.name")
         self.assertEqual(attrs[1].imported, False)
         self.assertEqual(attrs[1].inherited, False)
         self.assertEqual(attrs[1].ref, None)
-        self.assertEqual(attrs[1].note, "not override")
 
-        self.assertEqual(attrs[2].fqn, "net.peer.name")
+        self.assertEqual(attrs[2].fqn, "net.peer.port")
         self.assertEqual(attrs[2].imported, False)
         self.assertEqual(attrs[2].inherited, False)
         self.assertEqual(attrs[2].ref, None)
+        self.assertEqual(attrs[2].note, "not override")
 
         # Base - rpc
-        attrs = models[2].attributes
+        attrs = models[2].attributes_and_templates
         self.assertEqual(models[2].semconv_id, "rpc")
         self.assertEqual(len(attrs), 4)
-        # Included attributes
+
         self.assertEqual(attrs[0].fqn, "net.peer.ip")
         self.assertEqual(attrs[0].imported, True)
         self.assertEqual(attrs[0].inherited, False)
         self.assertEqual(attrs[0].ref, None)
 
-        self.assertEqual(attrs[1].fqn, "net.peer.port")
+        self.assertEqual(attrs[1].fqn, "net.peer.name")
         self.assertEqual(attrs[1].imported, True)
         self.assertEqual(attrs[1].inherited, False)
         self.assertEqual(attrs[1].ref, None)
-        self.assertEqual(attrs[1].note, "not override")
 
-        self.assertEqual(attrs[2].fqn, "net.peer.name")
+        self.assertEqual(attrs[2].fqn, "net.peer.port")
         self.assertEqual(attrs[2].imported, True)
         self.assertEqual(attrs[2].inherited, False)
         self.assertEqual(attrs[2].ref, None)
-        # Defined attributes
+        self.assertEqual(attrs[2].note, "not override")
+
         self.assertEqual(attrs[3].fqn, "rpc.service")
         self.assertEqual(attrs[3].imported, False)
         self.assertEqual(attrs[3].inherited, False)
         self.assertEqual(attrs[3].ref, None)
 
         # Extended - rpc.client
-        attrs = models[3].attributes
+        attrs = models[3].attributes_and_templates
         self.assertEqual(models[3].semconv_id, "rpc.client")
         self.assertEqual(len(attrs), 6)
-        # Parent attributes
-        self.assertEqual(attrs[0].fqn, "net.peer.ip")
+
+        self.assertEqual(attrs[0].fqn, "http.method")
         self.assertEqual(attrs[0].imported, True)
-        self.assertEqual(attrs[0].inherited, True)
+        self.assertEqual(attrs[0].inherited, False)
         self.assertEqual(attrs[0].ref, None)
 
-        self.assertEqual(attrs[1].fqn, "net.peer.port")
-        self.assertEqual(attrs[1].imported, False)
-        self.assertEqual(attrs[1].inherited, False)
-        self.assertEqual(attrs[1].ref, "net.peer.port")
-        self.assertEqual(attrs[1].brief, "override")
-        self.assertEqual(attrs[1].note, "not override")
+        self.assertEqual(attrs[1].fqn, "net.peer.ip")
+        self.assertEqual(attrs[1].imported, True)
+        self.assertEqual(attrs[1].inherited, True)
+        self.assertEqual(attrs[1].ref, None)
 
         self.assertEqual(attrs[2].fqn, "net.peer.name")
         self.assertEqual(attrs[2].imported, True)
         self.assertEqual(attrs[2].inherited, True)
         self.assertEqual(attrs[2].ref, None)
 
-        self.assertEqual(attrs[3].fqn, "rpc.service")
+        self.assertEqual(attrs[3].fqn, "net.peer.port")
         self.assertEqual(attrs[3].imported, False)
-        self.assertEqual(attrs[3].inherited, True)
-        self.assertEqual(attrs[3].ref, None)
-        # Included attributes
-        self.assertEqual(attrs[4].fqn, "http.method")
-        self.assertEqual(attrs[4].imported, True)
+        self.assertEqual(attrs[3].inherited, False)
+        self.assertEqual(attrs[3].ref, "net.peer.port")
+        self.assertEqual(attrs[3].brief, "override")
+        self.assertEqual(attrs[3].note, "not override")
+
+        self.assertEqual(attrs[4].fqn, "rpc.client.name")
+        self.assertEqual(attrs[4].imported, False)
         self.assertEqual(attrs[4].inherited, False)
         self.assertEqual(attrs[4].ref, None)
-        # Defined attributes
-        self.assertEqual(attrs[5].fqn, "rpc.client.name")
+
+        self.assertEqual(attrs[5].fqn, "rpc.service")
         self.assertEqual(attrs[5].imported, False)
-        self.assertEqual(attrs[5].inherited, False)
+        self.assertEqual(attrs[5].inherited, True)
         self.assertEqual(attrs[5].ref, None)
 
         # Include on Extended - zother
-        attrs = models[4].attributes
+        attrs = models[4].attributes_and_templates
         self.assertEqual(models[4].semconv_id, "zother")
         self.assertEqual(len(attrs), 1)
-        # Defined attributes
+
         self.assertEqual(attrs[0].fqn, "zother.hostname")
         self.assertEqual(attrs[0].imported, False)
         self.assertEqual(attrs[0].inherited, False)
         self.assertEqual(attrs[0].ref, None)
 
         # Include on Extended - zz.rpc.client
-        attrs = models[5].attributes
+        attrs = models[5].attributes_and_templates
         self.assertEqual(models[5].semconv_id, "zz.rpc.client")
         self.assertEqual(len(attrs), 8)
-        # Parent attributes
-        self.assertEqual(attrs[0].fqn, "net.peer.ip")
+
+        self.assertEqual(attrs[0].fqn, "http.method")
         self.assertEqual(attrs[0].imported, True)
         self.assertEqual(attrs[0].inherited, True)
         self.assertEqual(attrs[0].ref, None)
 
-        self.assertEqual(attrs[1].fqn, "net.peer.port")
-        self.assertEqual(attrs[1].imported, False)
+        self.assertEqual(attrs[1].fqn, "net.peer.ip")
+        self.assertEqual(attrs[1].imported, True)
         self.assertEqual(attrs[1].inherited, True)
-        self.assertEqual(attrs[1].ref, "net.peer.port")
-        self.assertEqual(attrs[1].brief, "override")
-        self.assertEqual(attrs[1].note, "not override")
+        self.assertEqual(attrs[1].ref, None)
 
         self.assertEqual(attrs[2].fqn, "net.peer.name")
         self.assertEqual(attrs[2].imported, True)
         self.assertEqual(attrs[2].inherited, True)
         self.assertEqual(attrs[2].ref, None)
 
-        self.assertEqual(attrs[3].fqn, "rpc.service")
+        self.assertEqual(attrs[3].fqn, "net.peer.port")
         self.assertEqual(attrs[3].imported, False)
         self.assertEqual(attrs[3].inherited, True)
-        self.assertEqual(attrs[3].ref, None)
+        self.assertEqual(attrs[3].ref, "net.peer.port")
+        self.assertEqual(attrs[3].brief, "override")
+        self.assertEqual(attrs[3].note, "not override")
 
-        self.assertEqual(attrs[4].fqn, "http.method")
-        self.assertEqual(attrs[4].imported, True)
+        self.assertEqual(attrs[4].fqn, "rpc.client.name")
+        self.assertEqual(attrs[4].imported, False)
         self.assertEqual(attrs[4].inherited, True)
         self.assertEqual(attrs[4].ref, None)
 
-        self.assertEqual(attrs[5].fqn, "rpc.client.name")
+        self.assertEqual(attrs[5].fqn, "rpc.client.zz.attr")
         self.assertEqual(attrs[5].imported, False)
-        self.assertEqual(attrs[5].inherited, True)
+        self.assertEqual(attrs[5].inherited, False)
         self.assertEqual(attrs[5].ref, None)
-        # Included attributes
-        self.assertEqual(attrs[6].fqn, "zother.hostname")
-        self.assertEqual(attrs[6].imported, True)
-        self.assertEqual(attrs[6].inherited, False)
+
+        self.assertEqual(attrs[6].fqn, "rpc.service")
+        self.assertEqual(attrs[6].imported, False)
+        self.assertEqual(attrs[6].inherited, True)
         self.assertEqual(attrs[6].ref, None)
-        # Defined attributes
-        self.assertEqual(attrs[7].fqn, "rpc.client.zz.attr")
-        self.assertEqual(attrs[7].imported, False)
+
+        self.assertEqual(attrs[7].fqn, "zother.hostname")
+        self.assertEqual(attrs[7].imported, True)
         self.assertEqual(attrs[7].inherited, False)
         self.assertEqual(attrs[7].ref, None)
 

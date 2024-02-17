@@ -27,6 +27,9 @@ from opentelemetry.semconv.model.utils import (
     validate_values,
 )
 
+TEMPLATE_PREFIX = "template["
+TEMPLATE_SUFFIX = "]"
+
 
 class RequirementLevel(Enum):
     REQUIRED = 1
@@ -38,15 +41,6 @@ class RequirementLevel(Enum):
 class StabilityLevel(Enum):
     STABLE = 1
     EXPERIMENTAL = 2
-    DEPRECATED = 3
-
-
-def unique_attributes(attributes):
-    output = []
-    for x in attributes:
-        if x.fqn not in [attr.fqn for attr in output]:
-            output.append(x)
-    return output
 
 
 @dataclass
@@ -75,6 +69,10 @@ class SemanticAttribute:
         return replace(self, inherited=True)
 
     @property
+    def instantiated_type(self):
+        return AttributeType.get_instantiated_type(self.attr_type)
+
+    @property
     def is_local(self):
         return not self.imported and not self.inherited
 
@@ -83,9 +81,7 @@ class SemanticAttribute:
         return isinstance(self.attr_type, EnumAttributeType)
 
     @staticmethod
-    def parse(
-        prefix, semconv_stability, yaml_attributes
-    ) -> "Dict[str, SemanticAttribute]":
+    def parse(prefix, yaml_attributes) -> "Dict[str, SemanticAttribute]":
         """This method parses the yaml representation for semantic attributes
         creating the respective SemanticAttribute objects.
         """
@@ -117,7 +113,9 @@ class SemanticAttribute:
                 raise ValidationError.from_yaml_pos(position, msg)
             if attr_id is not None:
                 validate_id(attr_id, position_data["id"])
-                attr_type, brief, examples = SemanticAttribute.parse_id(attribute)
+                attr_type, brief, examples = SemanticAttribute.parse_attribute(
+                    attribute
+                )
                 if prefix:
                     fqn = f"{prefix}.{attr_id}"
                 else:
@@ -178,21 +176,13 @@ class SemanticAttribute:
                 raise ValidationError.from_yaml_pos(position, msg)
 
             tag = attribute.get("tag", "").strip()
-            stability, deprecated = SemanticAttribute.parse_stability_deprecated(
-                attribute.get("stability"), attribute.get("deprecated"), position_data
+            stability = SemanticAttribute.parse_stability(
+                attribute.get("stability"), position_data
             )
-            if (
-                semconv_stability == StabilityLevel.DEPRECATED
-                and stability is not StabilityLevel.DEPRECATED
-            ):
-                position = (
-                    position_data["stability"]
-                    if "stability" in position_data
-                    else position_data["deprecated"]
-                )
-                msg = f"Semantic convention stability set to deprecated but attribute '{attr_id}' is {stability}"
-                raise ValidationError.from_yaml_pos(position, msg)
-            stability = stability or semconv_stability or StabilityLevel.STABLE
+            deprecated = SemanticAttribute.parse_deprecated(
+                attribute.get("deprecated"), position_data
+            )
+
             sampling_relevant = (
                 AttributeType.to_bool("sampling_relevant", attribute)
                 if attribute.get("sampling_relevant")
@@ -231,7 +221,7 @@ class SemanticAttribute:
         return attributes
 
     @staticmethod
-    def parse_id(attribute):
+    def parse_attribute(attribute):
         check_no_missing_keys(attribute, ["type", "brief"])
         attr_val = attribute["type"]
         try:
@@ -242,14 +232,9 @@ class SemanticAttribute:
             position = attribute.lc.data["type"]
             raise ValidationError.from_yaml_pos(position, e.message) from e
         brief = attribute["brief"]
-        zlass = (
-            AttributeType.type_mapper(attr_type)
-            if isinstance(attr_type, str)
-            else "enum"
-        )
-
         examples = attribute.get("examples")
         is_simple_type = AttributeType.is_simple_type(attr_type)
+        is_template_type = AttributeType.is_template_type(attr_type)
         # if we are an array, examples must already be an array
         if (
             is_simple_type
@@ -263,18 +248,31 @@ class SemanticAttribute:
             # TODO: If validation fails later, this will crash when trying to access position data
             # since a list, contrary to a CommentedSeq, does not have position data
             examples = [examples]
-        if is_simple_type and attr_type not in (
-            "boolean",
-            "boolean[]",
-            "int",
-            "int[]",
-            "double",
-            "double[]",
+        if is_template_type or (
+            is_simple_type
+            and attr_type
+            not in (
+                "boolean",
+                "boolean[]",
+                "int",
+                "int[]",
+                "double",
+                "double[]",
+            )
         ):
             if not examples:
                 position = attribute.lc.data[list(attribute)[0]]
                 msg = f"Empty examples for {attr_type} are not allowed"
                 raise ValidationError.from_yaml_pos(position, msg)
+
+        if is_template_type:
+            return attr_type, str(brief), examples
+
+        zlass = (
+            AttributeType.type_mapper(attr_type)
+            if isinstance(attr_type, str)
+            else "enum"
+        )
 
         # TODO: Implement type check for enum examples or forbid them
         if examples is not None and is_simple_type:
@@ -282,44 +280,31 @@ class SemanticAttribute:
         return attr_type, str(brief), examples
 
     @staticmethod
-    def parse_stability_deprecated(stability, deprecated, position_data):
-        if deprecated is not None and stability is None:
-            stability = "deprecated"
+    def parse_stability(stability, position_data):
+        if stability is None:
+            return StabilityLevel.EXPERIMENTAL
+
+        stability_value_map = {
+            "experimental": StabilityLevel.EXPERIMENTAL,
+            "stable": StabilityLevel.STABLE,
+        }
+        val = stability_value_map.get(stability)
+        if val is not None:
+            return val
+        msg = f"Value '{stability}' is not allowed as a stability marker"
+        raise ValidationError.from_yaml_pos(position_data["stability"], msg)
+
+    @staticmethod
+    def parse_deprecated(deprecated, position_data):
         if deprecated is not None:
-            if stability is not None and stability != "deprecated":
-                position = position_data["deprecated"]
-                msg = f"There is a deprecation message but the stability is set to '{stability}'"
-                raise ValidationError.from_yaml_pos(position, msg)
             if AttributeType.get_type(deprecated) != "string" or deprecated == "":
-                position = position_data["deprecated"]
                 msg = (
                     "Deprecated field expects a string that specifies why the attribute is deprecated and/or what"
                     " to use instead! "
                 )
-                raise ValidationError.from_yaml_pos(position, msg)
-            deprecated = deprecated.strip()
-        if stability is not None:
-            stability = SemanticAttribute.check_stability(
-                stability,
-                position_data["stability"]
-                if "stability" in position_data
-                else position_data["deprecated"],
-            )
-        return stability, deprecated
-
-    @staticmethod
-    def check_stability(stability_value, position):
-
-        stability_value_map = {
-            "deprecated": StabilityLevel.DEPRECATED,
-            "experimental": StabilityLevel.EXPERIMENTAL,
-            "stable": StabilityLevel.STABLE,
-        }
-        val = stability_value_map.get(stability_value)
-        if val is not None:
-            return val
-        msg = f"Value '{stability_value}' is not allowed as a stability marker"
-        raise ValidationError.from_yaml_pos(position, msg)
+                raise ValidationError.from_yaml_pos(position_data["deprecated"], msg)
+            return deprecated.strip()
+        return None
 
     def equivalent_to(self, other: "SemanticAttribute"):
         if self.attr_id is not None:
@@ -357,6 +342,29 @@ class AttributeType:
             "boolean",
             "boolean[]",
         )
+
+    @staticmethod
+    def is_template_type(attr_type: str):
+        if not isinstance(attr_type, str):
+            return False
+
+        return (
+            attr_type.startswith(TEMPLATE_PREFIX)
+            and attr_type.endswith(TEMPLATE_SUFFIX)
+            and AttributeType.is_simple_type(
+                attr_type[len(TEMPLATE_PREFIX) : len(attr_type) - len(TEMPLATE_SUFFIX)]
+            )
+        )
+
+    @staticmethod
+    def get_instantiated_type(attr_type: str):
+        if AttributeType.is_template_type(attr_type):
+            return attr_type[
+                len(TEMPLATE_PREFIX) : len(attr_type) - len(TEMPLATE_SUFFIX)
+            ]
+        if AttributeType.is_simple_type(attr_type):
+            return attr_type
+        return "enum"
 
     @staticmethod
     def type_mapper(attr_type: str):
@@ -432,7 +440,9 @@ class EnumAttributeType:
         otherwise it returns the basic type as string.
         """
         if isinstance(attribute_type, str):
-            if AttributeType.is_simple_type(attribute_type):
+            if AttributeType.is_simple_type(
+                attribute_type
+            ) or AttributeType.is_template_type(attribute_type):
                 return attribute_type
             # Wrong type used - raise the exception and fill the missing data in the parent
             raise ValidationError(

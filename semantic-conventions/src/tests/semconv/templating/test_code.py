@@ -41,3 +41,22 @@ def test_strip_blocks_enabled(test_file_path, read_test_file):
     )
 
     assert result == expected
+
+
+def test_codegen_attribute_templates(test_file_path, read_test_file):
+    semconv = SemanticConventionSet(debug=False)
+    semconv.parse(
+        test_file_path("yaml", "attr_templates_code", "attribute_templates.yml")
+    )
+    semconv.finish()
+
+    template_path = test_file_path("jinja", "attribute_templates", "template")
+    renderer = CodeRenderer({}, trim_whitespace=False)
+
+    output = io.StringIO()
+    renderer.render(semconv, template_path, output, None)
+    result = output.getvalue()
+
+    expected = read_test_file("jinja", "attribute_templates", "expected.java")
+
+    assert result == expected

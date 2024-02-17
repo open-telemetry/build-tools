@@ -1,0 +1,43 @@
+groups:
+  - id: custom_http
+    type: span
+    prefix: custom_http
+    brief: 'This document defines semantic conventions for HTTP client and server Spans.'
+    note: >
+        These conventions can be used for http and https schemes
+        and various HTTP versions like 1.1, 2 and SPDY.
+    extends: general
+    attributes:
+      - id: request.header
+        type: template[string[]]
+        brief: >
+          HTTP request headers, `<key>` being the normalized HTTP Header name
+          (lowercase, with - characters replaced by _), the value being the header values.
+        examples: '`http.request.header.content_type=["application/json"]`'
+      - id: request.method
+        type: string
+        requirement_level: required
+        sampling_relevant: false
+        brief: 'HTTP request method.'
+        examples: ["GET", "POST", "HEAD"]
+      - ref: referenced_http.request.referenced.header
+  - id: referenced_http_id
+    type: span
+    prefix: referenced_http
+    brief: 'This document defines semantic conventions for HTTP client and server Spans.'
+    attributes:
+      - id: request.referenced.header
+        type: template[string[]]
+        brief: >
+          This is a referenced attribute.
+        examples: '`http.request.header.content_type=["application/json"]`'
+  - id: general
+    type: span
+    prefix: general
+    brief: 'This document defines general attributes.'
+    attributes:
+      - id: some_general_attribute
+        type: template[string]
+        brief: >
+          This is a general attribute.
+        examples: '`some_general_attribute.some_key="abc"`'

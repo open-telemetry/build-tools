@@ -27,6 +27,9 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testRef(self):
         self.check("markdown/ref/")
 
+    def testRefExtends(self):
+        self.check("markdown/ref_extends/")
+
     def testInclude(self):
         self.check("markdown/include/")
 
@@ -61,6 +64,9 @@ class TestCorrectMarkdown(unittest.TestCase):
 
     def testExtendConstraint(self):
         self.check("markdown/extend_constraint/")
+
+    def test_extend_grandparent(self):
+        self.check("markdown/extend_grandparent/")
 
     def test_error_missing_end(self):
         ex = self.check("markdown/missing_end_tag/", assert_raises=ValueError)
@@ -133,6 +139,9 @@ class TestCorrectMarkdown(unittest.TestCase):
             ],
         )
 
+    def test_omit_requirement_level(self):
+        self.check("markdown/omit_requirement_level/")
+
     def testSamplingRelevant(self):
         self.check("markdown/sampling_relevant/")
 
@@ -141,6 +150,12 @@ class TestCorrectMarkdown(unittest.TestCase):
 
     def test_attribute_group(self):
         self.check("markdown/attribute_group/")
+
+    def test_attribute_templates(self):
+        self.check("markdown/attribute_templates/")
+
+    def test_sorting(self):
+        self.check("markdown/sorting/")
 
     def check(
         self,

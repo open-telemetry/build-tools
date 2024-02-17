@@ -4,6 +4,37 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- BREAKING: Make stability and deprecation independent properties.
+  ([#244](https://github.com/open-telemetry/build-tools/pull/244))
+
+## v0.23.0
+
+- Rephrase and relax sampling-relevant description
+  ([#230](https://github.com/open-telemetry/build-tools/pull/230))
+
+## v0.22.0
+
+- When an attribute is referenced using `ref:` from a group that already inherits the attribute with `extends:`, resolve the reference to the closest inherited attribute instead of the primary definition. This makes a difference in case the inherited reference overwrites any properties.
+  ([#204](https://github.com/open-telemetry/build-tools/pull/204))
+- Sort attributes by name
+  ([#205](https://github.com/open-telemetry/build-tools/pull/205))
+- Fix referencing template attributes
+  ([#206](https://github.com/open-telemetry/build-tools/pull/206))
+
+## v0.21.0
+
+- Render template-type attributes from yaml files
+  ([#186](https://github.com/open-telemetry/build-tools/pull/186))
+- Added `omit_requirement_level` option for markdown table rendering
+  ([#190](https://github.com/open-telemetry/build-tools/pull/190))
+- Fix conditionally_required definition in semconv.schema.json
+  ([#201](https://github.com/open-telemetry/build-tools/pull/201))
+
+## v0.20.0
+
+- Change default stability level to experimental
+  ([#189](https://github.com/open-telemetry/build-tools/pull/189))
+
 ## v0.19.0
 
 - Render notes on metric semconv tables
@@ -13,7 +44,7 @@ Please update the changelog as part of any significant pull request.
 
 - Allow multiple semconv in --only flag
   ([#157](https://github.com/open-telemetry/build-tools/pull/157))
-  
+
 ## v0.17.0
 
 - Rename Optional attribute requirement level to Opt-In
@@ -30,7 +61,7 @@ Please update the changelog as part of any significant pull request.
 
 ## v0.15.0
 
-- Add a semantic convention type for Metrics ("metric" and "metric_group") 
+- Add a semantic convention type for Metrics ("metric" and "metric_group")
   ([#79](https://github.com/open-telemetry/build-tools/pull/79))
 - Add a semantic convention type for generic attribute group ("attribute_group")
   ([#124](https://github.com/open-telemetry/build-tools/pull/124)).

@@ -22,7 +22,6 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from opentelemetry.semconv.model.semantic_attribute import (
     AttributeType,
-    EnumAttributeType,
     EnumMember,
     RequirementLevel,
     SemanticAttribute,
@@ -127,7 +126,7 @@ def to_doc_brief(doc_string: typing.Optional[str]) -> str:
     return doc_string
 
 
-def print_member_value(attr: EnumAttributeType, member: EnumMember) -> str:
+def print_member_value(attr: SemanticAttribute, member: EnumMember) -> str:
     if attr.attr_type.enum_type == "string":
         return f'"{member.value}"'
     return str(member.value)

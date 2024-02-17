@@ -17,3 +17,6 @@
 
 # Vim
 .swp
+
+# Python
+*.whl

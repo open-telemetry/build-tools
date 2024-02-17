@@ -4,9 +4,9 @@ groups:
     brief: first description
     prefix: first
     attributes:
-      - id: attr_one
+      - id: last_attr # intentionally out of alphabetical order to test sorting
         type: boolean
-        brief: short description of attr_one
+        brief: short description of last_attr
       - id: attr_template_one
         type: template[string]
         brief: >
@@ -54,3 +54,29 @@ groups:
         type: string
         brief: short description of attr_four
         examples: "4"
+  - id: fifth_group_id
+    brief: fifth description
+    prefix: fifth
+    attributes:
+      - id: attr_five_string
+        type:
+          members:
+            - id: enum1_one
+              value: "one"
+              brief: "First enum1 value"
+            - id: enum1_two
+              value: "two"
+              brief: "Second enum1 value"
+        brief: short description of attr_five_string
+        examples: one
+      - id: attr_five_int
+        type:
+          members:
+            - id: enum2_one
+              value: 1
+              brief: "First enum2 value"
+            - id: enum2_two
+              value: 2
+              brief: "Second enum2 value"
+        brief: short description of attr_five_int
+        examples: 1

@@ -22,6 +22,8 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from opentelemetry.semconv.model.semantic_attribute import (
     AttributeType,
+    EnumAttributeType,
+    EnumMember,
     RequirementLevel,
     SemanticAttribute,
     StabilityLevel,
@@ -123,6 +125,12 @@ def to_doc_brief(doc_string: typing.Optional[str]) -> str:
     if doc_string.endswith("."):
         return doc_string[:-1]
     return doc_string
+
+
+def print_member_value(attr: EnumAttributeType, member: EnumMember) -> str:
+    if attr.attr_type.enum_type == "string":
+        return f'"{member.value}"'
+    return str(member.value)
 
 
 def to_html_links(doc_string: typing.Optional[typing.Union[str, TextWithLinks]]) -> str:
@@ -255,6 +263,7 @@ class CodeRenderer:
         env.filters["to_html_links"] = to_html_links
         env.filters["regex_replace"] = regex_replace
         env.filters["render_markdown"] = render_markdown
+        env.filters["print_member_value"] = print_member_value
         env.filters["is_deprecated"] = is_deprecated
         env.filters["is_definition"] = is_definition
         env.filters["is_stable"] = is_stable
@@ -348,6 +357,7 @@ class CodeRenderer:
             data = {
                 "template": template_path,
                 "attributes_and_templates": attribute_and_templates,
+                "enum_attributes": [a for a in attribute_and_templates if a.is_enum],
                 "metrics": metrics.get(ns) or [],
                 "root_namespace": sanitized_ns,
             }

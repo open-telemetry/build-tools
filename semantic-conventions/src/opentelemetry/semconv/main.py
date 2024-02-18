@@ -217,7 +217,7 @@ def add_md_parser(subparsers):
     )
     parser.add_argument(
         "--specification-version",
-        help="Set specification version to use.",
+        help="Set specification version to use when generating links in markdown.",
         type=str,
         required=False,
         default="main",

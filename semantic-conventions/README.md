@@ -92,31 +92,13 @@ semantic conventions that have the tag `network`.
 
 The image supports [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates to generate code from the models.
 
-For example, opentelemetry-java [generates typed constants for semantic conventions](https://github.com/open-telemetry/opentelemetry-java/blob/main/semconv/src/main/java/io/opentelemetry/semconv/trace/attributes/SemanticAttributes.java)
-using [this template](https://github.com/open-telemetry/opentelemetry-java/blob/main/buildscripts/semantic-convention/templates/SemanticAttributes.java.j2).
+For example, opentelemetry-java generates typed constants for semantic conventions. Refer to https://github.com/open-telemetry/semantic-conventions-java for all semantic conventions.
 
 The commands used to generate that are
-[here in the opentelemetry-java repo](https://github.com/open-telemetry/opentelemetry-java/blob/main/buildscripts/semantic-convention/generate.sh).
-Note especially the `docker run` commands. For example to generate the aforementioned `SemanticAttributes.java`,
-the following command is used:
-
-```bash
-docker run --rm \
-  -v ${SCRIPT_DIR}/opentelemetry-specification/semantic_conventions/trace:/source \
-  -v ${SCRIPT_DIR}/templates:/templates \
-  -v ${ROOT_DIR}/semconv/src/main/java/io/opentelemetry/semconv/trace/attributes/:/output \
-  otel/semconvgen:$GENERATOR_VERSION \
-  --yaml-root /source \
-  code \
-  --template /templates/SemanticAttributes.java.j2 \
-  --output /output/SemanticAttributes.java \
-  -Dclass=SemanticAttributes \
-  -DschemaUrl=$SCHEMA_URL \
-  -Dpkg=io.opentelemetry.semconv.trace.attributes
-```
+[here in the semantic-conventions-java repo](https://github.com/open-telemetry/semantic-conventions-java/blob/2be178a7fd62d1073fa9b4f0f0520772a6496e0b/build.gradle.kts#L96-L141)
 
 By default, all models are fed into the specified template at once, i.e. only a single file is generated.
-This is helpful to generate constants for the semantic attributes, [example from opentelemetry-java](https://github.com/open-telemetry/opentelemetry-java/tree/main/buildscripts/semantic-convention).
+This is helpful to generate constants for the semantic attributes, [example from opentelemetry-java](https://github.com/open-telemetry/semantic-conventions-java#generating-semantic-conventions).
 
 If the parameter `--file-per-group {pattern}` is set, a single yaml model is fed into the template
 and the value of `pattern` is resolved from the model and attached as prefix to the output argument.

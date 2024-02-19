@@ -192,7 +192,10 @@ class SemanticAttribute:
             ):
                 for member in attr_type.members:
                     if member.stability == StabilityLevel.STABLE:
-                        msg = f"Member '{member.member_id}' is marked as stable, but it is not allowed on experimental attribute!"
+                        msg = (
+                            f"Member '{member.member_id}' is marked as stable "
+                            + "but it is not allowed on experimental attribute!"
+                        )
                         raise ValidationError.from_yaml_pos(position_data["type"], msg)
 
             deprecated = SemanticAttribute.parse_deprecated(

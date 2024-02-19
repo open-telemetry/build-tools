@@ -26,6 +26,19 @@ groups:
         stability: experimental
         deprecated: "Removed."
         brief: ""
+      - id: stable_enum_attr
+        brief: ""
+        stability: stable
+        type:
+          members:
+            - id: one
+              value: "one"
+              brief: 'member one'
+              stability: stable
+            - id: two
+              value: "two"
+              stability: experimental
+              brief: 'member two'
   - id: ref_test
     brief: 'ref_test'
     attributes:

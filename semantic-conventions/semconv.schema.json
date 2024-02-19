@@ -259,6 +259,9 @@
 							"note": {
 								"type": "string",
 								"description": "longer description. It defaults to an empty string."
+							},
+							"stability": {
+								"allOf": [{ "$ref": "#/definitions/StabilityLevel" }]
 							}
 						}
 					}
@@ -343,6 +346,14 @@
 				}
 			]
 		},
+		"StabilityLevel": {
+			"description": "specifies the stability level. Can be 'stable' or 'experimental' (the default).",
+			"type": "string",
+			"enum": [
+				"stable",
+				"experimental"
+			]
+		},
 		"Attribute": {
 			"type": "object",
 			"allOf": [
@@ -416,6 +427,9 @@
 						"deprecated": {
 							"type": "string",
 							"description": "specifies if the attribute is deprecated. The string provided as <description> MUST specify why it's deprecated and/or what to use instead."
+						},
+						"stability": {
+							"allOf": [{ "$ref": "#/definitions/StabilityLevel" }]
 						}
 					}
 				},

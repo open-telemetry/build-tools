@@ -172,6 +172,27 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("value 'deprecated' is not allowed as a stability marker", msg)
         self.assertEqual(e.line, 6)
 
+    def test_wrong_value_on_enum_member(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/stability/wrong_value_on_enum_member.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("value 'will_fail' is not allowed as a stability marker", msg)
+        self.assertEqual(e.line, 13)
+
+    def test_experimental_attr_stable_member(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/stability/experimental_attr_stable_member.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn(
+            "member 'one' is marked as stable, but it is not allowed on experimental attribute!",
+            msg,
+        )
+        self.assertEqual(e.line, 8)
+
     def test_invalid_deprecated_empty_string(self):
         with self.assertRaises(ValidationError) as ex:
             self.open_yaml("yaml/errors/deprecated/deprecation_empty_string.yaml")

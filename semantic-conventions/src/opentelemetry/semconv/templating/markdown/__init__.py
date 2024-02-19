@@ -325,7 +325,18 @@ class MarkdownRenderer:
             counter = 1
             notes = []
             for member in enum.members:
-                description = member.brief
+                description = ""
+                if (
+                    member.stability == StabilityLevel.STABLE
+                    and self.options.enable_stable
+                ):
+                    description = f"{self.options.stable_md_snippet()}<br> "
+                elif (
+                    member.stability == StabilityLevel.EXPERIMENTAL
+                    and self.options.enable_experimental
+                ):
+                    description = f"{self.options.experimental_md_snippet()}<br> "
+                description += member.brief
                 if member.note:
                     description += f" [{counter}]"
                     counter += 1

@@ -233,7 +233,7 @@ class CodeRenderer:
             "attributes": semconvset.attributes(),
             "attribute_templates": semconvset.attribute_templates(),
             "attributes_and_templates": self._grouped_attribute_definitions(semconvset),
-            "metrics": self._all_metrics_definitions(semconvset) or []
+            "metrics": self._all_metrics_definitions(semconvset) or [],
         }
         data.update(self.parameters)
         return data

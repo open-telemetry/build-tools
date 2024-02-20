@@ -29,18 +29,20 @@ from opentelemetry.semconv.model.semantic_convention import (
     SemanticConventionSet,
 )
 from opentelemetry.semconv.templating.code import CodeRenderer
-from opentelemetry.semconv.templating.compat import CompatibilityChecker
+from opentelemetry.semconv.templating.compatibility import CompatibilityChecker
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
 
-def parse_semconv(yaml_root:str, exclude:str, debug:bool, parser) -> SemanticConventionSet:
+def parse_semconv(
+    yaml_root: str, exclude: str, debug: bool, parser
+) -> SemanticConventionSet:
     semconv = SemanticConventionSet(debug)
     files = find_yaml(yaml_root, exclude)
     for file in sorted(files):
         if not file.endswith(".yaml") and not file.endswith(".yml"):
             parser.error(f"{file} is not a yaml file.")
-        semconv.parse(file)
+        semconv.parse(file, False)
     semconv.finish()
     if semconv.has_error():
         sys.exit(1)
@@ -82,8 +84,9 @@ def main():
         renderer.render(semconv, args.template, args.output, args.pattern)
     elif args.flavor == "markdown":
         process_markdown(semconv, args)
-    elif args.flavor == "compat":
+    elif args.flavor == "compatibility":
         check_compatibility(semconv, args, parser)
+
 
 def process_markdown(semconv, args):
     options = MarkdownOptions(
@@ -98,29 +101,31 @@ def process_markdown(semconv, args):
     md_renderer = MarkdownRenderer(args.markdown_root, semconv, options)
     md_renderer.render_md()
 
+
 def check_compatibility(semconv, args, parser):
     prev_semconv_path = download_previous_version(args.previous_version)
     prev_semconv = parse_semconv(prev_semconv_path, args.exclude, args.debug, parser)
-    compat_checker = CompatibilityChecker(semconv, prev_semconv)
-    errors = compat_checker.check()
+    compatibility_checker = CompatibilityChecker(semconv, prev_semconv)
+    problems = compatibility_checker.check()
 
-    if errors:
-        print(f"Found {len(errors)} compatibility issues:")
-        for error in errors:
-            print(f"\t {error}")
+    if problems:
+        print(f"Found {len(problems)} compatibility issues:")
+        for problem in problems:
+            print(f"\t {problem}")
 
-        sys.exit(1)
+        if not args.ignore_warnings or (
+            args.ignore_warnings and any(problem.critical for problem in problems)
+        ):
+            sys.exit(1)
 
 
-def find_yaml(yaml_root:str, exclude:str) -> List[str]:
+def find_yaml(yaml_root: str, exclude: str) -> List[str]:
 
     if yaml_root is not None:
-        exclude = set(
-            exclude_file_list(yaml_root if yaml_root else "", exclude)
+        exclude = set(exclude_file_list(yaml_root if yaml_root else "", exclude))
+        yaml_files = set(glob.glob(f"{yaml_root}/**/*.yaml", recursive=True)).union(
+            set(glob.glob(f"{yaml_root}/**/*.yml", recursive=True))
         )
-        yaml_files = set(
-            glob.glob(f"{yaml_root}/**/*.yaml", recursive=True)
-        ).union(set(glob.glob(f"{yaml_root}/**/*.yml", recursive=True)))
         return yaml_files - exclude
 
 
@@ -130,7 +135,7 @@ def check_args(arguments, parser):
         parser.error("Either --yaml-root or YAML_FILE must be present")
 
 
-def parse_only_filter(only:str, parser) -> List[str]:
+def parse_only_filter(only: str, parser) -> List[str]:
     if not only:
         return None
 
@@ -183,6 +188,7 @@ def add_code_parser(subparsers):
         action="store_true",
     )
 
+
 def add_md_parser(subparsers):
     parser = subparsers.add_parser("markdown")
     parser.add_argument(
@@ -211,7 +217,7 @@ def add_md_parser(subparsers):
         "--check-compat",
         help="Don't write the files, but check backward compatibility with specified older version of semantic conventions.",
         type=str,
-        required=False
+        required=False,
     )
     parser.add_argument(
         "--md-use-badges",
@@ -240,14 +246,23 @@ def add_md_parser(subparsers):
         action="store_false",
     )
 
+
 def add_compat_check_parser(subparsers):
-    parser = subparsers.add_parser("compat")
+    parser = subparsers.add_parser("compatibility")
     parser.add_argument(
         "--previous-version",
         help="Check backward compatibility with specified older version of semantic conventions.",
         type=str,
-        required=True
+        required=True,
     )
+    parser.add_argument(
+        "--ignore-warnings",
+        help="Ignore non-critical compatibility problems.",
+        required=False,
+        default=False,
+        action="store_true",
+    )
+
 
 def setup_parser():
     parser = argparse.ArgumentParser(
@@ -295,21 +310,25 @@ def setup_parser():
 
     return parser
 
+
 def download_previous_version(version: str) -> str:
     filename = f"v{version}.zip"
     tmppath = tempfile.mkdtemp()
     path_to_zip = os.path.join(tmppath, filename)
     path_to_semconv = os.path.join(tmppath, f"v{version}")
 
-    semconv_vprev = f"https://github.com/open-telemetry/semantic-conventions/archive/{filename}"
+    semconv_vprev = (
+        f"https://github.com/open-telemetry/semantic-conventions/archive/{filename}"
+    )
 
     request = requests.get(semconv_vprev, allow_redirects=True)
-    open(path_to_zip, 'wb').write(request.content)
+    open(path_to_zip, "wb").write(request.content)
 
-    with zipfile.ZipFile(path_to_zip, 'r') as zip_ref:
+    with zipfile.ZipFile(path_to_zip, "r") as zip_ref:
         zip_ref.extractall(path_to_semconv)
 
     return os.path.join(path_to_semconv, f"semantic-conventions-{version}", "model")
+
 
 if __name__ == "__main__":
     main()

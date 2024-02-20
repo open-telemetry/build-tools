@@ -59,15 +59,15 @@ def parse_semantic_convention_type(type_value):
     return CONVENTION_CLS_BY_GROUP_TYPE.get(type_value)
 
 
-def parse_semantic_convention_groups(yaml_file):
+def parse_semantic_convention_groups(yaml_file, strict_validation=True):
     yaml = YAML().load(yaml_file)
     models = []
     for group in yaml["groups"]:
-        models.append(SemanticConvention(group))
+        models.append(SemanticConvention(group, strict_validation))
     return models
 
 
-def SemanticConvention(group):
+def SemanticConvention(group, strict_validation=True):
     type_value = group.get("type")
     if type_value is None:
         line = group.lc.data["id"][0] + 1
@@ -85,7 +85,7 @@ def SemanticConvention(group):
 
     # First, validate that the correct fields are available in the yaml
     convention_type.validate_keys(group)
-    model = convention_type(group)
+    model = convention_type(group, strict_validation)
     # Also, validate that the value of the fields is acceptable
     model.validate_values()
     return model
@@ -134,7 +134,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
             key=lambda attr: attr.fqn,
         )
 
-    def __init__(self, group):
+    def __init__(self, group, strict_validation = True):
         super().__init__(group)
 
         self.semconv_id = self.id
@@ -142,7 +142,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
         self.prefix = group.get("prefix", "").strip()
         position_data = group.lc.data
         self.stability = SemanticAttribute.parse_stability(
-            group.get("stability"), position_data
+            group.get("stability"), position_data, not strict_validation
         )
         self.deprecated = SemanticAttribute.parse_deprecated(
             group.get("deprecated"), position_data
@@ -151,7 +151,8 @@ class BaseSemanticConvention(ValidatableYamlNode):
         self.events = group.get("events", ())
         self.constraints = parse_constraints(group.get("constraints", ()))
         self.attrs_by_name = SemanticAttribute.parse(
-            self.prefix, group.get("attributes")
+            self.prefix, group.get("attributes"),
+            strict_validation
         )
 
     def contains_attribute(self, attr: "SemanticAttribute"):
@@ -198,7 +199,7 @@ class SpanSemanticConvention(BaseSemanticConvention):
         "span_kind",
     )
 
-    def __init__(self, group):
+    def __init__(self, group, strict_validation=True):
         super().__init__(group)
         self.span_kind = SpanKind.parse(group.get("span_kind"))
         if self.span_kind is None:
@@ -212,7 +213,7 @@ class EventSemanticConvention(BaseSemanticConvention):
 
     allowed_keys = BaseSemanticConvention.allowed_keys + ("name",)
 
-    def __init__(self, group):
+    def __init__(self, group, strict_validation=True):
         super().__init__(group)
         self.name = group.get("name", self.prefix)
         if not self.name:
@@ -231,7 +232,7 @@ class UnitSemanticConvention(BaseSemanticConvention):
         "members",
     )
 
-    def __init__(self, group):
+    def __init__(self, group, strict_validation=True):
         super().__init__(group)
         self.members = UnitMember.parse(group.get("members"))
 
@@ -260,7 +261,7 @@ class MetricSemanticConvention(MetricGroupSemanticConvention):
         canonical_instrument_name_by_yaml_name.keys()
     )
 
-    def __init__(self, group):
+    def __init__(self, group, strict_validation=True):
         super().__init__(group)
         self.metric_name = group.get("metric_name")
         self.unit = group.get("unit")
@@ -292,10 +293,10 @@ class SemanticConventionSet:
     models: typing.Dict[str, BaseSemanticConvention] = field(default_factory=dict)
     errors: bool = False
 
-    def parse(self, file):
+    def parse(self, file, strict_validation=True):
         with open(file, "r", encoding="utf-8") as yaml_file:
             try:
-                semconv_models = parse_semantic_convention_groups(yaml_file)
+                semconv_models = parse_semantic_convention_groups(yaml_file, strict_validation)
                 for model in semconv_models:
                     if model.semconv_id in self.models:
                         self.errors = True

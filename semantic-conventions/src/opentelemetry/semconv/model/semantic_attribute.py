@@ -81,7 +81,7 @@ class SemanticAttribute:
         return isinstance(self.attr_type, EnumAttributeType)
 
     @staticmethod
-    def parse(prefix, yaml_attributes) -> "Dict[str, SemanticAttribute]":
+    def parse(prefix, yaml_attributes, strict_validation=True) -> "Dict[str, SemanticAttribute]":
         """This method parses the yaml representation for semantic attributes
         creating the respective SemanticAttribute objects.
         """
@@ -177,7 +177,7 @@ class SemanticAttribute:
 
             tag = attribute.get("tag", "").strip()
             stability = SemanticAttribute.parse_stability(
-                attribute.get("stability"), position_data
+                attribute.get("stability"), position_data, not strict_validation
             )
             deprecated = SemanticAttribute.parse_deprecated(
                 attribute.get("deprecated"), position_data
@@ -280,7 +280,7 @@ class SemanticAttribute:
         return attr_type, str(brief), examples
 
     @staticmethod
-    def parse_stability(stability, position_data):
+    def parse_stability(stability, position_data, ignore_deprecated=False):
         if stability is None:
             return StabilityLevel.EXPERIMENTAL
 
@@ -291,12 +291,15 @@ class SemanticAttribute:
         val = stability_value_map.get(stability)
         if val is not None:
             return val
-        msg = f"Value '{stability}' is not allowed as a stability marker, setting to experimental!"
 
-        print(msg)
-        return StabilityLevel.EXPERIMENTAL
+        # TODO: remove this branch - it's necessary for now to allow back-compat checks against old spec versions
+        # where we used 'deprecated' as stability level
+        if ignore_deprecated and stability == "deprecated":
+            print(f'WARNING: Using "deprecated" as stability level is no longer supported. Use "experimental" instead.')
+            return StabilityLevel.EXPERIMENTAL
 
-        #raise ValidationError.from_yaml_pos(position_data["stability"], msg)
+        msg = f"Value '{stability}' is not allowed as a stability marker"
+        raise ValidationError.from_yaml_pos(position_data["stability"], msg)
 
     @staticmethod
     def parse_deprecated(deprecated, position_data):

@@ -29,6 +29,12 @@ groups:
         note: "third attribute note"
         examples: ["one"]
         stability: stable
+      - id: fifth_attr_template
+        type: template[string[]]
+        brief: "request headers"
+        examples: '`first.fifth_attr.foo=["bar"]`'
+        stability: stable
+
   - id: metric_one
     type: metric
     metric_name: "metric_one"

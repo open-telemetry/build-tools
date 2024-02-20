@@ -36,6 +36,13 @@ groups:
         note: "forth attribute note"
         examples: [True]
         stability: stable
+      - id: fifth_attr_template
+        type: template[string[]]
+        brief: "Request headers."
+        note: "Request headers note."
+        examples: '`first.fifth_attr.bar=["foo"]`'
+        stability: stable
+
   - id: metric_one
     type: metric
     metric_name: "metric_one"

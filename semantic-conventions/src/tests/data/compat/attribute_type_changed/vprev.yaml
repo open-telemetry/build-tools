@@ -16,3 +16,8 @@ groups:
         note: "second attribute note"
         stability: stable
         examples: 2
+      - id: fifth_attr_template
+        type: template[string[]]
+        brief: "request headers"
+        examples: '`first.fifth_attr.foo=["bar"]`'
+        stability: stable

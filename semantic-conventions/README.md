@@ -85,8 +85,8 @@ convention that have the tag `network`.
 `<!-- semconv http.server(tag=network, full) -->` will print the constraints and attributes of both `http` and `http.server`
 semantic conventions that have the tag `network`.
 
-`<!-- semconv metric.http.server.active_requests(metric_table) -->` will print a table describing a single metric 
-`http.server.active_requests`. 
+`<!-- semconv metric.http.server.active_requests(metric_table) -->` will print a table describing a single metric
+`http.server.active_requests`.
 
 ## Code Generator
 
@@ -116,3 +116,32 @@ comma using the `--parameters [{key=value},]+` or `-D` flag.
 The image also supports customising
 [Whitespace Control in Jinja templates](https://jinja.palletsprojects.com/en/3.1.x/templates/#whitespace-control)
 via the additional flag `--trim-whitespace`. Providing the flag will enable both `lstrip_blocks` and `trim_blocks`.
+
+## Version compatibility check
+
+You can check compatibility between the local one specified with `--yaml-root` and sepcific OpenTelemetry semantic convention version using the following command:
+
+```bash
+docker run --rm otel/semconvgen --yaml-root {yaml_folder} compatibility --previous-version {semconv version}
+```
+
+The `{semconv version}` (e.g. `1.24.0`) is the previously released version of semantic conventions.
+
+Following checks are performed
+
+- On all attributes and metrics (experimental and stable):
+  - attributes and metrics must not be removed.
+
+- On stable attributes and attribute templates:
+  - stability must not be changed
+  - the type of attribute must not be changed
+  - enum attribute: type of value must not be changed
+  - enum attribute: members must not be removed (changing `id` field is allowed, as long as `value` does not change)
+- On stable metrics:
+  - stability must not be changed
+  - instrument and unit must not be changed
+  - new attributes should not be added.
+    This check does not take into account opt-in attributes. Adding new attributes to metric is not always breaking,
+    so it's considered non-critical and it's possible to suppress it with `--ignore-warnings`
+
+

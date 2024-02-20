@@ -120,13 +120,14 @@ def check_compatibility(semconv, args, parser):
 
 
 def find_yaml(yaml_root: str, exclude: str) -> List[str]:
-
     if yaml_root is not None:
-        exclude = set(exclude_file_list(yaml_root if yaml_root else "", exclude))
+        excluded_files = set(exclude_file_list(yaml_root if yaml_root else "", exclude))
         yaml_files = set(glob.glob(f"{yaml_root}/**/*.yaml", recursive=True)).union(
             set(glob.glob(f"{yaml_root}/**/*.yml", recursive=True))
         )
-        return yaml_files - exclude
+        return list(yaml_files - excluded_files)
+
+    return []
 
 
 def check_args(arguments, parser):
@@ -137,7 +138,7 @@ def check_args(arguments, parser):
 
 def parse_only_filter(only: str, parser) -> List[str]:
     if not only:
-        return None
+        return []
 
     types = [t.strip() for t in only.split(",")]
     unknown_types = [t for t in types if t not in CONVENTION_CLS_BY_GROUP_TYPE.keys()]
@@ -321,8 +322,9 @@ def download_previous_version(version: str) -> str:
         f"https://github.com/open-telemetry/semantic-conventions/archive/{filename}"
     )
 
-    request = requests.get(semconv_vprev, allow_redirects=True)
-    open(path_to_zip, "wb").write(request.content)
+    request = requests.get(semconv_vprev, allow_redirects=True, timeout=30)
+    with open(path_to_zip, "wb") as zip_file:
+        zip_file.write(request.content)
 
     with zipfile.ZipFile(path_to_zip, "r") as zip_ref:
         zip_ref.extractall(path_to_semconv)

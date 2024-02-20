@@ -108,6 +108,7 @@ class TestCompatibility(unittest.TestCase):
                 "metric",
                 "metric_one",
                 "attributes changed from '['first.first_attr']' to '['first.first_attr', 'first.second_attr']'",
+                critical=False,
             )
         ]
         self.assert_errors(expected_errors, problems)

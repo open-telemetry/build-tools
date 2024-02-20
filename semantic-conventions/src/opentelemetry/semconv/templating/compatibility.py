@@ -1,4 +1,5 @@
 from opentelemetry.semconv.model.semantic_attribute import (
+    EnumAttributeType,
     EnumMember,
     RequirementLevel,
     SemanticAttribute,
@@ -20,6 +21,7 @@ class Problem:
         self.signal = signal
         self.name = name
         self.message = message
+        self.critical = critical
 
     def __str__(self):
         return f"\t {self.signal} '{self.name}': {self.message}"
@@ -27,8 +29,8 @@ class Problem:
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.__dict__ == other.__dict__
-        else:
-            return False
+
+        return False
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -46,7 +48,7 @@ class CompatibilityChecker:
         self.previous_semconv = previous_semconv
 
     def check(self) -> list[Problem]:
-        problems = []
+        problems = []  # type: list[Problem]
         for semconv in self.previous_semconv.models.values():
             for prev_attr in semconv.attributes_and_templates:
                 if (
@@ -59,7 +61,7 @@ class CompatibilityChecker:
                 self._check_metric(semconv, problems)
         return problems
 
-    def _check_attribute(self, prev: SemanticAttribute, problems: list[str]):
+    def _check_attribute(self, prev: SemanticAttribute, problems: list[Problem]):
         cur = self.current_semconv._lookup_attribute(prev.fqn)
         if cur is None:
             problems.append(Problem("attribute", prev.fqn, "was removed"))
@@ -75,8 +77,8 @@ class CompatibilityChecker:
                     )
                 )
 
-            if prev.is_enum:
-                if not cur.is_enum:
+            if isinstance(prev.attr_type, EnumAttributeType):
+                if not isinstance(cur.attr_type, EnumAttributeType):
                     problems.append(
                         Problem(
                             "attribute",
@@ -107,7 +109,11 @@ class CompatibilityChecker:
                 )
 
     def _check_member(
-        self, fqn: str, prev: EnumMember, members: list[EnumMember], problems: list[str]
+        self,
+        fqn: str,
+        prev: EnumMember,
+        members: list[EnumMember],
+        problems: list[Problem],
     ):
         for member in members:
             if prev.value == member.value:
@@ -119,7 +125,7 @@ class CompatibilityChecker:
             )
         )
 
-    def _check_metric(self, prev: MetricSemanticConvention, problems: list[str]):
+    def _check_metric(self, prev: MetricSemanticConvention, problems: list[Problem]):
         for cur in self.current_semconv.models.values():
             if (
                 isinstance(cur, MetricSemanticConvention)
@@ -159,7 +165,7 @@ class CompatibilityChecker:
         self,
         prev: MetricSemanticConvention,
         cur: MetricSemanticConvention,
-        problems: list[str],
+        problems: list[Problem],
     ):
         if prev.stability == StabilityLevel.STABLE:
             prev_default_attributes = [

@@ -233,7 +233,7 @@ class CodeRenderer:
             "attributes": semconvset.attributes(),
             "attribute_templates": semconvset.attribute_templates(),
             "attributes_and_templates": self._grouped_attribute_definitions(semconvset),
-            "metrics": self._all_metrics_definitions(semconvset) or [],
+            "metrics": self._all_metrics_definitions(semconvset),
         }
         data.update(self.parameters)
         return data
@@ -391,10 +391,8 @@ class CodeRenderer:
     def _all_metrics_definitions(self, semconvset):
         all_metrics = []
         for semconv in semconvset.models.values():
-            if not is_metric(semconv):
-                continue
-
-            all_metrics.append(semconv)
+            if is_metric(semconv):
+                all_metrics.append(semconv)
 
         return sorted(all_metrics, key=lambda a: a.metric_name)
 

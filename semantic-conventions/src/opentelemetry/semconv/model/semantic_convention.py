@@ -142,7 +142,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
         self.prefix = group.get("prefix", "").strip()
         position_data = group.lc.data
         self.stability = SemanticAttribute.parse_stability(
-            group.get("stability"), position_data, not strict_validation
+            group.get("stability"), position_data, strict_validation
         )
         self.deprecated = SemanticAttribute.parse_deprecated(
             group.get("deprecated"), position_data

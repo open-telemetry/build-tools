@@ -19,7 +19,6 @@ from typing import List
 @dataclass()
 class MarkdownOptions:
     check_only: bool = False
-    check_compatibility_with: str = None
     enable_stable: bool = False
     enable_experimental: bool = False
     enable_deprecated: bool = True

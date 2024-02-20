@@ -179,7 +179,7 @@ class SemanticAttribute:
 
             tag = attribute.get("tag", "").strip()
             stability = SemanticAttribute.parse_stability(
-                attribute.get("stability"), position_data, not strict_validation
+                attribute.get("stability"), position_data, strict_validation
             )
             deprecated = SemanticAttribute.parse_deprecated(
                 attribute.get("deprecated"), position_data
@@ -282,7 +282,7 @@ class SemanticAttribute:
         return attr_type, str(brief), examples
 
     @staticmethod
-    def parse_stability(stability, position_data, ignore_deprecated=False):
+    def parse_stability(stability, position_data, strict_validation=True):
         if stability is None:
             return StabilityLevel.EXPERIMENTAL
 
@@ -296,7 +296,7 @@ class SemanticAttribute:
 
         # TODO: remove this branch - it's necessary for now to allow back-compat checks against old spec versions
         # where we used 'deprecated' as stability level
-        if ignore_deprecated and stability == "deprecated":
+        if not strict_validation and stability == "deprecated":
             print(
                 'WARNING: Using "deprecated" as stability level is no longer supported. Use "experimental" instead.'
             )

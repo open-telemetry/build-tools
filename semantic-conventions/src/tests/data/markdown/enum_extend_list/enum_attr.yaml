@@ -1,0 +1,27 @@
+groups:
+  - id: db
+    prefix: db
+    brief: ""
+    attributes:
+      - id: system
+        type:
+          allow_custom_values: false
+          members:
+            - id: mysql
+              value: "mysql"
+            - id: postgresql
+              value: "postgresql"
+            - id: mssql
+              value: "mssql"
+        brief: ""
+        examples: ["mysql"]
+  - id: db.redis
+    brief: ""
+    prefix: db.redis
+    attributes:
+      - ref: system
+        type:
+          members:
+            - id: redis
+              value: "redis"
+        examples: ["redis"]

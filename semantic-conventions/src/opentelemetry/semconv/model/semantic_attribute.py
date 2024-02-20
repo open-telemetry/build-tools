@@ -291,8 +291,12 @@ class SemanticAttribute:
         val = stability_value_map.get(stability)
         if val is not None:
             return val
-        msg = f"Value '{stability}' is not allowed as a stability marker"
-        raise ValidationError.from_yaml_pos(position_data["stability"], msg)
+        msg = f"Value '{stability}' is not allowed as a stability marker, setting to experimental!"
+
+        print(msg)
+        return StabilityLevel.EXPERIMENTAL
+
+        #raise ValidationError.from_yaml_pos(position_data["stability"], msg)
 
     @staticmethod
     def parse_deprecated(deprecated, position_data):

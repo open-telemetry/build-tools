@@ -134,7 +134,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
             key=lambda attr: attr.fqn,
         )
 
-    def __init__(self, group, strict_validation = True):
+    def __init__(self, group, strict_validation=True):
         super().__init__(group)
 
         self.semconv_id = self.id
@@ -151,8 +151,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
         self.events = group.get("events", ())
         self.constraints = parse_constraints(group.get("constraints", ()))
         self.attrs_by_name = SemanticAttribute.parse(
-            self.prefix, group.get("attributes"),
-            strict_validation
+            self.prefix, group.get("attributes"), strict_validation
         )
 
     def contains_attribute(self, attr: "SemanticAttribute"):
@@ -296,7 +295,9 @@ class SemanticConventionSet:
     def parse(self, file, strict_validation=True):
         with open(file, "r", encoding="utf-8") as yaml_file:
             try:
-                semconv_models = parse_semantic_convention_groups(yaml_file, strict_validation)
+                semconv_models = parse_semantic_convention_groups(
+                    yaml_file, strict_validation
+                )
                 for model in semconv_models:
                     if model.semconv_id in self.models:
                         self.errors = True

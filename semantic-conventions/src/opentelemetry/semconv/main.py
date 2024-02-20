@@ -215,7 +215,7 @@ def add_md_parser(subparsers):
     )
     parser.add_argument(
         "--check-compat",
-        help="Don't write the files, but check backward compatibility with specified older version of semantic conventions.",
+        help="Check backward compatibility with previous version of semantic conventions.",
         type=str,
         required=False,
     )

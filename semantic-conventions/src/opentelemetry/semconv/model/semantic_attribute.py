@@ -81,7 +81,9 @@ class SemanticAttribute:
         return isinstance(self.attr_type, EnumAttributeType)
 
     @staticmethod
-    def parse(prefix, yaml_attributes, strict_validation=True) -> "Dict[str, SemanticAttribute]":
+    def parse(
+        prefix, yaml_attributes, strict_validation=True
+    ) -> "Dict[str, SemanticAttribute]":
         """This method parses the yaml representation for semantic attributes
         creating the respective SemanticAttribute objects.
         """
@@ -295,7 +297,9 @@ class SemanticAttribute:
         # TODO: remove this branch - it's necessary for now to allow back-compat checks against old spec versions
         # where we used 'deprecated' as stability level
         if ignore_deprecated and stability == "deprecated":
-            print(f'WARNING: Using "deprecated" as stability level is no longer supported. Use "experimental" instead.')
+            print(
+                'WARNING: Using "deprecated" as stability level is no longer supported. Use "experimental" instead.'
+            )
             return StabilityLevel.EXPERIMENTAL
 
         msg = f"Value '{stability}' is not allowed as a stability marker"

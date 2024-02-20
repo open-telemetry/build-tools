@@ -171,9 +171,10 @@ Processes all parsed semantic conventions
 - `semconvs` - the dictionary containing parsed `BaseSemanticConvention` instances with semconv `id` as a key
 - `attributes_and_templates` - the dictionary containing all attributes (including template ones) grouped by their root namespace.
   Each element in the dictionary is a list of attributes that share the same root namespace. Attributes that don't have a namespace
-  appear under `""` key.
+  appear under `""` key. Attributes and templates are sorted by attribute name.
 - `attributes` - the list of all attributes from all parsed semantic conventions. Does not include template attributes.
 - `attribute_templates` - the list of all attribute templates from all parsed semantic conventions.
+- `metrics` - the list of all metric semantic conventions sorted by metric name.
 
 #### The `root_namespace` pattern
 

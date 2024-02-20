@@ -233,6 +233,7 @@ class CodeRenderer:
             "attributes": semconvset.attributes(),
             "attribute_templates": semconvset.attribute_templates(),
             "attributes_and_templates": self._grouped_attribute_definitions(semconvset),
+            "metrics": self._all_metrics_definitions(semconvset),
         }
         data.update(self.parameters)
         return data
@@ -386,6 +387,14 @@ class CodeRenderer:
                 grouped_metrics[ns], key=lambda a: a.metric_name
             )
         return grouped_metrics
+
+    def _all_metrics_definitions(self, semconvset):
+        all_metrics = []
+        for semconv in semconvset.models.values():
+            if is_metric(semconv):
+                all_metrics.append(semconv)
+
+        return sorted(all_metrics, key=lambda a: a.metric_name)
 
     def _write_template_to_file(self, template, data, output_name):
         template.globals["now"] = datetime.datetime.utcnow()

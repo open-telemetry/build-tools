@@ -23,6 +23,24 @@ def test_codegen_units(test_file_path, read_test_file):
     assert result == expected
 
 
+def test_codegen_metrics_all(test_file_path, read_test_file):
+    semconv = SemanticConventionSet(debug=False)
+    semconv.parse(test_file_path("yaml", "metrics", "metrics.yaml"))
+    semconv.finish()
+
+    template_path = test_file_path("jinja", "metrics", "metrics_template")
+    renderer = CodeRenderer({}, trim_whitespace=False)
+
+    filename = os.path.join(tempfile.mkdtemp(), "AllMetrics.java")
+    renderer.render(semconv, template_path, filename, None)
+    with open(filename, "r", encoding="utf-8") as f:
+        result = f.read()
+
+    expected = read_test_file("jinja", "metrics", "expected_metrics.java")
+
+    assert result == expected
+
+
 def test_strip_blocks_enabled(test_file_path, read_test_file):
     """Tests that the Jinja whitespace control params are fed to the Jinja environment"""
     semconv = SemanticConventionSet(debug=False)

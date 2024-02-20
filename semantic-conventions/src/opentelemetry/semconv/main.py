@@ -17,12 +17,12 @@
 import argparse
 import glob
 import os
-import requests
 import sys
 import tempfile
 import zipfile
-
 from typing import List
+
+import requests
 
 from opentelemetry.semconv.model.semantic_convention import (
     CONVENTION_CLS_BY_GROUP_TYPE,

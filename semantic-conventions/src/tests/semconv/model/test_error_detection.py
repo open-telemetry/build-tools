@@ -188,7 +188,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn(
-            "member 'one' is marked as stable, but it is not allowed on experimental attribute!",
+            "member 'one' is marked as stable but it is not allowed on experimental attribute!",
             msg,
         )
         self.assertEqual(e.line, 8)

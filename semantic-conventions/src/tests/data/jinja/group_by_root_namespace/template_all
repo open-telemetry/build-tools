@@ -42,4 +42,16 @@ class {{ root_namespace | to_camelcase(True) }}Attributes {
   public static final AttributeKey<{{ to_java_return_type(attribute.instantiated_type | string) | first_up }}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");
   {% endif %}
 {% endfor %}
+
+{%- for attribute in enum_attributes %}
+  {% set type = to_java_return_type(attribute.attr_type.enum_type) %}
+  public static final class {{attribute.fqn | to_camelcase(True) ~ "Values"}} {
+    {% for member in attribute.attr_type.members %}
+      /** {{member.brief | to_doc_brief}}.*/
+      {% set value = attribute | print_member_value(member) %}
+      public static final {{ type }} {{ member.member_id | to_const_name }} = {{ value }};
+    {% endfor %}
+  }
+
+{% endfor %}
 }

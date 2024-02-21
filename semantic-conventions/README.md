@@ -180,7 +180,8 @@ Processes all parsed semantic conventions
 
 Processes a single namespace and is called for each namespace detected.
 
-- `attributes_and_templates` - the list containing all attributes (including template ones) in the given root namespace.
+- `attributes_and_templates` - the list containing all attributes (including template ones) in the given root namespace. Attributes are sorted by their name.
+- `enum_attributes` - the list containing all enum attributes in the given root namespace.  Attributes are sorted by their name.
 - `root_namespace` - the root namespace being processed.
 
 #### Other patterns
@@ -202,6 +203,7 @@ Semconvgen supports following additional filters to simplify common operations i
 3. `is_experimental` - Checks if the attribute is experimental. The same check can also be done with `(attribute.stability | string())  == "StabilityLevel.EXPERIMENTAL"`
 4. `is_stable` - Checks if the attribute is experimental. The same check can also be done with `(attribute.stability | string())  == "StabilityLevel.STABLE"`
 5. `is_template` - Checks if the attribute is a template attribute.
+6. `attribute | print_member_value(member)` - Applies to enum attributes only and takes `EnumMember` as a parameter. Prints value of a given enum member as a constant - strings are quoted, integers are printed as is.
 
 #### String operations
 
@@ -216,3 +218,218 @@ Semconvgen supports following additional filters to simplify common operations i
 #### `BaseSemanticConvention` operations
 
 1. `is_metric` - Checks if semantic convention describes a metric.
+
+
+### Examples
+
+#### Generate all attributes in files grouped by root namespace
+
+First, we should iterate over all attributes.
+```jinja
+{%- for attribute in attributes_and_templates %}
+...
+{%- endfor %}
+```
+
+Now, for each attribute we want to generate constant declaration like
+
+```python
+SERVER_ADDRESS = "server.address"
+"""
+Server domain name if available without reverse DNS lookup; otherwise, IP address or Unix domain socket name.
+Note: When observed from the client side, and when communicating through an intermediary, `server.address` SHOULD represent the server address behind any intermediaries, for example proxies, if it's available.
+"""
+
+we can achieve it with the following template:
+
+```jinja
+{{attribute.fqn | to_const_name}} = "{{attribute.fqn}}"
+"""
+{{attribute.brief | to_doc_brief}}.
+{%- if attribute.note %}
+Note: {{attribute.note | to_doc_brief | indent}}.
+{%- endif %}
+"""
+```
+
+We should also annotate deprecated attributes and potentially generate template attributes differently.
+Here's a full example:
+
+```jinja
+{%- for attribute in attributes_and_templates %}
+
+{% if attribute | is_template %}
+{{attribute.fqn | to_const_name}}_TEMPLATE = "{{attribute.fqn}}"
+{%- else %}
+{{attribute.fqn | to_const_name}} = "{{attribute.fqn}}"
+{%- endif %}
+"""
+{{attribute.brief | to_doc_brief}}.
+{%- if attribute.note %}
+Note: {{attribute.note | to_doc_brief | indent}}.
+{%- endif %}
+
+{%- if attribute | is_deprecated %}
+Deprecated: {{attribute.deprecated | to_doc_brief}}.
+{%- endif %}
+"""
+
+{%- endfor %}
+```
+
+#### Filter attributes based on stability
+
+It's possible to split attributes into stable and unstable for example to ship them in different artifacts or namespaces.
+
+You can achieve it by running code generation twice with different filters and output destinations.
+
+Here's an example of how to keep one template file for both:
+
+```jinja
+{%- set filtered_attributes = attributes_and_templates | select(filter) | list %}
+{%- for attribute in attributes_and_templates %}
+...
+{%- endfor %}
+```
+
+Here we apply a Jinja test named `filter` which we can define in the generation script:
+
+```bash
+docker run --rm \
+  -v ${SCRIPT_DIR}/semantic-conventions/model:/source \
+  -v ${SCRIPT_DIR}/templates:/templates \
+  -v ${ROOT_DIR}/opentelemetry-semantic-conventions/src/opentelemetry/semconv/:/output \
+  otel/semconvgen:$OTEL_SEMCONV_GEN_IMG_VERSION \
+  -f /source code \
+  --template /templates/semantic_attributes.j2 \
+  --output /output/{{snake_prefix}}_attributes.py \
+  --file-per-group root_namespace \
+  -Dfilter=is_stable
+```
+
+Here we run the generation with `filter` variable set to `is_stable`, which resolves to `attributes_and_templates | select("is_stable")` expression.
+It will apply `is_stable` custom function to each attribute and collect only stable ones.
+
+We can also generate experimental attributes by changing the destination path and filter value:
+
+```bash
+docker run --rm \
+  -v ${SCRIPT_DIR}/semantic-conventions/model:/source \
+  -v ${SCRIPT_DIR}/templates:/templates \
+  -v ${ROOT_DIR}/opentelemetry-semantic-conventions/src/opentelemetry/semconv/:/output \
+  otel/semconvgen:$OTEL_SEMCONV_GEN_IMG_VERSION \
+  -f /source code \
+  --template /templates/semantic_attributes.j2 \
+  --output /output/experimental/{{snake_prefix}}_attributes.py \
+  --file-per-group root_namespace \
+  -Dfilter=is_experimental
+```
+
+#### Generate enum definitions
+
+Enum attribute members could be generated in the following way:
+
+```jinja
+{%- for attribute in enum_attributes %}
+
+{%- set class_name = attribute.fqn | to_camelcase(True) ~ "Values" %}
+{%- set type = attribute.attr_type.enum_type %}
+class {{class_name}}(Enum):
+    {%- for member in attribute.attr_type.members %}
+    {{ member.member_id | to_const_name }} = {{ attribute | print_member_value(member) }}
+    """{{member.brief | to_doc_brief}}."""
+
+    {% endfor %}
+
+{% endfor %}
+```
+
+resulting in en enum like this:
+
+```python
+class NetworkTransportValues(Enum):
+    TCP = "tcp"
+    """TCP."""
+
+    UDP = "udp"
+    """UDP."""
+
+    PIPE = "pipe"
+    """Named or anonymous pipe."""
+
+    UNIX = "unix"
+    """Unix domain socket."""
+```
+
+#### Exclude certain namespaces
+
+In some cases you might want to skip certain namespaces. For example, JVM attribute and metric definitions might not be very useful in Python application.
+
+You can create a list of excluded namespaces and pass it over to the template as parameter (or hardcode it):
+
+```jinja
+{%- if root_namespace not in ("jvm", "dotnet") %}
+...
+{%- endif %}
+```
+
+If result of the rendering is empty string, code generator does not store it.
+
+#### Generate metric definitions
+
+You can generate metric names as constants, but could also generate method definitions that create instruments and populate name, description, and unit:
+
+```python
+"""
+Duration of HTTP client requests
+"""
+@staticmethod
+def create_http_client_request_duration(meter: Meter) -> Histogram:
+    return meter.create_histogram(
+        name="http.client.request.duration",
+        description="Duration of HTTP client requests.",
+        unit="s",
+    )
+```
+
+Since metric types (like `Histogram`) and factory methods (like `create_histogram`) depend on the language, it's necessary to define mappings in the template.
+
+For example, this is a macro rendering Python instrument type name based on the semantic convention type:
+
+```jinja
+{%- macro to_python_instrument_type(instrument) -%}
+  {%- if instrument == "counter" -%}
+    Counter
+  {%- elif instrument == "histogram" -%}
+    Histogram
+  {%- elif instrument == "updowncounter" -%}
+    UpDownCounter
+  {%- elif instrument == "gauge" -%}
+    ObservableGauge
+  {%- endif -%}
+{%- endmacro %}
+```
+
+We'd need a very similar one for factory method.
+
+This is the template that generates above metric definition:
+
+```java
+    """
+    {{metric.brief | to_doc_brief}}
+    """
+    @staticmethod
+  {%- if metric.instrument == "gauge" %}
+    def create_{{ metric.metric_name | replace(".", "_") }}(meter: Meter, callback: Sequence[Callable]) -> {{to_python_instrument_type(metric.instrument)}}:
+  {%- else %}
+    def create_{{ metric.metric_name | replace(".", "_") }}(meter: Meter) -> {{to_python_instrument_type(metric.instrument)}}:
+  {%- endif %}
+        return meter.create_{{to_python_instrument_factory(metric.instrument)}}(
+            name="{{ metric.metric_name }}",
+  {%- if metric.instrument == "gauge" %}
+            callback=callback,
+  {%- endif %}
+            description="{{ metric.brief }}",
+            unit="{{ metric.unit }}",
+        )
+```

@@ -110,6 +110,9 @@ def test_codegen_attribute_root_ns(test_file_path, read_test_file):
     third = read_test_file("jinja", test_path, "ThirdAttributes.java")
     check_file(tmppath, "ThirdAttributes.java", third)
 
+    fifth = read_test_file("jinja", test_path, "FifthAttributes.java")
+    check_file(tmppath, "FifthAttributes.java", fifth)
+
 
 def test_codegen_attribute_root_ns_snake_case_file(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
@@ -137,6 +140,9 @@ def test_codegen_attribute_root_ns_snake_case_file(test_file_path, read_test_fil
 
     third = read_test_file("jinja", test_path, "ThirdAttributes.java")
     check_file(tmppath, "third_attributes.java", third)
+
+    fifth = read_test_file("jinja", test_path, "FifthAttributes.java")
+    check_file(tmppath, "fifth_attributes.java", fifth)
 
 
 def test_codegen_attribute_root_ns_stable(test_file_path, read_test_file):

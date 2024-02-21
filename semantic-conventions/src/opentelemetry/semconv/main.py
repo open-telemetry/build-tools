@@ -110,8 +110,7 @@ def check_compatibility(semconv, args, parser):
 
     if any(problems):
         print(f"Found {len(problems)} compatibility issues:")
-        problems_str = [str(p) for p in problems]
-        for problem in sorted(problems_str):
+        for problem in sorted(str(p) for p in problems):
             print(f"\t{problem}")
 
         if not args.ignore_warnings or (
@@ -323,13 +322,11 @@ def download_previous_version(version: str) -> str:
         f"https://github.com/open-telemetry/semantic-conventions/archive/{filename}"
     )
 
-    request = requests.get(semconv_vprev, allow_redirects=True, timeout=30)
-    if request.status_code != 200:
-        raise Exception(
-            f"Failed to download semantic conventions version {version}. Status code: {request.status_code}"
-        )
+    response = requests.get(semconv_vprev, allow_redirects=True, timeout=30)
+    response.raise_for_status()
+
     with open(path_to_zip, "wb") as zip_file:
-        zip_file.write(request.content)
+        zip_file.write(response.content)
 
     with zipfile.ZipFile(path_to_zip, "r") as zip_ref:
         zip_ref.extractall(path_to_semconv)

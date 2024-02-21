@@ -323,6 +323,10 @@ def download_previous_version(version: str) -> str:
     )
 
     request = requests.get(semconv_vprev, allow_redirects=True, timeout=30)
+    if request.status_code != 200:
+        raise Exception(
+            f"Failed to download semantic conventions version {version}. Status code: {request.status_code}"
+        )
     with open(path_to_zip, "wb") as zip_file:
         zip_file.write(request.content)
 

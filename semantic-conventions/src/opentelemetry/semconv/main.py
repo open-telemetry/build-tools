@@ -108,10 +108,11 @@ def check_compatibility(semconv, args, parser):
     compatibility_checker = CompatibilityChecker(semconv, prev_semconv)
     problems = compatibility_checker.check()
 
-    if problems:
+    if any(problems):
         print(f"Found {len(problems)} compatibility issues:")
-        for problem in problems:
-            print(f"\t {problem}")
+        problems_str = [str(p) for p in problems]
+        for problem in sorted(problems_str):
+            print(f"\t{problem}")
 
         if not args.ignore_warnings or (
             args.ignore_warnings and any(problem.critical for problem in problems)

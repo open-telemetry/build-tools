@@ -24,7 +24,7 @@ class Problem:
         self.critical = critical
 
     def __str__(self):
-        return f"\t {self.signal} '{self.name}': {self.message}"
+        return f"{self.signal} '{self.name}' {self.message}"
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):

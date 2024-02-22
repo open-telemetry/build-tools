@@ -107,7 +107,7 @@ class MarkdownRenderer:
             "\n|---|---|---|---|---|\n"
         )
         self.table_headers_omitting_req_level = (
-            "| Attribute  | Type | Description  | Examples  |" "\n|---|---|---|---|\n"
+            "| Attribute  | Type | Description  | Examples  |\n|---|---|---|---|\n"
         )
 
     def to_markdown_attr(

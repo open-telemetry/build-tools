@@ -20,10 +20,10 @@ groups:
       - id: third_attr
         type:
           members:
-            - id: one
+            - id: enum_one
               brief: "Enum one."
               value: "one"
-            - id: two
+            - id: enum_two
               brief: "Enum two."
               value: "two"
         brief: "Third attribute."

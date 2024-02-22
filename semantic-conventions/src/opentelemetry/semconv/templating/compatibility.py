@@ -87,6 +87,9 @@ class CompatibilityChecker:
                         )
                     )
                 else:
+                    # enum type change inevitably causes some values to be removed
+                    # which will be reported in _check_member method as well.
+                    # keeping this check to provide more detailed error message
                     if cur.attr_type.enum_type != prev.attr_type.enum_type:
                         problems.append(
                             Problem(
@@ -116,13 +119,23 @@ class CompatibilityChecker:
         problems: list[Problem],
     ):
         for member in members:
-            if prev.value == member.value:
+            if prev.member_id == member.member_id:
+                if prev.value != member.value:
+                    member_value = (
+                        f'"{member.value}"'
+                        if isinstance(member.value, str)
+                        else member.value
+                    )
+                    problems.append(
+                        Problem(
+                            "enum attribute member",
+                            f"{fqn}.{prev.member_id}",
+                            f"value changed from '{prev.value}' to '{member_value}'",
+                        )
+                    )
                 return
-
         problems.append(
-            Problem(
-                "attribute", fqn, f"enum member with value '{prev.value}' was removed"
-            )
+            Problem("enum attribute member", f"{fqn}.{prev.member_id}", "was removed")
         )
 
     def _check_metric(self, prev: MetricSemanticConvention, problems: list[Problem]):

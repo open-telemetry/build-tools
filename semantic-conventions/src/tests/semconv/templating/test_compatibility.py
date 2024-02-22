@@ -142,23 +142,37 @@ class TestCompatibility(unittest.TestCase):
                 "enum type changed from 'string' to 'int'",
             ),
             Problem(
-                "attribute",
-                "first.third_attr",
-                "enum member with value 'one' was removed",
+                "enum attribute member",
+                "first.third_attr.enum_one",
+                "value changed from 'one' to '1'",
             ),
         ]
         self.assert_errors(expected_errors, problems)
 
-    def testEnumValueRemoved(self):
-        cur = self.parse_semconv("compat/enum_value_removed/vnext.yaml")
-        prev = self.parse_semconv("compat/enum_value_removed/vprev.yaml")
+    def testEnumValueChanged(self):
+        cur = self.parse_semconv("compat/enum_value_changed/vnext.yaml")
+        prev = self.parse_semconv("compat/enum_value_changed/vprev.yaml")
         checker = CompatibilityChecker(cur, prev)
         problems = checker.check()
         expected_errors = [
             Problem(
-                "attribute",
-                "first.third_attr",
-                "enum member with value 'one' was removed",
+                "enum attribute member",
+                "first.third_attr.enum_one",
+                "value changed from 'one' to '\"1\"'",
+            )
+        ]
+        self.assert_errors(expected_errors, problems)
+
+    def testEnumMemberRemoved(self):
+        cur = self.parse_semconv("compat/enum_member_removed/vnext.yaml")
+        prev = self.parse_semconv("compat/enum_member_removed/vprev.yaml")
+        checker = CompatibilityChecker(cur, prev)
+        problems = checker.check()
+        expected_errors = [
+            Problem(
+                "enum attribute member",
+                "first.third_attr.enum_one",
+                "was removed",
             )
         ]
         self.assert_errors(expected_errors, problems)

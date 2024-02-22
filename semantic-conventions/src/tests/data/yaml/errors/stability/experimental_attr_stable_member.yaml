@@ -5,6 +5,7 @@ groups:
     attributes:
       - id: enum_attr
         brief: ""
+        stability: experimental
         type:
           members:
             - id: one

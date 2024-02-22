@@ -191,7 +191,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
             "member 'one' is marked as stable but it is not allowed on experimental attribute!",
             msg,
         )
-        self.assertEqual(e.line, 8)
+        self.assertEqual(e.line, 9)
 
     def test_invalid_deprecated_empty_string(self):
         with self.assertRaises(ValidationError) as ex:

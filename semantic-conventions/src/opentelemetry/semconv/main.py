@@ -87,7 +87,6 @@ def process_markdown(semconv, args):
         use_badge=args.md_use_badges,
         break_count=args.md_break_conditional,
         exclude_files=exclude_file_list(args.markdown_root, args.exclude),
-        specification_repo_tag=args.specification_version,
     )
     md_renderer = MarkdownRenderer(args.markdown_root, semconv, options)
     md_renderer.render_md()
@@ -214,14 +213,6 @@ def add_md_parser(subparsers):
         default=True,
         dest="md_enable_deprecated",
         action="store_false",
-    )
-    parser.add_argument(
-        "--specification-version",
-        help="Set specification version to use when generating links in markdown.",
-        type=str,
-        required=False,
-        default="main",
-        dest="specification_version",
     )
 
 

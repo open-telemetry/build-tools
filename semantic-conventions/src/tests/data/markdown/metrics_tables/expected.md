@@ -11,7 +11,7 @@
 
 **Attributes for `foo.size`**
 <!-- semconv metric.foo.size -->
-| Attribute  | [Type](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
 |---|---|---|---|---|
 | `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | `Required` |
 | `http.status_code` | int | [HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6). | `200` | `Conditionally Required` if and only if one was received/sent. |
@@ -26,7 +26,7 @@
 
 **Attributes for `foo.active_eggs`**
 <!-- semconv metric.foo.active_eggs -->
-| Attribute  | [Type](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
 |---|---|---|---|---|
 | `bar.egg.type` | string | Type of egg. [1] | `chicken`; `emu`; `dragon` | `Conditionally Required` if available to instrumentation. |
 | `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | Opt-In |

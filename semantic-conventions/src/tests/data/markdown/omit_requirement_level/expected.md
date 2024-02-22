@@ -1,7 +1,7 @@
 # Common Attributes
 
 <!-- semconv http(omit_requirement_level) -->
-| Attribute  | [Type](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) | Description  | Examples  |
+| Attribute  | Type | Description  | Examples  |
 |---|---|---|---|
 | `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` |
 | `http.target` | string | The full request target as passed in a HTTP request line or equivalent. | `/path/12314/?q=ddds#123` |

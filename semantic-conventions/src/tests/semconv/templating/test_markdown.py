@@ -157,12 +157,6 @@ class TestCorrectMarkdown(unittest.TestCase):
     def test_sorting(self):
         self.check("markdown/sorting/")
 
-    def test_spec_version(self):
-        self.check(
-            "markdown/spec_version/",
-            options=MarkdownOptions(specification_repo_tag="v1.26.0"),
-        )
-
     def check(
         self,
         input_dir: str,

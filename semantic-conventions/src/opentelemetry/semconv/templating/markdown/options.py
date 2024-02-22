@@ -25,7 +25,6 @@ class MarkdownOptions:
     use_badge: bool = False
     break_count: int = 50
     exclude_files: List[str] = field(default_factory=list)
-    specification_repo_tag: str = "main"
 
     def stable_md_snippet(self):
         if self.use_badge:

@@ -1,7 +1,7 @@
 # Custom HTTP Semantic Conventions
 
 <!-- semconv custom_http(full) -->
-| Attribute  | [Type](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) | Description  | Examples  | [Requirement Level](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/attribute-requirement-level.md) |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
 |---|---|---|---|---|
 | `custom_http.request.header.<key>` | string[] | HTTP request headers, `<key>` being the normalized HTTP Header name (lowercase, with - characters replaced by _), the value being the header values. | ``http.request.header.content_type=["application/json"]`` | `Recommended` |
 | `custom_http.request.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | `Required` |

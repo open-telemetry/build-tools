@@ -39,6 +39,10 @@ from opentelemetry.semconv.model.semantic_convention import (
 from opentelemetry.semconv.model.utils import ID_RE
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
+_REQUIREMENT_LEVEL_URL = (
+    "https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/"
+)
+
 
 class RenderContext:
     def __init__(self):
@@ -96,25 +100,14 @@ class MarkdownRenderer:
         # that contains it
         self.filename_for_attr_fqn = self._create_attribute_location_dict()
 
-        spec_root_url = (
-            f"https://github.com/open-telemetry/opentelemetry-specification/blob/"
-            f"{options.specification_repo_tag}"
-        )
-        attribute_req_level_url = (
-            f"{spec_root_url}/specification/common/attribute-requirement-level.md"
-        )
-        req_level = f"[Requirement Level]({attribute_req_level_url})"
-        attribute_type = (
-            f"[Type]({spec_root_url}/specification/common/README.md#attribute)"
-        )
+        req_level = f"[Requirement Level]({_REQUIREMENT_LEVEL_URL})"
 
         self.table_headers = (
-            f"| Attribute  | {attribute_type} | Description  | Examples  | {req_level} |"
+            f"| Attribute  | Type | Description  | Examples  | {req_level} |"
             "\n|---|---|---|---|---|\n"
         )
         self.table_headers_omitting_req_level = (
-            f"| Attribute  | {attribute_type} | Description  | Examples  |"
-            "\n|---|---|---|---|\n"
+            "| Attribute  | Type | Description  | Examples  |" "\n|---|---|---|---|\n"
         )
 
     def to_markdown_attr(

@@ -39,6 +39,16 @@ groups:
               value: "two"
               stability: experimental
               brief: 'member two'
+            - id: three
+              value: "three"
+              stability: experimental
+              deprecated: "Removed."
+              brief: 'member three'
+            - id: four
+              value: "four"
+              stability: stable
+              deprecated: "Removed."
+              brief: 'member four'
   - id: ref_test
     brief: 'ref_test'
     attributes:

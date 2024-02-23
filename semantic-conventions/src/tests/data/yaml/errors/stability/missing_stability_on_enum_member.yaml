@@ -1,0 +1,12 @@
+groups:
+  - id: test
+    type: attribute_group
+    brief: 'test'
+    attributes:
+      - id: enum_attr
+        brief: ""
+        type:
+          members:
+            - id: one
+              value: "one"
+              brief: 'member one'

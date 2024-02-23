@@ -11,6 +11,7 @@ groups:
             - id: enum_one
               brief: "enum one"
               value: 1
+              stability: experimental
         brief: "third attribute"
         note: "third attribute note"
         examples: [1]

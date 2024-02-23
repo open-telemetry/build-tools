@@ -5,10 +5,12 @@ groups:
     brief: 'Attributes that appear last.'
     attributes:
       - id: yyy
+        stability: experimental
         type: string
         brief: 'the 6th attribute'
         examples: 'yyy'
       - id: xxx
+        stability: experimental
         type: string
         brief: 'the 5th attribute'
         examples: 'xxx'
@@ -19,6 +21,7 @@ groups:
     brief: 'Attributes that appear first.'
     attributes:
       - id: aaa
+        stability: experimental
         type: string
         brief: 'the 1st attribute'
         examples: 'aaa'
@@ -29,6 +32,7 @@ groups:
     brief: 'Attributes that appear after `mmm`.'
     attributes:
       - id: nnn
+        stability: experimental
         type: string
         brief: 'the 4th attribute'
         examples: 'nnn'
@@ -40,10 +44,12 @@ groups:
     extends: nnn
     attributes:
       - id: ccc
+        stability: experimental
         type: template[string]
         brief: the 3rd attribute
         examples: '`mmm.ccc="ccc"`'
       - id: bbb
+        stability: experimental
         type: string
         brief: the 2nd attribute
         examples: 'bbb'

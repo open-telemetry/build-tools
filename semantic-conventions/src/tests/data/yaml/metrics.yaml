@@ -2,11 +2,13 @@ groups:
   - id: metric.foo
     prefix: bar
     type: metric_group
+    stability: experimental
     brief: "This document defines foo."
     note: >
         Details about foo.
-    attributes: 
+    attributes:
       - id: egg.type
+        stability: experimental
         type: string
         brief: 'Type of egg.'
         examples: ["chicken", "emu", "dragon"]
@@ -16,6 +18,7 @@ groups:
   - id: metric.foo.size
     prefix: foo
     type: metric
+    stability: stable
     metric_name: foo.size
     brief: "Measures the size of foo."
     instrument: histogram
@@ -32,13 +35,15 @@ groups:
   - id: metric.foo.active_eggs
     prefix: foo
     type: metric
+    stability: experimental
+    deprecated: "Removed."
     metric_name: foo.active_eggs
     brief: "Measures how many eggs are currently active."
     instrument: updowncounter
     unit: "{cartons}"
-    attributes: 
+    attributes:
       - ref: http.method
         requirement_level: opt_in
       - ref: bar.egg.type
-        requirement_level: 
+        requirement_level:
           conditionally_required: "if available to instrumentation."

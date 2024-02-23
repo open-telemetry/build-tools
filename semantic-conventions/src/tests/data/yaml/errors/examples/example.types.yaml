@@ -10,16 +10,19 @@ groups:
         requirement_level: required
         brief: 'test'
         examples: [1,asd]
+        stability: experimental
       - id: convention_version
         type: int[]
         requirement_level: required
         brief: 'test'
         examples: [1,3]
+        stability: experimental
       - id: url
         type: string
         requirement_level: required
         brief: 'test'
         examples: ['http://1.2.3.4:5678/']
+        stability: experimental
       - id: value
         type:
           allow_custom_values: false
@@ -29,8 +32,10 @@ groups:
               note: 'val'
         requirement_level: required
         brief: 'test.'
+        stability: experimental
       - id: flag
         requirement_level: conditionally_required
         type: boolean
         brief: 'test'
         examples: [true]
+        stability: experimental

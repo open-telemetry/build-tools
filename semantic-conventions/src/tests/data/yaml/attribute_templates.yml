@@ -1,5 +1,6 @@
 attributes:
   - id: attribute_template_one
+    stability: experimental
     tag: tag-one
     type: template[string]
     brief: >
@@ -7,6 +8,7 @@ attributes:
       the first attribute template
     examples: 'This is a good example of the first attribute template'
   - id: attribute_template_two
+    stability: experimental
     tag: tag-two
     type: template[int]
     brief: >
@@ -14,6 +16,7 @@ attributes:
       the second attribute template. It's a number.
     examples: [1000, 10, 1]
   - id: attribute_three
+    stability: experimental
     tag: tag-three
     type: boolean
     brief: >

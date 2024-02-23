@@ -5,6 +5,7 @@ groups:
     brief: 'This document defines semantic conventions for remote procedure calls.'
     attributes:
       - id: service
+        stability: experimental
         type: string
         requirement_level: required
         brief: 'The service name, must be equal to the $service part in the span name.'

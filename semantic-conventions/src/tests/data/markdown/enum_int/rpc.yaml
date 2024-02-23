@@ -5,6 +5,7 @@ groups:
       brief: 'Tech-specific attributes for gRPC.'
       attributes:
         - id: status_code
+          stability: experimental
           type:
             members:
               - id: ok

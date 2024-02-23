@@ -6,6 +6,7 @@ groups:
     note: 'test'
     attributes:
       - id: one
+        stability: experimental
         type: double
         brief: it contains a float number.
         examples: [12, 1f, 1.0]

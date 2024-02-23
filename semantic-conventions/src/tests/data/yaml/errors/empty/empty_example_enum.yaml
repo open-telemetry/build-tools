@@ -6,6 +6,7 @@ groups:
     span_kind: client
     attributes:
       - id: type
+        stability: experimental
         type:
           allow_custom_values: false
           members:

@@ -8,6 +8,7 @@ groups:
     brief: example
     attributes:
       - id: flag
+        stability: experimental
         type: boolean
         brief: An attribute.
 
@@ -17,5 +18,6 @@ groups:
     brief: example
     attributes:
       - id: flag
+        stability: experimental
         type: boolean
         brief: An attribute.

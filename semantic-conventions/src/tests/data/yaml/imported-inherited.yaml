@@ -6,6 +6,7 @@ groups:
     brief: 'Base'
     attributes:
       - id: service
+        stability: experimental
         type: string
         requirement_level: required
         brief: 'The service name, must be equal to the $service part in the span name.'
@@ -22,16 +23,19 @@ groups:
     brief: 'imported'
     attributes:
       - id: peer.ip
+        stability: experimental
         type: string
         brief: >
           Remote
         examples: '127.0.0.1'
       - id: peer.port
+        stability: experimental
         type: int
         brief: 'Remote port number.'
         note: 'not override'
         examples: [80, 8080, 443]
       - id: peer.name
+        stability: experimental
         type: string
         brief: 'Remote hostname or similar, see note below.'
         examples: 'example.com'
@@ -47,6 +51,7 @@ groups:
         requirement_level: required
         brief: 'override'
       - id: name
+        stability: experimental
         type: string
         requirement_level: required
         brief: 'Name'
@@ -60,6 +65,7 @@ groups:
     brief: 'Imported'
     attributes:
       - id: method
+        stability: experimental
         type: string
         brief: 'HTTP Method'
         examples: 'example.com'
@@ -72,6 +78,7 @@ groups:
     brief: 'Imported extends'
     attributes:
       - id: hostname
+        stability: experimental
         type: string
         brief: 'hostname'
         examples: 'example.com'
@@ -84,6 +91,7 @@ groups:
     brief: 'Extends extends.'
     attributes:
       - id: zz.attr
+        stability: experimental
         type: string
         requirement_level: required
         brief: 'zz attr'

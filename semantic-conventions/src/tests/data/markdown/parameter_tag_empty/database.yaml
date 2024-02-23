@@ -9,6 +9,7 @@ groups:
     span_kind: client
     attributes:
       - id: type
+        stability: experimental
         tag: connection-level
         type:
           allow_custom_values: true
@@ -39,6 +40,7 @@ groups:
           Database type. For any SQL database, "sql".
           For others, the lower-case database category.
       - id: dbms
+        stability: experimental
         type:
           allow_custom_values: true
           members:
@@ -146,6 +148,7 @@ groups:
         brief: >
           An identifier for the DBMS (database management system) product
       - id: connection_string
+        stability: experimental
         tag: connection-level
         type: string
         note: 'It is recommended to remove embedded credentials.'
@@ -153,12 +156,14 @@ groups:
           The connection string used to connect to the database.
         examples: 'Server=(localdb)\v11.0;Integrated Security=true;'
       - id: user
+        stability: experimental
         tag: connection-level
         type: string
         brief: >
           Username for accessing the database.
         examples: ['readonly_user', 'reporting_user']
       - id: mssql.instance_name
+        stability: experimental
         type: string
         note: >
           If setting a `db.mssql.instance_name`, `net.peer.port` is no longer
@@ -168,11 +173,13 @@ groups:
           connecting to. This name is used to determine the port of a named instance.
         examples: 'MSSQLSERVER'
       - id: jdbc.driver_classname
+        stability: experimental
         type: string
         brief: >
           The fully-qualified class name of the JDBC driver used to connect.
         examples: ['org.postgresql.Driver', 'com.microsoft.sqlserver.jdbc.SQLServerDriver']
       - id: name
+        stability: experimental
         type: string
         requirement_level:
           conditionally_required: >
@@ -186,6 +193,7 @@ groups:
           Redis does not have a database name to used here.
         examples: [ 'customers', 'master' ]
       - id: statement
+        stability: experimental
         type: string
         requirement_level:
           conditionally_required: if applicable.
@@ -194,6 +202,7 @@ groups:
           A database statement for the given database type.
         examples: ['SELECT * FROM wuser_table', 'SET mykey "WuValue"']
       - id: operation
+        stability: experimental
         type: string
         requirement_level:
           conditionally_required: if `db.statement` is not applicable.
@@ -221,6 +230,7 @@ groups:
       Call-level attributes for Cassandra
     attributes:
       - id: keyspace
+        stability: experimental
         type: string
         requirement_level: required
         brief: >
@@ -234,6 +244,7 @@ groups:
       Call-level attributes for Apache HBase
     attributes:
       - id: namespace
+        stability: experimental
         type: string
         requirement_level: required
         brief: >
@@ -248,8 +259,9 @@ groups:
       Call-level attributes for MongoDB
     attributes:
       - id: collection
+        stability: experimental
         type: string
         requirement_level: required
         brief: >
           The collection being accessed within the database stated in `db.name`.
-        examples: [ 'customers', 'products' ] 
+        examples: [ 'customers', 'products' ]

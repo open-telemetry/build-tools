@@ -10,3 +10,4 @@ groups:
         deprecated: True
         brief: 'test'
         examples: [true, false]
+        stability: experimental

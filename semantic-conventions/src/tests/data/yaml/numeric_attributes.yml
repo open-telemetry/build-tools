@@ -6,6 +6,7 @@ groups:
     note: 'test'
     attributes:
       - id: one
+        stability: experimental
         tag: tag-one
         type: int
         brief: >
@@ -13,6 +14,7 @@ groups:
           the first attribute
         examples: 10
       - id: two
+        stability: experimental
         tag: tag-two
         type: double
         brief: >

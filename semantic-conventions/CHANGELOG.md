@@ -6,7 +6,7 @@ Please update the changelog as part of any significant pull request.
 
 - BREAKING: Make stability and deprecation independent properties.
   ([#244](https://github.com/open-telemetry/build-tools/pull/244))
-- Add link to attribute types and requirement levels from Markdown table title.
+- Add link to requirement levels definition from Markdown table title.
   ([#222](https://github.com/open-telemetry/build-tools/pull/222))
 
 ## v0.23.0

@@ -4,6 +4,8 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- BREAKING: Add `stability` (required) and `deprecated` (optional) properties to `EnumMember`
+  ([#267](https://github.com/open-telemetry/build-tools/pull/267))
 - BREAKING: Make stability required (also: fix ref and extends, render badges on metrics).
   ([#272](https://github.com/open-telemetry/build-tools/pull/272))
 - BREAKING: Make stability and deprecation independent properties.

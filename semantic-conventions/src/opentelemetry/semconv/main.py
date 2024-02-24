@@ -16,25 +16,33 @@
 
 import argparse
 import glob
+import os
 import sys
+import tempfile
+import zipfile
 from typing import List
+
+import requests
 
 from opentelemetry.semconv.model.semantic_convention import (
     CONVENTION_CLS_BY_GROUP_TYPE,
     SemanticConventionSet,
 )
 from opentelemetry.semconv.templating.code import CodeRenderer
+from opentelemetry.semconv.templating.compatibility import CompatibilityChecker
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
 
-def parse_semconv(args, parser) -> SemanticConventionSet:
-    semconv = SemanticConventionSet(args.debug)
-    find_yaml(args)
-    for file in sorted(args.files):
+def parse_semconv(
+    yaml_root: str, exclude: str, debug: bool, parser
+) -> SemanticConventionSet:
+    semconv = SemanticConventionSet(debug)
+    files = find_yaml(yaml_root, exclude)
+    for file in sorted(files):
         if not file.endswith(".yaml") and not file.endswith(".yml"):
             parser.error(f"{file} is not a yaml file.")
-        semconv.parse(file)
+        semconv.parse(file, False)
     semconv.finish()
     if semconv.has_error():
         sys.exit(1)
@@ -64,8 +72,8 @@ def main():
     parser = setup_parser()
     args = parser.parse_args()
     check_args(args, parser)
-    semconv = parse_semconv(args, parser)
-    semconv_filter = parse_only_filter(args, parser)
+    semconv = parse_semconv(args.yaml_root, args.exclude, args.debug, parser)
+    semconv_filter = parse_only_filter(args.only, parser)
     filter_semconv(semconv, semconv_filter)
     if len(semconv.models) == 0:
         parser.error("No semantic convention model found!")
@@ -76,6 +84,8 @@ def main():
         renderer.render(semconv, args.template, args.output, args.pattern)
     elif args.flavor == "markdown":
         process_markdown(semconv, args)
+    elif args.flavor == "compatibility":
+        check_compatibility(semconv, args, parser)
 
 
 def process_markdown(semconv, args):
@@ -92,16 +102,32 @@ def process_markdown(semconv, args):
     md_renderer.render_md()
 
 
-def find_yaml(args):
-    if args.yaml_root is not None:
-        exclude = set(
-            exclude_file_list(args.yaml_root if args.yaml_root else "", args.exclude)
+def check_compatibility(semconv, args, parser):
+    prev_semconv_path = download_previous_version(args.previous_version)
+    prev_semconv = parse_semconv(prev_semconv_path, args.exclude, args.debug, parser)
+    compatibility_checker = CompatibilityChecker(semconv, prev_semconv)
+    problems = compatibility_checker.check()
+
+    if any(problems):
+        print(f"Found {len(problems)} compatibility issues:")
+        for problem in sorted(str(p) for p in problems):
+            print(f"\t{problem}")
+
+        if not args.ignore_warnings or (
+            args.ignore_warnings and any(problem.critical for problem in problems)
+        ):
+            sys.exit(1)
+
+
+def find_yaml(yaml_root: str, exclude: str) -> List[str]:
+    if yaml_root is not None:
+        excluded_files = set(exclude_file_list(yaml_root if yaml_root else "", exclude))
+        yaml_files = set(glob.glob(f"{yaml_root}/**/*.yaml", recursive=True)).union(
+            set(glob.glob(f"{yaml_root}/**/*.yml", recursive=True))
         )
-        yaml_files = set(
-            glob.glob(f"{args.yaml_root}/**/*.yaml", recursive=True)
-        ).union(set(glob.glob(f"{args.yaml_root}/**/*.yml", recursive=True)))
-        file_names = yaml_files - exclude
-        args.files.extend(file_names)
+        return list(yaml_files - excluded_files)
+
+    return []
 
 
 def check_args(arguments, parser):
@@ -110,11 +136,11 @@ def check_args(arguments, parser):
         parser.error("Either --yaml-root or YAML_FILE must be present")
 
 
-def parse_only_filter(arguments, parser):
-    if not arguments.only:
-        return None
+def parse_only_filter(only: str, parser) -> List[str]:
+    if not only:
+        return []
 
-    types = [t.strip() for t in arguments.only.split(",")]
+    types = [t.strip() for t in only.split(",")]
     unknown_types = [t for t in types if t not in CONVENTION_CLS_BY_GROUP_TYPE.keys()]
     if unknown_types:
         parser.error(
@@ -192,6 +218,12 @@ def add_md_parser(subparsers):
         action="store_true",
     )
     parser.add_argument(
+        "--check-compat",
+        help="Check backward compatibility with previous version of semantic conventions.",
+        type=str,
+        required=False,
+    )
+    parser.add_argument(
         "--md-use-badges",
         help="Use stability badges instead of labels for attributes.",
         required=False,
@@ -216,6 +248,23 @@ def add_md_parser(subparsers):
         default=True,
         dest="md_enable_deprecated",
         action="store_false",
+    )
+
+
+def add_compat_check_parser(subparsers):
+    parser = subparsers.add_parser("compatibility")
+    parser.add_argument(
+        "--previous-version",
+        help="Check backward compatibility with specified older version of semantic conventions.",
+        type=str,
+        required=True,
+    )
+    parser.add_argument(
+        "--ignore-warnings",
+        help="Ignore non-critical compatibility problems.",
+        required=False,
+        default=False,
+        action="store_true",
     )
 
 
@@ -261,8 +310,31 @@ def setup_parser():
     subparsers = parser.add_subparsers(dest="flavor")
     add_code_parser(subparsers)
     add_md_parser(subparsers)
+    add_compat_check_parser(subparsers)
 
     return parser
+
+
+def download_previous_version(version: str) -> str:
+    filename = f"v{version}.zip"
+    tmppath = tempfile.mkdtemp()
+    path_to_zip = os.path.join(tmppath, filename)
+    path_to_semconv = os.path.join(tmppath, f"v{version}")
+
+    semconv_vprev = (
+        f"https://github.com/open-telemetry/semantic-conventions/archive/{filename}"
+    )
+
+    response = requests.get(semconv_vprev, allow_redirects=True, timeout=30)
+    response.raise_for_status()
+
+    with open(path_to_zip, "wb") as zip_file:
+        zip_file.write(response.content)
+
+    with zipfile.ZipFile(path_to_zip, "r") as zip_ref:
+        zip_ref.extractall(path_to_semconv)
+
+    return os.path.join(path_to_semconv, f"semantic-conventions-{version}", "model")
 
 
 if __name__ == "__main__":

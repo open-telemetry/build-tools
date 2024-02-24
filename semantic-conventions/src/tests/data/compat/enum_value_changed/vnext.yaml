@@ -1,0 +1,17 @@
+groups:
+  - id: first
+    type: attribute_group
+    brief: "First group."
+    note: "First group note."
+    prefix: "first"
+    attributes:
+      - id: third_attr
+        type:
+          members:
+            - id: enum_one
+              brief: "enum one"
+              value: "1"
+        brief: "third attribute"
+        note: "third attribute note"
+        examples: ["one"]
+        stability: stable

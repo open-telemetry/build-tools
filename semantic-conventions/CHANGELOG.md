@@ -8,6 +8,8 @@ Please update the changelog as part of any significant pull request.
   ([#244](https://github.com/open-telemetry/build-tools/pull/244))
 - Add backward-compatibility check mode.
   ([#271](https://github.com/open-telemetry/build-tools/pull/271))
+- Add link to requirement levels definition from Markdown table title.
+  ([#222](https://github.com/open-telemetry/build-tools/pull/222))
 
 ## v0.23.0
 

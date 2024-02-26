@@ -130,7 +130,7 @@ class TestCompatibility(unittest.TestCase):
         ]
         self.assert_errors(expected_errors, problems)
 
-    def testStableEnumTypeChanged(self):
+    def testEnumTypeChanged(self):
         cur = self.parse_semconv("compat/enum_type_changed/vnext.yaml")
         prev = self.parse_semconv("compat/enum_type_changed/vprev.yaml")
         checker = CompatibilityChecker(cur, prev)
@@ -154,7 +154,7 @@ class TestCompatibility(unittest.TestCase):
         ]
         self.assert_errors(expected_errors, problems)
 
-    def testStableEnumValueChanged(self):
+    def testEnumValueChanged(self):
         cur = self.parse_semconv("compat/enum_value_changed/vnext.yaml")
         prev = self.parse_semconv("compat/enum_value_changed/vprev.yaml")
         checker = CompatibilityChecker(cur, prev)

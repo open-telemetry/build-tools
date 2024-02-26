@@ -73,14 +73,19 @@ class CompatibilityChecker:
         if prev.stability == StabilityLevel.STABLE:
             self._check_attribute_type(prev, cur, problems)
 
-        if isinstance(prev.attr_type, EnumAttributeType):
+        if (
+            isinstance(prev.attr_type, EnumAttributeType)
+            and
+            # this makes mypy happy, we already checked that type is the same for stable attributes
+            isinstance(cur.attr_type, EnumAttributeType)
+        ):
             for member in prev.attr_type.members:
                 self._check_member(prev.fqn, member, cur.attr_type.members, problems)
 
     def _check_stability(
         self,
-        prev: SemanticAttribute,
-        cur: SemanticAttribute,
+        prev: StabilityLevel,
+        cur: StabilityLevel,
         signal: str,
         fqn: str,
         problems: list[Problem],
@@ -91,7 +96,7 @@ class CompatibilityChecker:
             )
 
     def _check_attribute_type(
-        self, prev: EnumAttributeType, cur: EnumAttributeType, problems: list[Problem]
+        self, prev: SemanticAttribute, cur: SemanticAttribute, problems: list[Problem]
     ):
         if isinstance(prev.attr_type, EnumAttributeType):
             if not isinstance(cur.attr_type, EnumAttributeType):

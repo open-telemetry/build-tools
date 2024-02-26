@@ -1,28 +1,28 @@
 <!-- semconv test -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
 |---|---|---|---|---|
-| [`test.deprecated_experimental_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | Required |
-| [`test.deprecated_stable_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | Required |
-| [`test.exp_attr`](stable_badges_expected.md) | boolean |  |  | Required |
-| [`test.stable_attr`](stable_badges_expected.md) | boolean | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> |  | Required |
+| [`test.deprecated_experimental_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | `Required` |
+| [`test.deprecated_stable_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | `Required` |
+| [`test.exp_attr`](stable_badges_expected.md) | boolean |  |  | `Required` |
+| [`test.stable_attr`](stable_badges_expected.md) | boolean | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> |  | `Required` |
 <!-- endsemconv -->
 
 <!-- semconv ref_test -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
 |---|---|---|---|---|
-| [`test.deprecated_experimental_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | Required |
-| [`test.deprecated_stable_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | Required |
-| [`test.exp_attr`](stable_badges_expected.md) | boolean |  |  | Required |
-| [`test.stable_attr`](stable_badges_expected.md) | boolean | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> |  | Required |
+| [`test.deprecated_experimental_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | `Required` |
+| [`test.deprecated_stable_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | `Required` |
+| [`test.exp_attr`](stable_badges_expected.md) | boolean |  |  | `Required` |
+| [`test.stable_attr`](stable_badges_expected.md) | boolean | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> |  | `Required` |
 <!-- endsemconv -->
 
 <!-- semconv extends_test(full) -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
 |---|---|---|---|---|
-| [`test.deprecated_experimental_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | Required |
-| [`test.deprecated_stable_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | Required |
-| [`test.exp_attr`](stable_badges_expected.md) | boolean |  |  | Required |
-| [`test.stable_attr`](stable_badges_expected.md) | boolean | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> |  | Required |
+| [`test.deprecated_experimental_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | `Required` |
+| [`test.deprecated_stable_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | `Required` |
+| [`test.exp_attr`](stable_badges_expected.md) | boolean |  |  | `Required` |
+| [`test.stable_attr`](stable_badges_expected.md) | boolean | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> |  | `Required` |
 <!-- endsemconv -->
 
 <!-- semconv stable_metric(metric_table) -->

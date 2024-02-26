@@ -67,42 +67,34 @@ class CompatibilityChecker:
             problems.append(Problem("attribute", prev.fqn, "was removed"))
             return
 
+        self._check_stability(
+            prev.stability, cur.stability, "attribute", prev.fqn, problems
+        )
         if prev.stability == StabilityLevel.STABLE:
-            if cur.stability != prev.stability:
-                problems.append(
-                    Problem(
-                        "attribute",
-                        prev.fqn,
-                        f"stability changed from '{prev.stability}' to '{cur.stability}'",
-                    )
-                )
+            self._check_attribute_type(prev, cur, problems)
 
-            if isinstance(prev.attr_type, EnumAttributeType):
-                if not isinstance(cur.attr_type, EnumAttributeType):
-                    problems.append(
-                        Problem(
-                            "attribute",
-                            prev.fqn,
-                            f"type changed from '{prev.attr_type}' to '{cur.attr_type}'",
-                        )
-                    )
-                else:
-                    # enum type change inevitably causes some values to be removed
-                    # which will be reported in _check_member method as well.
-                    # keeping this check to provide more detailed error message
-                    if cur.attr_type.enum_type != prev.attr_type.enum_type:
-                        problems.append(
-                            Problem(
-                                "attribute",
-                                prev.fqn,
-                                f"enum type changed from '{prev.attr_type.enum_type}' to '{cur.attr_type.enum_type}'",
-                            )
-                        )
-                    for member in prev.attr_type.members:
-                        self._check_member(
-                            prev.fqn, member, cur.attr_type.members, problems
-                        )
-            elif cur.attr_type != prev.attr_type:
+        if isinstance(prev.attr_type, EnumAttributeType):
+            for member in prev.attr_type.members:
+                self._check_member(prev.fqn, member, cur.attr_type.members, problems)
+
+    def _check_stability(
+        self,
+        prev: SemanticAttribute,
+        cur: SemanticAttribute,
+        signal: str,
+        fqn: str,
+        problems: list[Problem],
+    ):
+        if prev == StabilityLevel.STABLE and cur != prev:
+            problems.append(
+                Problem(signal, fqn, f"stability changed from '{prev}' to '{cur}'")
+            )
+
+    def _check_attribute_type(
+        self, prev: EnumAttributeType, cur: EnumAttributeType, problems: list[Problem]
+    ):
+        if isinstance(prev.attr_type, EnumAttributeType):
+            if not isinstance(cur.attr_type, EnumAttributeType):
                 problems.append(
                     Problem(
                         "attribute",
@@ -110,6 +102,26 @@ class CompatibilityChecker:
                         f"type changed from '{prev.attr_type}' to '{cur.attr_type}'",
                     )
                 )
+            else:
+                # enum type change inevitably causes some values to be removed
+                # which will be reported in _check_member method as well.
+                # keeping this check to provide more detailed error message
+                if cur.attr_type.enum_type != prev.attr_type.enum_type:
+                    problems.append(
+                        Problem(
+                            "attribute",
+                            prev.fqn,
+                            f"enum type changed from '{prev.attr_type.enum_type}' to '{cur.attr_type.enum_type}'",
+                        )
+                    )
+        elif cur.attr_type != prev.attr_type:
+            problems.append(
+                Problem(
+                    "attribute",
+                    prev.fqn,
+                    f"type changed from '{prev.attr_type}' to '{cur.attr_type}'",
+                )
+            )
 
     def _check_member(
         self,
@@ -118,8 +130,22 @@ class CompatibilityChecker:
         members: list[EnumMember],
         problems: list[Problem],
     ):
+        found = False
         for member in members:
             if prev.member_id == member.member_id:
+                found = True
+                if prev.stability != StabilityLevel.STABLE:
+                    # we allow stability and value changes for non-stable members
+                    break
+
+                self._check_stability(
+                    prev.stability,
+                    member.stability,
+                    "enum attribute member",
+                    f"{fqn}.{prev.member_id}",
+                    problems,
+                )
+
                 if prev.value != member.value:
                     member_value = (
                         f'"{member.value}"'
@@ -133,10 +159,12 @@ class CompatibilityChecker:
                             f"value changed from '{prev.value}' to '{member_value}'",
                         )
                     )
-                return
-        problems.append(
-            Problem("enum attribute member", f"{fqn}.{prev.member_id}", "was removed")
-        )
+        if not found:
+            problems.append(
+                Problem(
+                    "enum attribute member", f"{fqn}.{prev.member_id}", "was removed"
+                )
+            )
 
     def _check_metric(self, prev: MetricSemanticConvention, problems: list[Problem]):
         for cur in self.current_semconv.models.values():
@@ -145,14 +173,13 @@ class CompatibilityChecker:
                 and cur.metric_name == prev.metric_name
             ):
                 if prev.stability == StabilityLevel.STABLE:
-                    if cur.stability != prev.stability:
-                        problems.append(
-                            Problem(
-                                "metric",
-                                prev.metric_name,
-                                f"stability changed from '{prev.stability}' to '{cur.stability}'",
-                            )
-                        )
+                    self._check_stability(
+                        prev.stability,
+                        cur.stability,
+                        "metric",
+                        prev.metric_name,
+                        problems,
+                    )
                     if cur.unit != prev.unit:
                         problems.append(
                             Problem(

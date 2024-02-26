@@ -10,8 +10,13 @@ groups:
           members:
             - id: enum_one
               brief: "enum one"
+              stability: stable
               value: "1"
               stability: experimental
+            - id: enum_two
+              brief: "enum two"
+              stability: experimental
+              value: "_two_"
         brief: "third attribute"
         note: "third attribute note"
         examples: ["one"]

@@ -130,7 +130,7 @@ class TestCompatibility(unittest.TestCase):
         ]
         self.assert_errors(expected_errors, problems)
 
-    def testEnumTypeChanged(self):
+    def testStableEnumTypeChanged(self):
         cur = self.parse_semconv("compat/enum_type_changed/vnext.yaml")
         prev = self.parse_semconv("compat/enum_type_changed/vprev.yaml")
         checker = CompatibilityChecker(cur, prev)
@@ -146,10 +146,15 @@ class TestCompatibility(unittest.TestCase):
                 "first.third_attr.enum_one",
                 "value changed from 'one' to '1'",
             ),
+            Problem(
+                "attribute",
+                "first.forth_attr",
+                "enum type changed from 'string' to 'int'",
+            ),
         ]
         self.assert_errors(expected_errors, problems)
 
-    def testEnumValueChanged(self):
+    def testStableEnumValueChanged(self):
         cur = self.parse_semconv("compat/enum_value_changed/vnext.yaml")
         prev = self.parse_semconv("compat/enum_value_changed/vprev.yaml")
         checker = CompatibilityChecker(cur, prev)

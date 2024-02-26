@@ -130,13 +130,18 @@ The `{semconv version}` (e.g. `1.24.0`) is the previously released version of se
 Following checks are performed
 
 - On all attributes and metrics (experimental and stable):
-  - attributes and metrics must not be removed.
+  - attributes and metrics must not be removed
+  - enum attribute members must not be removed
 
 - On stable attributes and attribute templates:
   - stability must not be changed
   - the type of attribute must not be changed
   - enum attribute: type of value must not be changed
-  - enum attribute: members must not be removed (changing `id` field is allowed, as long as `value` does not change)
+
+- On stable enum attribute members:
+  - stability must not be changed
+  - `id` and `value` must not be changed
+
 - On stable metrics:
   - stability must not be changed
   - instrument and unit must not be changed

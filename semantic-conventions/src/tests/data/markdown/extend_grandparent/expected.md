@@ -1,10 +1,10 @@
 ## DB spans
 
 <!-- semconv database.foo.span(full) -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
 |---|---|---|---|---|
-| `db.foo.bar` | string | Some property. | `baz` | Recommended |
-| `db.name` | string | Database name. | `the_shop` | Recommended |
+| `db.foo.bar` | string | Some property. | `baz` | `Recommended` |
+| `db.name` | string | Database name. | `the_shop` | `Recommended` |
 <!-- endsemconv -->
 
 ## DB metrics
@@ -16,8 +16,8 @@
 <!-- endsemconv -->
 
 <!-- semconv database.foo.duration.metric(full) -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
 |---|---|---|---|---|
-| `db.foo.bar` | string | Some property. | `baz` | Recommended |
-| `db.name` | string | Database name. | `the_shop` | Recommended |
+| `db.foo.bar` | string | Some property. | `baz` | `Recommended` |
+| `db.name` | string | Database name. | `the_shop` | `Recommended` |
 <!-- endsemconv -->

@@ -70,17 +70,17 @@ Note that the items marked with [1] are different from the mapping defined in th
 
 <!-- Re-generate TOC with `TODO: ADD cmd` -->
 
-| Attribute name | Notes and examples                                           | Required? |
+| Attribute name | Notes and examples                                           | `Required`? |
 | :------------- | :----------------------------------------------------------- | --------- |
-| `http.method` | HTTP request method. E.g. `"GET"`. | Required |
+| `http.method` | HTTP request method. E.g. `"GET"`. | `Required` |
 | `http.url` | Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`. Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless. | Defined later. |
 | `http.target` | The full request target as passed in a [HTTP request line][] or equivalent, e.g. `"/path/12314/?q=ddds#123"`. | Defined later. |
 | `http.host` | The value of the [HTTP host header][]. When the header is empty or not present, this attribute should be the same. | Defined later. |
 | `http.scheme` | The URI scheme identifying the used protocol: `"http"` or `"https"` | Defined later. |
-| `http.status_code` | [HTTP response status code][]. E.g. `200` (integer) | Conditionally Required: if and only if one was received/sent. |
-| `http.status_text` | [HTTP reason phrase][]. E.g. `"OK"` | Recommended |
+| `http.status_code` | [HTTP response status code][]. E.g. `200` (integer) | `Conditionally Required` if and only if one was received/sent. |
+| `http.status_text` | [HTTP reason phrase][]. E.g. `"OK"` | `Recommended` |
 | `http.flavor` | Kind of HTTP protocol used: `"1.0"`, `"1.1"`, `"2"`, `"SPDY"` or `"QUIC"`. |  Opt-In |
-| `http.user_agent` | Value of the HTTP [User-Agent][] header sent by the client. | Recommended |
+| `http.user_agent` | Value of the HTTP [User-Agent][] header sent by the client. | `Recommended` |
 
 It is recommended to also use the general [network attributes][], especially `net.peer.ip`. If `net.transport` is not specified, it can be assumed to be `IP.TCP` except if `http.flavor` is `QUIC`, in which case `IP.UDP` is assumed.
 
@@ -183,11 +183,11 @@ If the route does not include the application root, it SHOULD be prepended to th
 
 If the route cannot be determined, the `name` attribute MUST be set as defined in the general semantic conventions for HTTP.
 
-| Attribute name | Notes and examples                                           | Required? |
+| Attribute name | Notes and examples                                           | `Required`? |
 | :------------- | :----------------------------------------------------------- | --------- |
 | `http.server_name` | The primary server name of the matched virtual host. This should be obtained via configuration. If no such configuration can be obtained, this attribute MUST NOT be set ( `net.host.name` should be used instead). | [1] |
-| `http.route` | The matched route (path template). (TODO: Define whether to prepend application root) E.g. `"/users/:userID?"`. | Recommended |
-| `http.client_ip` | The IP address of the original client behind all proxies, if known (e.g. from [X-Forwarded-For][]). Note that this is not necessarily the same as `net.peer.ip`, which would identify the network-level peer, which may be a proxy. | Recommended |
+| `http.route` | The matched route (path template). (TODO: Define whether to prepend application root) E.g. `"/users/:userID?"`. | `Recommended` |
+| `http.client_ip` | The IP address of the original client behind all proxies, if known (e.g. from [X-Forwarded-For][]). Note that this is not necessarily the same as `net.peer.ip`, which would identify the network-level peer, which may be a proxy. | `Recommended` |
 
 [HTTP request line]: https://tools.ietf.org/html/rfc7230#section-3.1.1
 [HTTP host header]: https://tools.ietf.org/html/rfc7230#section-5.4

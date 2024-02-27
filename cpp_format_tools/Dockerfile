@@ -2,7 +2,7 @@ ARG BUILDIFIER_VERSION=3.5.0
 ARG CLANG_VERSION=10.0.1-r0
 ARG CMAKE_FORMAT_VERSION=0.6.13
 
-FROM alpine:3.13
+FROM alpine:3.17
 LABEL maintainer="The OpenTelemetry Authors"
 RUN apk update
 

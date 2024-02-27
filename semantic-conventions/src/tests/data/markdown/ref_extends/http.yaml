@@ -19,6 +19,7 @@ groups:
 
   - id: http.client.request.duration.metric
     type: metric
+    stability: experimental
     metric_name: http.client.request.duration
     brief: "Measures request duration."
     instrument: histogram

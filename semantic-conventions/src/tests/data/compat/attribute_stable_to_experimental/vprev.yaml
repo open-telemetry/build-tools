@@ -10,6 +10,7 @@ groups:
         brief: "first attribute"
         note: "first attribute note"
         examples: "first example"
+        stability: experimental
       - id: second_attr
         type: int
         brief: "second attribute"

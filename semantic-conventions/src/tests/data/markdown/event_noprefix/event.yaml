@@ -7,3 +7,4 @@ groups:
       - id: attr
         type: boolean
         brief: attrbrief
+        stability: experimental

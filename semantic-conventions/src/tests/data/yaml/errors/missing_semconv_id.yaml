@@ -5,6 +5,7 @@ groups:
     span_kind: client
     attributes:
       - id: test
+        stability: experimental
         type:
           allow_custom_values: false
           members:

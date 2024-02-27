@@ -36,12 +36,23 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testDeprecated(self):
         self.check("markdown/deprecated/")
 
-    def testStability(self):
-        self.check("markdown/stability/", expected_name="labels_expected.md")
+    def testStableBadges(self):
         self.check(
             "markdown/stability/",
             MarkdownOptions(enable_stable=True, use_badge=True),
-            expected_name="badges_expected.md",
+            expected_name="stable_badges_expected.md",
+        )
+
+    def testExperimentalAndStableBadges(self):
+        self.check(
+            "markdown/stability/",
+            MarkdownOptions(
+                enable_stable=True,
+                enable_experimental=True,
+                enable_deprecated=True,
+                use_badge=True,
+            ),
+            expected_name="all_badges_expected.md",
         )
 
     def testSingle(self):

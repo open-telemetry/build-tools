@@ -10,3 +10,4 @@ groups:
         brief: 'test'
         requirement_level: conditionally_required
         examples: [true, false]
+        stability: experimental

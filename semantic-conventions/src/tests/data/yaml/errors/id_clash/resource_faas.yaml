@@ -6,12 +6,14 @@ groups:
         Attributes for a serverless instance.
     attributes:
       - id: name
+        stability: experimental
         type: string
         requirement_level: required
         brief: >
            	The name of the function being executed.
         examples: ['my-function']
       - id: id
+        stability: experimental
         type: string
         requirement_level: required
         brief: >
@@ -24,12 +26,14 @@ groups:
             field.
         examples: ['arn:aws:lambda:us-west-2:123456789012:function:my-function']
       - id: version
+        stability: experimental
         type: string
         brief: >
            	The version string of the function being executed as defined in
             [Version Attributes](https://github.com/open-telemetry/opentelemetry-specification/tree/master/specification/resource/semantic_conventions#version-attributes).
         examples: ['semver:2.0.0']
       - id: instance
+        stability: experimental
         type: string
         brief: >
            	The execution environment ID as a string.

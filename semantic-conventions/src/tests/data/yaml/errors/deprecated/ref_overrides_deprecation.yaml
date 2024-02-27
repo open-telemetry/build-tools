@@ -1,0 +1,18 @@
+groups:
+  - id: test
+    type: span
+    prefix: test
+    brief: ""
+    span_kind: client
+    attributes:
+      - id: convention_version
+        type: boolean
+        brief: 'test'
+        examples: [true, false]
+        stability: experimental
+  - id: test_child
+    type: span
+    brief: ""
+    attributes:
+      - ref: test.convention_version
+        deprecated: "Removed"

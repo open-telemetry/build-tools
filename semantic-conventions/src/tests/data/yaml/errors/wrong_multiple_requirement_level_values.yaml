@@ -6,9 +6,10 @@ groups:
     span_kind: client
     attributes:
       - id: convention_version
+        stability: experimental
         type: boolean
         brief: 'test'
-        requirement_level: 
+        requirement_level:
           recommended: recommended
           conditionally_required: condition
         examples: [true, false]

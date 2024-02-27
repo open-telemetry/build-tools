@@ -1,5 +1,6 @@
 attributes:
   - id: attribute_one
+    stability: experimental
     tag: tag-one
     type: string
     brief: >
@@ -7,6 +8,7 @@ attributes:
       the first attribute
     examples: 'This is a good example of the first attribute'
   - id: attribute_two
+    stability: experimental
     tag: tag-two
     type: int
     brief: >
@@ -14,6 +16,7 @@ attributes:
       the second attribute. It's a number.
     examples: [1000, 10, 1]
   - id: attribute_three
+    stability: experimental
     tag: tag-three
     type: boolean
     brief: >

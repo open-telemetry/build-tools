@@ -10,3 +10,4 @@ groups:
         requirement_level: maybe
         brief: 'test'
         examples: [true, false]
+        stability: experimental

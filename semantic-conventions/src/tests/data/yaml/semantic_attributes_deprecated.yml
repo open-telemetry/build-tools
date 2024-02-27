@@ -1,5 +1,6 @@
 attributes:
   - id: deprecated_attribute
+    stability: experimental
     tag: tag-one
     deprecated: don't use this one anymore
     type: boolean

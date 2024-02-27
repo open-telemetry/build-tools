@@ -128,6 +128,12 @@ class SemanticAttribute:
                 if "type" in attribute:
                     msg = f"Ref attribute '{ref}' must not declare a type"
                     raise ValidationError.from_yaml_pos(position, msg)
+                if "stability" in attribute:
+                    msg = f"Ref attribute '{ref}' must not override stability"
+                    raise ValidationError.from_yaml_pos(position, msg)
+                if "deprecated" in attribute:
+                    msg = f"Ref attribute '{ref}' must not override deprecation status"
+                    raise ValidationError.from_yaml_pos(position, msg)
                 brief = attribute.get("brief")
                 examples = attribute.get("examples")
                 ref = ref.strip()
@@ -224,7 +230,7 @@ class SemanticAttribute:
 
     @staticmethod
     def parse_attribute(attribute):
-        check_no_missing_keys(attribute, ["type", "brief"])
+        check_no_missing_keys(attribute, ["type", "brief", "stability"])
         attr_val = attribute["type"]
         try:
             attr_type = EnumAttributeType.parse(attr_val)
@@ -284,7 +290,7 @@ class SemanticAttribute:
     @staticmethod
     def parse_stability(stability, position_data, strict_validation=True):
         if stability is None:
-            return StabilityLevel.EXPERIMENTAL
+            return None
 
         stability_value_map = {
             "experimental": StabilityLevel.EXPERIMENTAL,

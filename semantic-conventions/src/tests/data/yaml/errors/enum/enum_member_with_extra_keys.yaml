@@ -14,3 +14,4 @@ groups:
               value: yesyes
         requirement_level: required
         brief: 'test'
+        stability: experimental

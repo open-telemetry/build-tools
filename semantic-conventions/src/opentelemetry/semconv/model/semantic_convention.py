@@ -104,6 +104,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
         "extends",
         "attributes",
         "constraints",
+        "deprecated",
     )
 
     GROUP_TYPE_NAME: str
@@ -268,11 +269,11 @@ class MetricSemanticConvention(MetricGroupSemanticConvention):
         self.validate()
 
     def validate(self):
-        val_tuple = (self.metric_name, self.unit, self.instrument)
+        val_tuple = (self.metric_name, self.unit, self.instrument, self.stability)
         if not all(val_tuple):
             raise ValidationError.from_yaml_pos(
                 self._position,
-                "All of metric_name, units, and instrument must be defined",
+                "All of metric_name, units, instrument, and stability must be defined",
             )
 
         if self.instrument not in self.allowed_instruments:
@@ -483,6 +484,8 @@ class SemanticConventionSet:
 
     def _merge_attribute(self, child, parent):
         child.attr_type = parent.attr_type
+        child.stability = parent.stability
+        child.deprecated = parent.deprecated
         if not child.brief:
             child.brief = parent.brief
         if not child.requirement_level:

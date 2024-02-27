@@ -5,6 +5,7 @@ groups:
     brief: These attributes describe database calls.
     attributes:
       - id: name
+        stability: experimental
         brief: Database name.
         type: string
         examples: [ 'the_shop' ]
@@ -16,6 +17,7 @@ groups:
     extends: database.common_attributes
     attributes:
       - id: bar
+        stability: experimental
         brief: Some property.
         type: string
         examples: [ 'baz' ]
@@ -28,6 +30,7 @@ groups:
 
   - id: database.foo.duration.metric
     type: metric
+    stability: experimental
     metric_name: db.foo.duration
     instrument: histogram
     unit: s

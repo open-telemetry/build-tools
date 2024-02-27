@@ -141,6 +141,28 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("is not allowed as a stability marker", msg)
         self.assertEqual(e.line, 10)
 
+    def test_multiple_stability_values(self):
+        with self.assertRaises(DuplicateKeyError):
+            self.open_yaml("yaml/errors/stability/multiple_stability_values.yaml")
+
+    def test_missing_stability_value(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/stability/missing_stability_value.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("missing keys: ['stability']", msg)
+        self.assertEqual(e.line, 6)
+
+    def test_ref_override_stability(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/stability/ref_override_stability.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("ref attribute 'test_attr' must not override stability", msg)
+        self.assertEqual(e.line, 14)
+
     def test_invalid_semconv_stability_with_deprecated(self):
         with self.assertRaises(ValidationError) as ex:
             self.open_yaml("yaml/errors/stability/semconv_stability_deprecated.yaml")
@@ -161,6 +183,34 @@ class TestCorrectErrorDetection(unittest.TestCase):
             msg,
         )
         self.assertEqual(e.line, 10)
+
+    def test_multiple_deprecations(self):
+        with self.assertRaises(DuplicateKeyError):
+            self.open_yaml("yaml/errors/deprecated/multiple_deprecations.yaml")
+
+    def test_extends_overrides_deprecation(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/deprecated/extends_overrides_deprecation.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn(
+            "ref attribute 'test.convention_version' must not override deprecation status",
+            msg,
+        )
+        self.assertEqual(e.line, 19)
+
+    def test_ref_overrides_deprecation(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/deprecated/ref_overrides_deprecation.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn(
+            "ref attribute 'test.convention_version' must not override deprecation status",
+            msg,
+        )
+        self.assertEqual(e.line, 17)
 
     def test_invalid_deprecated_boolean(self):
         with self.assertRaises(ValidationError) as ex:
@@ -295,7 +345,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("example with wrong type", msg)
         self.assertIn("expected double", msg)
         self.assertIn("is was <class 'int'>", msg)
-        self.assertEqual(e.line, 11)
+        self.assertEqual(e.line, 12)
 
     def test_examples_bool(self):
         with self.assertRaises(ValidationError) as ex:
@@ -378,7 +428,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("is already present at line 8", msg)
-        self.assertEqual(e.line, 16)
+        self.assertEqual(e.line, 18)
 
     def test_attribute_id_clash_inherited(self):
         semconv = SemanticConventionSet(debug=False)
@@ -409,7 +459,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         msg = e.message.lower()
         self.assertIn("any_of attribute", msg)
         self.assertIn("does not exists", msg)
-        self.assertEqual(e.line, 15)
+        self.assertEqual(e.line, 16)
 
     def test_missing_event(self):
         with self.assertRaises(ValidationError) as ex:
@@ -459,7 +509,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("multiple requirement_level values are not allowed!", msg)
-        self.assertEqual(e.line, 11)
+        self.assertEqual(e.line, 12)
 
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:

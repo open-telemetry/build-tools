@@ -203,7 +203,7 @@ class TestCorrectParse(unittest.TestCase):
         semconv.parse(self.load_file("yaml/http.yaml"))
 
         metric_semconvs = cast(
-            List[MetricSemanticConvention], list(semconv.models.values())[:2]
+            List[MetricSemanticConvention], list(semconv.models.values())
         )
 
         expected = {
@@ -211,6 +211,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "bar",
             "extends": "",
             "n_constraints": 0,
+            "stability": StabilityLevel.EXPERIMENTAL,
             "attributes": ["bar.egg.type"],
         }
         self.semantic_convention_check(metric_semconvs[0], expected)
@@ -220,6 +221,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "foo",
             "extends": "",
             "n_constraints": 0,
+            "stability": StabilityLevel.STABLE,
             "metric_name": "foo.size",
             "unit": "{bars}",
             "instrument": "histogram",
@@ -232,6 +234,26 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(metric_semconvs[1].unit, expected["unit"])
         self.assertEqual(metric_semconvs[1].instrument, expected["instrument"])
         self.assertEqual(metric_semconvs[1].metric_name, expected["metric_name"])
+
+        expected = {
+            "id": "metric.foo.active_eggs",
+            "prefix": "foo",
+            "extends": "",
+            "n_constraints": 0,
+            "stability": StabilityLevel.EXPERIMENTAL,
+            "metric_name": "foo.active_eggs",
+            "unit": "{cartons}",
+            "deprecated": "Removed.",
+            "instrument": "updowncounter",
+            "attributes": [
+                "bar.egg.type",
+                "http.method",
+            ],
+        }
+        self.semantic_convention_check(metric_semconvs[2], expected)
+        self.assertEqual(metric_semconvs[2].unit, expected["unit"])
+        self.assertEqual(metric_semconvs[2].instrument, expected["instrument"])
+        self.assertEqual(metric_semconvs[2].metric_name, expected["metric_name"])
 
     def test_resource(self):
         semconv = SemanticConventionSet(debug=False)
@@ -256,7 +278,7 @@ class TestCorrectParse(unittest.TestCase):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("yaml/event.yaml"))
         semconv.finish()
-        self.assertEqual(len(semconv.models), 1)
+        self.assertEqual(len(semconv.models), 4)
         event = list(semconv.models.values())[0]
         expected = {
             "id": "exception",
@@ -281,22 +303,61 @@ class TestCorrectParse(unittest.TestCase):
                     constraint.choice_list_attributes[choice_index][attr_index],
                 )
 
+        experimental_event = list(semconv.models.values())[1]
+        expected = {
+            "id": "experimental_event",
+            "prefix": "experimental_event",
+            "extends": "",
+            "n_constraints": 0,
+            "stability": StabilityLevel.EXPERIMENTAL,
+            "attributes": [
+                "experimental_event.foo",
+            ],
+        }
+        self.semantic_convention_check(experimental_event, expected)
+
+        stable_event = list(semconv.models.values())[2]
+        expected = {
+            "id": "stable_event",
+            "prefix": "stable_event",
+            "extends": "",
+            "n_constraints": 0,
+            "stability": StabilityLevel.STABLE,
+            "attributes": [],
+        }
+        self.semantic_convention_check(stable_event, expected)
+
+        deprecated_event = list(semconv.models.values())[3]
+        expected = {
+            "id": "deprecated_event",
+            "prefix": "deprecated_event",
+            "extends": "",
+            "n_constraints": 0,
+            "stability": StabilityLevel.STABLE,
+            "deprecated": "Removed.",
+            "attributes": [],
+        }
+        self.semantic_convention_check(deprecated_event, expected)
+
     def test_span_with_event(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("yaml/event.yaml"))
         semconv.parse(self.load_file("yaml/span_event.yaml"))
         semconv.finish()
-        self.assertEqual(len(semconv.models), 3)
+        self.assertEqual(len(semconv.models), 6)
         semconvs = list(semconv.models.values())
         self.assertTrue(isinstance(semconvs[0], EventSemanticConvention))
-        self.assertTrue(isinstance(semconvs[1], SpanSemanticConvention))
+        self.assertTrue(isinstance(semconvs[1], EventSemanticConvention))
         self.assertTrue(isinstance(semconvs[2], EventSemanticConvention))
-        event_semconv = semconvs[1]
-        self.assertEqual(2, len(event_semconv.events))
-        self.assertTrue(isinstance(event_semconv.events[0], EventSemanticConvention))
-        self.assertTrue(isinstance(event_semconv.events[1], EventSemanticConvention))
-        self.assertEqual("exception", event_semconv.events[0].semconv_id)
-        self.assertEqual("random.event", event_semconv.events[1].semconv_id)
+        self.assertTrue(isinstance(semconvs[3], EventSemanticConvention))
+        self.assertTrue(isinstance(semconvs[4], SpanSemanticConvention))
+        self.assertTrue(isinstance(semconvs[5], EventSemanticConvention))
+        span_semconv = semconvs[4]
+        self.assertEqual(2, len(span_semconv.events))
+        self.assertTrue(isinstance(span_semconv.events[0], EventSemanticConvention))
+        self.assertTrue(isinstance(span_semconv.events[1], EventSemanticConvention))
+        self.assertEqual("exception", span_semconv.events[0].semconv_id)
+        self.assertEqual("random.event", span_semconv.events[1].semconv_id)
 
     def test_rpc(self):
         semconv = SemanticConventionSet(debug=False)
@@ -457,14 +518,27 @@ class TestCorrectParse(unittest.TestCase):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("yaml/deprecated/http.yaml"))
         semconv.finish()
-        self.assertEqual(len(semconv.models), 1)
+        self.assertEqual(len(semconv.models), 3)
 
-        method_attr = list(semconv.models.values())[0].attrs_by_name["http.method"]
-        self.assertIsNotNone(method_attr.deprecated)
+        method_attr_original = list(semconv.models.values())[0].attrs_by_name[
+            "http.method"
+        ]
+        self.assertIsNotNone(method_attr_original.deprecated)
         self.assertEqual(
-            method_attr.deprecated,
+            method_attr_original.deprecated,
             "Use attribute `nonDepecrated`.",
         )
+
+        method_attr_client = list(semconv.models.values())[1].attrs_by_name[
+            "http.method"
+        ]
+        self.assertEqual(method_attr_client.deprecated, method_attr_original.deprecated)
+
+        method_attr_server = list(semconv.models.values())[2].attrs_by_name[
+            "http.method"
+        ]
+        self.assertEqual(method_attr_server.deprecated, method_attr_original.deprecated)
+
         self.assertIsNone(
             list(semconv.models.values())[0].attrs_by_name["http.target"].deprecated
         )
@@ -476,37 +550,39 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(len(semconv.models), 6)
 
         model = list(semconv.models.values())[0]
-        self.assertEqual(len(model.attributes_and_templates), 3)
-        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
+        self.assertEqual(len(model.attributes_and_templates), 2)
+        self.assertIsNone(model.stability)
 
         attr = model.attributes_and_templates[0]
-        self.assertEqual(attr.attr_id, "def_stability")
-        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
-
-        attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "exp_attr")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes_and_templates[2]
+        attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "stable_attr")
         self.assertEqual(attr.stability, StabilityLevel.STABLE)
 
         model = list(semconv.models.values())[1]
         self.assertEqual(len(model.attributes_and_templates), 2)
-        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
+        self.assertIsNone(model.stability)
 
         attr = model.attributes_and_templates[0]
-        self.assertEqual(attr.attr_id, "dep")
+        self.assertEqual(attr.attr_id, "exp_attr")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
         attr = model.attributes_and_templates[1]
-        self.assertEqual(attr.attr_id, "test_attr")
-        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
+        self.assertEqual(attr.attr_id, "stable_attr")
+        self.assertEqual(attr.stability, StabilityLevel.STABLE)
 
         model = list(semconv.models.values())[2]
-        self.assertEqual(len(model.attributes_and_templates), 2)
-        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
+        attr = model.attributes_and_templates[0]
+        self.assertEqual(attr.attr_id, "exp_attr")
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
+        attr = model.attributes_and_templates[1]
+        self.assertEqual(attr.attr_id, "stable_attr")
+        self.assertEqual(attr.stability, StabilityLevel.STABLE)
+
+        model = list(semconv.models.values())[3]
         attr = model.attributes_and_templates[0]
         self.assertEqual(attr.attr_id, "stable_deprecated_attr")
         self.assertEqual(attr.stability, StabilityLevel.STABLE)
@@ -708,6 +784,8 @@ class TestCorrectParse(unittest.TestCase):
 
     def semantic_convention_check(self, s, expected):
         self.assertEqual(expected["prefix"], s.prefix)
+        self.assertEqual(expected.get("stability"), s.stability)
+        self.assertEqual(expected.get("deprecated"), s.deprecated)
         self.assertEqual(expected["extends"], s.extends)
         self.assertEqual(expected["id"], s.semconv_id)
         self.assertEqual(len(expected["attributes"]), len(s.attributes))

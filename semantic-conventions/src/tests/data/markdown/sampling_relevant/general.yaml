@@ -6,14 +6,17 @@ groups:
         These attributes may be used for any network related operation.
     attributes:
       - id: peer.ip
+        stability: experimental
         type: string
         brief: .
         examples: '.'
       - id: peer.port
+        stability: experimental
         type: int
         brief: .
         examples: []
       - id: peer.name
+        stability: experimental
         type: string
         brief: .
         examples: '.'

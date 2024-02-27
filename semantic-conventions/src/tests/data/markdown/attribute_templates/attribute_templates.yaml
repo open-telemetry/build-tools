@@ -14,12 +14,14 @@ groups:
           HTTP request headers, `<key>` being the normalized HTTP Header name
           (lowercase, with - characters replaced by _), the value being the header values.
         examples: '`http.request.header.content_type=["application/json"]`'
+        stability: experimental
       - id: request.method
         type: string
         requirement_level: required
         sampling_relevant: false
         brief: 'HTTP request method.'
         examples: ["GET", "POST", "HEAD"]
+        stability: experimental
       - ref: referenced_http.request.referenced.header
   - id: referenced_http_id
     type: span
@@ -31,6 +33,7 @@ groups:
         brief: >
           This is a referenced attribute.
         examples: '`http.request.header.content_type=["application/json"]`'
+        stability: experimental
   - id: general
     type: span
     prefix: general
@@ -41,3 +44,4 @@ groups:
         brief: >
           This is a general attribute.
         examples: '`some_general_attribute.some_key="abc"`'
+        stability: experimental

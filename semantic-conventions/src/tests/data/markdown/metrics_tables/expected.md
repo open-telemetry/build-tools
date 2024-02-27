@@ -21,7 +21,7 @@
 <!-- semconv metric.foo.active_eggs(metric_table) -->
 | Name     | Instrument Type | Unit (UCUM) | Description    |
 | -------- | --------------- | ----------- | -------------- |
-| `foo.active_eggs` | UpDownCounter | `{cartons}` | Measures how many eggs are currently active. |
+| `foo.active_eggs` | UpDownCounter | `{cartons}` | **Deprecated: Removed.**<br>Measures how many eggs are currently active. |
 <!-- endsemconv -->
 
 **Attributes for `foo.active_eggs`**

@@ -10,3 +10,4 @@ groups:
         requirement_level: required
         brief: 'test'
         examples: [["",'',"'",'"'],["asd", 'dsa', 123]]
+        stability: experimental

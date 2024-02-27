@@ -6,10 +6,11 @@ groups:
     attributes:
       - id: bar
         type: string
-        requirement_level: 
+        requirement_level:
           recommended: if available
         brief: Attribute 1
         examples: ['baz']
+        stability: experimental
 
   - id: derived_attributes
     type: attribute_group
@@ -19,10 +20,11 @@ groups:
     attributes:
       - id: qux
         type: int
-        requirement_level: 
+        requirement_level:
           conditionally_required: if available
         brief: Attribute 2
         examples: [42]
+        stability: experimental
 
   - id: span_attribute_group
     prefix: ""

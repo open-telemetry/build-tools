@@ -8,6 +8,7 @@ groups:
     span_kind: client
     attributes:
       - id: system
+        stability: experimental
         tag: connection-level
         brief: An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers.
         requirement_level: required
@@ -144,6 +145,7 @@ groups:
               value: 'neo4j'
               brief: 'Neo4j'
       - id: connection_string
+        stability: experimental
         tag: connection-level
         type: string
         brief: >
@@ -151,12 +153,14 @@ groups:
         note: It is recommended to remove embedded credentials.
         examples: 'Server=(localdb)\v11.0;Integrated Security=true;'
       - id: user
+        stability: experimental
         tag: connection-level
         type: string
         brief: >
           Username for accessing the database.
         examples: ['readonly_user', 'reporting_user']
       - id: mssql.instance_name
+        stability: experimental
         tag: connection-level-tech-specific
         type: string
         note: >
@@ -167,12 +171,14 @@ groups:
           connecting to. This name is used to determine the port of a named instance.
         examples: 'MSSQLSERVER'
       - id: jdbc.driver_classname
+        stability: experimental
         tag: connection-level-tech-specific
         type: string
         brief: >
           The fully-qualified class name of the JDBC driver used to connect.
         examples: ['org.postgresql.Driver', 'com.microsoft.sqlserver.jdbc.SQLServerDriver']
       - id: name
+        stability: experimental
         tag: call-level
         type: string
         requirement_level:
@@ -185,6 +191,7 @@ groups:
           In some SQL databases, the database name to be used is called "schema name".
         examples: [ 'customers', 'main' ]
       - id: statement
+        stability: experimental
         tag: call-level
         type: string
         requirement_level:
@@ -194,6 +201,7 @@ groups:
         note: The value may be sanitized to exclude sensitive information.
         examples: ['SELECT * FROM wuser_table', 'SET mykey "WuValue"']
       - id: operation
+        stability: experimental
         tag: call-level
         type: string
         requirement_level:
@@ -231,6 +239,7 @@ groups:
       Call-level attributes for Cassandra
     attributes:
       - id: keyspace
+        stability: experimental
         type: string
         requirement_level: required
         brief: >
@@ -245,6 +254,7 @@ groups:
       Call-level attributes for Apache HBase
     attributes:
       - id: namespace
+        stability: experimental
         type: string
         requirement_level: required
         brief: >
@@ -260,6 +270,7 @@ groups:
       Call-level attributes for Redis
     attributes:
       - id: database_index
+        stability: experimental
         type: int
         requirement_level:
           conditionally_required: if other than the default database (`0`).
@@ -276,6 +287,7 @@ groups:
       Call-level attributes for MongoDB
     attributes:
       - id: collection
+        stability: experimental
         type: string
         requirement_level: required
         brief: >

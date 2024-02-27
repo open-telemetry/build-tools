@@ -124,25 +124,7 @@ class MarkdownRenderer:
             if isinstance(attribute.attr_type, EnumAttributeType)
             else AttributeType.get_instantiated_type(attribute.attr_type)
         )
-        description = ""
-        if attribute.deprecated and self.options.enable_deprecated:
-            if "deprecated" in attribute.deprecated.lower():
-                description = f"**{attribute.deprecated}**<br>"
-            else:
-                deprecated_msg = self.options.deprecated_md_snippet().format(
-                    attribute.deprecated
-                )
-                description = f"{deprecated_msg}<br>"
-        elif (
-            attribute.stability == StabilityLevel.STABLE and self.options.enable_stable
-        ):
-            description = f"{self.options.stable_md_snippet()}<br>"
-        elif (
-            attribute.stability == StabilityLevel.EXPERIMENTAL
-            and self.options.enable_experimental
-        ):
-            description = f"{self.options.experimental_md_snippet()}<br>"
-        description += attribute.brief
+        description = self._description_with_badge(attribute) + attribute.brief
         if attribute.note:
             self.render_ctx.add_note(attribute.note)
             description += f" [{len(self.render_ctx.notes)}]"
@@ -258,7 +240,7 @@ class MarkdownRenderer:
             "| -------- | --------------- | ----------- | -------------- |\n"
         )
 
-        description = semconv.brief
+        description = self._description_with_badge(semconv) + semconv.brief
         if semconv.note:
             self.render_ctx.add_note(semconv.note)
             description += f" [{len(self.render_ctx.notes)}]"
@@ -544,3 +526,25 @@ class MarkdownRenderer:
             self.to_markdown_unit_table(semconv.members, output)
 
         output.write("<!-- endsemconv -->")
+
+    def _description_with_badge(
+        self, item: typing.Union[SemanticAttribute | BaseSemanticConvention]
+    ):
+        description = ""
+        if item.deprecated and self.options.enable_deprecated:
+            if "deprecated" in item.deprecated.lower():
+                description = f"**{item.deprecated}**<br>"
+            else:
+                deprecated_msg = self.options.deprecated_md_snippet().format(
+                    item.deprecated
+                )
+                description = f"{deprecated_msg}<br>"
+        elif item.stability == StabilityLevel.STABLE and self.options.enable_stable:
+            description = f"{self.options.stable_md_snippet()}<br>"
+        elif (
+            item.stability == StabilityLevel.EXPERIMENTAL
+            and self.options.enable_experimental
+        ):
+            description = f"{self.options.experimental_md_snippet()}<br>"
+
+        return description

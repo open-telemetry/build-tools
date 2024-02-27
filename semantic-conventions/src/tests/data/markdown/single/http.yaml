@@ -8,22 +8,26 @@ groups:
         and various HTTP versions like 1.1, 2 and SPDY.
     attributes:
       - id: method
+        stability: experimental
         type: string
         requirement_level: required
         sampling_relevant: false
         brief: 'HTTP request method.'
         examples: ["GET", "POST", "HEAD"]
       - id: url
+        stability: experimental
         type: string
         brief: >
             Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`.
             Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless.
         examples: ['https://www.foo.bar/search?q=OpenTelemetry#SemConv']
       - id: target
+        stability: experimental
         type: string
         brief: 'The full request target as passed in a HTTP request line or equivalent.'
         examples: ['/path/12314/?q=ddds#123']
       - id: host
+        stability: experimental
         type: string
         brief: >
             The value of the [HTTP host header](https://tools.ietf.org/html/rfc7230#section-5.4).
@@ -32,20 +36,24 @@ groups:
         requirement_level:
           conditionally_required: <condition>
       - id: scheme
+        stability: experimental
         type: string
         brief: 'The URI scheme identifying the used protocol.'
         examples: ["http", "https"]
       - id: status_code
+        stability: experimental
         type: int
         requirement_level:
           conditionally_required: if and only if one was received/sent.
         brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'
         examples: [200]
       - id: status_text
+        stability: experimental
         type: string
         brief: '[HTTP reason phrase](https://tools.ietf.org/html/rfc7230#section-3.1.2).'
         examples: ['OK']
       - id: user_agent
+        stability: experimental
         type: string
         brief: 'Value of the [HTTP User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3) header sent by the client.'
         examples: ['CERN-LineMode/2.15 libwww/2.17b3']
@@ -69,6 +77,7 @@ groups:
     brief: 'Semantic Convention for HTTP Server'
     attributes:
       - id: server_name
+        stability: experimental
         type: string
         requirement_level:
           conditionally_required: >
@@ -83,11 +92,13 @@ groups:
             It is thus preferred to supply the raw data that is available.
         examples: ['example.com']
       - id: route
+        stability: experimental
         type: string
         brief: >
             The matched route (path template).
         examples: '/users/:userID?'
       - id: client_ip
+        stability: experimental
         type: string
         sampling_relevant: false
         brief: >

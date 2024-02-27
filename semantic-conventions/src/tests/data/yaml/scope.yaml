@@ -6,6 +6,7 @@ groups:
       Instrumentation Scope attributes
     attributes:
       - id: short_name
+        stability: experimental
         type: string
         requirement_level: recommended
         brief: >

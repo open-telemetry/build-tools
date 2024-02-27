@@ -8,6 +8,7 @@ groups:
         and various HTTP versions like 1.1, 2 and SPDY.
     attributes:
       - id: method
+        stability: experimental
         type: string
         requirement_level: required
         sampling_relevant: false

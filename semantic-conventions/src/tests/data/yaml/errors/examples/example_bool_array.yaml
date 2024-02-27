@@ -10,3 +10,4 @@ groups:
         requirement_level: required
         brief: 'test'
         examples: [[true,false], [true, 1]]
+        stability: experimental

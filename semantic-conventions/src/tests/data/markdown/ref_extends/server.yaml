@@ -5,6 +5,7 @@ groups:
     brief: 'This document defines semantic conventions for common server attributes.'
     attributes:
       - id: address
+        stability: experimental
         type: string
         brief: 'Domain name. (original brief)'
         examples: 'foo'

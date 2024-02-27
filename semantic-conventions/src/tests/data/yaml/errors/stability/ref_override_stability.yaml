@@ -1,0 +1,15 @@
+groups:
+  - id: test
+    type: attribute_group
+    brief: 'test'
+    attributes:
+      - id: test_attr
+        type: boolean
+        brief: ""
+        stability: experimental
+  - id: test_child_1
+    type: attribute_group
+    brief: 'test child'
+    attributes:
+      - ref: test_attr
+        stability: stable

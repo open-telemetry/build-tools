@@ -9,3 +9,4 @@ groups:
         type: boolean[]
         requirement_level: required
         brief: 'test'
+        stability: experimental

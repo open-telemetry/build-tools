@@ -1,8 +1,8 @@
 groups:
-  - id: test
+  - id: test_1
     type: span
     brief: 'test'
-    prefix: http_1
+    prefix: test_1
     attributes:
       - id: exp_attr
         type: boolean
@@ -14,36 +14,28 @@ groups:
         requirement_level: required
         stability: stable
         brief: ""
-      - id: def_stability
-        type: boolean
-        requirement_level: required
-        brief: ""
 
-  - id: parent_default
-    type: span
-    brief: 'test'
-    prefix: http_2
-    stability: experimental
+  - id: ref_test_1
+    type: attribute_group
+    brief: 'ref_test'
     attributes:
-      - id: test_attr
-        type: boolean
-        requirement_level: required
-        brief: ""
-      - id: dep
-        type: boolean
-        requirement_level: required
-        deprecated: should not fail.
-        brief: ""
+      - ref: test_1.exp_attr
+      - ref: test_1.stable_attr
+
+  - id: extends_test_1
+    type: attribute_group
+    brief: 'extends_test'
+    extends: test_1
 
   - id: not_fail
     type: span
     brief: 'test'
-    prefix: http_3
-    stability: experimental
+    prefix: test_2
     attributes:
       - id: test_attr
         type: boolean
         requirement_level: required
+        stability: experimental
         deprecated: should not fail.
         brief: ""
       - id: stable_deprecated_attr
@@ -56,7 +48,7 @@ groups:
   - id: resource_test
     type: resource
     brief: 'test'
-    prefix: http_4
+    prefix: test_3
     attributes:
       - id: exp_attr
         type: boolean
@@ -68,34 +60,15 @@ groups:
         requirement_level: required
         stability: stable
         brief: ""
-      - id: def_stability
-        type: boolean
-        requirement_level: required
-        brief: ""
-
-  - id: resource_parent_default
-    type: resource
-    brief: 'test'
-    prefix: http_5
-    stability: experimental
-    attributes:
-      - id: test_attr
-        type: boolean
-        requirement_level: required
-        brief: ""
-      - id: dep
-        type: boolean
-        requirement_level: required
-        deprecated: should not fail.
-        brief: ""
 
   - id: resource_not_fail
     type: resource
     brief: 'test'
-    prefix: http_6
+    prefix: test_4
     attributes:
       - id: test_attr
         type: boolean
         requirement_level: required
+        stability: experimental
         deprecated: should not fail.
         brief: ""

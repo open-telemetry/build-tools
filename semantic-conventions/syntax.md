@@ -100,7 +100,6 @@ requirement_level ::= "required"
          |   "recommended" [condition] # Default if not specified
          |   "opt_in"
 
-# EXPERIMENTAL: Using this is NOT ALLOWED in the specification currently.
 sampling_relevant ::= boolean
 
 examples ::= <example_value> {<example_value>}
@@ -160,7 +159,6 @@ The field `semconv` represents a semantic convention and it is made by:
    It defaults to an empty string.
 - `extends`, optional string, reference another semantic convention `id`.
    It inherits the prefix, constraints, and all attributes defined in the specified semantic convention.
-- `stability`, optional enum, specifies the stability of the semantic convention. Defaults to `experimental`.
 - `deprecated`, optional, when present marks the semantic convention as deprecated.
    The string provided as `<description>` MUST specify why it's deprecated and/or what to use instead.
 - `attributes`, list of attributes that belong to the semantic convention.
@@ -212,8 +210,8 @@ Attribute groups don't have any specific fields and follow the general `semconv`
 
 An attribute is defined by:
 
-- `id`, string that uniquely identifies the attribute.
-- `type`, either a string literal denoting the type as a primitive or an array type, a template type or an enum definition (See later).
+- `id`, string that uniquely identifies the attribute. Required.
+- `type`, either a string literal denoting the type as a primitive or an array type, a template type or an enum definition (See later).  Required.
    The accepted string literals are:
   * _primitive and array types as string literals:_
     * `"string"`: String attributes.
@@ -225,8 +223,8 @@ An attribute is defined by:
     * `"double[]"`: Array of double attributes.
     * `"boolean[]"`: Array of booleans attributes.
   * _template type as string literal:_ `"template[<PRIMITIVE_OR_ARRAY_TYPE>]"` (See [below](#template-type))
-
   See the [specification of Attributes](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) for the definition of the value types.
+- `stability`, enum - either `stable` or `experimental`, specifies the stability of the attribute. Required.
 - `ref`, optional string, reference an existing attribute, see [below](#ref).
 - `tag`, optional string, associates a tag ("sub-group") to the attribute.
    It carries no particular semantic meaning but can be used e.g. for filtering
@@ -235,10 +233,10 @@ An attribute is defined by:
    Can be "required", "conditionally_required", "recommended" or "opt_in". When omitted, the attribute is "recommended".
    When set to "conditionally_required", the string provided as `<condition>` MUST specify
    the conditions under which the attribute is required.
-- `sampling_relevant`, optional EXPERIMENTAL boolean,
+- `sampling_relevant`, optional boolean,
   specifies if the attribute is (especially) relevant for sampling and
   thus should be set at span start. It defaults to `false`.
-- `brief`, `note`, `stability`, `deprecated`, same meaning as for the whole
+- `brief`, `note`, `deprecated`, same meaning as for the whole
   [semantic convention](#semantic-convention), but per attribute.
 - `examples`, sequence of example values for the attribute or single example value.
    They are required only for string and string array attributes.
@@ -326,7 +324,7 @@ examples:
 
 #### Ref
 
-`ref` MUST have an id of an existing attribute. When it is set, `id` and `type` MUST NOT be present.
+`ref` MUST have an id of an existing attribute. When it is set, `id`, `type`, `stability`, and `deprecation` MUST NOT be present.
 `ref` is useful for specifying that an existing attribute of another semantic convention is part of
 the current semantic convention and inherit its `brief`, `note`, and `example` values. However, if these
 fields are present in the current attribute definition, they override the inherited values.
@@ -354,6 +352,7 @@ groups:
     attributes:
       - id: http.request.header
         type: template[string[]]
+        stability: stable
         brief: >
           HTTP request headers, the key being the normalized HTTP header name (lowercase, with `-` characters replaced by `_`), the value being the header values.
         examples: ['http.request.header.content_type=["application/json"]', 'http.request.header.x_forwarded_for=["1.2.3.4", "1.2.3.5"]']

@@ -11,3 +11,4 @@ groups:
         requirement_level: required
         requirement_level: opt_in
         examples: [true, false]
+        stability: experimental

@@ -4,12 +4,14 @@ groups:
     brief: 'This document defines semantic conventions for HTTP client and server Spans.'
     attributes:
       - id: method
+        stability: experimental
         type: string
         requirement_level: required
         brief: .
         sampling_relevant: true
         examples: ["GET"]
       - id: url
+        stability: experimental
         type: string
         brief: .
         note: >
@@ -18,27 +20,32 @@ groups:
         sampling_relevant: true
         examples: ['.']
       - id: target
+        stability: experimental
         type: string
         brief: .
         sampling_relevant: true
         examples: ['.']
       - id: host
+        stability: experimental
         type: string
         brief: .
         sampling_relevant: true
         examples: ['.']
       - id: scheme
+        stability: experimental
         type: string
         brief: .
         sampling_relevant: true
         examples: ["http"]
       - id: status_code
+        stability: experimental
         type: int
         requirement_level:
           conditionally_required: <condition>
         brief: .
         examples: []
       - id: user_agent
+        stability: experimental
         type: string
         brief: .
         examples: ['.']

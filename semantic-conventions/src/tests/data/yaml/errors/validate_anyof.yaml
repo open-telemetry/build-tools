@@ -9,6 +9,7 @@ groups:
         type: string
         brief: The version of the Node.js runtime.
         examples: [ '10.19.0' ]
+        stability: experimental
     constraints:
       - any_of:
         - 'messaging.node_version'

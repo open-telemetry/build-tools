@@ -6,6 +6,7 @@ groups:
     span_kind: server
     attributes:
       - id: attr_one
+        stability: experimental
         type: boolean
         brief: short description
   - id: second_group_id
@@ -16,6 +17,7 @@ groups:
     extends: first_group_id
     attributes:
       - id: attr_two
+        stability: experimental
         type: string
         brief: short description
         examples: ['example_one', 'example_two']

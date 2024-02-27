@@ -10,3 +10,4 @@ groups:
         brief: 'test'
         sampling_relevant: maybe
         examples: [true, false]
+        stability: experimental

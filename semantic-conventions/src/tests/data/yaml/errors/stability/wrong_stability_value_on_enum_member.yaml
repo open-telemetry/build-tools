@@ -11,3 +11,4 @@ groups:
               value: "one"
               brief: 'member one'
               stability: will_fail
+        stability: experimental

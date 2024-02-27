@@ -5,6 +5,16 @@
 | [`test.deprecated_stable_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | `Required` |
 | [`test.exp_attr`](stable_badges_expected.md) | boolean |  |  | `Required` |
 | [`test.stable_attr`](stable_badges_expected.md) | boolean | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> |  | `Required` |
+| [`test.stable_enum_attr`](stable_badges_expected.md) | string | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> | `one` | `Recommended` |
+
+`test.stable_enum_attr` MUST be one of the following:
+
+| Value  | Description |
+|---|---|
+| `one` | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br>member one |
+| `two` | member two |
+| `three` | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br>member three |
+| `four` | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br>member four |
 <!-- endsemconv -->
 
 <!-- semconv ref_test -->
@@ -14,6 +24,7 @@
 | [`test.deprecated_stable_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | `Required` |
 | [`test.exp_attr`](stable_badges_expected.md) | boolean |  |  | `Required` |
 | [`test.stable_attr`](stable_badges_expected.md) | boolean | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> |  | `Required` |
+| [`test.stable_enum_attr`](stable_badges_expected.md) | string | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> | `one` | `Recommended` |
 <!-- endsemconv -->
 
 <!-- semconv extends_test(full) -->
@@ -23,6 +34,16 @@
 | [`test.deprecated_stable_attr`](stable_badges_expected.md) | boolean | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br> |  | `Required` |
 | [`test.exp_attr`](stable_badges_expected.md) | boolean |  |  | `Required` |
 | [`test.stable_attr`](stable_badges_expected.md) | boolean | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> |  | `Required` |
+| [`test.stable_enum_attr`](stable_badges_expected.md) | string | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br> | `one` | `Recommended` |
+
+`test.stable_enum_attr` MUST be one of the following:
+
+| Value  | Description |
+|---|---|
+| `one` | ![Stable](https://img.shields.io/badge/-stable-lightgreen)<br>member one |
+| `two` | member two |
+| `three` | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br>member three |
+| `four` | ![Deprecated](https://img.shields.io/badge/-deprecated-red)<br>member four |
 <!-- endsemconv -->
 
 <!-- semconv stable_metric(metric_table) -->

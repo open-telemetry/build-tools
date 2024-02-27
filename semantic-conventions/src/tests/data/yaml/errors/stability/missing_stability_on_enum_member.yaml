@@ -10,3 +10,4 @@ groups:
             - id: one
               value: "one"
               brief: 'member one'
+        stability: experimental

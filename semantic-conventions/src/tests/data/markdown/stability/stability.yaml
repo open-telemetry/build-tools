@@ -56,6 +56,7 @@ groups:
       - ref: test.stable_attr
       - ref: test.deprecated_stable_attr
       - ref: test.deprecated_experimental_attr
+      - ref: test.stable_enum_attr
   - id: extends_test
     brief: 'extends_test'
     extends: test

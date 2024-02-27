@@ -243,7 +243,10 @@ class MarkdownRenderer:
             "| -------- | --------------- | ----------- | -------------- |\n"
         )
 
-        description = self._description_with_badge(semconv.stability, semconv.deprecated) + semconv.brief
+        description = (
+            self._description_with_badge(semconv.stability, semconv.deprecated)
+            + semconv.brief
+        )
         if semconv.note:
             self.render_ctx.add_note(semconv.note)
             description += f" [{len(self.render_ctx.notes)}]"

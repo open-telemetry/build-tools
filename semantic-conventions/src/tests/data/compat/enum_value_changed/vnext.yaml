@@ -12,7 +12,6 @@ groups:
               brief: "enum one"
               stability: stable
               value: "1"
-              stability: experimental
             - id: enum_two
               brief: "enum two"
               stability: experimental

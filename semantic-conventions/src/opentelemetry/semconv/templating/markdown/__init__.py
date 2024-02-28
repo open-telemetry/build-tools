@@ -39,14 +39,19 @@ from opentelemetry.semconv.model.semantic_convention import (
 from opentelemetry.semconv.model.utils import ID_RE
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
+<<<<<<< HEAD
 from .utils import VisualDiffer
 
+=======
+_OPENTELEMETRY_IO_SPEC_URL = "https://opentelemetry.io/docs/specs/"
+>>>>>>> 01b82d1 (lint)
 _REQUIREMENT_LEVEL_URL = (
-    "https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/"
+    _OPENTELEMETRY_IO_SPEC_URL + "semconv/general/attribute-requirement-level/"
 )
 
 _SEMANTIC_CONVENTIONS_STABILITY_URL = (
-    "https://opentelemetry.io/docs/specs/otel/versioning-and-stability/#semantic-conventions-stability"
+    _OPENTELEMETRY_IO_SPEC_URL
+    + "otel/versioning-and-stability/#semantic-conventions-stability"
 )
 
 
@@ -550,32 +555,14 @@ class MarkdownRenderer:
 
         output.write("<!-- endsemconv -->")
 
-<<<<<<< HEAD
-    def _description_with_badge(self, stability: StabilityLevel, deprecated: str):
-        description = ""
-        if deprecated and self.options.enable_deprecated:
-            if "deprecated" in deprecated.lower():
-                description = f"**{deprecated}**<br>"
-            else:
-                deprecated_msg = self.options.deprecated_md_snippet().format(deprecated)
-                description = f"{deprecated_msg}<br>"
-        elif stability == StabilityLevel.STABLE and self.options.enable_stable:
-            description = f"{self.options.stable_md_snippet()}<br>"
-        elif (
-            stability == StabilityLevel.EXPERIMENTAL
-            and self.options.enable_experimental
-        ):
-            description = f"{self.options.experimental_md_snippet()}<br>"
-=======
     def _render_stability(
         self, item: typing.Union[SemanticAttribute | BaseSemanticConvention]
     ):
         if item.deprecated:
             return self.options.deprecated_md_snippet(item.deprecated)
-        elif item.stability == StabilityLevel.STABLE:
+        if item.stability == StabilityLevel.STABLE:
             return self.options.stable_md_snippet()
-        elif item.stability == StabilityLevel.EXPERIMENTAL:
+        if item.stability == StabilityLevel.EXPERIMENTAL:
             return self.options.experimental_md_snippet()
->>>>>>> c5a1094 (add stability as a separate column)
 
         raise ValueError(f"Unknown stability level {item.stability}")

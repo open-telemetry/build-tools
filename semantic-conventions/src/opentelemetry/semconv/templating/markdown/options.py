@@ -19,24 +19,24 @@ from typing import List
 @dataclass()
 class MarkdownOptions:
     check_only: bool = False
-    enable_stable: bool = False
-    enable_experimental: bool = False
-    enable_deprecated: bool = True
-    use_badge: bool = False
+    disable_stable_badge: bool = False
+    disable_experimental_badge: bool = False
+    disable_deprecated_badge: bool = False
     break_count: int = 50
     exclude_files: List[str] = field(default_factory=list)
 
     def stable_md_snippet(self):
-        if self.use_badge:
-            return "![Stable](https://img.shields.io/badge/-stable-lightgreen)"
-        return "**Stable**"
+        if self.disable_stable_badge:
+            return "Stable"
+        return "![Stable](https://img.shields.io/badge/-stable-lightgreen)"
 
     def experimental_md_snippet(self):
-        if self.use_badge:
-            return "![Experimental](https://img.shields.io/badge/-experimental-blue)"
-        return "**Experimental**"
+        if self.disable_experimental_badge:
+            return "Experimental"
+        return "![Experimental](https://img.shields.io/badge/-experimental-blue)"
 
-    def deprecated_md_snippet(self):
-        if self.use_badge:
-            return "![Deprecated](https://img.shields.io/badge/-deprecated-red)"
-        return "**Deprecated: {}**"
+    def deprecated_md_snippet(self, deprecated_note: str):
+        if self.disable_deprecated_badge:
+            return f"Deprecated: {deprecated_note}"
+
+        return f"![Deprecated](https://img.shields.io/badge/-deprecated-red)<br>{deprecated_note}"

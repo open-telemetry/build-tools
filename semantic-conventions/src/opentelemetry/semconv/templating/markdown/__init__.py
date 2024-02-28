@@ -45,6 +45,8 @@ _REQUIREMENT_LEVEL_URL = (
     "https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/"
 )
 
+_SEMANTIC_CONVENTIONS_STABILITY_URL = "https://opentelemetry.io/docs/specs/otel/versioning-and-stability/#semantic-conventions-stability"
+
 
 class RenderContext:
     def __init__(self):
@@ -103,13 +105,15 @@ class MarkdownRenderer:
         self.filename_for_attr_fqn = self._create_attribute_location_dict()
 
         req_level = f"[Requirement Level]({_REQUIREMENT_LEVEL_URL})"
+        stability = f"[Stability]({_SEMANTIC_CONVENTIONS_STABILITY_URL})"
 
         self.table_headers = (
-            f"| Attribute  | Type | Description  | Examples  | {req_level} |"
-            "\n|---|---|---|---|---|\n"
+            f"| Attribute  | Type | Description  | Examples  | {req_level} | {stability} |"
+            "\n|---|---|---|---|---|---|\n"
         )
         self.table_headers_omitting_req_level = (
-            "| Attribute  | Type | Description  | Examples  |\n|---|---|---|---|\n"
+            f"| Attribute  | Type | Description  | Examples  | {stability} |"
+            "\n|---|---|---|---|---|\n"
         )
 
     def to_markdown_attr(
@@ -126,10 +130,14 @@ class MarkdownRenderer:
             if isinstance(attribute.attr_type, EnumAttributeType)
             else AttributeType.get_instantiated_type(attribute.attr_type)
         )
+<<<<<<< HEAD
         description = (
             self._description_with_badge(attribute.stability, attribute.deprecated)
             + attribute.brief
         )
+=======
+        description = attribute.brief
+>>>>>>> c5a1094 (add stability as a separate column)
         if attribute.note:
             self.render_ctx.add_note(attribute.note)
             description += f" [{len(self.render_ctx.notes)}]"
@@ -156,12 +164,15 @@ class MarkdownRenderer:
             else:
                 examples = "; ".join(f"`{ex}`" for ex in example_list)
 
+        stability = self._render_stability(attribute)
         if self.render_ctx.is_omit_requirement_level:
-            output.write(f"| {name} | {attr_type} | {description} | {examples} |\n")
+            output.write(
+                f"| {name} | {attr_type} | {description} | {examples} | {stability} |\n"
+            )
         else:
             required = self.derive_requirement_level(attribute)
             output.write(
-                f"| {name} | {attr_type} | {description} | {examples} | {required} |\n"
+                f"| {name} | {attr_type} | {description} | {examples} | {required} | {stability} |\n"
             )
 
     def derive_requirement_level(self, attribute: SemanticAttribute):
@@ -175,7 +186,7 @@ class MarkdownRenderer:
                 self.render_ctx.add_note(attribute.requirement_level_msg)
                 required = f"`Conditionally Required` [{len(self.render_ctx.notes)}]"
         elif attribute.requirement_level == RequirementLevel.OPT_IN:
-            required = "Opt-In"
+            required = "`Opt-In`"
         else:  # attribute.requirement_level == Required.RECOMMENDED or None
             # check if there are any notes
             if (
@@ -240,21 +251,21 @@ class MarkdownRenderer:
         instrument = MetricSemanticConvention.canonical_instrument_name_by_yaml_name[
             semconv.instrument
         ]
+
+        stability = f"[Stability]({_SEMANTIC_CONVENTIONS_STABILITY_URL})"
         output.write(
-            "| Name     | Instrument Type | Unit (UCUM) | Description    |\n"
-            "| -------- | --------------- | ----------- | -------------- |\n"
+            f"| Name     | Instrument Type | Unit (UCUM) | Description    | {stability} |\n"
+            "| -------- | --------------- | ----------- | -------------- | --------- |\n"
         )
 
-        description = (
-            self._description_with_badge(semconv.stability, semconv.deprecated)
-            + semconv.brief
-        )
+        description = semconv.brief
         if semconv.note:
             self.render_ctx.add_note(semconv.note)
             description += f" [{len(self.render_ctx.notes)}]"
 
+        stability = self._render_stability(semconv)
         output.write(
-            f"| `{semconv.metric_name}` | {instrument} | `{semconv.unit}` | {description} |\n"
+            f"| `{semconv.metric_name}` | {instrument} | `{semconv.unit}` | {description} | {stability} |\n"
         )
         self.to_markdown_notes(output)
 
@@ -537,6 +548,7 @@ class MarkdownRenderer:
 
         output.write("<!-- endsemconv -->")
 
+<<<<<<< HEAD
     def _description_with_badge(self, stability: StabilityLevel, deprecated: str):
         description = ""
         if deprecated and self.options.enable_deprecated:
@@ -552,5 +564,16 @@ class MarkdownRenderer:
             and self.options.enable_experimental
         ):
             description = f"{self.options.experimental_md_snippet()}<br>"
+=======
+    def _render_stability(
+        self, item: typing.Union[SemanticAttribute | BaseSemanticConvention]
+    ):
+        if item.deprecated:
+            return self.options.deprecated_md_snippet(item.deprecated)
+        elif item.stability == StabilityLevel.STABLE:
+            return self.options.stable_md_snippet()
+        elif item.stability == StabilityLevel.EXPERIMENTAL:
+            return self.options.experimental_md_snippet()
+>>>>>>> c5a1094 (add stability as a separate column)
 
-        return description
+        raise ValueError(f"Unknown stability level {item.stability}")

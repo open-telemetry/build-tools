@@ -1,14 +1,14 @@
 # DB
 
 <!-- semconv db(tag) -->
-| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
-|---|---|---|---|---|
-| `db.dbms` | string | An identifier for the DBMS (database management system) product | `mssql` | `Conditionally Required` for `db.type="sql"` |
-| `db.jdbc.driver_classname` | string | The fully-qualified class name of the JDBC driver used to connect. | `org.postgresql.Driver`; `com.microsoft.sqlserver.jdbc.SQLServerDriver` | `Recommended` |
-| `db.mssql.instance_name` | string | The Microsoft SQL Server [instance name](https://docs.microsoft.com/en-us/sql/connect/jdbc/building-the-connection-url?view=sql-server-ver15) connecting to. This name is used to determine the port of a named instance. [1] | `MSSQLSERVER` | `Recommended` |
-| `db.name` | string | If no tech-specific attribute is defined below, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [2] | `customers`; `master` | `Conditionally Required` [3] |
-| `db.operation` | string | The type of operation that is executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. While it would semantically make sense to set this, e.g., to a SQL keyword like `SELECT` or `INSERT`, it is not recommended to attempt any client-side parsing of `db.statement` just to get this property (the back end can do that if required). | `findAndModify` | `Conditionally Required` if `db.statement` is not applicable. |
-| `db.statement` | string | A database statement for the given database type. [4] | `SELECT * FROM wuser_table`; `SET mykey "WuValue"` | `Conditionally Required` if applicable. |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | [Stability](https://opentelemetry.io/docs/specs/otel/versioning-and-stability/#semantic-conventions-stability) |
+|---|---|---|---|---|---|
+| `db.dbms` | string | An identifier for the DBMS (database management system) product | `mssql` | `Conditionally Required` for `db.type="sql"` | Experimental |
+| `db.jdbc.driver_classname` | string | The fully-qualified class name of the JDBC driver used to connect. | `org.postgresql.Driver`; `com.microsoft.sqlserver.jdbc.SQLServerDriver` | `Recommended` | Experimental |
+| `db.mssql.instance_name` | string | The Microsoft SQL Server [instance name](https://docs.microsoft.com/en-us/sql/connect/jdbc/building-the-connection-url?view=sql-server-ver15) connecting to. This name is used to determine the port of a named instance. [1] | `MSSQLSERVER` | `Recommended` | Experimental |
+| `db.name` | string | If no tech-specific attribute is defined below, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [2] | `customers`; `master` | `Conditionally Required` [3] | Experimental |
+| `db.operation` | string | The type of operation that is executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. While it would semantically make sense to set this, e.g., to a SQL keyword like `SELECT` or `INSERT`, it is not recommended to attempt any client-side parsing of `db.statement` just to get this property (the back end can do that if required). | `findAndModify` | `Conditionally Required` if `db.statement` is not applicable. | Experimental |
+| `db.statement` | string | A database statement for the given database type. [4] | `SELECT * FROM wuser_table`; `SET mykey "WuValue"` | `Conditionally Required` if applicable. | Experimental |
 
 **[1]:** If setting a `db.mssql.instance_name`, `net.peer.port` is no longer required (but still recommended if non-standard).
 

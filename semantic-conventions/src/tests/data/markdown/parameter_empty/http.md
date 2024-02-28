@@ -1,11 +1,11 @@
 # General
 
 <!-- semconv http.server -->
-| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
-|---|---|---|---|---|
-| `http.server_name` | String | The primary server name of the matched virtual host. [1] | `example.com` | `Conditionally Required` [2] |
-| `http.route` | String | The matched route (path template). | `/users/:userID?` | `Recommended` |
-| `http.client_ip` | String | The IP address of the original client behind all proxies, if known (e.g. from [X-Forwarded-For](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For)). [3] | `83.164.160.102` | `Recommended` |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | [Stability](https://opentelemetry.io/docs/specs/otel/versioning-and-stability/#semantic-conventions-stability) |
+|---|---|---|---|---|---|
+| `http.server_name` | String | The primary server name of the matched virtual host. [1] | `example.com` | `Conditionally Required` [2] | Experimental |
+| `http.route` | String | The matched route (path template). | `/users/:userID?` | `Recommended` | Experimental |
+| `http.client_ip` | String | The IP address of the original client behind all proxies, if known (e.g. from [X-Forwarded-For](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For)). [3] | `83.164.160.102` | `Recommended` | Experimental |
 
 **[1]:** http.url is usually not readily available on the server side but would have to be assembled in a cumbersome and sometimes lossy process from other information (see e.g. open-telemetry/opentelemetry-python/pull/148). It is thus preferred to supply the raw data that is available.
 

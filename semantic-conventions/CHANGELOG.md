@@ -9,7 +9,7 @@ Please update the changelog as part of any significant pull request.
 - Change minimum support python version to 3.10 in setup.cfg and Dockerfile
   ([#285](https://github.com/open-telemetry/build-tools/pull/285))
 - BREAKING: Add dedicated column for stability to Markdown tables.
-  ([#TODO](https://github.com/open-telemetry/build-tools/pull/TODO))
+  ([#278](https://github.com/open-telemetry/build-tools/pull/278))
 - BREAKING: Make stability required (also: fix ref and extends, render badges on metrics).
   ([#272](https://github.com/open-telemetry/build-tools/pull/272))
 - BREAKING: Make stability and deprecation independent properties.

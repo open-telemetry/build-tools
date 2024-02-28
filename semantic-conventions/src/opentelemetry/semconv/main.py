@@ -220,7 +220,7 @@ def add_md_parser(subparsers):
         required=False,
     )
     parser.add_argument(
-        "--md-disable-stable",
+        "--md-disable-stable-badge",
         help="Removes badges from attributes marked as stable.",
         required=False,
         default=False,

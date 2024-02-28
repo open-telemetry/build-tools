@@ -67,6 +67,9 @@ After `{semantic_convention_id}`, optional parameters enclosed in parentheses ca
 - `ref`: prints attributes that are referenced from another semantic convention;
 - `remove_constraint`: does not print additional constraints of the semantic convention.
 
+By default markdown tables are rendered with stability badges (like ![Stable](https://img.shields.io/badge/-stable-lightgreen) or ![Experimental](https://img.shields.io/badge/-experimental-blue)) which can be disabled with `--md-disable-stable-badge`, `--md-disable-experimental-badge`, `--md-disable-deprecated-badge`.
+When badges are disabled, stability column contains plain text representation of stability or deprecation status.
+
 ### Examples
 
 These examples assume that a semantic convention with the id `http.server` extends another semantic convention with the id `http`.

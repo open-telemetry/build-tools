@@ -45,7 +45,9 @@ _REQUIREMENT_LEVEL_URL = (
     "https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/"
 )
 
-_SEMANTIC_CONVENTIONS_STABILITY_URL = "https://opentelemetry.io/docs/specs/otel/versioning-and-stability/#semantic-conventions-stability"
+_SEMANTIC_CONVENTIONS_STABILITY_URL = (
+    "https://opentelemetry.io/docs/specs/otel/versioning-and-stability/#semantic-conventions-stability"
+)
 
 
 class RenderContext:

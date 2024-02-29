@@ -10,6 +10,8 @@ Please update the changelog as part of any significant pull request.
   ([#243](https://github.com/open-telemetry/build-tools/pull/243))
 - BREAKING: Make stability and deprecation independent properties.
   ([#244](https://github.com/open-telemetry/build-tools/pull/244))
+- Add backward-compatibility check mode.
+  ([#271](https://github.com/open-telemetry/build-tools/pull/271))
 
 ## v0.23.0
 

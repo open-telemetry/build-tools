@@ -88,6 +88,36 @@ semantic conventions that have the tag `network`.
 `<!-- semconv metric.http.server.active_requests(metric_table) -->` will print a table describing a single metric
 `http.server.active_requests`.
 
+## Version compatibility check
+
+You can check compatibility between the local one specified with `--yaml-root` and specific OpenTelemetry semantic convention version using the following command:
+
+```bash
+docker run --rm otel/semconvgen --yaml-root {yaml_folder} compatibility --previous-version {semconv version}
+```
+
+The `{semconv version}` (e.g. `1.24.0`) is the previously released version of semantic conventions.
+
+Following checks are performed
+
+- On all attributes and metrics (experimental and stable):
+  - attributes and metrics must not be removed.
+
+- On stable attributes and attribute templates:
+  - stability must not be changed
+  - the type of attribute must not be changed
+  - enum attribute: type of value must not be changed
+  - enum attribute: members must not be removed (changing `id` field is allowed, as long as `value` does not change)
+- On stable metrics:
+  - stability must not be changed
+  - instrument and unit must not be changed
+  - new attributes should not be added.
+    This check does not take into account opt-in attributes. Adding new attributes to metric is not always breaking,
+    so it's considered non-critical and it's possible to suppress it with `--ignore-warnings`
+
+In some cases previous versions of semantic conventions violate validation checks in the new tooling.
+You can disable some of these checks with `--strict-validation false`. I
+
 ## Code Generator
 
 The image supports [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates to generate code from the models.
@@ -152,6 +182,18 @@ docker run --rm \
 
 Finally, additional value can be passed to the template in form of `key=value` pairs separated by
 comma using the `--parameters [{key=value},]+` or `-D` flag.
+
+Generating code from older versions of semantic conventions with new tooling is, in general, not supported.
+However in some cases minor incompatibilities in semantic conventions can be ignored by setting `--strict-validation` flag to `false`
+
+```bash
+docker run --rm \
+  otel/semconvgen:$GENERATOR_VERSION \
+  --yaml-root /source \
+  `--strict-validation false`
+  code \
+  ...other parameters...
+```
 
 ### Customizing Jinja's Whitespace Control
 

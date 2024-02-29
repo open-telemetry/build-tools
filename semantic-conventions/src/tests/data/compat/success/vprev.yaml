@@ -1,0 +1,50 @@
+groups:
+  - id: first
+    type: attribute_group
+    brief: "first group"
+    note: "first group note"
+    prefix: "first"
+    attributes:
+      - id: first_attr
+        type: string
+        brief: "first attribute"
+        note: "first attribute note"
+        examples: "first example"
+      - id: second_attr
+        type: int
+        brief: "second attribute"
+        note: "second attribute note"
+        stability: stable
+        examples: 2
+      - id: third_attr
+        type:
+          members:
+            - id: enum_one
+              brief: "enum one"
+              value: "one"
+            - id: enum_two
+              brief: "enum two"
+              value: "two"
+        brief: "third attribute"
+        note: "third attribute note"
+        examples: ["one"]
+        stability: stable
+      - id: fifth_attr_template
+        type: template[string[]]
+        brief: "request headers"
+        examples: '`first.fifth_attr.foo=["bar"]`'
+        stability: stable
+
+  - id: metric_one
+    type: metric
+    metric_name: "metric_one"
+    brief: "metric one"
+    note: "metric one note"
+    stability: stable
+    unit: "s"
+    instrument: histogram
+    attributes:
+      - ref: first.second_attr
+        requirement_level: required
+      - ref: first.third_attr
+        requirement_level: recommended

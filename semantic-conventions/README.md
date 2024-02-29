@@ -90,7 +90,7 @@ semantic conventions that have the tag `network`.
 
 ## Version compatibility check
 
-You can check compatibility between the local one specified with `--yaml-root` and sepcific OpenTelemetry semantic convention version using the following command:
+You can check compatibility between the local one specified with `--yaml-root` and specific OpenTelemetry semantic convention version using the following command:
 
 ```bash
 docker run --rm otel/semconvgen --yaml-root {yaml_folder} compatibility --previous-version {semconv version}
@@ -114,6 +114,9 @@ Following checks are performed
   - new attributes should not be added.
     This check does not take into account opt-in attributes. Adding new attributes to metric is not always breaking,
     so it's considered non-critical and it's possible to suppress it with `--ignore-warnings`
+
+In some cases previous versions of semantic conventions violate validation checks in the new tooling.
+You can disable some of these checks with `--strict-validation false`. I
 
 ## Code Generator
 
@@ -180,13 +183,24 @@ docker run --rm \
 Finally, additional value can be passed to the template in form of `key=value` pairs separated by
 comma using the `--parameters [{key=value},]+` or `-D` flag.
 
+Generating code from older versions of semantic conventions with new tooling is, in general, not supported.
+However in some cases minor incompatibilities in semantic conventions can be ignored by setting `--strict-validation` flag to `false`
+
+```bash
+docker run --rm \
+  otel/semconvgen:$GENERATOR_VERSION \
+  --yaml-root /source \
+  `--strict-validation false`
+  code \
+  ...other parameters...
+```
+
 ### Customizing Jinja's Whitespace Control
 
 The image also supports customizing
 [Whitespace Control in Jinja templates](https://jinja.palletsprojects.com/en/3.1.x/templates/#whitespace-control)
 via the additional flag `--trim-whitespace`. Providing the flag will enable both `lstrip_blocks` and `trim_blocks`.
 
-<<<<<<< HEAD
 ### Accessing Semantic Conventions in the template
 
 When template is processed, it has access to a set of variables that depends on the `--file-per-group` value (or lack of it).

@@ -190,7 +190,7 @@ def is_stable(obj: typing.Union[SemanticAttribute, BaseSemanticConvention]) -> b
 
 
 def is_deprecated(obj: typing.Union[SemanticAttribute, BaseSemanticConvention]) -> bool:
-    return obj.stability == StabilityLevel.DEPRECATED
+    return obj.deprecated is not None
 
 
 def is_experimental(

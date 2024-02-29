@@ -2,7 +2,7 @@ groups:
   - id: test
     type: span
     brief: 'test'
-    prefix: http
+    prefix: http_1
     attributes:
       - id: exp_attr
         type: boolean
@@ -14,11 +14,6 @@ groups:
         requirement_level: required
         stability: stable
         brief: ""
-      - id: deprecated_attr
-        type: boolean
-        requirement_level: required
-        stability: deprecated
-        brief: ""
       - id: def_stability
         type: boolean
         requirement_level: required
@@ -27,7 +22,7 @@ groups:
   - id: parent_default
     type: span
     brief: 'test'
-    prefix: http
+    prefix: http_2
     stability: experimental
     attributes:
       - id: test_attr
@@ -43,19 +38,25 @@ groups:
   - id: not_fail
     type: span
     brief: 'test'
-    prefix: http
-    stability: deprecated
+    prefix: http_3
+    stability: experimental
     attributes:
       - id: test_attr
         type: boolean
         requirement_level: required
         deprecated: should not fail.
         brief: ""
+      - id: stable_deprecated_attr
+        type: boolean
+        requirement_level: required
+        stability: stable
+        deprecated: "should not fail."
+        brief: ""
 
   - id: resource_test
     type: resource
     brief: 'test'
-    prefix: http
+    prefix: http_4
     attributes:
       - id: exp_attr
         type: boolean
@@ -67,11 +68,6 @@ groups:
         requirement_level: required
         stability: stable
         brief: ""
-      - id: deprecated_attr
-        type: boolean
-        requirement_level: required
-        stability: deprecated
-        brief: ""
       - id: def_stability
         type: boolean
         requirement_level: required
@@ -80,7 +76,7 @@ groups:
   - id: resource_parent_default
     type: resource
     brief: 'test'
-    prefix: http
+    prefix: http_5
     stability: experimental
     attributes:
       - id: test_attr
@@ -96,8 +92,7 @@ groups:
   - id: resource_not_fail
     type: resource
     brief: 'test'
-    prefix: http
-    stability: deprecated
+    prefix: http_6
     attributes:
       - id: test_attr
         type: boolean

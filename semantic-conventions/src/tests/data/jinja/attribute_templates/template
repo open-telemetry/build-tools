@@ -45,7 +45,7 @@ class AttributesTemplate {
   * @deprecated {{attribute_template.brief | to_doc_brief}}.
     {%- endif %}
   */
-    {%- if attribute_template | is_deprecated  %}
+    {%- if attribute_template | is_deprecated %}
   @Deprecated
     {%- endif %}
   public static final AttributeKey<{{ to_java_return_type(attribute_template.instantiated_type | string) | to_camelcase(True)}}> {{attribute_template.fqn | to_const_name}} = {{to_java_key_type(attribute_template.instantiated_type | string)}}("{{attribute_template.fqn}}");
@@ -64,7 +64,7 @@ class AttributesTemplate {
   * @deprecated {{attribute.brief | to_doc_brief}}.
     {%- endif %}
   */
-    {%- if attribute | is_deprecated  %}
+    {%- if attribute | is_deprecated %}
   @Deprecated
     {%- endif %}
   public static final AttributeKey<{{ to_java_return_type(attribute.instantiated_type | string) | to_camelcase(True)}}> {{attribute.fqn | to_const_name}} = {{to_java_key_type(attribute.instantiated_type | string)}}("{{attribute.fqn}}");

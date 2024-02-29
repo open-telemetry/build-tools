@@ -17,7 +17,8 @@ groups:
       - id: deprecated_attr
         type: boolean
         requirement_level: required
-        stability: deprecated
+        stability: stable
+        deprecated: "Removed."
         brief: ""
       - id: def_stability
         type: boolean

@@ -141,25 +141,14 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("is not allowed as a stability marker", msg)
         self.assertEqual(e.line, 10)
 
-    def test_invalid_stability_with_deprecated(self):
-        with self.assertRaises(ValidationError) as ex:
-            self.open_yaml("yaml/errors/stability/stability_deprecated.yaml")
-            self.fail()
-        e = ex.exception
-        msg = e.message.lower()
-        self.assertIn("there is a deprecation message but the stability is set to", msg)
-        self.assertEqual(e.line, 11)
-
     def test_invalid_semconv_stability_with_deprecated(self):
         with self.assertRaises(ValidationError) as ex:
             self.open_yaml("yaml/errors/stability/semconv_stability_deprecated.yaml")
             self.fail()
         e = ex.exception
         msg = e.message.lower()
-        self.assertIn(
-            "semantic convention stability set to deprecated but attribute", msg
-        )
-        self.assertEqual(e.line, 11)
+        self.assertIn("value 'deprecated' is not allowed as a stability marker", msg)
+        self.assertEqual(e.line, 6)
 
     def test_invalid_deprecated_empty_string(self):
         with self.assertRaises(ValidationError) as ex:

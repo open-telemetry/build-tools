@@ -20,6 +20,14 @@ Please update the changelog as part of any significant pull request.
   [BREAKING] The `--file-per-group <pattern>` that used to create multiple directories (like `output/<pattern>/file`) now generates
   multiple files (`output/<pattern>file`) instead.
   ([#243](https://github.com/open-telemetry/build-tools/pull/243))
+- Update `semconvgen.yml` workflow to run on feature/* branches.
+  ([#256](https://github.com/open-telemetry/build-tools/pull/256))
+- Allow --output to be templatized when generating multiple files.
+  ([#263](https://github.com/open-telemetry/build-tools/pull/263))
+- Add `metrics` to the context of non-scoped code generation
+  ([#270](https://github.com/open-telemetry/build-tools/pull/270))
+- Add `enum_attributes` to the context, adds `print_member_value` helper
+  ([#266](https://github.com/open-telemetry/build-tools/pull/266))
 
 ## v0.23.0
 

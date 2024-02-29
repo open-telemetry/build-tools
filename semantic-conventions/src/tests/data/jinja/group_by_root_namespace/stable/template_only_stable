@@ -46,4 +46,4 @@ class {{ root_namespace | to_camelcase(True) }}Attributes {
   {% endif %}
 {% endfor %}
 }
-{%- endif %}
+{% endif %}

@@ -9,3 +9,4 @@ class AllMetrics {
   public static final String {{ metric.metric_name | to_const_name }} = "{{metric.metric_name}}";
 {%- endfor %}
 }
+

@@ -6,9 +6,11 @@ groups:
     attributes:
       - id: attr_one
         type: boolean
+        stability: experimental
         brief: short description of attr_one
       - id: attr_template_one
         type: template[string]
+        stability: experimental
         brief: >
           this is the description of attribute template
         examples: 'example'
@@ -21,6 +23,7 @@ groups:
     attributes:
       - id: attr_two
         type: string
+        stability: experimental
         brief: short description of attr_two
         examples: ['example_one', 'example_two']
 
@@ -31,6 +34,7 @@ groups:
     attributes:
       - id: attr_one_a
         type: int
+        stability: experimental
         brief: short description of attr_one_a
       - ref: second.attr_two
 
@@ -39,12 +43,14 @@ groups:
     attributes:
       - id: attr_four
         type: string
+        stability: experimental
         brief: short description of attr_four
         examples: "4"
 
   - id: first_metric_id
     brief: first metric description
     metric_name: first.metric.name
+    stability: experimental
     instrument: counter
     type: metric
     unit: "{one}"

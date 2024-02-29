@@ -1,11 +1,13 @@
 groups:
   - id: first_group_id
     type: attribute_group
+    stability: experimental
     brief: first description
     prefix: first
     attributes:
       - id: attr_one
         type: boolean
+        stability: experimental
         brief: short description of attr_one
 
   - id: first_metric_id
@@ -20,6 +22,7 @@ groups:
   - id: second_group_id
     brief: second metric description
     metric_name: second_group.metric
+    stability: experimental
     type: metric
     instrument: histogram
     unit: "s"
@@ -27,4 +30,5 @@ groups:
     attributes:
       - id: attr_two
         type: int
+        stability: experimental
         brief: short description of attr_two

@@ -6,15 +6,18 @@ groups:
     attributes:
       - id: attr_one
         type: boolean
+        stability: experimental
         brief: short description of attr_one
   - id: group_with_no_prefix
     brief: description
     attributes:
       - id: foo.attr_two
         type: string
+        stability: experimental
         brief: short description of foo.attr_two
         examples: "foo"
       - id: bar_attr
         type: string
+        stability: experimental
         brief: short description of bar_attr
         examples: "bar"

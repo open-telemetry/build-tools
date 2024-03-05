@@ -1,0 +1,22 @@
+groups:
+  - id: first_group_id
+    type: attribute_group
+    brief: first description
+    prefix: first
+    attributes:
+      - id: attr_one_a
+        type: int
+        brief: short description of attr_one_a
+        stability: experimental
+
+  - id: second_group_id
+    brief: second description
+    prefix: second
+    span_kind: client
+    extends: first_group_id
+    attributes:
+      - id: attr_two
+        type: string
+        brief: short description of attr_two
+        examples: ['example_one', 'example_two']
+        stability: stable

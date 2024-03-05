@@ -48,10 +48,11 @@ _Note:_ `venv` integrations exist for IDEs such as [PyCharm](https://www.jetbrai
 
 See the offical documents for creating and [using](https://docs.python.org/3/tutorial/venv.html) a [venv environment](https://docs.python.org/3/library/venv.html).  All "python" commands listed in this document should be run in an activated `venv`.
 
+**Note**, ensure the venv you create is using the earliest supported version of python as defined in `setup.cfg`
 
 ```bash
 # note that it's convention to not store your venv in your working directory, lest build tooling "pick up" venv configuration.
-python3 -m venv ../semconvgen
+python3.10 -m venv ../semconvgen
 source ../semconvgen/bin/activate
 # Run your pip/wheel commands as described elsewhere in this documentation here.
 # reset your environment by typing 'deactivate' or by exiting your TTY

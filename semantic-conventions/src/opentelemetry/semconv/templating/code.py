@@ -199,6 +199,10 @@ def is_experimental(
     return obj.stability is None or obj.stability == StabilityLevel.EXPERIMENTAL
 
 
+def any(obj) -> bool:
+    return True
+
+
 def is_definition(attribute: SemanticAttribute) -> bool:
     return attribute.is_local and attribute.ref is None
 
@@ -269,6 +273,7 @@ class CodeRenderer:
         env.filters["render_markdown"] = render_markdown
         env.filters["print_member_value"] = print_member_value
         env.filters["is_deprecated"] = is_deprecated
+        env.filters["any"] = any
         env.filters["is_definition"] = is_definition
         env.filters["is_stable"] = is_stable
         env.filters["is_experimental"] = is_experimental
@@ -280,6 +285,7 @@ class CodeRenderer:
         env.tests["is_definition"] = is_definition
         env.tests["is_template"] = is_template
         env.tests["is_metric"] = is_metric
+        env.tests["any"] = any
         env.trim_blocks = trim_whitespace
         env.lstrip_blocks = trim_whitespace
 
@@ -360,6 +366,7 @@ class CodeRenderer:
 
             data = {
                 "template": template_path,
+                "file_name": file_name,
                 "attributes_and_templates": attribute_and_templates,
                 "enum_attributes": [a for a in attribute_and_templates if a.is_enum],
                 "metrics": metrics.get(ns) or [],

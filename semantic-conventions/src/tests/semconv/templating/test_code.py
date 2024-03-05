@@ -114,6 +114,31 @@ def test_codegen_attribute_root_ns(test_file_path, read_test_file):
     check_file(tmppath, "FifthAttributes.java", fifth)
 
 
+def test_codegen_root_ns_incubating(test_file_path, read_test_file):
+    semconv = SemanticConventionSet(debug=False)
+
+    semconv.parse(test_file_path("jinja", "group_by_root_namespace/incubating", "attributes.yml"))
+    semconv.finish()
+
+    template_path = test_file_path("jinja", "group_by_root_namespace/incubating", "template_incubating")
+    renderer = CodeRenderer({"filter":"any"}, trim_whitespace=True)
+
+    test_path = os.path.join("group_by_root_namespace", "incubating")
+    tmppath = tempfile.mkdtemp()
+    renderer.render(
+        semconv,
+        template_path,
+        os.path.join(tmppath, "{{pascal_prefix}}Attributes.java"),
+        "root_namespace",
+    )
+
+    first = read_test_file("jinja", test_path, "FirstAttributes.java")
+    check_file(tmppath, "FirstAttributes.java", first)
+
+    second = read_test_file("jinja", test_path, "SecondAttributes.java")
+    check_file(tmppath, "SecondAttributes.java", second)
+
+
 def test_codegen_attribute_root_ns_snake_case_file(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
 
@@ -238,4 +263,5 @@ def test_codegen_attribute_root_ns_metrics(test_file_path, read_test_file):
 def check_file(tmppath, actual_filename, expected_content):
     with open(os.path.join(tmppath, actual_filename), "r", encoding="utf-8") as f:
         actual = f.read()
+        print(actual)
         assert actual == expected_content

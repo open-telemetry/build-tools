@@ -1,0 +1,15 @@
+{%- set filtered_attributes = attributes_and_templates | select(filter) | list %}
+package io.opentelemetry.instrumentation.api.incubating.semconv;
+
+class {{ root_namespace | to_camelcase(True) }}Attributes {
+{%- for attribute in filtered_attributes %}
+
+  /**
+  * {{attribute.brief | render_markdown(code="{{@code {0}}}", paragraph="{0}")}}
+  {% if filter != "is_stable" and attribute | is_stable %}
+  * @deprecated Use {@link io.opentelemetry.instrumentation.api.semconv.{{file_name[:-5]}}.{{attribute.fqn | to_const_name}}}
+  {% endif %}
+  */
+  public static final String {{attribute.fqn | to_const_name}} = "{{attribute.fqn}}";
+{% endfor %}
+}

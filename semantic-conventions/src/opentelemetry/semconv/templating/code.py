@@ -366,7 +366,7 @@ class CodeRenderer:
 
             data = {
                 "template": template_path,
-                "file_name": file_name,
+                "file_name": os.path.basename(output_name),
                 "attributes_and_templates": attribute_and_templates,
                 "enum_attributes": [a for a in attribute_and_templates if a.is_enum],
                 "metrics": metrics.get(ns) or [],

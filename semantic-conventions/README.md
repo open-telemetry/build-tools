@@ -225,6 +225,7 @@ Processes a single namespace and is called for each namespace detected.
 - `attributes_and_templates` - the list containing all attributes (including template ones) in the given root namespace. Attributes are sorted by their name.
 - `enum_attributes` - the list containing all enum attributes in the given root namespace.  Attributes are sorted by their name.
 - `root_namespace` - the root namespace being processed.
+- `file_name` - the name of the file being generated.
 
 #### Other patterns
 
@@ -261,6 +262,9 @@ Semconvgen supports following additional filters to simplify common operations i
 
 1. `is_metric` - Checks if semantic convention describes a metric.
 
+#### Common operations
+
+1. `any` - Simple test that returns true.
 
 ### Examples
 
@@ -281,6 +285,7 @@ SERVER_ADDRESS = "server.address"
 Server domain name if available without reverse DNS lookup; otherwise, IP address or Unix domain socket name.
 Note: When observed from the client side, and when communicating through an intermediary, `server.address` SHOULD represent the server address behind any intermediaries, for example proxies, if it's available.
 """
+```
 
 we can achieve it with the following template:
 
@@ -365,6 +370,34 @@ docker run --rm \
   --output /output/experimental/{{snake_prefix}}_attributes.py \
   --file-per-group root_namespace \
   -Dfilter=is_experimental
+```
+
+Instead of generating stable and experimental sets, you may want to generate all semantic conventions in the beta artifact and generate stable conventions only in the stable one.
+This way semantic conventions would not disappear from experimental artifact once they stabilize.
+
+To achieve it, we can pass `any` filter:
+
+```bash
+docker run --rm \
+  ...
+  --output /output/incubating/{{snake_prefix}}_attributes.py \
+  --file-per-group root_namespace \
+  -Dfilter=any
+```
+
+When a convention goes from stable to experimental, it would appear in both - incubating and stable artifacts to minimize breaking changes.
+We still want to point users to the stable version - here's an example of how it can be done in a template
+
+```jinja
+{%- if stable_package and attribute | is_stable -%}
+Deprecated: the attribute is stable now, use :py:const:`{{stable_package}}.{{file_name[:-3]}}.{{attribute.fqn | to_const_name}}` instead.
+{%- endif -%}
+```
+
+Here `stable_package` is a custom parameter passed by a generation script, and `file_name` is passed in the context - it's the name of the file being generated (it does not contain a directory).
+This template will result in a docstring similar to
+```python
+Deprecated: the attribute is stable now, use :py:const:`opentelemetry.semconv.http_attributes.HTTP_REQUEST_METHOD` instead.
 ```
 
 #### Generate enum definitions
@@ -457,21 +490,21 @@ We'd need a very similar one for factory method.
 This is the template that generates above metric definition:
 
 ```java
-    """
-    {{metric.brief | to_doc_brief}}
-    """
-    @staticmethod
-  {%- if metric.instrument == "gauge" %}
-    def create_{{ metric.metric_name | replace(".", "_") }}(meter: Meter, callback: Sequence[Callable]) -> {{to_python_instrument_type(metric.instrument)}}:
-  {%- else %}
-    def create_{{ metric.metric_name | replace(".", "_") }}(meter: Meter) -> {{to_python_instrument_type(metric.instrument)}}:
-  {%- endif %}
-        return meter.create_{{to_python_instrument_factory(metric.instrument)}}(
-            name="{{ metric.metric_name }}",
-  {%- if metric.instrument == "gauge" %}
-            callback=callback,
-  {%- endif %}
-            description="{{ metric.brief }}",
-            unit="{{ metric.unit }}",
-        )
+"""
+{{metric.brief | to_doc_brief}}
+"""
+@staticmethod
+{%- if metric.instrument == "gauge" %}
+def create_{{ metric.metric_name | replace(".", "_") }}(meter: Meter, callback: Sequence[Callable]) -> {{to_python_instrument_type(metric.instrument)}}:
+{%- else %}
+def create_{{ metric.metric_name | replace(".", "_") }}(meter: Meter) -> {{to_python_instrument_type(metric.instrument)}}:
+{%- endif %}
+    return meter.create_{{to_python_instrument_factory(metric.instrument)}}(
+        name="{{ metric.metric_name }}",
+{%- if metric.instrument == "gauge" %}
+        callback=callback,
+{%- endif %}
+        description="{{ metric.brief }}",
+        unit="{{ metric.unit }}",
+    )
 ```

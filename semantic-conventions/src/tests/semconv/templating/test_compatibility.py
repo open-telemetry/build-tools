@@ -146,6 +146,11 @@ class TestCompatibility(unittest.TestCase):
                 "first.third_attr.enum_one",
                 "value changed from 'one' to '1'",
             ),
+            Problem(
+                "attribute",
+                "first.forth_attr",
+                "enum type changed from 'string' to 'int'",
+            ),
         ]
         self.assert_errors(expected_errors, problems)
 

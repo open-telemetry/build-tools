@@ -22,9 +22,11 @@ groups:
           members:
             - id: enum_one
               brief: "Enum one."
-              value: "one"
+              stability: stable
+              value: "_one_"
             - id: enum_two
               brief: "Enum two."
+              stability: stable
               value: "two"
         brief: "Third attribute."
         note: "Third attribute note."

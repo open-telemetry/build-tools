@@ -17,9 +17,10 @@ import os
 import unittest
 from pathlib import Path
 from typing import Optional, Sequence
+from unittest.mock import patch
 
 from opentelemetry.semconv.model.semantic_convention import SemanticConventionSet
-from opentelemetry.semconv.templating.markdown import MarkdownRenderer
+from opentelemetry.semconv.templating.markdown import MarkdownRenderer, VisualDiffer
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
 
@@ -167,6 +168,79 @@ class TestCorrectMarkdown(unittest.TestCase):
 
     def test_sorting(self):
         self.check("markdown/sorting/")
+
+    def testVisualDiffer(self):
+        with open(
+            self.get_file_path("markdown/table_generation_conflict/input-1.md"),
+            encoding="utf8",
+        ) as fin:
+            sample_1 = fin.read()
+        with open(
+            self.get_file_path("markdown/table_generation_conflict/input-2.md"),
+            encoding="utf8",
+        ) as fin:
+            sample_2 = fin.read()
+        with open(
+            self.get_file_path(
+                "markdown/table_generation_conflict/expected-no-colors.md"
+            ),
+            encoding="utf8",
+        ) as fin:
+            expected = fin.read()
+        actual = VisualDiffer.visual_diff(sample_1, sample_2)
+        with open(
+            self.get_file_path(
+                "markdown/table_generation_conflict/expected-no-colors.md"
+            ),
+            "w+",
+            encoding="utf8",
+        ) as out:
+            out.writelines(actual)
+        self.assertEqual(expected, actual)
+
+    @patch.dict(os.environ, {"COLORED_DIFF": "false"})
+    def testVisualDifferExplicitNoColors(self):
+        with open(
+            self.get_file_path("markdown/table_generation_conflict/input-1.md"),
+            encoding="utf8",
+        ) as fin:
+            sample_1 = fin.read()
+        with open(
+            self.get_file_path("markdown/table_generation_conflict/input-2.md"),
+            encoding="utf8",
+        ) as fin:
+            sample_2 = fin.read()
+        with open(
+            self.get_file_path(
+                "markdown/table_generation_conflict/expected-no-colors.md"
+            ),
+            encoding="utf8",
+        ) as fin:
+            expected = fin.read()
+        actual = VisualDiffer.visual_diff(sample_1, sample_2)
+        self.assertEqual(expected, actual)
+
+    @patch.dict(os.environ, {"COLORED_DIFF": "true"})
+    def testColoredVisualDiffer(self):
+        with open(
+            self.get_file_path("markdown/table_generation_conflict/input-1.md"),
+            encoding="utf8",
+        ) as fin:
+            sample_1 = fin.read()
+        with open(
+            self.get_file_path("markdown/table_generation_conflict/input-2.md"),
+            encoding="utf8",
+        ) as fin:
+            sample_2 = fin.read()
+        with open(
+            self.get_file_path(
+                "markdown/table_generation_conflict/expected-with-colors.md",
+            ),
+            encoding="utf8",
+        ) as fin:
+            expected = fin.read()
+        actual = VisualDiffer.visual_diff(sample_1, sample_2)
+        self.assertEqual(expected, actual)
 
     def check(
         self,

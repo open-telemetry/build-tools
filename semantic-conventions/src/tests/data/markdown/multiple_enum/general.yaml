@@ -12,26 +12,33 @@ groups:
           members:
             - id: ip.tcp
               value: "IP.TCP"
+              stability: experimental
             - id: ip.udp
               value: "IP.UDP"
+              stability: experimental
             - id: ip
               value: "IP"
               brief: 'Another IP-based protocol'
+              stability: experimental
             - id: unix
               value: "Unix"
               brief: 'Unix Domain socket. See below.'
+              stability: experimental
             - id: pipe
               value: "pipe"
               brief: 'Named or anonymous pipe. See note below.'
+              stability: experimental
             - id: inproc
               value: "inproc"
               brief: 'In-process communication.'
+              stability: experimental
               note: >
                 Signals that there is only in-process communication not using a "real" network protocol
                 in cases where network attributes would normally be expected. Usually all other network
                 attributes can be left out in that case.
             - id: other
               value: "other"
+              stability: experimental
               brief: 'Something else (non IP-based).'
         brief: >
           Transport protocol used. See note below.
@@ -43,13 +50,17 @@ groups:
           members:
             - id: wifi
               value: "wifi"
+              stability: experimental
               note: "Usually 802.11"
             - id: wired
               value: "wired"
+              stability: experimental
             - id: cell
               value: "cell"
+              stability: experimental
             - id: unavailable
               value: "unavailable"
+              stability: experimental
         brief: 'unavailable'
         examples: 'wifi'
       - id: host.connection.subtype
@@ -61,10 +72,12 @@ groups:
               value: "1G"
               brief: >
                 1G
+              stability: experimental
             - id: gen2g
               value: "2G"
               brief: >
                 2G
+              stability: experimental
         brief: 'This describes more details regarding the connection.type. It may be the type of cell connection, but it could be used for describing details about a wifi connection.'
         examples: '2G'
       - id: host.carrier.name

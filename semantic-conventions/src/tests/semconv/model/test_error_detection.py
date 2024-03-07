@@ -134,7 +134,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
 
     def test_invalid_stability(self):
         with self.assertRaises(ValidationError) as ex:
-            self.open_yaml("yaml/errors/stability/wrong_value.yaml")
+            self.open_yaml("yaml/errors/stability/wrong_stability_value.yaml")
             self.fail()
         e = ex.exception
         msg = e.message.lower()
@@ -171,6 +171,46 @@ class TestCorrectErrorDetection(unittest.TestCase):
         msg = e.message.lower()
         self.assertIn("value 'deprecated' is not allowed as a stability marker", msg)
         self.assertEqual(e.line, 6)
+
+    def test_wrong_stability_value_on_enum_member(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml(
+                "yaml/errors/stability/wrong_stability_value_on_enum_member.yaml"
+            )
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("value 'will_fail' is not allowed as a stability marker", msg)
+        self.assertEqual(e.line, 13)
+
+    def test_missing_stability_value_on_enum_member(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml(
+                "yaml/errors/stability/missing_stability_on_enum_member.yaml"
+            )
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("enumeration member 'one' must have a stability level", msg)
+        self.assertEqual(e.line, 10)
+
+    def test_multiple_stability_values_on_enum_member(self):
+        with self.assertRaises(DuplicateKeyError):
+            self.open_yaml(
+                "yaml/errors/stability/multiple_stability_values_on_enum_member.yaml"
+            )
+
+    def test_experimental_attr_stable_member(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/stability/experimental_attr_stable_member.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn(
+            "member 'one' is marked as stable but it is not allowed on experimental attribute!",
+            msg,
+        )
+        self.assertEqual(e.line, 9)
 
     def test_invalid_deprecated_empty_string(self):
         with self.assertRaises(ValidationError) as ex:

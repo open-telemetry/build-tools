@@ -93,7 +93,7 @@ allow_custom_values := boolean
 
 members ::= member {member}
 
-member ::= id value [brief] [note]
+member ::= id value [brief] [note] [stability] [deprecated]
 
 requirement_level ::= "required"
          |   "conditionally_required" <condition>
@@ -376,6 +376,8 @@ An enum entry has the following fields:
 - `value`, string, int, or boolean; value of the enum entry.
 - `brief`, optional string, brief description of the enum entry value. It defaults to the value of `id`.
 - `note`, optional string, longer description. It defaults to an empty string.
+- `stability`, required stability level. Attributes marked as experimental cannot have stable members.
+- `deprecated`, optional string, similarly to semantic convention and attribute deprecation, marks specific member as deprecated.
 
 ### Constraints
 

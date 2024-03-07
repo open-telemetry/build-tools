@@ -61,18 +61,23 @@ groups:
             - id: http_1_0
               value: '1.0'
               brief: 'HTTP 1.0'
+              stability: experimental
             - id: http_1_1
               value: '1.1'
               brief: 'HTTP 1.1'
+              stability: experimental
             - id: http_2_0
               value: '2.0'
               brief: 'HTTP 2'
+              stability: experimental
             - id: spdy
               value: 'SPDY'
               brief: 'SPDY protocol.'
+              stability: experimental
             - id: quic
               value: 'QUIC'
               brief: 'QUIC protocol.'
+              stability: experimental
         brief: 'Kind of HTTP protocol used'
         deprecated: Deprecated. Use attribute `flavor_new` instead.
         note: >

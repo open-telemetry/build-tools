@@ -39,7 +39,8 @@ jobs:
       run: pylint *.py src/
     - name: Type checking (mypy)
       run: mypy src/
-      
+    - name: Build the Docker image
+      run: pip wheel --no-deps . && docker build . -t semconvgen && docker run --rm semconvgen --help
 
   build-and-publish-docker:
     runs-on: ubuntu-latest

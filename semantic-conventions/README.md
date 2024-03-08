@@ -123,6 +123,12 @@ The following checks are performed:
     This check does not take into account opt-in attributes. Adding new attributes to metric is not always breaking,
     so it's considered non-critical and it's possible to suppress it with `--ignore-warnings`
 
+Previous versions of semantic conventions are not always compatible with later versions of build-tools. You can suppress validation errors but setting `--strict-validation` flag to `false`:
+
+```bash
+docker run --rm otel/semconvgen --yaml-root {yaml_folder} --strict-validation False compatibility --previous-version {semconv version}
+```
+
 ## Code Generator
 
 The image supports [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates to generate code from the models.

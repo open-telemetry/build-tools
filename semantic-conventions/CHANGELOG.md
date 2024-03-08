@@ -32,6 +32,8 @@ Please update the changelog as part of any significant pull request.
   ([#266](https://github.com/open-telemetry/build-tools/pull/266))
 - Sort attribute tables by requirement level and attribute name
   ([#260](https://github.com/open-telemetry/build-tools/pull/260))
+- Warn on all validation issues if strict validation is disabled to improve back-compat checks
+  TODO
 
 ## v0.23.0
 

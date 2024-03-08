@@ -19,19 +19,15 @@ class ValidationError(Exception):
         line -- line in the file where the error occurred
         column -- column in the file where the error occurred
         message -- reason of the error
+        fqn -- identifier of the node that contains the error
     """
 
-    @classmethod
-    def from_yaml_pos(cls, pos, msg):
-        # the yaml parser starts counting from 0
-        # while in document is usually reported starting from 1
-        return cls(pos[0] + 1, pos[1] + 1, msg)
-
-    def __init__(self, line, column, message):
-        super().__init__(line, column, message)
+    def __init__(self, line, column, message, fqn):
+        super().__init__(line, column, message, fqn)
         self.message = message
         self.line = line
         self.column = column
+        self.fqn = fqn
 
     def __str__(self):
-        return f"{self.message} - @{self.line}:{self.column}"
+        return f"{self.message} - @{self.line}:{self.column} ('{self.fqn}')"

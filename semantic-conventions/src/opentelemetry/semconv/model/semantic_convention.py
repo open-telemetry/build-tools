@@ -28,7 +28,12 @@ from opentelemetry.semconv.model.semantic_attribute import (
     SemanticAttribute,
 )
 from opentelemetry.semconv.model.unit_member import UnitMember
-from opentelemetry.semconv.model.utils import ValidatableYamlNode, validate_id
+from opentelemetry.semconv.model.utils import (
+    ValidatableYamlNode,
+    ValidationContext,
+    check_no_missing_keys,
+    validate_id,
+)
 
 
 class SpanKind(Enum):
@@ -60,16 +65,17 @@ def parse_semantic_convention_type(type_value):
     return CONVENTION_CLS_BY_GROUP_TYPE.get(type_value)
 
 
-def parse_semantic_convention_groups(yaml_file, strict_validation=True):
+def parse_semantic_convention_groups(yaml_file, validation_ctx):
     yaml = YAML().load(yaml_file)
     models = []
     for group in yaml["groups"]:
-        models.append(SemanticConvention(group, strict_validation))
+        models.append(SemanticConvention(group, validation_ctx))
     return models
 
 
-def SemanticConvention(group, strict_validation=True):
+def SemanticConvention(group, validation_ctx):
     type_value = group.get("type")
+    id = group.get("id")
     if type_value is None:
         line = group.lc.data["id"][0] + 1
         doc_url = "https://github.com/open-telemetry/build-tools/blob/main/semantic-conventions/syntax.md#groups"
@@ -82,11 +88,11 @@ def SemanticConvention(group, strict_validation=True):
     if convention_type is None:
         position = group.lc.data["type"] if "type" in group else group.lc.data["id"]
         msg = f"Invalid value for semantic convention type: {group.get('type')}"
-        raise ValidationError.from_yaml_pos(position, msg)
+        validation_ctx.raise_or_warn(position, msg, id)
 
     # First, validate that the correct fields are available in the yaml
-    convention_type.validate_keys(group)
-    model = convention_type(group, strict_validation)
+    convention_type.validate_keys(group, validation_ctx)
+    model = convention_type(group, validation_ctx)
     # Also, validate that the value of the fields is acceptable
     model.validate_values()
     return model
@@ -141,24 +147,27 @@ class BaseSemanticConvention(ValidatableYamlNode):
             key=comparison_key,
         )
 
-    def __init__(self, group, strict_validation=True):
-        super().__init__(group)
+    def __init__(self, group, validation_ctx):
+        super().__init__(group, validation_ctx)
 
         self.semconv_id = self.id
         self.note = group.get("note", "").strip()
         self.prefix = group.get("prefix", "").strip()
+        self.validation_ctx = validation_ctx
         position_data = group.lc.data
         self.stability = SemanticAttribute.parse_stability(
-            group.get("stability"), position_data, strict_validation
+            group.get("stability"), position_data, self.semconv_id, validation_ctx
         )
         self.deprecated = SemanticAttribute.parse_deprecated(
-            group.get("deprecated"), position_data
+            group.get("deprecated"), position_data, self.semconv_id, validation_ctx
         )
         self.extends = group.get("extends", "").strip()
         self.events = group.get("events", ())
-        self.constraints = parse_constraints(group.get("constraints", ()))
+        self.constraints = parse_constraints(
+            group.get("constraints", ()), validation_ctx
+        )
         self.attrs_by_name = SemanticAttribute.parse(
-            self.prefix, group.get("attributes"), strict_validation
+            self.prefix, group.get("attributes"), validation_ctx
         )
 
     def contains_attribute(self, attr: "SemanticAttribute"):
@@ -182,7 +191,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
     def validate_values(self):
         super().validate_values()
         if self.prefix:
-            validate_id(self.prefix, self._position)
+            validate_id(self.prefix, self._position, self.validation_ctx)
 
 
 class ResourceSemanticConvention(BaseSemanticConvention):
@@ -205,13 +214,13 @@ class SpanSemanticConvention(BaseSemanticConvention):
         "span_kind",
     )
 
-    def __init__(self, group, strict_validation=True):
-        super().__init__(group)
+    def __init__(self, group, validation_ctx):
+        super().__init__(group, validation_ctx)
         self.span_kind = SpanKind.parse(group.get("span_kind"))
         if self.span_kind is None:
             position = group.lc.data["span_kind"]
             msg = f"Invalid value for span_kind: {group.get('span_kind')}"
-            raise ValidationError.from_yaml_pos(position, msg)
+            validation_ctx.raise_or_warn(position, msg, group.get("id"))
 
 
 class EventSemanticConvention(BaseSemanticConvention):
@@ -219,12 +228,14 @@ class EventSemanticConvention(BaseSemanticConvention):
 
     allowed_keys = BaseSemanticConvention.allowed_keys + ("name",)
 
-    def __init__(self, group, strict_validation=True):
-        super().__init__(group)
+    def __init__(self, group, validation_ctx):
+        super().__init__(group, validation_ctx)
         self.name = group.get("name", self.prefix)
         if not self.name:
-            raise ValidationError.from_yaml_pos(
-                self._position, "Event must define at least one of name or prefix"
+            validation_ctx.raise_or_warn(
+                self._position,
+                "Event must define at least one of name or prefix",
+                group.get("id"),
             )
 
 
@@ -238,9 +249,9 @@ class UnitSemanticConvention(BaseSemanticConvention):
         "members",
     )
 
-    def __init__(self, group, strict_validation=True):
-        super().__init__(group)
-        self.members = UnitMember.parse(group.get("members"))
+    def __init__(self, group, validation_ctx):
+        super().__init__(group, validation_ctx)
+        self.members = UnitMember.parse(group.get("members"), validation_ctx)
 
 
 class MetricGroupSemanticConvention(BaseSemanticConvention):
@@ -267,28 +278,29 @@ class MetricSemanticConvention(MetricGroupSemanticConvention):
         canonical_instrument_name_by_yaml_name.keys()
     )
 
-    def __init__(self, group, strict_validation=True):
-        super().__init__(group)
+    def __init__(self, group, validation_ctx):
+        super().__init__(group, validation_ctx)
         self.metric_name = group.get("metric_name")
         self.unit = group.get("unit")
         self.instrument = group.get("instrument")
+        self.validation_ctx = validation_ctx
 
         namespaces = self.metric_name.split(".")
         self.root_namespace = namespaces[0] if len(namespaces) > 1 else ""
-        self.validate()
+        self.validate(group)
 
-    def validate(self):
-        val_tuple = (self.metric_name, self.unit, self.instrument, self.stability)
-        if not all(val_tuple):
-            raise ValidationError.from_yaml_pos(
-                self._position,
-                "All of metric_name, units, instrument, and stability must be defined",
-            )
+    def validate(self, yaml):
+        check_no_missing_keys(
+            yaml,
+            ["metric_name", "unit", "instrument", "stability"],
+            self.validation_ctx,
+        )
 
         if self.instrument not in self.allowed_instruments:
-            raise ValidationError.from_yaml_pos(
+            self.validation_ctx.raise_or_warn(
                 self._position,
                 f"Instrument '{self.instrument}' is not a valid instrument name",
+                self.metric_name,
             )
 
 
@@ -302,11 +314,12 @@ class SemanticConventionSet:
     models: typing.Dict[str, BaseSemanticConvention] = field(default_factory=dict)
     errors: bool = False
 
-    def parse(self, file, strict_validation=True):
+    def parse(self, file, validation_ctx=None):
+        self.validation_ctx = validation_ctx or ValidationContext(file, True)
         with open(file, "r", encoding="utf-8") as yaml_file:
             try:
                 semconv_models = parse_semantic_convention_groups(
-                    yaml_file, strict_validation
+                    yaml_file, self.validation_ctx
                 )
                 for model in semconv_models:
                     if model.semconv_id in self.models:
@@ -391,10 +404,11 @@ class SemanticConventionSet:
         if semconv.extends:
             extended = self.models.get(semconv.extends)
             if extended is None:
-                raise ValidationError.from_yaml_pos(
-                    semconv._position,
+                self.validation_ctx.raise_or_warn(
+                    self._position,
                     f"Semantic Convention {semconv.semconv_id} extends "
                     f"{semconv.extends} but the latter cannot be found!",
+                    semconv.semconv_id,
                 )
 
             # Process hierarchy chain
@@ -435,10 +449,11 @@ class SemanticConventionSet:
                     for attr_id in attr_ids:
                         ref_attr = self._lookup_attribute(attr_id)
                         if ref_attr is None:
-                            raise ValidationError.from_yaml_pos(
+                            self.validation_ctx.raise_or_warn(
                                 any_of._yaml_src_position[index],
-                                f"Any_of attribute '{attr_id}' of semantic convention "
-                                "{semconv.semconv_id} does not exists!",
+                                f"Any_of attribute '{attr_id}' of semantic "
+                                "convention {semconv.semconv_id} does not exist!",
+                                attr_id,
                             )
                         constraint_attrs.append(ref_attr)
                     if constraint_attrs:
@@ -450,16 +465,18 @@ class SemanticConventionSet:
             for event_id in semconv.events:
                 event = self.models.get(event_id)
                 if event is None:
-                    raise ValidationError.from_yaml_pos(
+                    self.validation_ctx.raise_or_warn(
                         semconv._position,
                         f"Semantic Convention {semconv.semconv_id} has "
                         "{event_id} as event but the latter cannot be found!",
+                        event_id,
                     )
                 if not isinstance(event, EventSemanticConvention):
-                    raise ValidationError.from_yaml_pos(
+                    self.validation_ctx.raise_or_warn(
                         semconv._position,
                         f"Semantic Convention {semconv.semconv_id} has {event_id} as event but"
                         " the latter is not a semantic convention for events!",
+                        event_id,
                     )
                 events.append(event)
             semconv.events = events
@@ -474,9 +491,10 @@ class SemanticConventionSet:
                 fixpoint_ref = False
                 ref_attr = self._lookup_attribute(attr.ref)
                 if not ref_attr:
-                    raise ValidationError.from_yaml_pos(
+                    self.validation_ctx.raise_or_warn(
                         semconv._position,
                         f"Semantic Convention {semconv.semconv_id} reference `{attr.ref}` but it cannot be found!",
+                        semconv.semconv_id,
                     )
                 attr = self._merge_attribute(attr, ref_attr)
         return fixpoint_ref
@@ -515,10 +533,11 @@ class SemanticConventionSet:
                 include_semconv = self.models.get(constraint.semconv_id)
                 # include required attributes and constraints
                 if include_semconv is None:
-                    raise ValidationError.from_yaml_pos(
+                    self.validation_ctx.raise_or_warn(
                         semconv._position,
                         f"Semantic Convention {semconv.semconv_id} includes "
                         "{constraint.semconv_id} but the latter cannot be found!",
+                        semconv.semconv_id,
                     )
                 # We resolve the parent/child relationship of the included semantic convention, if any
                 self._populate_extends_single(

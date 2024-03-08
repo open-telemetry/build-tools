@@ -28,6 +28,7 @@ from opentelemetry.semconv.model.semantic_convention import (
     CONVENTION_CLS_BY_GROUP_TYPE,
     SemanticConventionSet,
 )
+from opentelemetry.semconv.model.utils import ValidationContext
 from opentelemetry.semconv.templating.code import CodeRenderer
 from opentelemetry.semconv.templating.compatibility import CompatibilityChecker
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
@@ -42,7 +43,7 @@ def parse_semconv(
     for file in sorted(files):
         if not file.endswith(".yaml") and not file.endswith(".yml"):
             parser.error(f"{file} is not a yaml file.")
-        semconv.parse(file, strict_validation)
+        semconv.parse(file, ValidationContext(file, strict_validation))
     semconv.finish()
     if semconv.has_error():
         sys.exit(1)

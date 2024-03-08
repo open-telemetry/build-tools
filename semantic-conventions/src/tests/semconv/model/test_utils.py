@@ -14,7 +14,11 @@
 import pytest
 
 from opentelemetry.semconv.model.exceptions import ValidationError
-from opentelemetry.semconv.model.utils import validate_id, validate_values
+from opentelemetry.semconv.model.utils import (
+    ValidationContext,
+    validate_id,
+    validate_values,
+)
 
 _POSITION = [10, 2]
 
@@ -35,7 +39,7 @@ def test_validate_id__valid(semconv_id):
     # a lowercase letter. The rest of the id may contain only lowercase letters,
     # numbers, underscores, and dashes
 
-    validate_id(semconv_id, _POSITION)
+    validate_id(semconv_id, _POSITION, True)
 
 
 @pytest.mark.parametrize(
@@ -43,9 +47,13 @@ def test_validate_id__valid(semconv_id):
 )
 def test_validate_id__invalid(semconv_id):
     with pytest.raises(ValidationError) as err:
-        validate_id(semconv_id, _POSITION)
+        validate_id(semconv_id, _POSITION, ValidationContext(None, True))
 
     assert err.value.message.startswith("Invalid id")
+
+
+def test_validate_id__invalid_not_strict():
+    validate_id("123", _POSITION, ValidationContext(None, False))
 
 
 @pytest.mark.parametrize(
@@ -63,7 +71,7 @@ def test_validate_values(load_yaml, allowed, mandatory):
     conventions = load_yaml("basic_example.yml")
     yaml = conventions["groups"][0]
 
-    validate_values(yaml, allowed, mandatory)
+    validate_values(yaml, allowed, ValidationContext(None, True), mandatory)
 
 
 @pytest.mark.parametrize(
@@ -96,6 +104,6 @@ def test_validate_values__invalid(load_yaml, allowed, mandatory, expected_messag
     yaml = conventions["groups"][0]
 
     with pytest.raises(ValidationError) as err:
-        validate_values(yaml, allowed, mandatory)
+        validate_values(yaml, allowed, ValidationContext(None, True), mandatory)
 
     assert err.value.message == expected_message

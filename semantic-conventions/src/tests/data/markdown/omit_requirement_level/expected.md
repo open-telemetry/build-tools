@@ -1,7 +1,7 @@
 # Common Attributes
 
 <!-- semconv http(omit_requirement_level) -->
-| Attribute  | Type | Description  | Examples  | [Stability](https://opentelemetry.io/docs/specs/otel/versioning-and-stability/#semantic-conventions-stability) |
+| Attribute  | Type | Description  | Examples  | Stability |
 |---|---|---|---|---|
 | `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | Experimental |
 | `http.target` | string | The full request target as passed in a HTTP request line or equivalent. | `/path/12314/?q=ddds#123` | Experimental |

@@ -68,7 +68,7 @@ After `{semantic_convention_id}`, optional parameters enclosed in parentheses ca
 - `remove_constraint`: does not print additional constraints of the semantic convention.
 
 By default markdown tables are rendered with stability badges (like ![Stable](https://img.shields.io/badge/-stable-lightgreen) or ![Experimental](https://img.shields.io/badge/-experimental-blue)) which can be disabled with `--md-disable-stable-badge`, `--md-disable-experimental-badge`, `--md-disable-deprecated-badge`.
-When badges are disabled, stability column contains plain text representation of stability or deprecation status.
+When badges are disabled, the stability column contains plain text representation of stability or deprecation status.
 
 ### Examples
 

@@ -2,7 +2,7 @@
 
 <!-- Re-generate TOC with `TODO: ADD cmd` -->
 <!-- semconv http -->
-| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | [Stability](https://opentelemetry.io/docs/specs/otel/versioning-and-stability/#semantic-conventions-stability) |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
 |---|---|---|---|---|---|
 | `http.flavor` | string | Kind of HTTP protocol used [1] | `1.0` | `Recommended` | Deprecated: Use attribute `flavor_new` instead. |
 | `http.host` | string | The value of the [HTTP host header](https://tools.ietf.org/html/rfc7230#section-5.4). When the header is empty or not present, this attribute should be the same. | `www.example.org` | `Recommended` | Experimental |

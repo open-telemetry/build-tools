@@ -49,12 +49,6 @@ _REQUIREMENT_LEVEL_URL = (
     _OPENTELEMETRY_IO_SPEC_URL + "semconv/general/attribute-requirement-level/"
 )
 
-_SEMANTIC_CONVENTIONS_STABILITY_URL = (
-    _OPENTELEMETRY_IO_SPEC_URL
-    + "otel/versioning-and-stability/#semantic-conventions-stability"
-)
-
-
 class RenderContext:
     def __init__(self):
         self.is_full = False
@@ -112,14 +106,13 @@ class MarkdownRenderer:
         self.filename_for_attr_fqn = self._create_attribute_location_dict()
 
         req_level = f"[Requirement Level]({_REQUIREMENT_LEVEL_URL})"
-        stability = f"[Stability]({_SEMANTIC_CONVENTIONS_STABILITY_URL})"
 
         self.table_headers = (
-            f"| Attribute  | Type | Description  | Examples  | {req_level} | {stability} |"
+            f"| Attribute  | Type | Description  | Examples  | {req_level} | Stability |"
             "\n|---|---|---|---|---|---|\n"
         )
         self.table_headers_omitting_req_level = (
-            f"| Attribute  | Type | Description  | Examples  | {stability} |"
+            f"| Attribute  | Type | Description  | Examples  | Stability |"
             "\n|---|---|---|---|---|\n"
         )
 
@@ -259,9 +252,8 @@ class MarkdownRenderer:
             semconv.instrument
         ]
 
-        stability = f"[Stability]({_SEMANTIC_CONVENTIONS_STABILITY_URL})"
         output.write(
-            f"| Name     | Instrument Type | Unit (UCUM) | Description    | {stability} |\n"
+            f"| Name     | Instrument Type | Unit (UCUM) | Description    | Stability |\n"
             "| -------- | --------------- | ----------- | -------------- | --------- |\n"
         )
 

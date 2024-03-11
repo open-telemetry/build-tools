@@ -1,7 +1,7 @@
 # Attributes
 
 <!-- semconv mmm(full) -->
-| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | [Stability](https://opentelemetry.io/docs/specs/otel/versioning-and-stability/#semantic-conventions-stability) |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
 |---|---|---|---|---|---|
 | `aaa.aaa` | string | the 1st attribute | `aaa` | `Recommended` | Experimental |
 | `mmm.bbb` | string | the 2nd attribute | `bbb` | `Recommended` | Experimental |

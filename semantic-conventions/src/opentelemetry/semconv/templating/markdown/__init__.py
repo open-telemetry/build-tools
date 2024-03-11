@@ -39,12 +39,9 @@ from opentelemetry.semconv.model.semantic_convention import (
 from opentelemetry.semconv.model.utils import ID_RE
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
-<<<<<<< HEAD
 from .utils import VisualDiffer
 
-=======
 _OPENTELEMETRY_IO_SPEC_URL = "https://opentelemetry.io/docs/specs/"
->>>>>>> 01b82d1 (lint)
 _REQUIREMENT_LEVEL_URL = (
     _OPENTELEMETRY_IO_SPEC_URL + "semconv/general/attribute-requirement-level/"
 )
@@ -130,14 +127,7 @@ class MarkdownRenderer:
             if isinstance(attribute.attr_type, EnumAttributeType)
             else AttributeType.get_instantiated_type(attribute.attr_type)
         )
-<<<<<<< HEAD
-        description = (
-            self._description_with_badge(attribute.stability, attribute.deprecated)
-            + attribute.brief
-        )
-=======
         description = attribute.brief
->>>>>>> c5a1094 (add stability as a separate column)
         if attribute.note:
             self.render_ctx.add_note(attribute.note)
             description += f" [{len(self.render_ctx.notes)}]"
@@ -338,20 +328,18 @@ class MarkdownRenderer:
             else:
                 output.write("MUST be one of the following:")
             output.write("\n\n")
-            output.write("| Value  | Description |\n|---|---|")
+            output.write("| Value  | Description | Stability |\n|---|---|---|")
             member: EnumMember
             counter = 1
             notes = []
             for member in enum.members:
-                description = (
-                    self._description_with_badge(member.stability, member.deprecated)
-                    + member.brief
-                )
+                description = member.brief
                 if member.note:
                     description += f" [{counter}]"
                     counter += 1
                     notes.append(member.note)
-                output.write(f"\n| `{member.value}` | {description} |")
+                stability = self._render_stability(member)
+                output.write(f"\n| `{member.value}` | {description} | {stability} |")
             counter = 1
             if not notes:
                 output.write("\n")
@@ -548,7 +536,7 @@ class MarkdownRenderer:
         output.write("<!-- endsemconv -->")
 
     def _render_stability(
-        self, item: typing.Union[SemanticAttribute | BaseSemanticConvention]
+        self, item: typing.Union[SemanticAttribute | BaseSemanticConvention | EnumMember]
     ):
         if item.deprecated:
             return self.options.deprecated_md_snippet(item.deprecated)

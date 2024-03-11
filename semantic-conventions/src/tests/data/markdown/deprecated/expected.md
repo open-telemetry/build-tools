@@ -18,13 +18,13 @@
 
 `http.flavor` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
 
-| Value  | Description |
-|---|---|
-| `1.0` | HTTP 1.0 |
-| `1.1` | HTTP 1.1 |
-| `2.0` | HTTP 2 |
-| `SPDY` | SPDY protocol. |
-| `QUIC` | QUIC protocol. |
+| Value  | Description | Stability |
+|---|---|---|
+| `1.0` | HTTP 1.0 | Experimental |
+| `1.1` | HTTP 1.1 | Experimental |
+| `2.0` | HTTP 2 | Experimental |
+| `SPDY` | SPDY protocol. | Experimental |
+| `QUIC` | QUIC protocol. | Experimental |
 <!-- endsemconv -->
 
 It is recommended to also use the general [network attributes][], especially `net.peer.ip`. If `net.transport` is not specified, it can be assumed to be `IP.TCP` except if `http.flavor` is `QUIC`, in which case `IP.UDP` is assumed.

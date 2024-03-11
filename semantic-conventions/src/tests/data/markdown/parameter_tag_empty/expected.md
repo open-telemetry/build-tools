@@ -25,39 +25,39 @@
 
 `db.dbms` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
 
-| Value  | Description |
-|---|---|
-| `mssql` | Microsoft SQL Server |
-| `mysql` | MySQL |
-| `oracle` | Oracle |
-| `db2` | IBM Db2 |
-| `postgresql` | PostgreSQL |
-| `redshift` | Amazon Redshift |
-| `hive` | Apache Hive |
-| `cloudscape` | Cloudscape |
-| `hsqlsb` | HyperSQL DataBase |
-| `progress` | Progress Database |
-| `maxdb` | SAP MaxDB |
-| `hanadb` | SAP HANA |
-| `ingres` | Ingres |
-| `firstsql` | FirstSQL |
-| `edb` | EnterpriseDB |
-| `cache` | InterSystems Caché |
-| `adabas` | Adabas (Adaptable Database System) |
-| `firebird` | Firebird |
-| `derby` | Apache Derby |
-| `filemaker` | FileMaker |
-| `informix` | Informix |
-| `instantdb` | InstantDB |
-| `interbase` | InterBase |
-| `mariadb` | MariaDB |
-| `netezza` | Netezza |
-| `pervasive` | Pervasive PSQL |
-| `pointbase` | PointBase |
-| `sqlite` | SQLite |
-| `sybase` | Sybase |
-| `teradata` | Teradata |
-| `vertica` | Vertica |
-| `h2` | H2 |
-| `coldfusion` | ColdFusion IMQ |
+| Value  | Description | Stability |
+|---|---|---|
+| `mssql` | Microsoft SQL Server | Experimental |
+| `mysql` | MySQL | Experimental |
+| `oracle` | Oracle | Experimental |
+| `db2` | IBM Db2 | Experimental |
+| `postgresql` | PostgreSQL | Experimental |
+| `redshift` | Amazon Redshift | Experimental |
+| `hive` | Apache Hive | Experimental |
+| `cloudscape` | Cloudscape | Experimental |
+| `hsqlsb` | HyperSQL DataBase | Experimental |
+| `progress` | Progress Database | Experimental |
+| `maxdb` | SAP MaxDB | Experimental |
+| `hanadb` | SAP HANA | Experimental |
+| `ingres` | Ingres | Experimental |
+| `firstsql` | FirstSQL | Experimental |
+| `edb` | EnterpriseDB | Experimental |
+| `cache` | InterSystems Caché | Experimental |
+| `adabas` | Adabas (Adaptable Database System) | Experimental |
+| `firebird` | Firebird | Experimental |
+| `derby` | Apache Derby | Experimental |
+| `filemaker` | FileMaker | Experimental |
+| `informix` | Informix | Experimental |
+| `instantdb` | InstantDB | Experimental |
+| `interbase` | InterBase | Experimental |
+| `mariadb` | MariaDB | Experimental |
+| `netezza` | Netezza | Experimental |
+| `pervasive` | Pervasive PSQL | Experimental |
+| `pointbase` | PointBase | Experimental |
+| `sqlite` | SQLite | Experimental |
+| `sybase` | Sybase | Experimental |
+| `teradata` | Teradata | Experimental |
+| `vertica` | Vertica | Experimental |
+| `h2` | H2 | Experimental |
+| `coldfusion` | ColdFusion IMQ | Experimental |
 <!-- endsemconv -->

@@ -20,33 +20,33 @@
 
 `net.host.connection.subtype` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
 
-| Value  | Description |
-|---|---|
-| `1G` | 1G |
-| `2G` | 2G |
+| Value  | Description | Stability |
+|---|---|---|
+| `1G` | 1G | Experimental |
+| `2G` | 2G | Experimental |
 
 `net.host.connection.type` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
 
-| Value  | Description |
-|---|---|
-| `wifi` | wifi [1] |
-| `wired` | wired |
-| `cell` | cell |
-| `unavailable` | unavailable |
+| Value  | Description | Stability |
+|---|---|---|
+| `wifi` | wifi [1] | Experimental |
+| `wired` | wired | Experimental |
+| `cell` | cell | Experimental |
+| `unavailable` | unavailable | Experimental |
 
 **[1]:** Usually 802.11
 
 `net.transport` MUST be one of the following:
 
-| Value  | Description |
-|---|---|
-| `IP.TCP` | ip.tcp |
-| `IP.UDP` | ip.udp |
-| `IP` | Another IP-based protocol |
-| `Unix` | Unix Domain socket. See below. |
-| `pipe` | Named or anonymous pipe. See note below. |
-| `inproc` | In-process communication. [1] |
-| `other` | Something else (non IP-based). |
+| Value  | Description | Stability |
+|---|---|---|
+| `IP.TCP` | ip.tcp | Experimental |
+| `IP.UDP` | ip.udp | Experimental |
+| `IP` | Another IP-based protocol | Experimental |
+| `Unix` | Unix Domain socket. See below. | Experimental |
+| `pipe` | Named or anonymous pipe. See note below. | Experimental |
+| `inproc` | In-process communication. [1] | Experimental |
+| `other` | Something else (non IP-based). | Experimental |
 
 **[1]:** Signals that there is only in-process communication not using a "real" network protocol in cases where network attributes would normally be expected. Usually all other network attributes can be left out in that case.
 <!-- endsemconv -->

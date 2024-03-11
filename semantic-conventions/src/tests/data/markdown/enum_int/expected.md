@@ -7,23 +7,23 @@
 
 `rpc.grpc.status_code` MUST be one of the following:
 
-| Value  | Description |
-|---|---|
-| `0` | ok |
-| `1` | cancelled |
-| `2` | unknown |
-| `3` | invalid_argument |
-| `4` | deadline_exceeded |
-| `5` | not_found |
-| `6` | already_exists |
-| `7` | permission_denied |
-| `8` | resource_exhausted |
-| `9` | failed_precondition |
-| `10` | aborted |
-| `11` | out_of_range |
-| `12` | unimplemented |
-| `13` | internal |
-| `14` | unavailable |
-| `15` | data_loss |
-| `16` | unauthenticated |
+| Value  | Description | Stability |
+|---|---|---|
+| `0` | ok | Experimental |
+| `1` | cancelled | Experimental |
+| `2` | unknown | Experimental |
+| `3` | invalid_argument | Experimental |
+| `4` | deadline_exceeded | Experimental |
+| `5` | not_found | Experimental |
+| `6` | already_exists | Experimental |
+| `7` | permission_denied | Experimental |
+| `8` | resource_exhausted | Experimental |
+| `9` | failed_precondition | Experimental |
+| `10` | aborted | Experimental |
+| `11` | out_of_range | Experimental |
+| `12` | unimplemented | Experimental |
+| `13` | internal | Experimental |
+| `14` | unavailable | Experimental |
+| `15` | data_loss | Experimental |
+| `16` | unauthenticated | Experimental |
 <!-- endsemconv -->

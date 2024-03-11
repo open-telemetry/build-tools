@@ -15,14 +15,14 @@
 
 `db.type` MUST be one of the following:
 
-| Value  | Description |
-|---|---|
-| sql | A SQL database |
-| cassandra | Apache Cassandra |
-| hbase | Apache HBase |
-| mongodb | MongoDB |
-| redis | Redis |
-| couchbase | Couchbase |
-| couchdb | CouchDB |
+| Value  | Description | Stability |
+|---|---|---|
+| sql | A SQL database | Experimental |
+| cassandra | Apache Cassandra | Experimental |
+| hbase | Apache HBase | Experimental |
+| mongodb | MongoDB | Experimental |
+| redis | Redis | Experimental |
+| couchbase | Couchbase | Experimental |
+| couchdb | CouchDB | Experimental |
 
 <!-- endsemconv -->

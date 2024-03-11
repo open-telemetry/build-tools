@@ -288,6 +288,7 @@ class TestCorrectMarkdown(unittest.TestCase):
             return ex.exception
         do_render()
         result = output.getvalue()
+        print(result)
         assert result == (dirpath / expected_name).read_text(encoding="utf-8")
         return None
 

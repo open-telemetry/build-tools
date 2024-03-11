@@ -35,11 +35,11 @@
 
 `faas.trigger` MUST be one of the following:
 
-| Value  | Description |
-|---|---|
-| `datasource` | A response to some data source operation such as a database or filesystem read/write. |
-| `http` | To provide an answer to an inbound HTTP request |
-| `pubsub` | A function is set to be executed when messages are sent to a messaging system. |
-| `timer` | A function is scheduled to be executed regularly. |
-| `other` | other |
+| Value  | Description | Stability |
+|---|---|---|
+| `datasource` | A response to some data source operation such as a database or filesystem read/write. | Experimental |
+| `http` | To provide an answer to an inbound HTTP request | Experimental |
+| `pubsub` | A function is set to be executed when messages are sent to a messaging system. | Experimental |
+| `timer` | A function is scheduled to be executed regularly. | Experimental |
+| `other` | other | Experimental |
 <!-- endsemconv -->

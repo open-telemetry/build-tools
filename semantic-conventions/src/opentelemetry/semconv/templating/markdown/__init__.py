@@ -46,6 +46,7 @@ _REQUIREMENT_LEVEL_URL = (
     _OPENTELEMETRY_IO_SPEC_URL + "semconv/general/attribute-requirement-level/"
 )
 
+
 class RenderContext:
     def __init__(self):
         self.is_full = False
@@ -109,7 +110,7 @@ class MarkdownRenderer:
             "\n|---|---|---|---|---|---|\n"
         )
         self.table_headers_omitting_req_level = (
-            f"| Attribute  | Type | Description  | Examples  | Stability |"
+            "| Attribute  | Type | Description  | Examples  | Stability |"
             "\n|---|---|---|---|---|\n"
         )
 
@@ -243,7 +244,7 @@ class MarkdownRenderer:
         ]
 
         output.write(
-            f"| Name     | Instrument Type | Unit (UCUM) | Description    | Stability |\n"
+            "| Name     | Instrument Type | Unit (UCUM) | Description    | Stability |\n"
             "| -------- | --------------- | ----------- | -------------- | --------- |\n"
         )
 
@@ -536,7 +537,8 @@ class MarkdownRenderer:
         output.write("<!-- endsemconv -->")
 
     def _render_stability(
-        self, item: typing.Union[SemanticAttribute | BaseSemanticConvention | EnumMember]
+        self,
+        item: typing.Union[SemanticAttribute | BaseSemanticConvention | EnumMember],
     ):
         if item.deprecated:
             return self.options.deprecated_md_snippet(item.deprecated)

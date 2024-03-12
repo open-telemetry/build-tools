@@ -139,7 +139,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
                 if templates is None
                 or templates == AttributeType.is_template_type(attr.attr_type)
             ],
-            key=comparison_key
+            key=comparison_key,
         )
 
     def __init__(self, group, strict_validation=True):

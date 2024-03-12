@@ -129,8 +129,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
         def comparison_key(attr):
             if attr.requirement_level:
                 return attr.requirement_level.value, attr.fqn
-            else:
-                return RequirementLevel.RECOMMENDED.value, attr.fqn
+            return RequirementLevel.RECOMMENDED.value, attr.fqn
 
         return sorted(
             [

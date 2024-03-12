@@ -58,18 +58,23 @@ groups:
           allow_custom_values: true
           members:
             - id: http_1_0
+              stability: experimental
               value: '1.0'
               brief: 'HTTP 1.0'
             - id: http_1_1
+              stability: experimental
               value: '1.1'
               brief: 'HTTP 1.1'
             - id: http_2_0
+              stability: experimental
               value: '2.0'
               brief: 'HTTP 2'
             - id: spdy
+              stability: experimental
               value: 'SPDY'
               brief: 'SPDY protocol.'
             - id: quic
+              stability: experimental
               value: 'QUIC'
               brief: 'QUIC protocol.'
         brief: 'Kind of HTTP protocol used'

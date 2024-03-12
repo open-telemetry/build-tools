@@ -15,18 +15,23 @@ groups:
           allow_custom_values: false
           members:
             - id: datasource
+              stability: experimental
               value: 'datasource'
               brief: 'A response to some data source operation such as a database or filesystem read/write.'
             - id: http
+              stability: experimental
               value: 'http'
               brief: 'To provide an answer to an inbound HTTP request'
             - id: pubsub
+              stability: experimental
               value: 'pubsub'
               brief: 'A function is set to be executed when messages are sent to a messaging system.'
             - id: timer
+              stability: experimental
               value: 'timer'
               brief: 'A function is scheduled to be executed regularly.'
             - id: other
+              stability: experimental
               value: 'other'
       - id: execution
         stability: experimental

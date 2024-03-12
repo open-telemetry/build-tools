@@ -117,6 +117,9 @@ The image also supports customising
 [Whitespace Control in Jinja templates](https://jinja.palletsprojects.com/en/3.1.x/templates/#whitespace-control)
 via the additional flag `--trim-whitespace`. Providing the flag will enable both `lstrip_blocks` and `trim_blocks`.
 
+### Enabling/disabling support for colored diffs in error messages
+The `COLORED_DIFF` environment variable is set in the `semantic-conventions` `Dockerfile`.  When this environment varibale is set, errors related to reformatting tables will show a "colored diff" using standard ANSI control characters. While this should be supported natively in any modern terminal environment, you may unset this variable if issues arise.  Doing so will enable a "fall back" of non-colored inline diffs showing what was "added" and what was "removed", followed by the exact tokens added/removed encased in single quotes.
+
 ## Version compatibility check
 
 You can check compatibility between the local one specified with `--yaml-root` and sepcific OpenTelemetry semantic convention version using the following command:
@@ -130,13 +133,18 @@ The `{semconv version}` (e.g. `1.24.0`) is the previously released version of se
 Following checks are performed
 
 - On all attributes and metrics (experimental and stable):
-  - attributes and metrics must not be removed.
+  - attributes and metrics must not be removed
+  - enum attribute members must not be removed
 
 - On stable attributes and attribute templates:
   - stability must not be changed
   - the type of attribute must not be changed
   - enum attribute: type of value must not be changed
-  - enum attribute: members must not be removed (changing `id` field is allowed, as long as `value` does not change)
+
+- On stable enum attribute members:
+  - stability must not be changed
+  - `id` and `value` must not be changed
+
 - On stable metrics:
   - stability must not be changed
   - instrument and unit must not be changed

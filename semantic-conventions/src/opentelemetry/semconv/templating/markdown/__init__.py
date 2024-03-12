@@ -39,6 +39,8 @@ from opentelemetry.semconv.model.semantic_convention import (
 from opentelemetry.semconv.model.utils import ID_RE
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
+from .utils import VisualDiffer
+
 _REQUIREMENT_LEVEL_URL = (
     "https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/"
 )
@@ -124,7 +126,10 @@ class MarkdownRenderer:
             if isinstance(attribute.attr_type, EnumAttributeType)
             else AttributeType.get_instantiated_type(attribute.attr_type)
         )
-        description = self._description_with_badge(attribute) + attribute.brief
+        description = (
+            self._description_with_badge(attribute.stability, attribute.deprecated)
+            + attribute.brief
+        )
         if attribute.note:
             self.render_ctx.add_note(attribute.note)
             description += f" [{len(self.render_ctx.notes)}]"
@@ -240,7 +245,10 @@ class MarkdownRenderer:
             "| -------- | --------------- | ----------- | -------------- |\n"
         )
 
-        description = self._description_with_badge(semconv) + semconv.brief
+        description = (
+            self._description_with_badge(semconv.stability, semconv.deprecated)
+            + semconv.brief
+        )
         if semconv.note:
             self.render_ctx.add_note(semconv.note)
             description += f" [{len(self.render_ctx.notes)}]"
@@ -325,7 +333,10 @@ class MarkdownRenderer:
             counter = 1
             notes = []
             for member in enum.members:
-                description = member.brief
+                description = (
+                    self._description_with_badge(member.stability, member.deprecated)
+                    + member.brief
+                )
                 if member.note:
                     description += f" [{counter}]"
                     counter += 1
@@ -392,12 +403,11 @@ class MarkdownRenderer:
                 output = io.StringIO()
                 self._render_single_file(content, md_filename, output)
             if self.options.check_only:
-                if content != output.getvalue():
-                    sys.exit(
-                        "File "
-                        + md_filename
-                        + " contains a table that would be reformatted."
-                    )
+                output_value = output.getvalue()
+                if content != output_value:
+                    diff = VisualDiffer.visual_diff(content, output_value)
+                    err_msg = f"File {md_filename} contains a table that would be reformatted.\n{diff}"
+                    sys.exit(err_msg)
             else:
                 with open(md_filename, "w", encoding="utf-8") as md_file:
                     md_file.write(output.getvalue())
@@ -527,22 +537,18 @@ class MarkdownRenderer:
 
         output.write("<!-- endsemconv -->")
 
-    def _description_with_badge(
-        self, item: typing.Union[SemanticAttribute | BaseSemanticConvention]
-    ):
+    def _description_with_badge(self, stability: StabilityLevel, deprecated: str):
         description = ""
-        if item.deprecated and self.options.enable_deprecated:
-            if "deprecated" in item.deprecated.lower():
-                description = f"**{item.deprecated}**<br>"
+        if deprecated and self.options.enable_deprecated:
+            if "deprecated" in deprecated.lower():
+                description = f"**{deprecated}**<br>"
             else:
-                deprecated_msg = self.options.deprecated_md_snippet().format(
-                    item.deprecated
-                )
+                deprecated_msg = self.options.deprecated_md_snippet().format(deprecated)
                 description = f"{deprecated_msg}<br>"
-        elif item.stability == StabilityLevel.STABLE and self.options.enable_stable:
+        elif stability == StabilityLevel.STABLE and self.options.enable_stable:
             description = f"{self.options.stable_md_snippet()}<br>"
         elif (
-            item.stability == StabilityLevel.EXPERIMENTAL
+            stability == StabilityLevel.EXPERIMENTAL
             and self.options.enable_experimental
         ):
             description = f"{self.options.experimental_md_snippet()}<br>"

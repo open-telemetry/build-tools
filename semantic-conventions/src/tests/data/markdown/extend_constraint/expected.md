@@ -37,9 +37,9 @@ Some database systems may allow a connection to switch to a different `db.user`,
 | Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) |
 |---|---|---|---|---|
 | `db.system` | string | An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers. | `other_sql` | `Required` |
-| `net.peer.port` | int | Remote port number. | `80`; `8080`; `443` | `Conditionally Required` [2] |
-| `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | `Conditionally Required` [3] |
-| `db.connection_string` | string | The connection string used to connect to the database. [1] | `Server=(localdb)\v11.0;Integrated Security=true;` | `Recommended` |
+| `net.peer.port` | int | Remote port number. | `80`; `8080`; `443` | `Conditionally Required` [1] |
+| `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | `Conditionally Required` [2] |
+| `db.connection_string` | string | The connection string used to connect to the database. [3] | `Server=(localdb)\v11.0;Integrated Security=true;` | `Recommended` |
 | `db.user` | string | Username for accessing the database. | `readonly_user`; `reporting_user` | `Recommended` |
 | `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | See below |
 | `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | See below |

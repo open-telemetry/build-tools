@@ -13,7 +13,7 @@
 #   limitations under the License.
 
 from dataclasses import dataclass, replace
-from typing import List, Tuple
+from typing import Tuple
 
 from ruamel.yaml.comments import CommentedSeq
 
@@ -52,7 +52,7 @@ class AnyOf:
     def __hash__(self):
         return hash(self.choice_list_ids)
 
-    def add_attributes(self, attr: List[SemanticAttribute]):
+    def add_attributes(self, attr: Tuple[SemanticAttribute]):
         self.choice_list_attributes += (attr,)
 
     def inherit_anyof(self):

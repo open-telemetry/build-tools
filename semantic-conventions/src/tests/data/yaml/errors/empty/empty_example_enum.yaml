@@ -13,5 +13,6 @@ groups:
             - id: first
               value: 'first'
               note: 'first'
+              stability: experimental
         requirement_level: required
         brief: 'test'

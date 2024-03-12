@@ -187,6 +187,17 @@ class SemanticAttribute:
             stability = SemanticAttribute.parse_stability(
                 attribute.get("stability"), position_data, strict_validation
             )
+            if stability == StabilityLevel.EXPERIMENTAL and isinstance(
+                attr_type, EnumAttributeType
+            ):
+                for member in attr_type.members:
+                    if member.stability == StabilityLevel.STABLE:
+                        msg = (
+                            f"Member '{member.member_id}' is marked as stable "
+                            + "but it is not allowed on experimental attribute!"
+                        )
+                        raise ValidationError.from_yaml_pos(position_data["type"], msg)
+
             deprecated = SemanticAttribute.parse_deprecated(
                 attribute.get("deprecated"), position_data
             )
@@ -482,7 +493,7 @@ class EnumAttributeType:
                 attribute_type.lc.data["members"], "Enumeration without members!"
             )
 
-        allowed_keys = ["id", "value", "brief", "note"]
+        allowed_keys = ["id", "value", "brief", "note", "stability", "deprecated"]
         mandatory_keys = ["id", "value"]
         for member in attribute_type["members"]:
             validate_values(member, allowed_keys, mandatory_keys)
@@ -492,12 +503,26 @@ class EnumAttributeType:
                     f"Invalid value used in enum: <{member['value']}>",
                 )
             validate_id(member["id"], member.lc.data["id"])
+
+            stability_str = member.get("stability")
+            if not stability_str:
+                raise ValidationError.from_yaml_pos(
+                    member.lc.data["id"],
+                    f"Enumeration member '{member['value']}' must have a stability level",
+                )
+
+            stability = SemanticAttribute.parse_stability(stability_str, member.lc.data)
+            deprecated = SemanticAttribute.parse_deprecated(
+                member.get("deprecated"), member.lc.data
+            )
             members.append(
                 EnumMember(
                     member_id=member["id"],
                     value=member["value"],
                     brief=member.get("brief", member["id"]).strip(),
                     note=member.get("note", "").strip(),
+                    stability=stability,
+                    deprecated=deprecated,
                 )
             )
         enum_type = AttributeType.get_type(members[0].value)
@@ -516,6 +541,8 @@ class EnumMember:
     value: str
     brief: str
     note: str
+    stability: StabilityLevel
+    deprecated: str
 
 
 class MdLink:

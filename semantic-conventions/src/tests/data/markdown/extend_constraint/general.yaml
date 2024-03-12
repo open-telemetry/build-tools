@@ -12,20 +12,26 @@ groups:
           members:
             - id: ip.tcp
               value: "IP.TCP"
+              stability: experimental
             - id: ip.udp
               value: "IP.UDP"
+              stability: experimental
             - id: ip
               value: "IP"
               brief: 'Another IP-based protocol'
+              stability: experimental
             - id: unix
               value: "Unix"
               brief: 'Unix Domain socket. See below.'
+              stability: experimental
             - id: pipe
               value: "pipe"
               brief: 'Named or anonymous pipe. See note below.'
+              stability: experimental
             - id: inproc
               value: "inproc"
               brief: 'In-process communication.'
+              stability: experimental
               note: >
                 Signals that there is only in-process communication not using a "real" network protocol
                 in cases where network attributes would normally be expected. Usually all other network
@@ -33,6 +39,7 @@ groups:
             - id: other
               value: "other"
               brief: 'Something else (non IP-based).'
+              stability: experimental
         brief: >
           Transport protocol used. See note below.
         examples: 'IP.TCP'

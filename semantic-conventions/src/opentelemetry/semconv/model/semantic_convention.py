@@ -126,6 +126,12 @@ class BaseSemanticConvention(ValidatableYamlNode):
         if not hasattr(self, "attrs_by_name"):
             return []
 
+        def comparison_key(attr):
+            if attr.requirement_level:
+                return attr.requirement_level.value, attr.fqn
+            else:
+                return RequirementLevel.RECOMMENDED.value, attr.fqn
+
         return sorted(
             [
                 attr
@@ -133,14 +139,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
                 if templates is None
                 or templates == AttributeType.is_template_type(attr.attr_type)
             ],
-            key=lambda attr: (
-                (
-                    attr.requirement_level.value
-                    if attr.requirement_level
-                    else RequirementLevel.RECOMMENDED.value
-                ),
-                attr.fqn,
-            ),
+            key=comparison_key
         )
 
     def __init__(self, group, strict_validation=True):

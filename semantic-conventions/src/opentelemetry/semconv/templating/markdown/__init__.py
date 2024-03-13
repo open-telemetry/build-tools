@@ -41,8 +41,9 @@ from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
 from .utils import VisualDiffer
 
+_OPENTELEMETRY_IO_SPEC_URL = "https://opentelemetry.io/docs/specs/"
 _REQUIREMENT_LEVEL_URL = (
-    "https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/"
+    _OPENTELEMETRY_IO_SPEC_URL + "semconv/general/attribute-requirement-level/"
 )
 
 
@@ -105,11 +106,12 @@ class MarkdownRenderer:
         req_level = f"[Requirement Level]({_REQUIREMENT_LEVEL_URL})"
 
         self.table_headers = (
-            f"| Attribute  | Type | Description  | Examples  | {req_level} |"
-            "\n|---|---|---|---|---|\n"
+            f"| Attribute  | Type | Description  | Examples  | {req_level} | Stability |"
+            "\n|---|---|---|---|---|---|\n"
         )
         self.table_headers_omitting_req_level = (
-            "| Attribute  | Type | Description  | Examples  |\n|---|---|---|---|\n"
+            "| Attribute  | Type | Description  | Examples  | Stability |"
+            "\n|---|---|---|---|---|\n"
         )
 
     def to_markdown_attr(
@@ -126,10 +128,7 @@ class MarkdownRenderer:
             if isinstance(attribute.attr_type, EnumAttributeType)
             else AttributeType.get_instantiated_type(attribute.attr_type)
         )
-        description = (
-            self._description_with_badge(attribute.stability, attribute.deprecated)
-            + attribute.brief
-        )
+        description = attribute.brief
         if attribute.note:
             self.render_ctx.add_note(attribute.note)
             description += f" [{len(self.render_ctx.notes)}]"
@@ -156,12 +155,15 @@ class MarkdownRenderer:
             else:
                 examples = "; ".join(f"`{ex}`" for ex in example_list)
 
+        stability = self._render_stability(attribute)
         if self.render_ctx.is_omit_requirement_level:
-            output.write(f"| {name} | {attr_type} | {description} | {examples} |\n")
+            output.write(
+                f"| {name} | {attr_type} | {description} | {examples} | {stability} |\n"
+            )
         else:
             required = self.derive_requirement_level(attribute)
             output.write(
-                f"| {name} | {attr_type} | {description} | {examples} | {required} |\n"
+                f"| {name} | {attr_type} | {description} | {examples} | {required} | {stability} |\n"
             )
 
     def derive_requirement_level(self, attribute: SemanticAttribute):
@@ -175,7 +177,7 @@ class MarkdownRenderer:
                 self.render_ctx.add_note(attribute.requirement_level_msg)
                 required = f"`Conditionally Required` [{len(self.render_ctx.notes)}]"
         elif attribute.requirement_level == RequirementLevel.OPT_IN:
-            required = "Opt-In"
+            required = "`Opt-In`"
         else:  # attribute.requirement_level == Required.RECOMMENDED or None
             # check if there are any notes
             if (
@@ -240,21 +242,20 @@ class MarkdownRenderer:
         instrument = MetricSemanticConvention.canonical_instrument_name_by_yaml_name[
             semconv.instrument
         ]
+
         output.write(
-            "| Name     | Instrument Type | Unit (UCUM) | Description    |\n"
-            "| -------- | --------------- | ----------- | -------------- |\n"
+            "| Name     | Instrument Type | Unit (UCUM) | Description    | Stability |\n"
+            "| -------- | --------------- | ----------- | -------------- | --------- |\n"
         )
 
-        description = (
-            self._description_with_badge(semconv.stability, semconv.deprecated)
-            + semconv.brief
-        )
+        description = semconv.brief
         if semconv.note:
             self.render_ctx.add_note(semconv.note)
             description += f" [{len(self.render_ctx.notes)}]"
 
+        stability = self._render_stability(semconv)
         output.write(
-            f"| `{semconv.metric_name}` | {instrument} | `{semconv.unit}` | {description} |\n"
+            f"| `{semconv.metric_name}` | {instrument} | `{semconv.unit}` | {description} | {stability} |\n"
         )
         self.to_markdown_notes(output)
 
@@ -328,20 +329,18 @@ class MarkdownRenderer:
             else:
                 output.write("MUST be one of the following:")
             output.write("\n\n")
-            output.write("| Value  | Description |\n|---|---|")
+            output.write("| Value  | Description | Stability |\n|---|---|---|")
             member: EnumMember
             counter = 1
             notes = []
             for member in enum.members:
-                description = (
-                    self._description_with_badge(member.stability, member.deprecated)
-                    + member.brief
-                )
+                description = member.brief
                 if member.note:
                     description += f" [{counter}]"
                     counter += 1
                     notes.append(member.note)
-                output.write(f"\n| `{member.value}` | {description} |")
+                stability = self._render_stability(member)
+                output.write(f"\n| `{member.value}` | {description} | {stability} |")
             counter = 1
             if not notes:
                 output.write("\n")
@@ -537,20 +536,15 @@ class MarkdownRenderer:
 
         output.write("<!-- endsemconv -->")
 
-    def _description_with_badge(self, stability: StabilityLevel, deprecated: str):
-        description = ""
-        if deprecated and self.options.enable_deprecated:
-            if "deprecated" in deprecated.lower():
-                description = f"**{deprecated}**<br>"
-            else:
-                deprecated_msg = self.options.deprecated_md_snippet().format(deprecated)
-                description = f"{deprecated_msg}<br>"
-        elif stability == StabilityLevel.STABLE and self.options.enable_stable:
-            description = f"{self.options.stable_md_snippet()}<br>"
-        elif (
-            stability == StabilityLevel.EXPERIMENTAL
-            and self.options.enable_experimental
-        ):
-            description = f"{self.options.experimental_md_snippet()}<br>"
+    def _render_stability(
+        self,
+        item: typing.Union[SemanticAttribute | BaseSemanticConvention | EnumMember],
+    ):
+        if item.deprecated:
+            return self.options.deprecated_md_snippet(item.deprecated)
+        if item.stability == StabilityLevel.STABLE:
+            return self.options.stable_md_snippet()
+        if item.stability == StabilityLevel.EXPERIMENTAL:
+            return self.options.experimental_md_snippet()
 
-        return description
+        raise ValueError(f"Unknown stability level {item.stability}")

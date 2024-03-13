@@ -24,6 +24,7 @@ from opentelemetry.semconv.model.constraints import AnyOf, Include, parse_constr
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
     AttributeType,
+    RequirementLevel,
     SemanticAttribute,
 )
 from opentelemetry.semconv.model.unit_member import UnitMember
@@ -125,6 +126,11 @@ class BaseSemanticConvention(ValidatableYamlNode):
         if not hasattr(self, "attrs_by_name"):
             return []
 
+        def comparison_key(attr):
+            if attr.requirement_level:
+                return attr.requirement_level.value, attr.fqn
+            return RequirementLevel.RECOMMENDED.value, attr.fqn
+
         return sorted(
             [
                 attr
@@ -132,7 +138,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
                 if templates is None
                 or templates == AttributeType.is_template_type(attr.attr_type)
             ],
-            key=lambda attr: attr.fqn,
+            key=comparison_key,
         )
 
     def __init__(self, group, strict_validation=True):

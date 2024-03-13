@@ -4,11 +4,11 @@
 <!-- semconv http -->
 | Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
 |---|---|---|---|---|---|
+| `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | `Required` | Experimental |
+| `http.status_code` | int | [HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6). | `200` | `Conditionally Required` if and only if one was received/sent | Experimental |
 | `http.flavor` | string | Kind of HTTP protocol used [1] | `1.0` | `Recommended` | Deprecated: Use attribute `flavor_new` instead. |
 | `http.host` | string | The value of the [HTTP host header](https://tools.ietf.org/html/rfc7230#section-5.4). When the header is empty or not present, this attribute should be the same. | `www.example.org` | `Recommended` | Experimental |
-| `http.method` | string | HTTP request method. | `GET`; `POST`; `HEAD` | `Required` | Experimental |
 | `http.scheme` | string | The URI scheme identifying the used protocol. | `http`; `https` | `Recommended` | Experimental |
-| `http.status_code` | int | [HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6). | `200` | `Conditionally Required` if and only if one was received/sent | Experimental |
 | `http.status_text` | string | [HTTP reason phrase](https://tools.ietf.org/html/rfc7230#section-3.1.2). | `OK` | `Recommended` | Deprecated: Use attribute `status_description` instead. |
 | `http.target` | string | The full request target as passed in a HTTP request line or equivalent. | `/path/12314/?q=ddds#123` | `Recommended` | Experimental |
 | `http.url` | string | Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`. Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless. | `https://www.foo.bar/search?q=OpenTelemetry#SemConv` | `Recommended` | Experimental |

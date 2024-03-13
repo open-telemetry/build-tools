@@ -84,7 +84,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "faas",
             "extends": "",
             "n_constraints": 0,
-            "attributes": ["faas.execution", "faas.trigger"],
+            "attributes": ["faas.trigger", "faas.execution"],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
         expected = {
@@ -94,9 +94,9 @@ class TestCorrectParse(unittest.TestCase):
             "n_constraints": 0,
             "attributes": [
                 "faas.document.collection",
-                "faas.document.name",
                 "faas.document.operation",
                 "faas.document.time",
+                "faas.document.name",
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[1], expected)
@@ -121,7 +121,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "faas",
             "extends": "faas",
             "n_constraints": 0,
-            "attributes": ["faas.cron", "faas.time"],
+            "attributes": ["faas.time", "faas.cron"],
         }
         self.semantic_convention_check(list(semconv.models.values())[4], expected)
 
@@ -166,11 +166,11 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
+                "http.method",
+                "http.status_code",
                 "http.flavor",
                 "http.host",
-                "http.method",
                 "http.scheme",
-                "http.status_code",
                 "http.status_text",
                 "http.target",
                 "http.url",
@@ -429,11 +429,11 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
+                "http.method",
+                "http.status_code",
                 "http.flavor",
                 "http.host",
-                "http.method",
                 "http.scheme",
-                "http.status_code",
                 "http.status_text",
                 "http.target",
                 "http.url",
@@ -447,11 +447,11 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "http",
             "n_constraints": 1,
             "attributes": [
+                "http.method",
+                "http.status_code",
                 "http.flavor",
                 "http.host",
-                "http.method",
                 "http.scheme",
-                "http.status_code",
                 "http.status_text",
                 "http.target",
                 "http.url",
@@ -465,12 +465,12 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "http",
             "n_constraints": 1,
             "attributes": [
-                "http.flavor",
-                "http.host",
                 "http.method",
-                "http.scheme",
                 "http.server_name",
                 "http.status_code",
+                "http.flavor",
+                "http.host",
+                "http.scheme",
                 "http.status_text",
                 "http.target",
                 "http.url",
@@ -496,16 +496,14 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "faas",
             "n_constraints": 2,
             "attributes": [
-                # Parent
-                "faas.execution",
-                "faas.trigger",
-                # Include
-                "http.flavor",
-                "http.host",
+                "faas.trigger",  # Parent
                 "http.method",
-                "http.scheme",
                 "http.server_name",
                 "http.status_code",
+                "faas.execution",  # Parent
+                "http.flavor",
+                "http.host",
+                "http.scheme",
                 "http.status_text",
                 "http.target",
                 "http.url",
@@ -667,61 +665,61 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(models[2].semconv_id, "rpc")
         self.assertEqual(len(attrs), 4)
 
-        self.assertEqual(attrs[0].fqn, "net.peer.ip")
-        self.assertEqual(attrs[0].imported, True)
+        self.assertEqual(attrs[0].fqn, "rpc.service")
+        self.assertEqual(attrs[0].imported, False)
         self.assertEqual(attrs[0].inherited, False)
         self.assertEqual(attrs[0].ref, None)
 
-        self.assertEqual(attrs[1].fqn, "net.peer.name")
+        self.assertEqual(attrs[1].fqn, "net.peer.ip")
         self.assertEqual(attrs[1].imported, True)
         self.assertEqual(attrs[1].inherited, False)
         self.assertEqual(attrs[1].ref, None)
 
-        self.assertEqual(attrs[2].fqn, "net.peer.port")
+        self.assertEqual(attrs[2].fqn, "net.peer.name")
         self.assertEqual(attrs[2].imported, True)
         self.assertEqual(attrs[2].inherited, False)
         self.assertEqual(attrs[2].ref, None)
-        self.assertEqual(attrs[2].note, "not override")
 
-        self.assertEqual(attrs[3].fqn, "rpc.service")
-        self.assertEqual(attrs[3].imported, False)
+        self.assertEqual(attrs[3].fqn, "net.peer.port")
+        self.assertEqual(attrs[3].imported, True)
         self.assertEqual(attrs[3].inherited, False)
         self.assertEqual(attrs[3].ref, None)
+        self.assertEqual(attrs[3].note, "not override")
 
         # Extended - rpc.client
         attrs = models[3].attributes_and_templates
         self.assertEqual(models[3].semconv_id, "rpc.client")
         self.assertEqual(len(attrs), 6)
 
-        self.assertEqual(attrs[0].fqn, "http.method")
-        self.assertEqual(attrs[0].imported, True)
+        self.assertEqual(attrs[0].fqn, "net.peer.port")
+        self.assertEqual(attrs[0].imported, False)
         self.assertEqual(attrs[0].inherited, False)
-        self.assertEqual(attrs[0].ref, None)
+        self.assertEqual(attrs[0].ref, "net.peer.port")
+        self.assertEqual(attrs[0].brief, "override")
+        self.assertEqual(attrs[0].note, "not override")
 
-        self.assertEqual(attrs[1].fqn, "net.peer.ip")
-        self.assertEqual(attrs[1].imported, True)
-        self.assertEqual(attrs[1].inherited, True)
+        self.assertEqual(attrs[1].fqn, "rpc.client.name")
+        self.assertEqual(attrs[1].imported, False)
+        self.assertEqual(attrs[1].inherited, False)
         self.assertEqual(attrs[1].ref, None)
 
-        self.assertEqual(attrs[2].fqn, "net.peer.name")
-        self.assertEqual(attrs[2].imported, True)
+        self.assertEqual(attrs[2].fqn, "rpc.service")
+        self.assertEqual(attrs[2].imported, False)
         self.assertEqual(attrs[2].inherited, True)
         self.assertEqual(attrs[2].ref, None)
 
-        self.assertEqual(attrs[3].fqn, "net.peer.port")
-        self.assertEqual(attrs[3].imported, False)
+        self.assertEqual(attrs[3].fqn, "http.method")
+        self.assertEqual(attrs[3].imported, True)
         self.assertEqual(attrs[3].inherited, False)
-        self.assertEqual(attrs[3].ref, "net.peer.port")
-        self.assertEqual(attrs[3].brief, "override")
-        self.assertEqual(attrs[3].note, "not override")
+        self.assertEqual(attrs[3].ref, None)
 
-        self.assertEqual(attrs[4].fqn, "rpc.client.name")
-        self.assertEqual(attrs[4].imported, False)
-        self.assertEqual(attrs[4].inherited, False)
+        self.assertEqual(attrs[4].fqn, "net.peer.ip")
+        self.assertEqual(attrs[4].imported, True)
+        self.assertEqual(attrs[4].inherited, True)
         self.assertEqual(attrs[4].ref, None)
 
-        self.assertEqual(attrs[5].fqn, "rpc.service")
-        self.assertEqual(attrs[5].imported, False)
+        self.assertEqual(attrs[5].fqn, "net.peer.name")
+        self.assertEqual(attrs[5].imported, True)
         self.assertEqual(attrs[5].inherited, True)
         self.assertEqual(attrs[5].ref, None)
 
@@ -740,40 +738,40 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(models[5].semconv_id, "zz.rpc.client")
         self.assertEqual(len(attrs), 8)
 
-        self.assertEqual(attrs[0].fqn, "http.method")
-        self.assertEqual(attrs[0].imported, True)
+        self.assertEqual(attrs[0].fqn, "net.peer.port")
+        self.assertEqual(attrs[0].imported, False)
         self.assertEqual(attrs[0].inherited, True)
-        self.assertEqual(attrs[0].ref, None)
+        self.assertEqual(attrs[0].ref, "net.peer.port")
+        self.assertEqual(attrs[0].brief, "override")
+        self.assertEqual(attrs[0].note, "not override")
 
-        self.assertEqual(attrs[1].fqn, "net.peer.ip")
-        self.assertEqual(attrs[1].imported, True)
+        self.assertEqual(attrs[1].fqn, "rpc.client.name")
+        self.assertEqual(attrs[1].imported, False)
         self.assertEqual(attrs[1].inherited, True)
         self.assertEqual(attrs[1].ref, None)
 
-        self.assertEqual(attrs[2].fqn, "net.peer.name")
-        self.assertEqual(attrs[2].imported, True)
-        self.assertEqual(attrs[2].inherited, True)
+        self.assertEqual(attrs[2].fqn, "rpc.client.zz.attr")
+        self.assertEqual(attrs[2].imported, False)
+        self.assertEqual(attrs[2].inherited, False)
         self.assertEqual(attrs[2].ref, None)
 
-        self.assertEqual(attrs[3].fqn, "net.peer.port")
+        self.assertEqual(attrs[3].fqn, "rpc.service")
         self.assertEqual(attrs[3].imported, False)
         self.assertEqual(attrs[3].inherited, True)
-        self.assertEqual(attrs[3].ref, "net.peer.port")
-        self.assertEqual(attrs[3].brief, "override")
-        self.assertEqual(attrs[3].note, "not override")
+        self.assertEqual(attrs[3].ref, None)
 
-        self.assertEqual(attrs[4].fqn, "rpc.client.name")
-        self.assertEqual(attrs[4].imported, False)
+        self.assertEqual(attrs[4].fqn, "http.method")
+        self.assertEqual(attrs[4].imported, True)
         self.assertEqual(attrs[4].inherited, True)
         self.assertEqual(attrs[4].ref, None)
 
-        self.assertEqual(attrs[5].fqn, "rpc.client.zz.attr")
-        self.assertEqual(attrs[5].imported, False)
-        self.assertEqual(attrs[5].inherited, False)
+        self.assertEqual(attrs[5].fqn, "net.peer.ip")
+        self.assertEqual(attrs[5].imported, True)
+        self.assertEqual(attrs[5].inherited, True)
         self.assertEqual(attrs[5].ref, None)
 
-        self.assertEqual(attrs[6].fqn, "rpc.service")
-        self.assertEqual(attrs[6].imported, False)
+        self.assertEqual(attrs[6].fqn, "net.peer.name")
+        self.assertEqual(attrs[6].imported, True)
         self.assertEqual(attrs[6].inherited, True)
         self.assertEqual(attrs[6].ref, None)
 

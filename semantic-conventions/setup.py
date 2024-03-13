@@ -15,7 +15,7 @@ VERSION_SUFFIX = os.environ.get("SEMCONGEN_VERSION_SUFFIX")
 PUBLIC_VERSION = PACKAGE_INFO["__version__"]
 
 setuptools.setup(
-    version=PUBLIC_VERSION
-    if not VERSION_SUFFIX
-    else PUBLIC_VERSION + "+" + VERSION_SUFFIX
+    version=(
+        PUBLIC_VERSION if not VERSION_SUFFIX else PUBLIC_VERSION + "+" + VERSION_SUFFIX
+    )
 )

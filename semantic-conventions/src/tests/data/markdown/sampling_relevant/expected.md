@@ -3,10 +3,10 @@
 <!-- semconv http -->
 | Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
 |---|---|---|---|---|---|
-| `http.host` | string | . | `.` | `Recommended` | Experimental |
 | `http.method` | string | . | `GET` | `Required` | Experimental |
-| `http.scheme` | string | . | `http` | `Recommended` | Experimental |
 | `http.status_code` | int | . |  | `Conditionally Required` <condition> | Experimental |
+| `http.host` | string | . | `.` | `Recommended` | Experimental |
+| `http.scheme` | string | . | `http` | `Recommended` | Experimental |
 | `http.target` | string | . | `.` | `Recommended` | Experimental |
 | `http.url` | string | . [1] | `.` | `Recommended` | Experimental |
 | `http.user_agent` | string | . | `.` | `Recommended` | Experimental |
@@ -18,8 +18,8 @@
 
 The following attributes can be important for making sampling decisions and SHOULD be provided **at span creation time** (if provided at all):
 
-* `http.host`
 * `http.method`
+* `http.host`
 * `http.scheme`
 * `http.target`
 * `http.url`

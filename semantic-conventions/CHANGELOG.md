@@ -30,6 +30,8 @@ Please update the changelog as part of any significant pull request.
   ([#270](https://github.com/open-telemetry/build-tools/pull/270))
 - Add `enum_attributes` to the context, adds `print_member_value` helper
   ([#266](https://github.com/open-telemetry/build-tools/pull/266))
+- Sort attribute tables by requirement level and attribute name
+  ([#260](https://github.com/open-telemetry/build-tools/pull/260))
 
 ## v0.23.0
 

@@ -79,7 +79,7 @@ groups:
               brief: 'QUIC protocol.'
               stability: experimental
         brief: 'Kind of HTTP protocol used'
-        deprecated: Deprecated. Use attribute `flavor_new` instead.
+        deprecated: Use attribute `flavor_new` instead.
         note: >
           If `net.transport` is not specified, it can be assumed to be `IP.TCP` except if `http.flavor`
           is `QUIC`, in which case `IP.UDP` is assumed.

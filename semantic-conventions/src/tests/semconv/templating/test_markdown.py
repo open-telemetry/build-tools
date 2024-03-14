@@ -40,19 +40,16 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testStableBadges(self):
         self.check(
             "markdown/stability/",
-            MarkdownOptions(enable_stable=True, use_badge=True),
+            MarkdownOptions(
+                disable_deprecated_badge=True, disable_experimental_badge=True
+            ),
             expected_name="stable_badges_expected.md",
         )
 
     def testExperimentalAndStableBadges(self):
         self.check(
             "markdown/stability/",
-            MarkdownOptions(
-                enable_stable=True,
-                enable_experimental=True,
-                enable_deprecated=True,
-                use_badge=True,
-            ),
+            MarkdownOptions(),
             expected_name="all_badges_expected.md",
         )
 
@@ -245,7 +242,11 @@ class TestCorrectMarkdown(unittest.TestCase):
     def check(
         self,
         input_dir: str,
-        options=MarkdownOptions(),
+        options=MarkdownOptions(
+            disable_experimental_badge=True,
+            disable_deprecated_badge=True,
+            disable_stable_badge=True,
+        ),
         *,
         expected_name="expected.md",
         extra_yaml_dirs: Sequence[str] = (),
@@ -287,6 +288,7 @@ class TestCorrectMarkdown(unittest.TestCase):
             return ex.exception
         do_render()
         result = output.getvalue()
+        print(result)
         assert result == (dirpath / expected_name).read_text(encoding="utf-8")
         return None
 

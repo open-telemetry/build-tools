@@ -91,10 +91,9 @@ def main():
 def process_markdown(semconv, args):
     options = MarkdownOptions(
         check_only=args.md_check,
-        enable_stable=args.md_stable,
-        enable_experimental=args.md_experimental,
-        enable_deprecated=args.md_enable_deprecated,
-        use_badge=args.md_use_badges,
+        disable_stable_badge=args.md_disable_stable,
+        disable_experimental_badge=args.md_disable_experimental,
+        disable_deprecated_badge=args.md_disable_deprecated,
         break_count=args.md_break_conditional,
         exclude_files=exclude_file_list(args.markdown_root, args.exclude),
     )
@@ -221,30 +220,25 @@ def add_md_parser(subparsers):
         required=False,
     )
     parser.add_argument(
-        "--md-use-badges",
-        help="Use stability badges instead of labels for attributes.",
+        "--md-disable-stable-badge",
+        help="Removes badges from attributes marked as stable.",
         required=False,
+        default=False,
         action="store_true",
     )
     parser.add_argument(
-        "--md-stable",
-        help="Add labels to attributes marked as stable.",
+        "--md-disable-experimental-badge",
+        help="Removes badges from attributes marked as experimental.",
         required=False,
+        default=False,
         action="store_true",
     )
     parser.add_argument(
-        "--md-experimental",
-        help="Add labels to attributes marked as experimental.",
+        "--md-disable-deprecated-badge",
+        help="Removes badges from attributes marked as deprecated.",
         required=False,
+        default=False,
         action="store_true",
-    )
-    parser.add_argument(
-        "--md-disable-deprecated",
-        help="Removes deprecated notes of deprecated attributes.",
-        required=False,
-        default=True,
-        dest="md_enable_deprecated",
-        action="store_false",
     )
 
 

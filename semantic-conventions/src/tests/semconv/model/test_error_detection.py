@@ -510,7 +510,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("any_of attribute", msg)
-        self.assertIn("does not exists", msg)
+        self.assertIn("does not exist", msg)
         self.assertEqual(e.line, 16)
 
     def test_missing_event(self):

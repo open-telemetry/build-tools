@@ -324,7 +324,7 @@ class SemanticConventionSet:
                 for model in semconv_models:
                     if model.semconv_id in self.models:
                         self.errors = True
-                        print(f"Error parsing {file}\n", file=sys.stderr)
+                        print(f"\nError parsing {file}:", file=sys.stderr)
                         print(
                             f"Semantic convention '{model.semconv_id}' is already defined.",
                             file=sys.stderr,
@@ -332,8 +332,9 @@ class SemanticConventionSet:
                     self.models[model.semconv_id] = model
             except ValidationError as e:
                 self.errors = True
-                print(f"Error parsing {file}\n", file=sys.stderr)
+                print(f"\nError parsing {file}:", file=sys.stderr)
                 print(e, file=sys.stderr)
+                print()
 
     def has_error(self):
         return self.errors

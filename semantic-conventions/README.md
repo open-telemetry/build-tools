@@ -93,7 +93,7 @@ semantic conventions that have the tag `network`.
 
 ## Version compatibility check
 
-You can check compatibility between the local one specified with `--yaml-root` and sepcific OpenTelemetry semantic convention version using the following command:
+You can check compatibility between the local one specified with `--yaml-root` and specific OpenTelemetry semantic convention version using the following command:
 
 ```bash
 docker run --rm otel/semconvgen --yaml-root {yaml_folder} compatibility --previous-version {semconv version}
@@ -101,7 +101,7 @@ docker run --rm otel/semconvgen --yaml-root {yaml_folder} compatibility --previo
 
 The `{semconv version}` (e.g. `1.24.0`) is the previously released version of semantic conventions.
 
-Following checks are performed
+The following checks are performed:
 
 - On all attributes and metrics (experimental and stable):
   - attributes and metrics must not be removed
@@ -193,7 +193,7 @@ The `COLORED_DIFF` environment variable is set in the `semantic-conventions` `Do
 
 ### Accessing Semantic Conventions in the template
 
-When template is processed, it has access to a set of variables that depends on the `--file-per-group` value (or lack of it).
+When the template is processed, it has access to a set of variables that depends on the `--file-per-group` value (or lack of it).
 You can access properties of these variables and call Jinja or Python functions defined on them.
 
 #### Single file (no `--file-per-group` pattern is provided)
@@ -226,7 +226,7 @@ Processes a single pattern value and is called for each distinct value.
 
 Jinja templates has a notion of [filters](https://jinja.palletsprojects.com/en/2.11.x/templates/#list-of-builtin-filters) allowing to transform objects or filter lists.
 
-Semconvgen supports following additional filters to simplify common operations in templates.
+Semconvgen supports the following additional filters to simplify common operations in templates.
 
 #### `SemanticAttribute` operations
 
@@ -250,7 +250,6 @@ Semconvgen supports following additional filters to simplify common operations i
 #### `BaseSemanticConvention` operations
 
 1. `is_metric` - Checks if semantic convention describes a metric.
-
 
 ### Examples
 

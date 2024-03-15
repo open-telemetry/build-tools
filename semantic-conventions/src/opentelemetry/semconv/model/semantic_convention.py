@@ -75,7 +75,7 @@ def parse_semantic_convention_groups(yaml_file, validation_ctx):
 
 def SemanticConvention(group, validation_ctx):
     type_value = group.get("type")
-    id = group.get("id")
+    semconv_id = group.get("id")
     if type_value is None:
         line = group.lc.data["id"][0] + 1
         doc_url = "https://github.com/open-telemetry/build-tools/blob/main/semantic-conventions/syntax.md#groups"
@@ -88,7 +88,7 @@ def SemanticConvention(group, validation_ctx):
     if convention_type is None:
         position = group.lc.data["type"] if "type" in group else group.lc.data["id"]
         msg = f"Invalid value for semantic convention type: {group.get('type')}"
-        validation_ctx.raise_or_warn(position, msg, id)
+        validation_ctx.raise_or_warn(position, msg, semconv_id)
 
     # First, validate that the correct fields are available in the yaml
     convention_type.validate_keys(group, validation_ctx)
@@ -313,6 +313,7 @@ class SemanticConventionSet:
     debug: bool
     models: typing.Dict[str, BaseSemanticConvention] = field(default_factory=dict)
     errors: bool = False
+    validation_ctx: Optional[ValidationContext] = None
 
     def parse(self, file, validation_ctx=None):
         self.validation_ctx = validation_ctx or ValidationContext(file, True)
@@ -398,7 +399,7 @@ class SemanticConventionSet:
         Resolves the parent/child relationship for a single Semantic Convention. If the parent **p** of the input
         semantic convention **i** has in turn a parent **pp**, it recursively resolves **pp** before processing **p**.
         :param semconv: The semantic convention for which resolve the parent/child relationship.
-        :param semconvs: The list of remaining semantic conventions to process.
+        :param unprocessed: The list of remaining semantic conventions to process.
         :return: A list of remaining semantic convention to process.
         """
         # Resolve parent of current Semantic Convention
@@ -406,7 +407,7 @@ class SemanticConventionSet:
             extended = self.models.get(semconv.extends)
             if extended is None:
                 self.validation_ctx.raise_or_warn(
-                    self._position,
+                    semconv._position,
                     f"Semantic Convention {semconv.semconv_id} extends "
                     f"{semconv.extends} but the latter cannot be found!",
                     semconv.semconv_id,

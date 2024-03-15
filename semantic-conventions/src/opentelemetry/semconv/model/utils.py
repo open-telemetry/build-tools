@@ -34,12 +34,12 @@ def validate_id(semconv_id, position, validation_ctx):
 
 def validate_values(yaml, keys, validation_ctx, mandatory=()):
     """This method checks only valid keywords and value types are used"""
-    id = yaml.get("id")
+    node_id = yaml.get("id")
     unwanted = [k for k in yaml.keys() if k not in keys]
     if unwanted:
         position = yaml.lc.data[unwanted[0]]
         msg = f"Invalid keys: {unwanted}"
-        validation_ctx.raise_or_warn(position, msg, id)
+        validation_ctx.raise_or_warn(position, msg, node_id)
     if mandatory:
         check_no_missing_keys(yaml, mandatory, validation_ctx)
 
@@ -95,5 +95,4 @@ class ValidationContext:
         error = ValidationError(pos[0] + 1, pos[1] + 1, msg, fqn)
         if self.strict_validation:
             raise error
-        else:
-            print(f"[Warning] {self.file_name}: {error}\n")
+        print(f"[Warning] {self.file_name}: {error}\n")

@@ -318,6 +318,10 @@ class SemanticAttribute:
 
         msg = f"Value '{stability}' is not allowed as a stability marker"
         validation_ctx.raise_or_warn(position_data["stability"], msg, attr_id)
+        # TODO: replace with None - it's necessary for now to give codegen
+        # a default value for semconv 1.24.0 and lower where we used
+        # 'deprecated' as stability level
+        return StabilityLevel.EXPERIMENTAL
 
     @staticmethod
     def parse_deprecated(deprecated, position_data, attr_id, validation_ctx):
@@ -442,6 +446,7 @@ class AttributeType:
             msg,
             parent_object.get("id"),
         )
+        return None
 
 
 @dataclass
@@ -531,7 +536,7 @@ class EnumAttributeType:
                 validation_ctx.raise_or_warn(
                     myaml.lc.data["value"],
                     f"Enumeration member does not have type {enum_type}!",
-                    enum_type.get("id"),
+                    m.member_id,
                 )
         return EnumAttributeType(custom_values, members, enum_type)
 

@@ -266,8 +266,6 @@ class SemanticAttribute:
             position = attribute.lc.data[list(attribute)[0]]
             msg = f"Non array examples for {attr_type} are not allowed"
             validation_ctx.raise_or_warn(position, msg, attr_id)
-
-            # raise ValidationError.from_yaml_pos(position, msg)
         if not isinstance(examples, CommentedSeq) and examples is not None:
             # TODO: If validation fails later, this will crash when trying to access position data
             # since a list, contrary to a CommentedSeq, does not have position data

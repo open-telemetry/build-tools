@@ -32,8 +32,10 @@ Please update the changelog as part of any significant pull request.
   ([#266](https://github.com/open-telemetry/build-tools/pull/266))
 - Sort attribute tables by requirement level and attribute name
   ([#260](https://github.com/open-telemetry/build-tools/pull/260))
-- Warn on all validation issues if strict validation is disabled to improve back-compat checks
-  TODO
+- Support suppressing all validation errors via flag that allows to
+  parse previous versions of semantic conventions for backward compatibility checks
+  and use code generation improvements on older semantic convention version.
+  ([#TODO](https://github.com/open-telemetry/build-tools/pull/TODO))
 
 ## v0.23.0
 

@@ -1,0 +1,12 @@
+class AllMetrics {
+{%- for metric in metrics %}
+  /**
+  * {{metric.brief | to_doc_brief}}
+  * Unit: {{ metric.unit }}
+  * Instrument: {{ metric.instrument }}
+  * Experimental: {{ metric | is_experimental }}
+  */
+  public static final String {{ metric.metric_name | to_const_name }} = "{{metric.metric_name}}";
+{%- endfor %}
+}
+

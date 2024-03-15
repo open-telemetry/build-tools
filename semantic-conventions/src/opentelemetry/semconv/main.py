@@ -74,7 +74,11 @@ def main():
     args = parser.parse_args()
     check_args(args, parser)
     semconv = parse_semconv(
-        args.yaml_root, args.exclude, args.debug, not args.continue_on_validation_errors, parser
+        args.yaml_root,
+        args.exclude,
+        args.debug,
+        not args.continue_on_validation_errors,
+        parser,
     )
     semconv_filter = parse_only_filter(args.only, parser)
     filter_semconv(semconv, semconv_filter)
@@ -107,7 +111,11 @@ def process_markdown(semconv, args):
 def check_compatibility(semconv, args, parser):
     prev_semconv_path = download_previous_version(args.previous_version)
     prev_semconv = parse_semconv(
-        prev_semconv_path, args.exclude, args.debug, not args.continue_on_validation_errors, parser
+        prev_semconv_path,
+        args.exclude,
+        args.debug,
+        not args.continue_on_validation_errors,
+        parser,
     )
     compatibility_checker = CompatibilityChecker(semconv, prev_semconv)
     problems = compatibility_checker.check()
@@ -303,8 +311,9 @@ def setup_parser():
     parser.add_argument(
         "--continue-on-validation-errors",
         help="""Continue parsing on yaml validation issues.
-        Should not be used to generate or validate semantic conventions. Can be useful when running backward compatibility checks
-        or using newer tooling version to generate code for released semantic conventions.""",
+        Should not be used to generate or validate semantic conventions.
+        Useful when running backward compatibility checks or using newer
+        tooling version to generate code for released semantic conventions.""",
         required=False,
         default=False,
         action="store_true",

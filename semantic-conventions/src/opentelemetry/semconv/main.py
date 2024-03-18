@@ -35,14 +35,14 @@ from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
 
 
 def parse_semconv(
-    yaml_root: str, exclude: str, debug: bool, parser
+    yaml_root: str, exclude: str, debug: bool, strict_validation: bool, parser
 ) -> SemanticConventionSet:
     semconv = SemanticConventionSet(debug)
     files = find_yaml(yaml_root, exclude)
     for file in sorted(files):
         if not file.endswith(".yaml") and not file.endswith(".yml"):
             parser.error(f"{file} is not a yaml file.")
-        semconv.parse(file, False)
+        semconv.parse(file, strict_validation)
     semconv.finish()
     if semconv.has_error():
         sys.exit(1)
@@ -72,7 +72,9 @@ def main():
     parser = setup_parser()
     args = parser.parse_args()
     check_args(args, parser)
-    semconv = parse_semconv(args.yaml_root, args.exclude, args.debug, parser)
+    semconv = parse_semconv(
+        args.yaml_root, args.exclude, args.debug, args.strict_validation, parser
+    )
     semconv_filter = parse_only_filter(args.only, parser)
     filter_semconv(semconv, semconv_filter)
     if len(semconv.models) == 0:
@@ -103,7 +105,9 @@ def process_markdown(semconv, args):
 
 def check_compatibility(semconv, args, parser):
     prev_semconv_path = download_previous_version(args.previous_version)
-    prev_semconv = parse_semconv(prev_semconv_path, args.exclude, args.debug, parser)
+    prev_semconv = parse_semconv(
+        prev_semconv_path, args.exclude, args.debug, args.strict_validation, parser
+    )
     compatibility_checker = CompatibilityChecker(semconv, prev_semconv)
     problems = compatibility_checker.check()
 
@@ -154,7 +158,8 @@ def add_code_parser(subparsers):
     parser.add_argument(
         "--output",
         "-o",
-        help="Specify the output file for the code generation.",
+        help="Specify the output file name for the code generation. "
+        "See also `--file-per-group` on how to generate multiple files.",
         type=str,
         required=True,
     )
@@ -168,8 +173,10 @@ def add_code_parser(subparsers):
     parser.add_argument(
         "--file-per-group",
         dest="pattern",
-        help="Each Semantic Convention is processed by the template and store in a different file. PATTERN is expected "
-        "to be the name of a SemanticConvention field and is prepended as a prefix to the output argument",
+        help="Semantic conventions are processed by the template and stored in a different file. "
+        "File names start with a 'pattern' and end with the name specified in the 'output' argument. "
+        "The 'pattern' can either match 'root_namespace' to group attributes by the root namespace or "
+        "match a name of Semantic Convention property which value will be used as a file name prefix.",
         type=str,
     )
     parser.add_argument(
@@ -297,6 +304,13 @@ def setup_parser():
         type=str,
         nargs="*",
         help="YAML file containing a Semantic Convention",
+    )
+    parser.add_argument(
+        "--strict-validation",
+        help="Fail on non-critical yaml validation issues.",
+        required=False,
+        default=True,
+        action="store_false",
     )
     subparsers = parser.add_subparsers(dest="flavor")
     add_code_parser(subparsers)

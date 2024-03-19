@@ -7,11 +7,14 @@ from opentelemetry.semconv.model.semantic_convention import (
     UnitSemanticConvention,
     parse_semantic_convention_groups,
 )
+from opentelemetry.semconv.model.utils import ValidationContext
 
 
 def test_build_units(open_test_file):
     with open_test_file(os.path.join("yaml", "metrics", "units.yaml")) as yaml_file:
-        conventions = parse_semantic_convention_groups(yaml_file)
+        conventions = parse_semantic_convention_groups(
+            yaml_file, ValidationContext(open_test_file, True)
+        )
 
     assert len(conventions) == 1
     convention = conventions[0]
@@ -42,5 +45,7 @@ def test_build_units_bad(open_test_file):
     with pytest.raises(ValidationError) as excinfo, open_test_file(
         os.path.join("yaml", "metrics", "units_bad_with_attributes.yaml")
     ) as yaml_file:
-        parse_semantic_convention_groups(yaml_file)
+        parse_semantic_convention_groups(
+            yaml_file, ValidationContext(open_test_file, True)
+        )
     assert "attributes" in str(excinfo.value)

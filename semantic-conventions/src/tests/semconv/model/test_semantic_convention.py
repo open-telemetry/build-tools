@@ -18,11 +18,14 @@ from opentelemetry.semconv.model.semantic_convention import (
     SpanKind,
     parse_semantic_convention_groups,
 )
+from opentelemetry.semconv.model.utils import ValidationContext
 
 
 def test_parse_basic(open_test_file):
     with open_test_file(os.path.join("yaml", "basic_example.yml")) as yaml_file:
-        conventions = parse_semantic_convention_groups(yaml_file)
+        conventions = parse_semantic_convention_groups(
+            yaml_file, ValidationContext(open_test_file, True)
+        )
 
     assert conventions is not None
     assert len(conventions) == 2

@@ -6,17 +6,22 @@ groups:
     note: test
     attributes:
       - id: none
+        stability: experimental
         type: boolean
         brief: 'simple text'
       - id: single
+        stability: experimental
         type: boolean
         brief: 'text [eg](https://opentelemetry.io/)'
       - id: double
+        stability: experimental
         type: boolean
         brief: 'text1 [eg](https://opentelemetry.io/) text2 [eg](https://opentelemetry.io/) end'
       - id: start
+        stability: experimental
         type: boolean
         brief: '[eg](https://opentelemetry.io/) text'
       - id: multiple_end
+        stability: experimental
         type: boolean
         brief: 'text1 [eg](https://opentelemetry.io/) text2 [eg](https://opentelemetry.io/)'

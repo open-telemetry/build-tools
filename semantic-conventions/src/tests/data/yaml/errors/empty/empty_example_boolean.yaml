@@ -6,6 +6,7 @@ groups:
     span_kind: client
     attributes:
       - id: convention_version
+        stability: experimental
         type: boolean
         requirement_level: required
         brief: 'test'

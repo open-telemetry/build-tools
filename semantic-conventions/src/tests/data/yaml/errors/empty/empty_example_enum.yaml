@@ -6,11 +6,13 @@ groups:
     span_kind: client
     attributes:
       - id: type
+        stability: experimental
         type:
           allow_custom_values: false
           members:
             - id: first
               value: 'first'
               note: 'first'
+              stability: experimental
         requirement_level: required
         brief: 'test'

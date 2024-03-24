@@ -9,10 +9,6 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "docker"
-    directory: "/cpp_format_tools"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "docker"
     directory: "/schemas"
     schedule:
       interval: "weekly"

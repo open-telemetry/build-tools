@@ -8,44 +8,29 @@ groups:
         and various HTTP versions like 1.1, 2 and SPDY.
     attributes:
       - id: method
+        stability: experimental
         type: string
-        requirement_level: required
-        sampling_relevant: false
         deprecated: Use attribute `nonDepecrated`.
         brief: 'HTTP request method.'
         examples: ["GET", "POST", "HEAD"]
       - id: url
+        stability: experimental
         type: string
         deprecated: Use attribute `nonDepecrated`.
-        brief: >
-            Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`.
-            Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless.
+        brief: ""
         examples: ['https://www.foo.bar/search?q=OpenTelemetry#SemConv']
       - id: target
+        stability: experimental
         type: string
         brief: 'The full request target as passed in a HTTP request line or equivalent.'
         examples: ['/path/12314/?q=ddds#123']
-      - id: host
-        type: string
-        brief: >
-            The value of the [HTTP host header](https://tools.ietf.org/html/rfc7230#section-5.4).
-            When the header is empty or not present, this attribute should be the same.
-        examples: ['www.example.org']
-      - id: scheme
-        type: string
-        brief: 'The URI scheme identifying the used protocol.'
-        examples: ["http", "https"]
-      - id: status_code
-        type: int
-        requirement_level:
-          conditionally_required: "if and only if one was received/sent"
-        brief: '[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).'
-        examples: [200]
-      - id: status_text
-        type: string
-        brief: '[HTTP reason phrase](https://tools.ietf.org/html/rfc7230#section-3.1.2).'
-        examples: ['OK']
-      - id: user_agent
-        type: string
-        brief: 'Value of the [HTTP User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3) header sent by the client.'
-        examples: ['CERN-LineMode/2.15 libwww/2.17b3']
+  - id: http.client
+    type: span
+    brief: ""
+    attributes:
+      - ref: http.method
+  - id: http.server
+    type: span
+    brief: ""
+    extends: http
+

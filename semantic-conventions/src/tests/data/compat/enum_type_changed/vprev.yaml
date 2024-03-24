@@ -1,0 +1,29 @@
+groups:
+  - id: first
+    type: attribute_group
+    brief: "first group"
+    note: "first group note"
+    prefix: "first"
+    attributes:
+      - id: third_attr
+        type:
+          members:
+            - id: enum_one
+              brief: "enum one"
+              stability: stable
+              value: "one"
+        brief: "third attribute"
+        note: "third attribute note"
+        examples: ["three"]
+        stability: stable
+      - id: forth_attr
+        type:
+          members:
+            - id: enum_two
+              brief: "enum two"
+              stability: experimental
+              value: "one"
+        brief: "forth attribute"
+        note: "forth attribute note"
+        examples: ["four"]
+        stability: stable

@@ -84,7 +84,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "faas",
             "extends": "",
             "n_constraints": 0,
-            "attributes": ["faas.execution", "faas.trigger"],
+            "attributes": ["faas.trigger", "faas.execution"],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
         expected = {
@@ -94,9 +94,9 @@ class TestCorrectParse(unittest.TestCase):
             "n_constraints": 0,
             "attributes": [
                 "faas.document.collection",
-                "faas.document.name",
                 "faas.document.operation",
                 "faas.document.time",
+                "faas.document.name",
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[1], expected)
@@ -121,7 +121,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "faas",
             "extends": "faas",
             "n_constraints": 0,
-            "attributes": ["faas.cron", "faas.time"],
+            "attributes": ["faas.time", "faas.cron"],
         }
         self.semantic_convention_check(list(semconv.models.values())[4], expected)
 
@@ -166,11 +166,11 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
+                "http.method",
+                "http.status_code",
                 "http.flavor",
                 "http.host",
-                "http.method",
                 "http.scheme",
-                "http.status_code",
                 "http.status_text",
                 "http.target",
                 "http.url",
@@ -203,7 +203,7 @@ class TestCorrectParse(unittest.TestCase):
         semconv.parse(self.load_file("yaml/http.yaml"))
 
         metric_semconvs = cast(
-            List[MetricSemanticConvention], list(semconv.models.values())[:2]
+            List[MetricSemanticConvention], list(semconv.models.values())
         )
 
         expected = {
@@ -211,6 +211,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "bar",
             "extends": "",
             "n_constraints": 0,
+            "stability": StabilityLevel.EXPERIMENTAL,
             "attributes": ["bar.egg.type"],
         }
         self.semantic_convention_check(metric_semconvs[0], expected)
@@ -220,6 +221,7 @@ class TestCorrectParse(unittest.TestCase):
             "prefix": "foo",
             "extends": "",
             "n_constraints": 0,
+            "stability": StabilityLevel.STABLE,
             "metric_name": "foo.size",
             "unit": "{bars}",
             "instrument": "histogram",
@@ -232,6 +234,26 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(metric_semconvs[1].unit, expected["unit"])
         self.assertEqual(metric_semconvs[1].instrument, expected["instrument"])
         self.assertEqual(metric_semconvs[1].metric_name, expected["metric_name"])
+
+        expected = {
+            "id": "metric.foo.active_eggs",
+            "prefix": "foo",
+            "extends": "",
+            "n_constraints": 0,
+            "stability": StabilityLevel.EXPERIMENTAL,
+            "metric_name": "foo.active_eggs",
+            "unit": "{cartons}",
+            "deprecated": "Removed.",
+            "instrument": "updowncounter",
+            "attributes": [
+                "bar.egg.type",
+                "http.method",
+            ],
+        }
+        self.semantic_convention_check(metric_semconvs[2], expected)
+        self.assertEqual(metric_semconvs[2].unit, expected["unit"])
+        self.assertEqual(metric_semconvs[2].instrument, expected["instrument"])
+        self.assertEqual(metric_semconvs[2].metric_name, expected["metric_name"])
 
     def test_resource(self):
         semconv = SemanticConventionSet(debug=False)
@@ -256,7 +278,7 @@ class TestCorrectParse(unittest.TestCase):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("yaml/event.yaml"))
         semconv.finish()
-        self.assertEqual(len(semconv.models), 1)
+        self.assertEqual(len(semconv.models), 4)
         event = list(semconv.models.values())[0]
         expected = {
             "id": "exception",
@@ -281,22 +303,61 @@ class TestCorrectParse(unittest.TestCase):
                     constraint.choice_list_attributes[choice_index][attr_index],
                 )
 
+        experimental_event = list(semconv.models.values())[1]
+        expected = {
+            "id": "experimental_event",
+            "prefix": "experimental_event",
+            "extends": "",
+            "n_constraints": 0,
+            "stability": StabilityLevel.EXPERIMENTAL,
+            "attributes": [
+                "experimental_event.foo",
+            ],
+        }
+        self.semantic_convention_check(experimental_event, expected)
+
+        stable_event = list(semconv.models.values())[2]
+        expected = {
+            "id": "stable_event",
+            "prefix": "stable_event",
+            "extends": "",
+            "n_constraints": 0,
+            "stability": StabilityLevel.STABLE,
+            "attributes": [],
+        }
+        self.semantic_convention_check(stable_event, expected)
+
+        deprecated_event = list(semconv.models.values())[3]
+        expected = {
+            "id": "deprecated_event",
+            "prefix": "deprecated_event",
+            "extends": "",
+            "n_constraints": 0,
+            "stability": StabilityLevel.STABLE,
+            "deprecated": "Removed.",
+            "attributes": [],
+        }
+        self.semantic_convention_check(deprecated_event, expected)
+
     def test_span_with_event(self):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("yaml/event.yaml"))
         semconv.parse(self.load_file("yaml/span_event.yaml"))
         semconv.finish()
-        self.assertEqual(len(semconv.models), 3)
+        self.assertEqual(len(semconv.models), 6)
         semconvs = list(semconv.models.values())
         self.assertTrue(isinstance(semconvs[0], EventSemanticConvention))
-        self.assertTrue(isinstance(semconvs[1], SpanSemanticConvention))
+        self.assertTrue(isinstance(semconvs[1], EventSemanticConvention))
         self.assertTrue(isinstance(semconvs[2], EventSemanticConvention))
-        event_semconv = semconvs[1]
-        self.assertEqual(2, len(event_semconv.events))
-        self.assertTrue(isinstance(event_semconv.events[0], EventSemanticConvention))
-        self.assertTrue(isinstance(event_semconv.events[1], EventSemanticConvention))
-        self.assertEqual("exception", event_semconv.events[0].semconv_id)
-        self.assertEqual("random.event", event_semconv.events[1].semconv_id)
+        self.assertTrue(isinstance(semconvs[3], EventSemanticConvention))
+        self.assertTrue(isinstance(semconvs[4], SpanSemanticConvention))
+        self.assertTrue(isinstance(semconvs[5], EventSemanticConvention))
+        span_semconv = semconvs[4]
+        self.assertEqual(2, len(span_semconv.events))
+        self.assertTrue(isinstance(span_semconv.events[0], EventSemanticConvention))
+        self.assertTrue(isinstance(span_semconv.events[1], EventSemanticConvention))
+        self.assertEqual("exception", span_semconv.events[0].semconv_id)
+        self.assertEqual("random.event", span_semconv.events[1].semconv_id)
 
     def test_rpc(self):
         semconv = SemanticConventionSet(debug=False)
@@ -368,11 +429,11 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "",
             "n_constraints": 0,
             "attributes": [
+                "http.method",
+                "http.status_code",
                 "http.flavor",
                 "http.host",
-                "http.method",
                 "http.scheme",
-                "http.status_code",
                 "http.status_text",
                 "http.target",
                 "http.url",
@@ -386,11 +447,11 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "http",
             "n_constraints": 1,
             "attributes": [
+                "http.method",
+                "http.status_code",
                 "http.flavor",
                 "http.host",
-                "http.method",
                 "http.scheme",
-                "http.status_code",
                 "http.status_text",
                 "http.target",
                 "http.url",
@@ -404,12 +465,12 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "http",
             "n_constraints": 1,
             "attributes": [
-                "http.flavor",
-                "http.host",
                 "http.method",
-                "http.scheme",
                 "http.server_name",
                 "http.status_code",
+                "http.flavor",
+                "http.host",
+                "http.scheme",
                 "http.status_text",
                 "http.target",
                 "http.url",
@@ -435,16 +496,14 @@ class TestCorrectParse(unittest.TestCase):
             "extends": "faas",
             "n_constraints": 2,
             "attributes": [
-                # Parent
-                "faas.execution",
-                "faas.trigger",
-                # Include
-                "http.flavor",
-                "http.host",
+                "faas.trigger",  # Parent
                 "http.method",
-                "http.scheme",
                 "http.server_name",
                 "http.status_code",
+                "faas.execution",  # Parent
+                "http.flavor",
+                "http.host",
+                "http.scheme",
                 "http.status_text",
                 "http.target",
                 "http.url",
@@ -457,14 +516,27 @@ class TestCorrectParse(unittest.TestCase):
         semconv = SemanticConventionSet(debug=False)
         semconv.parse(self.load_file("yaml/deprecated/http.yaml"))
         semconv.finish()
-        self.assertEqual(len(semconv.models), 1)
+        self.assertEqual(len(semconv.models), 3)
 
-        method_attr = list(semconv.models.values())[0].attrs_by_name["http.method"]
-        self.assertIsNotNone(method_attr.deprecated)
+        method_attr_original = list(semconv.models.values())[0].attrs_by_name[
+            "http.method"
+        ]
+        self.assertIsNotNone(method_attr_original.deprecated)
         self.assertEqual(
-            method_attr.deprecated,
+            method_attr_original.deprecated,
             "Use attribute `nonDepecrated`.",
         )
+
+        method_attr_client = list(semconv.models.values())[1].attrs_by_name[
+            "http.method"
+        ]
+        self.assertEqual(method_attr_client.deprecated, method_attr_original.deprecated)
+
+        method_attr_server = list(semconv.models.values())[2].attrs_by_name[
+            "http.method"
+        ]
+        self.assertEqual(method_attr_server.deprecated, method_attr_original.deprecated)
+
         self.assertIsNone(
             list(semconv.models.values())[0].attrs_by_name["http.target"].deprecated
         )
@@ -476,37 +548,39 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(len(semconv.models), 6)
 
         model = list(semconv.models.values())[0]
-        self.assertEqual(len(model.attributes_and_templates), 3)
-        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
+        self.assertEqual(len(model.attributes_and_templates), 2)
+        self.assertIsNone(model.stability)
 
         attr = model.attributes_and_templates[0]
-        self.assertEqual(attr.attr_id, "def_stability")
-        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
-
-        attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "exp_attr")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
-        attr = model.attributes_and_templates[2]
+        attr = model.attributes_and_templates[1]
         self.assertEqual(attr.attr_id, "stable_attr")
         self.assertEqual(attr.stability, StabilityLevel.STABLE)
 
         model = list(semconv.models.values())[1]
         self.assertEqual(len(model.attributes_and_templates), 2)
-        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
+        self.assertIsNone(model.stability)
 
         attr = model.attributes_and_templates[0]
-        self.assertEqual(attr.attr_id, "dep")
+        self.assertEqual(attr.attr_id, "exp_attr")
         self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
         attr = model.attributes_and_templates[1]
-        self.assertEqual(attr.attr_id, "test_attr")
-        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
+        self.assertEqual(attr.attr_id, "stable_attr")
+        self.assertEqual(attr.stability, StabilityLevel.STABLE)
 
         model = list(semconv.models.values())[2]
-        self.assertEqual(len(model.attributes_and_templates), 2)
-        self.assertEqual(model.stability, StabilityLevel.EXPERIMENTAL)
+        attr = model.attributes_and_templates[0]
+        self.assertEqual(attr.attr_id, "exp_attr")
+        self.assertEqual(attr.stability, StabilityLevel.EXPERIMENTAL)
 
+        attr = model.attributes_and_templates[1]
+        self.assertEqual(attr.attr_id, "stable_attr")
+        self.assertEqual(attr.stability, StabilityLevel.STABLE)
+
+        model = list(semconv.models.values())[3]
         attr = model.attributes_and_templates[0]
         self.assertEqual(attr.attr_id, "stable_deprecated_attr")
         self.assertEqual(attr.stability, StabilityLevel.STABLE)
@@ -591,61 +665,61 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(models[2].semconv_id, "rpc")
         self.assertEqual(len(attrs), 4)
 
-        self.assertEqual(attrs[0].fqn, "net.peer.ip")
-        self.assertEqual(attrs[0].imported, True)
+        self.assertEqual(attrs[0].fqn, "rpc.service")
+        self.assertEqual(attrs[0].imported, False)
         self.assertEqual(attrs[0].inherited, False)
         self.assertEqual(attrs[0].ref, None)
 
-        self.assertEqual(attrs[1].fqn, "net.peer.name")
+        self.assertEqual(attrs[1].fqn, "net.peer.ip")
         self.assertEqual(attrs[1].imported, True)
         self.assertEqual(attrs[1].inherited, False)
         self.assertEqual(attrs[1].ref, None)
 
-        self.assertEqual(attrs[2].fqn, "net.peer.port")
+        self.assertEqual(attrs[2].fqn, "net.peer.name")
         self.assertEqual(attrs[2].imported, True)
         self.assertEqual(attrs[2].inherited, False)
         self.assertEqual(attrs[2].ref, None)
-        self.assertEqual(attrs[2].note, "not override")
 
-        self.assertEqual(attrs[3].fqn, "rpc.service")
-        self.assertEqual(attrs[3].imported, False)
+        self.assertEqual(attrs[3].fqn, "net.peer.port")
+        self.assertEqual(attrs[3].imported, True)
         self.assertEqual(attrs[3].inherited, False)
         self.assertEqual(attrs[3].ref, None)
+        self.assertEqual(attrs[3].note, "not override")
 
         # Extended - rpc.client
         attrs = models[3].attributes_and_templates
         self.assertEqual(models[3].semconv_id, "rpc.client")
         self.assertEqual(len(attrs), 6)
 
-        self.assertEqual(attrs[0].fqn, "http.method")
-        self.assertEqual(attrs[0].imported, True)
+        self.assertEqual(attrs[0].fqn, "net.peer.port")
+        self.assertEqual(attrs[0].imported, False)
         self.assertEqual(attrs[0].inherited, False)
-        self.assertEqual(attrs[0].ref, None)
+        self.assertEqual(attrs[0].ref, "net.peer.port")
+        self.assertEqual(attrs[0].brief, "override")
+        self.assertEqual(attrs[0].note, "not override")
 
-        self.assertEqual(attrs[1].fqn, "net.peer.ip")
-        self.assertEqual(attrs[1].imported, True)
-        self.assertEqual(attrs[1].inherited, True)
+        self.assertEqual(attrs[1].fqn, "rpc.client.name")
+        self.assertEqual(attrs[1].imported, False)
+        self.assertEqual(attrs[1].inherited, False)
         self.assertEqual(attrs[1].ref, None)
 
-        self.assertEqual(attrs[2].fqn, "net.peer.name")
-        self.assertEqual(attrs[2].imported, True)
+        self.assertEqual(attrs[2].fqn, "rpc.service")
+        self.assertEqual(attrs[2].imported, False)
         self.assertEqual(attrs[2].inherited, True)
         self.assertEqual(attrs[2].ref, None)
 
-        self.assertEqual(attrs[3].fqn, "net.peer.port")
-        self.assertEqual(attrs[3].imported, False)
+        self.assertEqual(attrs[3].fqn, "http.method")
+        self.assertEqual(attrs[3].imported, True)
         self.assertEqual(attrs[3].inherited, False)
-        self.assertEqual(attrs[3].ref, "net.peer.port")
-        self.assertEqual(attrs[3].brief, "override")
-        self.assertEqual(attrs[3].note, "not override")
+        self.assertEqual(attrs[3].ref, None)
 
-        self.assertEqual(attrs[4].fqn, "rpc.client.name")
-        self.assertEqual(attrs[4].imported, False)
-        self.assertEqual(attrs[4].inherited, False)
+        self.assertEqual(attrs[4].fqn, "net.peer.ip")
+        self.assertEqual(attrs[4].imported, True)
+        self.assertEqual(attrs[4].inherited, True)
         self.assertEqual(attrs[4].ref, None)
 
-        self.assertEqual(attrs[5].fqn, "rpc.service")
-        self.assertEqual(attrs[5].imported, False)
+        self.assertEqual(attrs[5].fqn, "net.peer.name")
+        self.assertEqual(attrs[5].imported, True)
         self.assertEqual(attrs[5].inherited, True)
         self.assertEqual(attrs[5].ref, None)
 
@@ -664,40 +738,40 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(models[5].semconv_id, "zz.rpc.client")
         self.assertEqual(len(attrs), 8)
 
-        self.assertEqual(attrs[0].fqn, "http.method")
-        self.assertEqual(attrs[0].imported, True)
+        self.assertEqual(attrs[0].fqn, "net.peer.port")
+        self.assertEqual(attrs[0].imported, False)
         self.assertEqual(attrs[0].inherited, True)
-        self.assertEqual(attrs[0].ref, None)
+        self.assertEqual(attrs[0].ref, "net.peer.port")
+        self.assertEqual(attrs[0].brief, "override")
+        self.assertEqual(attrs[0].note, "not override")
 
-        self.assertEqual(attrs[1].fqn, "net.peer.ip")
-        self.assertEqual(attrs[1].imported, True)
+        self.assertEqual(attrs[1].fqn, "rpc.client.name")
+        self.assertEqual(attrs[1].imported, False)
         self.assertEqual(attrs[1].inherited, True)
         self.assertEqual(attrs[1].ref, None)
 
-        self.assertEqual(attrs[2].fqn, "net.peer.name")
-        self.assertEqual(attrs[2].imported, True)
-        self.assertEqual(attrs[2].inherited, True)
+        self.assertEqual(attrs[2].fqn, "rpc.client.zz.attr")
+        self.assertEqual(attrs[2].imported, False)
+        self.assertEqual(attrs[2].inherited, False)
         self.assertEqual(attrs[2].ref, None)
 
-        self.assertEqual(attrs[3].fqn, "net.peer.port")
+        self.assertEqual(attrs[3].fqn, "rpc.service")
         self.assertEqual(attrs[3].imported, False)
         self.assertEqual(attrs[3].inherited, True)
-        self.assertEqual(attrs[3].ref, "net.peer.port")
-        self.assertEqual(attrs[3].brief, "override")
-        self.assertEqual(attrs[3].note, "not override")
+        self.assertEqual(attrs[3].ref, None)
 
-        self.assertEqual(attrs[4].fqn, "rpc.client.name")
-        self.assertEqual(attrs[4].imported, False)
+        self.assertEqual(attrs[4].fqn, "http.method")
+        self.assertEqual(attrs[4].imported, True)
         self.assertEqual(attrs[4].inherited, True)
         self.assertEqual(attrs[4].ref, None)
 
-        self.assertEqual(attrs[5].fqn, "rpc.client.zz.attr")
-        self.assertEqual(attrs[5].imported, False)
-        self.assertEqual(attrs[5].inherited, False)
+        self.assertEqual(attrs[5].fqn, "net.peer.ip")
+        self.assertEqual(attrs[5].imported, True)
+        self.assertEqual(attrs[5].inherited, True)
         self.assertEqual(attrs[5].ref, None)
 
-        self.assertEqual(attrs[6].fqn, "rpc.service")
-        self.assertEqual(attrs[6].imported, False)
+        self.assertEqual(attrs[6].fqn, "net.peer.name")
+        self.assertEqual(attrs[6].imported, True)
         self.assertEqual(attrs[6].inherited, True)
         self.assertEqual(attrs[6].ref, None)
 
@@ -708,6 +782,8 @@ class TestCorrectParse(unittest.TestCase):
 
     def semantic_convention_check(self, s, expected):
         self.assertEqual(expected["prefix"], s.prefix)
+        self.assertEqual(expected.get("stability"), s.stability)
+        self.assertEqual(expected.get("deprecated"), s.deprecated)
         self.assertEqual(expected["extends"], s.extends)
         self.assertEqual(expected["id"], s.semconv_id)
         self.assertEqual(len(expected["attributes"]), len(s.attributes))

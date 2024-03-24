@@ -11,3 +11,4 @@ groups:
           members:
         requirement_level: required
         brief: 'test'
+        stability: experimental

@@ -7,6 +7,7 @@ groups:
     span_kind: client
     attributes:
       - id: type
+        stability: experimental
         type: string
         requirement_level: required
         brief: >
@@ -14,6 +15,7 @@ groups:
           For others, the lower-case database category.
         examples: ['cassandra', 'hbase', 'redis']
       - id: instance
+        stability: experimental
         type: string
         requirement_level: required
         brief: >
@@ -22,6 +24,7 @@ groups:
           the instance name is "customers"
         examples: ['customers']
       - id: statement
+        stability: experimental
         type: string
         requirement_level: required
         brief: >
@@ -30,11 +33,13 @@ groups:
           sensitive information.
         examples: ['SELECT * FROM wuser_table', "SET mykey 'WuValue'"]
       - id: url
+        stability: experimental
         type: string
         requirement_level: required
         brief: 'JDBC substring'
         examples: ['mysql://db.example.com:3306']
       - id: user
+        stability: experimental
         type: string
         brief: 'Username for accessing database.'
         examples: ['readonly_user','reporting_user']

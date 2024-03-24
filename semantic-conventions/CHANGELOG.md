@@ -4,8 +4,38 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- BREAKING: Add `stability` (required) and `deprecated` (optional) properties to `EnumMember`
+  ([#267](https://github.com/open-telemetry/build-tools/pull/267))
+- Change minimum support python version to 3.10 in setup.cfg and Dockerfile
+  ([#285](https://github.com/open-telemetry/build-tools/pull/285))
+- BREAKING: Add dedicated column for stability to Markdown tables.
+  ([#278](https://github.com/open-telemetry/build-tools/pull/278))
+- BREAKING: Make stability required (also: fix ref and extends, render badges on metrics).
+  ([#272](https://github.com/open-telemetry/build-tools/pull/272))
 - BREAKING: Make stability and deprecation independent properties.
   ([#244](https://github.com/open-telemetry/build-tools/pull/244))
+- Add backward-compatibility check mode.
+  ([#271](https://github.com/open-telemetry/build-tools/pull/271))
+- Add link to requirement levels definition from Markdown table title.
+  ([#222](https://github.com/open-telemetry/build-tools/pull/222))
+- Added code-generation mode that groups attributes by the root namespace and ability to write each group into individual file.
+  [BREAKING] The `--file-per-group <pattern>` that used to create multiple directories (like `output/<pattern>/file`) now generates
+  multiple files (`output/<pattern>file`) instead.
+  ([#243](https://github.com/open-telemetry/build-tools/pull/243))
+- Update `semconvgen.yml` workflow to run on feature/* branches.
+  ([#256](https://github.com/open-telemetry/build-tools/pull/256))
+- Allow --output to be templatized when generating multiple files.
+  ([#263](https://github.com/open-telemetry/build-tools/pull/263))
+- Add `metrics` to the context of non-scoped code generation
+  ([#270](https://github.com/open-telemetry/build-tools/pull/270))
+- Add `enum_attributes` to the context, adds `print_member_value` helper
+  ([#266](https://github.com/open-telemetry/build-tools/pull/266))
+- Sort attribute tables by requirement level and attribute name
+  ([#260](https://github.com/open-telemetry/build-tools/pull/260))
+- Support suppressing all validation errors via flag that allows to
+  parse previous versions of semantic conventions for backward compatibility checks
+  and use code generation improvements on older semantic convention version.
+  ([#300](https://github.com/open-telemetry/build-tools/pull/300))
 
 ## v0.23.0
 

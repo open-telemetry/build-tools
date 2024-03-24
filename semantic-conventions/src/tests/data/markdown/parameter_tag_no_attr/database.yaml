@@ -6,6 +6,7 @@ groups:
     span_kind: client
     attributes:
       - id: type
+        stability: experimental
         tag: connection-level
         type: boolean
         requirement_level: required

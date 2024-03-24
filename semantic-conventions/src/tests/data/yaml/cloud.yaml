@@ -6,28 +6,35 @@ groups:
         Attributes for a cloud infrastructure (e.g. GCP, Azure, AWS).
     attributes:
       - id: provider
+        stability: experimental
         type:
           allow_custom_values: true
           members:
             - id: aws
               value: 'aws'
+              stability: experimental
             - id: gcp
               value: 'gcp'
+              stability: experimental
             - id: azure
               value: 'azure'
+              stability: experimental
         brief: >
            	Name of the cloud provider.
       - id: account.id
+        stability: experimental
         type: string
         brief: >
            	The cloud account id used to identify different entities.
         examples: ['opentelemetry-user']
       - id: region
+        stability: experimental
         type: string
         brief: >
            	A specific geographical location where different entities can run.
         examples: ['us-central1']
       - id: zone
+        stability: experimental
         type: string
         brief: >
            	Zones are a sub set of the region connected through low-latency links.

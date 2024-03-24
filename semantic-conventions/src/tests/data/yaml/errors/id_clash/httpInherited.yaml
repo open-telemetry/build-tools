@@ -6,6 +6,7 @@ groups:
     note: t
     attributes:
       - id: request_content_length
+        stability: experimental
         type: int
         brief: t
         examples: 3495
@@ -17,12 +18,14 @@ groups:
     brief: 'Semantic Convention for HTTP Server'
     attributes:
       - id: server_name
+        stability: experimental
         type: string
         sampling_relevant: false
         brief: t
         note: t
         examples: ['example.com']
       - id: request_content_length
+        stability: experimental
         type: int
         brief: t
         examples: 3495

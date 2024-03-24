@@ -9,15 +9,19 @@ groups:
         type: int
         brief: t
         examples: 3495
+        stability: experimental
       - id: request_content_length_uncompressed
         type: int
         brief: t
         examples: 3495
+        stability: experimental
       - id: request_content_length
         type: int
         brief: t
         examples: 3495
+        stability: experimental
       - id: response_content_length_uncompressed
         type: int
         brief: t
         examples: 3495
+        stability: experimental

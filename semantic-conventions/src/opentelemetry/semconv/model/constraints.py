@@ -13,11 +13,10 @@
 #   limitations under the License.
 
 from dataclasses import dataclass, replace
-from typing import List, Tuple
+from typing import Tuple
 
 from ruamel.yaml.comments import CommentedSeq
 
-from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute
 from opentelemetry.semconv.model.utils import validate_values
 
@@ -52,7 +51,7 @@ class AnyOf:
     def __hash__(self):
         return hash(self.choice_list_ids)
 
-    def add_attributes(self, attr: List[SemanticAttribute]):
+    def add_attributes(self, attr: Tuple[SemanticAttribute]):
         self.choice_list_attributes += (attr,)
 
     def inherit_anyof(self):
@@ -64,20 +63,20 @@ class Include:
     semconv_id: str
 
 
-def parse_constraints(yaml_constraints):
+def parse_constraints(yaml_constraints, validation_ctx):
     """This method parses the yaml representation for semantic convention attributes
     creating a list of Constraint objects.
     """
     constraints = ()
     allowed_keys = ("include", "any_of")
     for constraint in yaml_constraints:
-        validate_values(constraint, allowed_keys)
+        validate_values(constraint, allowed_keys, validation_ctx)
         if len(constraint.keys()) > 1:
             position = constraint.lc.data[list(constraint)[1]]
             msg = (
                 "Invalid entry in constraint array - multiple top-level keys in entry."
             )
-            raise ValidationError.from_yaml_pos(position, msg)
+            validation_ctx.raise_or_warn(position, msg, None)
         if "include" in constraint:
             constraints += (Include(constraint.get("include")),)
         elif "any_of" in constraint:

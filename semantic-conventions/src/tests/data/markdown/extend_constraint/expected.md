@@ -34,74 +34,74 @@ These attributes will usually be the same for all operations performed over the 
 Some database systems may allow a connection to switch to a different `db.user`, for example, and other database systems may not even have the concept of a connection at all.
 
 <!-- semconv db(tag=connection-level) -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
-|---|---|---|---|---|
-| `db.connection_string` | string | The connection string used to connect to the database. [1] | `Server=(localdb)\v11.0;Integrated Security=true;` | Recommended |
-| `db.system` | string | An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers. | `other_sql` | Required |
-| `db.user` | string | Username for accessing the database. | `readonly_user`; `reporting_user` | Recommended |
-| `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | See below |
-| `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | See below |
-| `net.peer.port` | int | Remote port number. | `80`; `8080`; `443` | Conditionally Required: [2] |
-| `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | Conditionally Required: [3] |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
+|---|---|---|---|---|---|
+| `db.system` | string | An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers. | `other_sql` | `Required` | Experimental |
+| `net.peer.port` | int | Remote port number. | `80`; `8080`; `443` | `Conditionally Required` [1] | Experimental |
+| `net.transport` | string | Transport protocol used. See note below. | `IP.TCP` | `Conditionally Required` [2] | Experimental |
+| `db.connection_string` | string | The connection string used to connect to the database. [3] | `Server=(localdb)\v11.0;Integrated Security=true;` | `Recommended` | Experimental |
+| `db.user` | string | Username for accessing the database. | `readonly_user`; `reporting_user` | `Recommended` | Experimental |
+| `net.peer.ip` | string | Remote address of the peer (dotted decimal for IPv4 or [RFC5952](https://tools.ietf.org/html/rfc5952) for IPv6) | `127.0.0.1` | See below | Experimental |
+| `net.peer.name` | string | Remote hostname or similar, see note below. | `example.com` | See below | Experimental |
 
-**[1]:** It is recommended to remove embedded credentials.
+**[1]:** if using a port other than the default port for this DBMS.
 
-**[2]:** if using a port other than the default port for this DBMS.
+**[2]:** Recommended in general, required for in-process databases (`"inproc"`).
 
-**[3]:** Recommended in general, required for in-process databases (`"inproc"`).
+**[3]:** It is recommended to remove embedded credentials.
 
 **Additional attribute requirements:** At least one of the following sets of attributes is required:
 
 * `net.peer.name`
 * `net.peer.ip`
 
-`db.system` has the following list of well-known values. If one of them applies, then the respective value MUST be used, otherwise a custom value MAY be used.
+`db.system` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
 
-| Value  | Description |
-|---|---|
-| `other_sql` | Some other SQL database. Fallback only. See notes. |
-| `mssql` | Microsoft SQL Server |
-| `mysql` | MySQL |
-| `oracle` | Oracle Database |
-| `db2` | IBM Db2 |
-| `postgresql` | PostgreSQL |
-| `redshift` | Amazon Redshift |
-| `hive` | Apache Hive |
-| `cloudscape` | Cloudscape |
-| `hsqlsb` | HyperSQL DataBase |
-| `progress` | Progress Database |
-| `maxdb` | SAP MaxDB |
-| `hanadb` | SAP HANA |
-| `ingres` | Ingres |
-| `firstsql` | FirstSQL |
-| `edb` | EnterpriseDB |
-| `cache` | InterSystems Caché |
-| `adabas` | Adabas (Adaptable Database System) |
-| `firebird` | Firebird |
-| `derby` | Apache Derby |
-| `filemaker` | FileMaker |
-| `informix` | Informix |
-| `instantdb` | InstantDB |
-| `interbase` | InterBase |
-| `mariadb` | MariaDB |
-| `netezza` | Netezza |
-| `pervasive` | Pervasive PSQL |
-| `pointbase` | PointBase |
-| `sqlite` | SQLite |
-| `sybase` | Sybase |
-| `teradata` | Teradata |
-| `vertica` | Vertica |
-| `h2` | H2 |
-| `coldfusion` | ColdFusion IMQ |
-| `cassandra` | Apache Cassandra |
-| `hbase` | Apache HBase |
-| `mongodb` | MongoDB |
-| `redis` | Redis |
-| `couchbase` | Couchbase |
-| `couchdb` | CouchDB |
-| `cosmosdb` | Microsoft Azure Cosmos DB |
-| `dynamodb` | Amazon DynamoDB |
-| `neo4j` | Neo4j |
+| Value  | Description | Stability |
+|---|---|---|
+| `other_sql` | Some other SQL database. Fallback only. See notes. | Experimental |
+| `mssql` | Microsoft SQL Server | Experimental |
+| `mysql` | MySQL | Experimental |
+| `oracle` | Oracle Database | Experimental |
+| `db2` | IBM Db2 | Experimental |
+| `postgresql` | PostgreSQL | Experimental |
+| `redshift` | Amazon Redshift | Experimental |
+| `hive` | Apache Hive | Experimental |
+| `cloudscape` | Cloudscape | Experimental |
+| `hsqlsb` | HyperSQL DataBase | Experimental |
+| `progress` | Progress Database | Experimental |
+| `maxdb` | SAP MaxDB | Experimental |
+| `hanadb` | SAP HANA | Experimental |
+| `ingres` | Ingres | Experimental |
+| `firstsql` | FirstSQL | Experimental |
+| `edb` | EnterpriseDB | Experimental |
+| `cache` | InterSystems Caché | Experimental |
+| `adabas` | Adabas (Adaptable Database System) | Experimental |
+| `firebird` | Firebird | Experimental |
+| `derby` | Apache Derby | Experimental |
+| `filemaker` | FileMaker | Experimental |
+| `informix` | Informix | Experimental |
+| `instantdb` | InstantDB | Experimental |
+| `interbase` | InterBase | Experimental |
+| `mariadb` | MariaDB | Experimental |
+| `netezza` | Netezza | Experimental |
+| `pervasive` | Pervasive PSQL | Experimental |
+| `pointbase` | PointBase | Experimental |
+| `sqlite` | SQLite | Experimental |
+| `sybase` | Sybase | Experimental |
+| `teradata` | Teradata | Experimental |
+| `vertica` | Vertica | Experimental |
+| `h2` | H2 | Experimental |
+| `coldfusion` | ColdFusion IMQ | Experimental |
+| `cassandra` | Apache Cassandra | Experimental |
+| `hbase` | Apache HBase | Experimental |
+| `mongodb` | MongoDB | Experimental |
+| `redis` | Redis | Experimental |
+| `couchbase` | Couchbase | Experimental |
+| `couchdb` | CouchDB | Experimental |
+| `cosmosdb` | Microsoft Azure Cosmos DB | Experimental |
+| `dynamodb` | Amazon DynamoDB | Experimental |
+| `neo4j` | Neo4j | Experimental |
 <!-- endsemconv -->
 
 ### Notes on `db.system`
@@ -125,10 +125,10 @@ When additional attributes are added that only apply to a specific DBMS, its ide
 ### Connection-level attributes for specific technologies
 
 <!-- semconv db(tag=connection-level-tech-specific,remove_constraints) -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
-|---|---|---|---|---|
-| `db.jdbc.driver_classname` | string | The fully-qualified class name of the JDBC driver used to connect. | `org.postgresql.Driver`; `com.microsoft.sqlserver.jdbc.SQLServerDriver` | Recommended |
-| `db.mssql.instance_name` | string | The Microsoft SQL Server [instance name](https://docs.microsoft.com/en-us/sql/connect/jdbc/building-the-connection-url?view=sql-server-ver15) connecting to. This name is used to determine the port of a named instance. [1] | `MSSQLSERVER` | Recommended |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
+|---|---|---|---|---|---|
+| `db.jdbc.driver_classname` | string | The fully-qualified class name of the JDBC driver used to connect. | `org.postgresql.Driver`; `com.microsoft.sqlserver.jdbc.SQLServerDriver` | `Recommended` | Experimental |
+| `db.mssql.instance_name` | string | The Microsoft SQL Server [instance name](https://docs.microsoft.com/en-us/sql/connect/jdbc/building-the-connection-url?view=sql-server-ver15) connecting to. This name is used to determine the port of a named instance. [1] | `MSSQLSERVER` | `Recommended` | Experimental |
 
 **[1]:** If setting a `db.mssql.instance_name`, `net.peer.port` is no longer required (but still recommended if non-standard).
 <!-- endsemconv -->
@@ -139,11 +139,11 @@ These attributes may be different for each operation performed, even if the same
 Usually only one `db.name` will be used per connection though.
 
 <!-- semconv db(tag=call-level,remove_constraints) -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
-|---|---|---|---|---|
-| `db.name` | string | If no tech-specific attribute is defined, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [1] | `customers`; `main` | Conditionally Required: [2] |
-| `db.operation` | string | The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. [3] | `findAndModify`; `HMSET` | Conditionally Required: if `db.statement` is not applicable. |
-| `db.statement` | string | The database statement being executed. [4] | `SELECT * FROM wuser_table`; `SET mykey "WuValue"` | Conditionally Required: if applicable. |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
+|---|---|---|---|---|---|
+| `db.name` | string | If no tech-specific attribute is defined, this attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails). [1] | `customers`; `main` | `Conditionally Required` [2] | Experimental |
+| `db.operation` | string | The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`. [3] | `findAndModify`; `HMSET` | `Conditionally Required` if `db.statement` is not applicable. | Experimental |
+| `db.statement` | string | The database statement being executed. [4] | `SELECT * FROM wuser_table`; `SET mykey "WuValue"` | `Conditionally Required` if applicable. | Experimental |
 
 **[1]:** In some SQL databases, the database name to be used is called "schema name".
 
@@ -169,33 +169,33 @@ For example, when retrieving a document, `db.operation` would be set to (literal
 #### Cassandra
 
 <!-- semconv db.cassandra -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
-|---|---|---|---|---|
-| `db.cassandra.keyspace` | string | The name of the keyspace being accessed. To be used instead of the generic `db.name` attribute. | `mykeyspace` | Required |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
+|---|---|---|---|---|---|
+| `db.cassandra.keyspace` | string | The name of the keyspace being accessed. To be used instead of the generic `db.name` attribute. | `mykeyspace` | `Required` | Experimental |
 <!-- endsemconv -->
 
 #### Apache HBase
 
 <!-- semconv db.hbase -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
-|---|---|---|---|---|
-| `db.hbase.namespace` | string | The [HBase namespace](https://hbase.apache.org/book.html#_namespace) being accessed. To be used instead of the generic `db.name` attribute. | `default` | Required |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
+|---|---|---|---|---|---|
+| `db.hbase.namespace` | string | The [HBase namespace](https://hbase.apache.org/book.html#_namespace) being accessed. To be used instead of the generic `db.name` attribute. | `default` | `Required` | Experimental |
 <!-- endsemconv -->
 
 #### Redis
 
 <!-- semconv db.redis -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
-|---|---|---|---|---|
-| `db.redis.database_index` | int | The index of the database being accessed as used in the [`SELECT` command](https://redis.io/commands/select), provided as an integer. To be used instead of the generic `db.name` attribute. | `0`; `1`; `15` | Conditionally Required: if other than the default database (`0`). |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
+|---|---|---|---|---|---|
+| `db.redis.database_index` | int | The index of the database being accessed as used in the [`SELECT` command](https://redis.io/commands/select), provided as an integer. To be used instead of the generic `db.name` attribute. | `0`; `1`; `15` | `Conditionally Required` if other than the default database (`0`). | Experimental |
 <!-- endsemconv -->
 
 #### MongoDB
 
 <!-- semconv db.mongodb -->
-| Attribute  | Type | Description  | Examples  | Requirement Level |
-|---|---|---|---|---|
-| `db.mongodb.collection` | string | The collection being accessed within the database stated in `db.name`. | `customers`; `products` | Required |
+| Attribute  | Type | Description  | Examples  | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Stability |
+|---|---|---|---|---|---|
+| `db.mongodb.collection` | string | The collection being accessed within the database stated in `db.name`. | `customers`; `products` | `Required` | Experimental |
 <!-- endsemconv -->
 
 ## Examples

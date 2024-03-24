@@ -1,0 +1,10 @@
+groups:
+  - id: test
+    type: attribute_group
+    brief: 'test'
+    attributes:
+      - id: test_attr
+        type: boolean
+        stability: stable
+        stability: experimental
+        brief: ""

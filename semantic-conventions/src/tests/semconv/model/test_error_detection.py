@@ -22,6 +22,7 @@ from opentelemetry.semconv.model.semantic_convention import (
     SemanticConventionSet,
     parse_semantic_convention_groups,
 )
+from opentelemetry.semconv.model.utils import ValidationContext
 
 
 class TestCorrectErrorDetection(unittest.TestCase):
@@ -118,8 +119,9 @@ class TestCorrectErrorDetection(unittest.TestCase):
             self.fail()
         e = ex.exception
         msg = e.message.lower()
-        self.assertIn("must not declare a type", msg)
-        self.assertIn("'test'", msg)
+        self.assertEqual("ref attribute must not declare a type", msg)
+        self.assertEqual("test", e.fqn)
+        self.assertIn("'test'", str(e))
         self.assertEqual(e.line, 8)
 
     def test_invalid_key_in_constraint(self):
@@ -134,12 +136,35 @@ class TestCorrectErrorDetection(unittest.TestCase):
 
     def test_invalid_stability(self):
         with self.assertRaises(ValidationError) as ex:
-            self.open_yaml("yaml/errors/stability/wrong_value.yaml")
+            self.open_yaml("yaml/errors/stability/wrong_stability_value.yaml")
             self.fail()
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("is not allowed as a stability marker", msg)
         self.assertEqual(e.line, 10)
+
+    def test_multiple_stability_values(self):
+        with self.assertRaises(DuplicateKeyError):
+            self.open_yaml("yaml/errors/stability/multiple_stability_values.yaml")
+
+    def test_missing_stability_value(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/stability/missing_stability_value.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("missing keys: ['stability']", msg)
+        self.assertEqual(e.line, 6)
+
+    def test_ref_override_stability(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/stability/ref_override_stability.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertEqual("ref attribute must not override stability", msg)
+        self.assertEqual("test_attr", e.fqn)
+        self.assertEqual(e.line, 14)
 
     def test_invalid_semconv_stability_with_deprecated(self):
         with self.assertRaises(ValidationError) as ex:
@@ -149,6 +174,53 @@ class TestCorrectErrorDetection(unittest.TestCase):
         msg = e.message.lower()
         self.assertIn("value 'deprecated' is not allowed as a stability marker", msg)
         self.assertEqual(e.line, 6)
+
+    def test_wrong_stability_value_on_enum_member(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml(
+                "yaml/errors/stability/wrong_stability_value_on_enum_member.yaml"
+            )
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("value 'will_fail' is not allowed as a stability marker", msg)
+        self.assertEqual(e.line, 13)
+
+    def test_missing_stability_value_on_enum_member(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml(
+                "yaml/errors/stability/missing_stability_on_enum_member.yaml"
+            )
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn("missing keys: ['stability']", msg)
+        self.assertEqual(e.line, 10)
+
+    def test_missing_stability_value_on_enum_member_not_strict(self):
+        path = "yaml/errors/stability/missing_stability_on_enum_member.yaml"
+        with open(self.load_file(path), encoding="utf-8") as file:
+            return parse_semantic_convention_groups(
+                file, ValidationContext(path, False)
+            )
+
+    def test_multiple_stability_values_on_enum_member(self):
+        with self.assertRaises(DuplicateKeyError):
+            self.open_yaml(
+                "yaml/errors/stability/multiple_stability_values_on_enum_member.yaml"
+            )
+
+    def test_experimental_attr_stable_member(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/stability/experimental_attr_stable_member.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertIn(
+            "member 'one' is marked as stable but it is not allowed on experimental attribute!",
+            msg,
+        )
+        self.assertEqual(e.line, 9)
 
     def test_invalid_deprecated_empty_string(self):
         with self.assertRaises(ValidationError) as ex:
@@ -161,6 +233,36 @@ class TestCorrectErrorDetection(unittest.TestCase):
             msg,
         )
         self.assertEqual(e.line, 10)
+
+    def test_multiple_deprecations(self):
+        with self.assertRaises(DuplicateKeyError):
+            self.open_yaml("yaml/errors/deprecated/multiple_deprecations.yaml")
+
+    def test_extends_overrides_deprecation(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/deprecated/extends_overrides_deprecation.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertEqual(
+            "ref attribute must not override deprecation status",
+            msg,
+        )
+        self.assertEqual("test.convention_version", e.fqn)
+        self.assertEqual(e.line, 19)
+
+    def test_ref_overrides_deprecation(self):
+        with self.assertRaises(ValidationError) as ex:
+            self.open_yaml("yaml/errors/deprecated/ref_overrides_deprecation.yaml")
+            self.fail()
+        e = ex.exception
+        msg = e.message.lower()
+        self.assertEqual(
+            "ref attribute must not override deprecation status",
+            msg,
+        )
+        self.assertEqual("test.convention_version", e.fqn)
+        self.assertEqual(e.line, 17)
 
     def test_invalid_deprecated_boolean(self):
         with self.assertRaises(ValidationError) as ex:
@@ -295,7 +397,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("example with wrong type", msg)
         self.assertIn("expected double", msg)
         self.assertIn("is was <class 'int'>", msg)
-        self.assertEqual(e.line, 11)
+        self.assertEqual(e.line, 12)
 
     def test_examples_bool(self):
         with self.assertRaises(ValidationError) as ex:
@@ -378,7 +480,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("is already present at line 8", msg)
-        self.assertEqual(e.line, 16)
+        self.assertEqual(e.line, 18)
 
     def test_attribute_id_clash_inherited(self):
         semconv = SemanticConventionSet(debug=False)
@@ -408,8 +510,8 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("any_of attribute", msg)
-        self.assertIn("does not exists", msg)
-        self.assertEqual(e.line, 15)
+        self.assertIn("does not exist", msg)
+        self.assertEqual(e.line, 16)
 
     def test_missing_event(self):
         with self.assertRaises(ValidationError) as ex:
@@ -459,11 +561,11 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("multiple requirement_level values are not allowed!", msg)
-        self.assertEqual(e.line, 11)
+        self.assertEqual(e.line, 12)
 
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:
-            return parse_semantic_convention_groups(file)
+            return parse_semantic_convention_groups(file, ValidationContext(path, True))
 
     _TEST_DIR = os.path.dirname(__file__)
 

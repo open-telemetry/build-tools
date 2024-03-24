@@ -8,3 +8,4 @@ groups:
       - id: test
         requirement_level: required
         brief: 'test.'
+        stability: experimental

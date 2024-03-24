@@ -1,0 +1,25 @@
+groups:
+  - id: first
+    type: attribute_group
+    brief: "First group."
+    note: "First group note."
+    prefix: "first"
+    attributes:
+      - id: first_attr
+        type: string
+        brief: "First attribute."
+        note: "First attribute note."
+        examples: ["first"]
+        stability: stable
+      - id: second_attr
+        type: int
+        brief: "Second attribute."
+        note: "Second attribute note."
+        stability: experimental
+        examples: [2]
+      - id: fifth_attr_template
+        type: template[string[]]
+        brief: "Request headers."
+        note: "Request headers note."
+        examples: '`first.fifth_attr.bar=["foo"]`'
+        stability: experimental

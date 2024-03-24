@@ -16,4 +16,4 @@
 *   @open-telemetry/specs-approvers
 
 # Owners for the semantic conventions generator tool
-/semantic-conventions/      @open-telemetry/specs-approvers @open-telemetry/specs-semconv-approvers
+/semantic-conventions/      @open-telemetry/specs-approvers @open-telemetry/specs-semconv-approvers @open-telemetry/specs-semconv-maintainers

@@ -28,6 +28,7 @@ from opentelemetry.semconv.model.semantic_convention import (
     CONVENTION_CLS_BY_GROUP_TYPE,
     SemanticConventionSet,
 )
+from opentelemetry.semconv.model.utils import ValidationContext
 from opentelemetry.semconv.templating.code import CodeRenderer
 from opentelemetry.semconv.templating.compatibility import CompatibilityChecker
 from opentelemetry.semconv.templating.markdown import MarkdownRenderer
@@ -42,7 +43,7 @@ def parse_semconv(
     for file in sorted(files):
         if not file.endswith(".yaml") and not file.endswith(".yml"):
             parser.error(f"{file} is not a yaml file.")
-        semconv.parse(file, strict_validation)
+        semconv.parse(file, ValidationContext(file, strict_validation))
     semconv.finish()
     if semconv.has_error():
         sys.exit(1)
@@ -73,7 +74,11 @@ def main():
     args = parser.parse_args()
     check_args(args, parser)
     semconv = parse_semconv(
-        args.yaml_root, args.exclude, args.debug, args.strict_validation, parser
+        args.yaml_root,
+        args.exclude,
+        args.debug,
+        not args.continue_on_validation_errors,
+        parser,
     )
     semconv_filter = parse_only_filter(args.only, parser)
     filter_semconv(semconv, semconv_filter)
@@ -93,9 +98,9 @@ def main():
 def process_markdown(semconv, args):
     options = MarkdownOptions(
         check_only=args.md_check,
-        disable_stable_badge=args.md_disable_stable,
-        disable_experimental_badge=args.md_disable_experimental,
-        disable_deprecated_badge=args.md_disable_deprecated,
+        disable_stable_badge=args.md_disable_stable_badge,
+        disable_experimental_badge=args.md_disable_experimental_badge,
+        disable_deprecated_badge=args.md_disable_deprecated_badge,
         break_count=args.md_break_conditional,
         exclude_files=exclude_file_list(args.markdown_root, args.exclude),
     )
@@ -106,7 +111,11 @@ def process_markdown(semconv, args):
 def check_compatibility(semconv, args, parser):
     prev_semconv_path = download_previous_version(args.previous_version)
     prev_semconv = parse_semconv(
-        prev_semconv_path, args.exclude, args.debug, args.strict_validation, parser
+        prev_semconv_path,
+        args.exclude,
+        args.debug,
+        not args.continue_on_validation_errors,
+        parser,
     )
     compatibility_checker = CompatibilityChecker(semconv, prev_semconv)
     problems = compatibility_checker.check()
@@ -221,12 +230,6 @@ def add_md_parser(subparsers):
         action="store_true",
     )
     parser.add_argument(
-        "--check-compat",
-        help="Check backward compatibility with previous version of semantic conventions.",
-        type=str,
-        required=False,
-    )
-    parser.add_argument(
         "--md-disable-stable-badge",
         help="Removes badges from attributes marked as stable.",
         required=False,
@@ -306,11 +309,14 @@ def setup_parser():
         help="YAML file containing a Semantic Convention",
     )
     parser.add_argument(
-        "--strict-validation",
-        help="Fail on non-critical yaml validation issues.",
+        "--continue-on-validation-errors",
+        help="""Continue parsing on yaml validation issues.
+        Should not be used to generate or validate semantic conventions.
+        Useful when running backward compatibility checks or using newer
+        tooling version to generate code for released semantic conventions.""",
         required=False,
-        default=True,
-        action="store_false",
+        default=False,
+        action="store_true",
     )
     subparsers = parser.add_subparsers(dest="flavor")
     add_code_parser(subparsers)

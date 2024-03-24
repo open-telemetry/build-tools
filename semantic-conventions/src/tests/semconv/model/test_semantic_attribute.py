@@ -15,11 +15,14 @@
 import re
 
 from opentelemetry.semconv.model.semantic_attribute import SemanticAttribute
+from opentelemetry.semconv.model.utils import ValidationContext
 
 
 def test_parse(load_yaml):
     yaml = load_yaml("semantic_attributes.yml")
-    attributes = SemanticAttribute.parse("prefix", yaml.get("attributes"))
+    attributes = SemanticAttribute.parse(
+        "prefix", yaml.get("attributes"), ValidationContext(None, True)
+    )
 
     assert len(attributes) == 3
 
@@ -45,7 +48,9 @@ def test_parse(load_yaml):
 
 def test_parse_deprecated(load_yaml):
     yaml = load_yaml("semantic_attributes_deprecated.yml")
-    attributes = SemanticAttribute.parse("", yaml.get("attributes"))
+    attributes = SemanticAttribute.parse(
+        "", yaml.get("attributes"), ValidationContext(None, True)
+    )
 
     assert len(attributes) == 1
     assert list(attributes.keys()) == ["deprecated_attribute"]
@@ -62,7 +67,9 @@ def test_parse_regex():
 
 def test_parse_attribute_templates(load_yaml):
     yaml = load_yaml("attribute_templates.yml")
-    attribute_templates = SemanticAttribute.parse("prefix", yaml.get("attributes"))
+    attribute_templates = SemanticAttribute.parse(
+        "prefix", yaml.get("attributes"), ValidationContext(None, True)
+    )
 
     assert len(attribute_templates) == 3
 

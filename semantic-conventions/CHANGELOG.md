@@ -32,6 +32,10 @@ Please update the changelog as part of any significant pull request.
   ([#266](https://github.com/open-telemetry/build-tools/pull/266))
 - Sort attribute tables by requirement level and attribute name
   ([#260](https://github.com/open-telemetry/build-tools/pull/260))
+- Support suppressing all validation errors via flag that allows to
+  parse previous versions of semantic conventions for backward compatibility checks
+  and use code generation improvements on older semantic convention version.
+  ([#300](https://github.com/open-telemetry/build-tools/pull/300))
 
 ## v0.23.0
 

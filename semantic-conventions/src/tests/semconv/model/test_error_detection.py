@@ -22,6 +22,7 @@ from opentelemetry.semconv.model.semantic_convention import (
     SemanticConventionSet,
     parse_semantic_convention_groups,
 )
+from opentelemetry.semconv.model.utils import ValidationContext
 
 
 class TestCorrectErrorDetection(unittest.TestCase):
@@ -118,8 +119,9 @@ class TestCorrectErrorDetection(unittest.TestCase):
             self.fail()
         e = ex.exception
         msg = e.message.lower()
-        self.assertIn("must not declare a type", msg)
-        self.assertIn("'test'", msg)
+        self.assertEqual("ref attribute must not declare a type", msg)
+        self.assertEqual("test", e.fqn)
+        self.assertIn("'test'", str(e))
         self.assertEqual(e.line, 8)
 
     def test_invalid_key_in_constraint(self):
@@ -160,7 +162,8 @@ class TestCorrectErrorDetection(unittest.TestCase):
             self.fail()
         e = ex.exception
         msg = e.message.lower()
-        self.assertIn("ref attribute 'test_attr' must not override stability", msg)
+        self.assertEqual("ref attribute must not override stability", msg)
+        self.assertEqual("test_attr", e.fqn)
         self.assertEqual(e.line, 14)
 
     def test_invalid_semconv_stability_with_deprecated(self):
@@ -191,8 +194,15 @@ class TestCorrectErrorDetection(unittest.TestCase):
             self.fail()
         e = ex.exception
         msg = e.message.lower()
-        self.assertIn("enumeration member 'one' must have a stability level", msg)
+        self.assertIn("missing keys: ['stability']", msg)
         self.assertEqual(e.line, 10)
+
+    def test_missing_stability_value_on_enum_member_not_strict(self):
+        path = "yaml/errors/stability/missing_stability_on_enum_member.yaml"
+        with open(self.load_file(path), encoding="utf-8") as file:
+            return parse_semantic_convention_groups(
+                file, ValidationContext(path, False)
+            )
 
     def test_multiple_stability_values_on_enum_member(self):
         with self.assertRaises(DuplicateKeyError):
@@ -234,10 +244,11 @@ class TestCorrectErrorDetection(unittest.TestCase):
             self.fail()
         e = ex.exception
         msg = e.message.lower()
-        self.assertIn(
-            "ref attribute 'test.convention_version' must not override deprecation status",
+        self.assertEqual(
+            "ref attribute must not override deprecation status",
             msg,
         )
+        self.assertEqual("test.convention_version", e.fqn)
         self.assertEqual(e.line, 19)
 
     def test_ref_overrides_deprecation(self):
@@ -246,10 +257,11 @@ class TestCorrectErrorDetection(unittest.TestCase):
             self.fail()
         e = ex.exception
         msg = e.message.lower()
-        self.assertIn(
-            "ref attribute 'test.convention_version' must not override deprecation status",
+        self.assertEqual(
+            "ref attribute must not override deprecation status",
             msg,
         )
+        self.assertEqual("test.convention_version", e.fqn)
         self.assertEqual(e.line, 17)
 
     def test_invalid_deprecated_boolean(self):
@@ -498,7 +510,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
         e = ex.exception
         msg = e.message.lower()
         self.assertIn("any_of attribute", msg)
-        self.assertIn("does not exists", msg)
+        self.assertIn("does not exist", msg)
         self.assertEqual(e.line, 16)
 
     def test_missing_event(self):
@@ -553,7 +565,7 @@ class TestCorrectErrorDetection(unittest.TestCase):
 
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:
-            return parse_semantic_convention_groups(file)
+            return parse_semantic_convention_groups(file, ValidationContext(path, True))
 
     _TEST_DIR = os.path.dirname(__file__)
 

@@ -4,6 +4,8 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+## 0.24.0
+
 - BREAKING: Add `stability` (required) and `deprecated` (optional) properties to `EnumMember`
   ([#267](https://github.com/open-telemetry/build-tools/pull/267))
 - Change minimum support python version to 3.10 in setup.cfg and Dockerfile

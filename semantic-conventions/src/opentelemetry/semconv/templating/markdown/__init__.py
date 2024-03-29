@@ -34,7 +34,6 @@ from opentelemetry.semconv.model.semantic_convention import (
     EventSemanticConvention,
     MetricSemanticConvention,
     SemanticConventionSet,
-    UnitSemanticConvention,
 )
 from opentelemetry.semconv.model.utils import ID_RE
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
@@ -530,9 +529,6 @@ class MarkdownRenderer:
             for cnst in semconv.constraints:
                 self.to_markdown_constraint(cnst, output)
         self.to_markdown_enum(output)
-
-        if isinstance(semconv, UnitSemanticConvention):
-            self.to_markdown_unit_table(semconv.members, output)
 
         output.write("<!-- endsemconv -->")
 

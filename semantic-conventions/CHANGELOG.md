@@ -4,6 +4,9 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- BREAKING: Remove unused semantic convention types: `UnitSemanticConvention`, `MetricGroupSemanticConvention`, `ScopeSemanticConvention`
+  ([#TODO](https://github.com/open-telemetry/build-tools/pull/TODO))
+
 ## 0.24.0
 
 - BREAKING: Add `stability` (required) and `deprecated` (optional) properties to `EnumMember`

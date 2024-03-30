@@ -17,17 +17,22 @@ groups:
             - id: datasource
               value: 'datasource'
               brief: 'A response to some data source operation such as a database or filesystem read/write.'
+              stability: experimental
             - id: http
               value: 'http'
               brief: 'To provide an answer to an inbound HTTP request'
+              stability: experimental
             - id: pubsub
               value: 'pubsub'
               brief: 'A function is set to be executed when messages are sent to a messaging system.'
+              stability: experimental
             - id: timer
               value: 'timer'
               brief: 'A function is scheduled to be executed regularly.'
+              stability: experimental
             - id: other
               value: 'other'
+              stability: experimental
       - id: execution
         stability: experimental
         type: string
@@ -39,5 +44,4 @@ groups:
     brief: >
       Semantic Convention for FaaS triggered as a response to some data
       source operation such as a database or filesystem read/write.
-    constraints:
-      - include: http.server
+

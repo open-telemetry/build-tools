@@ -16,7 +16,6 @@ import os
 import unittest
 from typing import List, cast
 
-from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import StabilityLevel
 from opentelemetry.semconv.model.semantic_convention import (
     EventSemanticConvention,
@@ -37,7 +36,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "test",
             "prefix": "test",
             "extends": "",
-            "n_constraints": 0,
             "attributes": ["test.one", "test.two"],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
@@ -63,7 +61,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "database",
             "prefix": "db",
             "extends": "",
-            "n_constraints": 1,
             "attributes": [
                 "db.instance",
                 "db.statement",
@@ -83,7 +80,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "faas",
             "prefix": "faas",
             "extends": "",
-            "n_constraints": 0,
             "attributes": ["faas.trigger", "faas.execution"],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
@@ -91,7 +87,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "faas.datasource",
             "prefix": "faas.document",
             "extends": "faas",
-            "n_constraints": 0,
             "attributes": [
                 "faas.document.collection",
                 "faas.document.operation",
@@ -104,7 +99,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "faas.http",
             "prefix": "",
             "extends": "faas",
-            "n_constraints": 1,
             "attributes": [],
         }
         self.semantic_convention_check(list(semconv.models.values())[2], expected)
@@ -112,7 +106,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "faas.pubsub",
             "prefix": "",
             "extends": "faas",
-            "n_constraints": 0,
             "attributes": [],
         }
         self.semantic_convention_check(list(semconv.models.values())[3], expected)
@@ -120,7 +113,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "faas.timer",
             "prefix": "faas",
             "extends": "faas",
-            "n_constraints": 0,
             "attributes": ["faas.time", "faas.cron"],
         }
         self.semantic_convention_check(list(semconv.models.values())[4], expected)
@@ -134,7 +126,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "network",
             "prefix": "net",
             "extends": "",
-            "n_constraints": 0,
             "attributes": [
                 "net.host.ip",
                 "net.host.name",
@@ -150,7 +141,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "identity",
             "prefix": "enduser",
             "extends": "",
-            "n_constraints": 0,
             "attributes": ["enduser.id", "enduser.role", "enduser.scope"],
         }
         self.semantic_convention_check(list(semconv.models.values())[1], expected)
@@ -164,7 +154,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "http",
             "prefix": "http",
             "extends": "",
-            "n_constraints": 0,
             "attributes": [
                 "http.method",
                 "http.status_code",
@@ -182,7 +171,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "http.client",
             "prefix": "http",
             "extends": "http",
-            "n_constraints": 1,
             "attributes": [],
         }
         self.semantic_convention_check(list(semconv.models.values())[1], expected)
@@ -190,7 +178,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "http.server",
             "prefix": "http",
             "extends": "http",
-            "n_constraints": 1,
             "attributes": ["http.server_name"],
         }
         self.semantic_convention_check(list(semconv.models.values())[2], expected)
@@ -210,7 +197,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "metric.foo",
             "prefix": "bar",
             "extends": "",
-            "n_constraints": 0,
             "stability": StabilityLevel.EXPERIMENTAL,
             "attributes": ["bar.egg.type"],
         }
@@ -220,7 +206,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "metric.foo.size",
             "prefix": "foo",
             "extends": "",
-            "n_constraints": 0,
             "stability": StabilityLevel.STABLE,
             "metric_name": "foo.size",
             "unit": "{bars}",
@@ -239,7 +224,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "metric.foo.active_eggs",
             "prefix": "foo",
             "extends": "",
-            "n_constraints": 0,
             "stability": StabilityLevel.EXPERIMENTAL,
             "metric_name": "foo.active_eggs",
             "unit": "{cartons}",
@@ -264,7 +248,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "cloud",
             "prefix": "cloud",
             "extends": "",
-            "n_constraints": 0,
             "attributes": [
                 "cloud.account.id",
                 "cloud.provider",
@@ -284,7 +267,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "exception",
             "prefix": "exception",
             "extends": "",
-            "n_constraints": 1,
             "attributes": [
                 "exception.escaped",
                 "exception.message",
@@ -293,22 +275,12 @@ class TestCorrectParse(unittest.TestCase):
             ],
         }
         self.semantic_convention_check(event, expected)
-        constraint = event.constraints[0]
-        self.assertIsInstance(constraint, AnyOf)
-        constraint: AnyOf
-        for choice_index, attr_list in enumerate(constraint.choice_list_ids):
-            for attr_index, attr in enumerate(attr_list):
-                self.assertEqual(
-                    event.attrs_by_name.get(attr),
-                    constraint.choice_list_attributes[choice_index][attr_index],
-                )
 
         experimental_event = list(semconv.models.values())[1]
         expected = {
             "id": "experimental_event",
             "prefix": "experimental_event",
             "extends": "",
-            "n_constraints": 0,
             "stability": StabilityLevel.EXPERIMENTAL,
             "attributes": [
                 "experimental_event.foo",
@@ -321,7 +293,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "stable_event",
             "prefix": "stable_event",
             "extends": "",
-            "n_constraints": 0,
             "stability": StabilityLevel.STABLE,
             "attributes": [],
         }
@@ -332,7 +303,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "deprecated_event",
             "prefix": "deprecated_event",
             "extends": "",
-            "n_constraints": 0,
             "stability": StabilityLevel.STABLE,
             "deprecated": "Removed.",
             "attributes": [],
@@ -368,7 +338,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "rpc",
             "prefix": "rpc",
             "extends": "",
-            "n_constraints": 1,
             "attributes": ["rpc.service"],
         }
         self.semantic_convention_check(list(semconv.models.values())[0], expected)
@@ -376,7 +345,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "grpc.client",
             "prefix": "",
             "extends": "rpc",
-            "n_constraints": 0,
             "attributes": ["net.peer.port"],
         }
         self.semantic_convention_check(list(semconv.models.values())[1], expected)
@@ -384,7 +352,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "grpc.server",
             "prefix": "",
             "extends": "rpc",
-            "n_constraints": 0,
             "attributes": ["net.peer.port"],
         }
         self.semantic_convention_check(list(semconv.models.values())[2], expected)
@@ -427,7 +394,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "http",
             "prefix": "http",
             "extends": "",
-            "n_constraints": 0,
             "attributes": [
                 "http.method",
                 "http.status_code",
@@ -445,7 +411,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "http.client",
             "prefix": "http",
             "extends": "http",
-            "n_constraints": 1,
             "attributes": [
                 "http.method",
                 "http.status_code",
@@ -463,7 +428,6 @@ class TestCorrectParse(unittest.TestCase):
             "id": "http.server",
             "prefix": "http",
             "extends": "http",
-            "n_constraints": 1,
             "attributes": [
                 "http.method",
                 "http.server_name",
@@ -478,39 +442,6 @@ class TestCorrectParse(unittest.TestCase):
             ],
         }
         self.semantic_convention_check(list(semconv.models.values())[2], expected)
-
-    def test_include(self):
-        semconv = SemanticConventionSet(debug=False)
-        semconv.parse(self.load_file("yaml/http.yaml"))
-        semconv.parse(self.load_file("yaml/faas.yaml"))
-        semconv.parse(self.load_file("yaml/general.yaml"))
-        semconv.finish()
-        self.assertEqual(len(semconv.models), 10)
-
-        faas_http = [s for s in semconv.models.values() if s.semconv_id == "faas.http"][
-            0
-        ]
-        expected = {
-            "id": "faas.http",
-            "prefix": "faas",
-            "extends": "faas",
-            "n_constraints": 2,
-            "attributes": [
-                "faas.trigger",  # Parent
-                "http.method",
-                "http.server_name",
-                "http.status_code",
-                "faas.execution",  # Parent
-                "http.flavor",
-                "http.host",
-                "http.scheme",
-                "http.status_text",
-                "http.target",
-                "http.url",
-                "http.user_agent",
-            ],
-        }
-        self.semantic_convention_check(faas_http, expected)
 
     def test_deprecation(self):
         semconv = SemanticConventionSet(debug=False)
@@ -598,25 +529,6 @@ class TestCorrectParse(unittest.TestCase):
         semconv.finish()
         models = sorted(semconv.models.values(), key=lambda m: m.semconv_id)
         self.assertEqual(len(models), 10)
-        self.assertEqual(len(models[0].constraints), 0)
-        self.assertEqual(len(models[1].constraints), 0)
-
-        self.assertEqual(len(models[2].constraints), 2)
-        self.assertTrue(isinstance(models[2].constraints[0], Include))
-        self.assertEqual(len(models[2].constraints[1].choice_list_attributes), 4)
-
-        self.assertEqual(len(models[3].constraints), 0)
-        self.assertEqual(len(models[4].constraints), 0)
-        self.assertEqual(len(models[5].constraints), 0)
-
-        self.assertEqual(len(models[6].constraints), 1)
-        self.assertEqual(len(models[6].constraints[0].choice_list_attributes), 4)
-
-        self.assertEqual(len(models[7].constraints), 1)
-        self.assertEqual(len(models[6].constraints[0].choice_list_attributes), 4)
-
-        self.assertEqual(len(models[8].constraints), 0)
-        self.assertEqual(len(models[9].constraints), 0)
 
     def test_inherited_imported(self):
         semconv = SemanticConventionSet(debug=False)
@@ -663,33 +575,17 @@ class TestCorrectParse(unittest.TestCase):
         # Base - rpc
         attrs = models[2].attributes_and_templates
         self.assertEqual(models[2].semconv_id, "rpc")
-        self.assertEqual(len(attrs), 4)
+        self.assertEqual(len(attrs), 1)
 
         self.assertEqual(attrs[0].fqn, "rpc.service")
         self.assertEqual(attrs[0].imported, False)
         self.assertEqual(attrs[0].inherited, False)
         self.assertEqual(attrs[0].ref, None)
 
-        self.assertEqual(attrs[1].fqn, "net.peer.ip")
-        self.assertEqual(attrs[1].imported, True)
-        self.assertEqual(attrs[1].inherited, False)
-        self.assertEqual(attrs[1].ref, None)
-
-        self.assertEqual(attrs[2].fqn, "net.peer.name")
-        self.assertEqual(attrs[2].imported, True)
-        self.assertEqual(attrs[2].inherited, False)
-        self.assertEqual(attrs[2].ref, None)
-
-        self.assertEqual(attrs[3].fqn, "net.peer.port")
-        self.assertEqual(attrs[3].imported, True)
-        self.assertEqual(attrs[3].inherited, False)
-        self.assertEqual(attrs[3].ref, None)
-        self.assertEqual(attrs[3].note, "not override")
-
         # Extended - rpc.client
         attrs = models[3].attributes_and_templates
         self.assertEqual(models[3].semconv_id, "rpc.client")
-        self.assertEqual(len(attrs), 6)
+        self.assertEqual(len(attrs), 3)
 
         self.assertEqual(attrs[0].fqn, "net.peer.port")
         self.assertEqual(attrs[0].imported, False)
@@ -708,21 +604,6 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[2].inherited, True)
         self.assertEqual(attrs[2].ref, None)
 
-        self.assertEqual(attrs[3].fqn, "http.method")
-        self.assertEqual(attrs[3].imported, True)
-        self.assertEqual(attrs[3].inherited, False)
-        self.assertEqual(attrs[3].ref, None)
-
-        self.assertEqual(attrs[4].fqn, "net.peer.ip")
-        self.assertEqual(attrs[4].imported, True)
-        self.assertEqual(attrs[4].inherited, True)
-        self.assertEqual(attrs[4].ref, None)
-
-        self.assertEqual(attrs[5].fqn, "net.peer.name")
-        self.assertEqual(attrs[5].imported, True)
-        self.assertEqual(attrs[5].inherited, True)
-        self.assertEqual(attrs[5].ref, None)
-
         # Include on Extended - zother
         attrs = models[4].attributes_and_templates
         self.assertEqual(models[4].semconv_id, "zother")
@@ -736,7 +617,7 @@ class TestCorrectParse(unittest.TestCase):
         # Include on Extended - zz.rpc.client
         attrs = models[5].attributes_and_templates
         self.assertEqual(models[5].semconv_id, "zz.rpc.client")
-        self.assertEqual(len(attrs), 8)
+        self.assertEqual(len(attrs), 4)
 
         self.assertEqual(attrs[0].fqn, "net.peer.port")
         self.assertEqual(attrs[0].imported, False)
@@ -760,26 +641,6 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[3].inherited, True)
         self.assertEqual(attrs[3].ref, None)
 
-        self.assertEqual(attrs[4].fqn, "http.method")
-        self.assertEqual(attrs[4].imported, True)
-        self.assertEqual(attrs[4].inherited, True)
-        self.assertEqual(attrs[4].ref, None)
-
-        self.assertEqual(attrs[5].fqn, "net.peer.ip")
-        self.assertEqual(attrs[5].imported, True)
-        self.assertEqual(attrs[5].inherited, True)
-        self.assertEqual(attrs[5].ref, None)
-
-        self.assertEqual(attrs[6].fqn, "net.peer.name")
-        self.assertEqual(attrs[6].imported, True)
-        self.assertEqual(attrs[6].inherited, True)
-        self.assertEqual(attrs[6].ref, None)
-
-        self.assertEqual(attrs[7].fqn, "zother.hostname")
-        self.assertEqual(attrs[7].imported, True)
-        self.assertEqual(attrs[7].inherited, False)
-        self.assertEqual(attrs[7].ref, None)
-
     def semantic_convention_check(self, s, expected):
         self.assertEqual(expected["prefix"], s.prefix)
         self.assertEqual(expected.get("stability"), s.stability)
@@ -787,7 +648,6 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(expected["extends"], s.extends)
         self.assertEqual(expected["id"], s.semconv_id)
         self.assertEqual(len(expected["attributes"]), len(s.attributes))
-        self.assertEqual(expected["n_constraints"], len(s.constraints))
         self.assertEqual(expected["attributes"], [a.fqn for a in s.attributes])
 
     def test_scope_attribute(self):
@@ -801,7 +661,6 @@ class TestCorrectParse(unittest.TestCase):
             "type": "scope",
             "extends": "",
             "brief": "Instrumentation Scope attributes",
-            "n_constraints": 0,
             "attributes": [
                 "short_name",
             ],

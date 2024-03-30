@@ -269,10 +269,6 @@ groups:
         tag: connection-level
         requirement_level:
           conditionally_required: Recommended in general, required for in-process databases (`"inproc"`).
-    constraints:
-      - any_of:
-        - 'net.peer.name'
-        - 'net.peer.ip'
 
   - id: db.cassandra
     type: span

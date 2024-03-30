@@ -22,9 +22,6 @@ Then, the semantic of each field is described.
       - [Examples (for examples)](#examples-for-examples)
       - [Ref](#ref)
       - [Type](#type)
-    - [Constraints](#constraints)
-      - [Any Of](#any-of)
-      - [Include](#include)
 
 <!-- tocstop -->
 
@@ -43,7 +40,7 @@ All attributes are lower case.
 groups ::= semconv
        | semconv groups
 
-semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [constraints] [specificfields]
+semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [specificfields]
 
 id    ::= string
 
@@ -104,11 +101,6 @@ sampling_relevant ::= boolean
 
 examples ::= <example_value> {<example_value>}
 
-constraints ::= constraint {constraint}
-
-constraint ::= any_of
-           |   include
-
 any_of ::= id {id}
 
 include ::= id
@@ -158,11 +150,10 @@ The field `semconv` represents a semantic convention and it is made by:
 - `prefix`, optional string, prefix for the attributes for this semantic convention.
    It defaults to an empty string.
 - `extends`, optional string, reference another semantic convention `id`.
-   It inherits the prefix, constraints, and all attributes defined in the specified semantic convention.
+   It inherits the prefix, and all attributes defined in the specified semantic convention.
 - `deprecated`, optional, when present marks the semantic convention as deprecated.
    The string provided as `<description>` MUST specify why it's deprecated and/or what to use instead.
 - `attributes`, list of attributes that belong to the semantic convention.
-- `constraints`, optional list, additional constraints (See later). It defaults to an empty list.
 
 #### Span semantic convention
 
@@ -378,18 +369,3 @@ An enum entry has the following fields:
 - `note`, optional string, longer description. It defaults to an empty string.
 - `stability`, required stability level. Attributes marked as experimental cannot have stable members.
 - `deprecated`, optional string, similarly to semantic convention and attribute deprecation, marks specific member as deprecated.
-
-### Constraints
-
-Allow to define additional requirements on the semantic convention.
-Currently, it supports `any_of` and `include`.
-
-#### Any Of
-
-`any_of` accepts a list of sequences. Each sequence contains a list of attribute ids that are required.
-`any_of` enforces that all attributes of at least one of the sequences are set.
-
-#### Include
-
-`include` accepts a semantic conventions `id`. It includes as part of this semantic convention all constraints
-and required attributes that are not already defined in the current semantic convention.

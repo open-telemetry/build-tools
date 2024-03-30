@@ -27,7 +27,6 @@ from opentelemetry.semconv.model.semantic_attribute import (
     RequirementLevel,
     SemanticAttribute,
 )
-from opentelemetry.semconv.model.unit_member import UnitMember
 from opentelemetry.semconv.model.utils import (
     ValidatableYamlNode,
     ValidationContext,

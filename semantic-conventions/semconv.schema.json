@@ -129,6 +129,10 @@
 							}
 						]
 					}
+				},
+				"display_name": {
+					"type": "string",
+					"description": "the display name / title of the attribute group."
 				}
 			}
 		},

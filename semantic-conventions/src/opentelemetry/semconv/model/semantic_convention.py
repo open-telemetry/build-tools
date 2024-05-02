@@ -111,6 +111,7 @@ class BaseSemanticConvention(ValidatableYamlNode):
         "attributes",
         "constraints",
         "deprecated",
+        "display_name",
     )
 
     GROUP_TYPE_NAME: str

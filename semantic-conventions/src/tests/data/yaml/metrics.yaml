@@ -1,7 +1,7 @@
 groups:
   - id: metric.foo
     prefix: bar
-    type: metric_group
+    type: attribute_group
     stability: experimental
     brief: "This document defines foo."
     note: >

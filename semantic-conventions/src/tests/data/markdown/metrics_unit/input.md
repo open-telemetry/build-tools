@@ -1,4 +1,0 @@
-# Units
-
-<!-- semconv units -->
-<!-- endsemconv -->

@@ -54,9 +54,7 @@
 						"span",
 						"resource",
 						"metric",
-						"metric_group",
 						"event",
-						"scope",
 						"attribute_group"
 					],
 					"description": "The (signal) type of the semantic convention"
@@ -172,16 +170,6 @@
 				{"required": ["prefix"]},
 				{"required": ["name"]}
 			]
-		},
-		"MetricGroupSemanticConvention": {
-			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
-			"required": ["type"],
-			"properties": {
-				"type": {
-					"type": "string",
-					"const": "metric_group"
-				}
-			}
 		},
 		"MetricSemanticConvention": {
 			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],

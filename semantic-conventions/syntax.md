@@ -51,8 +51,6 @@ convtype ::= "span" # Default if not specified
          |   "resource" # see spanspecificfields
          |   "event"    # see eventspecificfields
          |   "metric"   # see metricfields
-         |   "metric_group"
-         |   "scope"
          |   "attribute_group" # no specific fields defined
 
 brief ::= string

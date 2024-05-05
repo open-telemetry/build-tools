@@ -117,9 +117,6 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.assertIn("Parameter", msg)
         self.assertIn("already defined", msg)
 
-    def test_units(self):
-        self.check("markdown/metrics_unit/", extra_yaml_dirs=["yaml/metrics/"])
-
     def test_event(self):
         self.check("markdown/event/")
 
@@ -144,9 +141,6 @@ class TestCorrectMarkdown(unittest.TestCase):
 
     def testSamplingRelevant(self):
         self.check("markdown/sampling_relevant/")
-
-    def test_scope(self):
-        self.check("markdown/scope/")
 
     def test_attribute_group(self):
         self.check("markdown/attribute_group/")

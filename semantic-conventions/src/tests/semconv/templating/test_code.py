@@ -5,24 +5,6 @@ from opentelemetry.semconv.model.semantic_convention import SemanticConventionSe
 from opentelemetry.semconv.templating.code import CodeRenderer
 
 
-def test_codegen_units(test_file_path, read_test_file):
-    semconv = SemanticConventionSet(debug=False)
-    semconv.parse(test_file_path("yaml", "metrics", "units.yaml"))
-    semconv.finish()
-
-    template_path = test_file_path("jinja", "metrics", "units_template")
-    renderer = CodeRenderer({}, trim_whitespace=False)
-
-    filename = os.path.join(tempfile.mkdtemp(), "Attributes.java")
-    renderer.render(semconv, template_path, filename, None)
-    with open(filename, "r", encoding="utf-8") as f:
-        result = f.read()
-
-    expected = read_test_file("jinja", "metrics", "expected.java")
-
-    assert result == expected
-
-
 def test_codegen_metrics_all(test_file_path, read_test_file):
     semconv = SemanticConventionSet(debug=False)
     semconv.parse(test_file_path("yaml", "metrics", "metrics.yaml"))
@@ -44,11 +26,11 @@ def test_codegen_metrics_all(test_file_path, read_test_file):
 def test_strip_blocks_enabled(test_file_path, read_test_file):
     """Tests that the Jinja whitespace control params are fed to the Jinja environment"""
     semconv = SemanticConventionSet(debug=False)
-    semconv.parse(test_file_path("yaml", "metrics", "units.yaml"))
+    semconv.parse(test_file_path("yaml", "metrics", "metrics.yaml"))
     semconv.finish()
 
     template_path = test_file_path(
-        "jinja", "metrics", "units_template_trim_whitespace_enabled"
+        "jinja", "metrics", "metrics_template_trim_whitespace_enabled"
     )
     renderer = CodeRenderer({}, trim_whitespace=True)
 
@@ -61,6 +43,7 @@ def test_strip_blocks_enabled(test_file_path, read_test_file):
         "jinja", "metrics", "expected_trim_whitespace_enabled.java"
     )
 
+    print(result)
     assert result == expected
 
 

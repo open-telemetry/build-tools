@@ -650,23 +650,6 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(len(expected["attributes"]), len(s.attributes))
         self.assertEqual(expected["attributes"], [a.fqn for a in s.attributes])
 
-    def test_scope_attribute(self):
-        semconv = SemanticConventionSet(debug=False)
-        semconv.parse(self.load_file("yaml/scope.yaml"))
-        self.assertEqual(len(semconv.models), 1)
-
-        expected = {
-            "id": "scope-id",
-            "prefix": "",
-            "type": "scope",
-            "extends": "",
-            "brief": "Instrumentation Scope attributes",
-            "attributes": [
-                "short_name",
-            ],
-        }
-        self.semantic_convention_check(list(semconv.models.values())[0], expected)
-
     _TEST_DIR = os.path.dirname(__file__)
 
     def load_file(self, filename):

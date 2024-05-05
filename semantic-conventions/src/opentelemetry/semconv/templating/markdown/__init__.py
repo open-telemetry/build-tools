@@ -33,7 +33,6 @@ from opentelemetry.semconv.model.semantic_convention import (
     EventSemanticConvention,
     MetricSemanticConvention,
     SemanticConventionSet,
-    UnitSemanticConvention,
 )
 from opentelemetry.semconv.model.utils import ID_RE
 from opentelemetry.semconv.templating.markdown.options import MarkdownOptions
@@ -55,7 +54,6 @@ class RenderContext:
         self.group_key = ""
         self.enums = []
         self.notes = []
-        self.units = []
         self.current_md = ""
         self.current_semconv = None
 
@@ -277,17 +275,6 @@ class MarkdownRenderer:
             for attr in sampling_relevant_attrs:
                 output.write("* " + self.render_fqn_for_attribute(attr) + "\n")
 
-    @staticmethod
-    def to_markdown_unit_table(members, output: io.StringIO):
-        output.write("\n")
-        output.write(
-            "| Name        | Kind of Quantity         | Unit String   |\n"
-            "| ------------| ----------------         | -----------   |"
-        )
-        for member in members.values():
-            output.write(f"\n| {member.id} | {member.brief} | `{member.value}` |")
-        output.write("\n")
-
     def to_markdown_enum(self, output: io.StringIO):
         """Renders enum types after a Semantic Convention Table
         :return:
@@ -489,9 +476,6 @@ class MarkdownRenderer:
             self.to_markdown_attribute_table(semconv, output)
 
         self.to_markdown_enum(output)
-
-        if isinstance(semconv, UnitSemanticConvention):
-            self.to_markdown_unit_table(semconv.members, output)
 
         output.write("<!-- endsemconv -->")
 

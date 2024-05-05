@@ -1,22 +1,19 @@
 package io.opentelemetry.instrumentation.api.metric;
 
-class Units {
+class AllMetrics {
+    /**
+     * first metric description
+     * Unit: {one}
+     * Instrument: counter
+     * Experimental: False
+     */
+    public static final String FIRST_METRIC = "first.metric";
 
     /**
-    * Use this unit for Metric Instruments recording values
-    * representing fraction of a total.
-    **/
-    public static final String PERCENT = "%";
-
-    /**
-    * Use this unit for Metric Instruments recording values
-    * representing time.
-    **/
-    public static final String NANOSECOND = "NS";
-
-    /**
-    * Use this unit for Metric Instruments recording values
-    * representing connections.
-    **/
-    public static final String CONNECTIONS = "{connections}";
+     * second metric description
+     * Unit: s
+     * Instrument: histogram
+     * Experimental: True
+     */
+    public static final String SECOND_GROUP_METRIC = "second_group.metric";
 }

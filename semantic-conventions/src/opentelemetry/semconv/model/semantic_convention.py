@@ -26,7 +26,6 @@ from opentelemetry.semconv.model.semantic_attribute import (
     RequirementLevel,
     SemanticAttribute,
 )
-from opentelemetry.semconv.model.unit_member import UnitMember
 from opentelemetry.semconv.model.utils import (
     ValidatableYamlNode,
     ValidationContext,
@@ -185,10 +184,6 @@ class ResourceSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "resource"
 
 
-class ScopeSemanticConvention(BaseSemanticConvention):
-    GROUP_TYPE_NAME = "scope"
-
-
 class AttributeGroupConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "attribute_group"
 
@@ -226,26 +221,7 @@ class EventSemanticConvention(BaseSemanticConvention):
             )
 
 
-class UnitSemanticConvention(BaseSemanticConvention):
-    GROUP_TYPE_NAME = "units"
-
-    allowed_keys = (  # We completely override base semantic keys here.
-        "id",
-        "type",
-        "brief",
-        "members",
-    )
-
-    def __init__(self, group, validation_ctx):
-        super().__init__(group, validation_ctx)
-        self.members = UnitMember.parse(group.get("members"), validation_ctx)
-
-
-class MetricGroupSemanticConvention(BaseSemanticConvention):
-    GROUP_TYPE_NAME = "metric_group"
-
-
-class MetricSemanticConvention(MetricGroupSemanticConvention):
+class MetricSemanticConvention(BaseSemanticConvention):
     GROUP_TYPE_NAME = "metric"
 
     allowed_keys: Tuple[str, ...] = BaseSemanticConvention.allowed_keys + (
@@ -514,10 +490,7 @@ CONVENTION_CLS_BY_GROUP_TYPE = {
         SpanSemanticConvention,
         ResourceSemanticConvention,
         EventSemanticConvention,
-        MetricGroupSemanticConvention,
         MetricSemanticConvention,
-        UnitSemanticConvention,
-        ScopeSemanticConvention,
         AttributeGroupConvention,
     )
 }

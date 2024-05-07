@@ -11,10 +11,6 @@ groups:
         requirement_level: required
         brief: 'The service name, must be equal to the $service part in the span name.'
         examples: "EchoService"
-    constraints:
-      - any_of:
-        - net.peer.ip
-        - net.peer.name
   - id: grpc.client
     type: span
     extends: rpc

@@ -43,7 +43,3 @@ groups:
         type: string
         brief: 'Username for accessing database.'
         examples: ['readonly_user','reporting_user']
-    constraints:
-      - any_of:
-        - 'net.peer.name'
-        - 'net.peer.ip'

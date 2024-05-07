@@ -61,12 +61,6 @@ groups:
     extends: http
     span_kind: client
     brief: 'Semantic Convention for HTTP Client'
-    constraints:
-      - any_of:
-        - [http.url]
-        - [http.scheme, http.host, http.target]
-        - [http.scheme, net.peer.name, net.peer.port, http.target]
-        - [http.scheme, net.peer.ip, net.peer.port, http.target]
   - id: http.server
     type: span
     prefix: http
@@ -89,9 +83,3 @@ groups:
             sometimes lossy process from other information (see e.g. open-telemetry/opentelemetry-python/pull/148).
             It is thus preferred to supply the raw data that is available.
         examples: ['example.com']
-    constraints:
-      - any_of:
-        - [http.url]
-        - [http.scheme, http.host, http.target]
-        - [http.scheme, http.server_name, net.host.port, http.target]
-        - [http.scheme, net.host.name, net.host.port, http.target]

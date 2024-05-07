@@ -20,7 +20,6 @@ from typing import Dict, Optional, Tuple, Union
 
 from ruamel.yaml import YAML
 
-from opentelemetry.semconv.model.constraints import AnyOf, Include, parse_constraints
 from opentelemetry.semconv.model.exceptions import ValidationError
 from opentelemetry.semconv.model.semantic_attribute import (
     AttributeType,
@@ -109,7 +108,6 @@ class BaseSemanticConvention(ValidatableYamlNode):
         "stability",
         "extends",
         "attributes",
-        "constraints",
         "deprecated",
         "display_name",
     )
@@ -163,9 +161,6 @@ class BaseSemanticConvention(ValidatableYamlNode):
         )
         self.extends = group.get("extends", "").strip()
         self.events = group.get("events", ())
-        self.constraints = parse_constraints(
-            group.get("constraints", ()), validation_ctx
-        )
         self.attrs_by_name = SemanticAttribute.parse(
             self.prefix, group.get("attributes"), validation_ctx
         )
@@ -178,15 +173,6 @@ class BaseSemanticConvention(ValidatableYamlNode):
             if local_attr == attr:
                 return True
         return False
-
-    def has_attribute_constraint(self, attr):
-        return any(
-            attribute.equivalent_to(attr)
-            for constraint in self.constraints
-            if isinstance(constraint, AnyOf)
-            for attr_list in constraint.choice_list_attributes
-            for attribute in attr_list
-        )
 
     def validate_values(self):
         super().validate_values()
@@ -347,17 +333,13 @@ class SemanticConventionSet:
             if index > 0:
                 self.debug = False
             for semconv in self.models.values():
-                # Ref first, extends and includes after!
                 fixpoint_ref = self.resolve_ref(semconv)
-                fixpoint_inc = self.resolve_include(semconv)
-                fixpoint = fixpoint and fixpoint_ref and fixpoint_inc
+                fixpoint = fixpoint and fixpoint_ref
             index += 1
         self.debug = tmp_debug
         # After we resolve any local dependency, we can resolve parent/child relationship
         self._populate_extends()
         # From string containing attribute ids to SemanticAttribute objects
-        self._populate_anyof_attributes()
-        # From strings containing Semantic Conventions for Events ids to SemanticConvention objects
         self._populate_events()
 
     def _populate_extends(self):
@@ -397,15 +379,9 @@ class SemanticConventionSet:
                 parent_extended = self.models.get(extended.extends)
                 self._populate_extends_single(parent_extended, unprocessed)
 
-            # inherit prefix and constraints
+            # inherit prefix
             if not semconv.prefix:
                 semconv.prefix = extended.prefix
-            # Constraints
-            for constraint in extended.constraints:
-                if constraint not in semconv.constraints and isinstance(
-                    constraint, AnyOf
-                ):
-                    semconv.constraints += (constraint.inherit_anyof(),)
             # Attributes
             parent_attributes = {}
             for ext_attr in extended.attributes_and_templates:
@@ -416,27 +392,6 @@ class SemanticConventionSet:
 
         # delete from remaining semantic conventions to process
         del unprocessed[semconv.semconv_id]
-
-    def _populate_anyof_attributes(self):
-        any_of: AnyOf
-        for semconv in self.models.values():
-            for any_of in semconv.constraints:
-                if not isinstance(any_of, AnyOf):
-                    continue
-                for index, attr_ids in enumerate(any_of.choice_list_ids):
-                    constraint_attrs = []
-                    for attr_id in attr_ids:
-                        ref_attr = self._lookup_attribute(attr_id)
-                        if ref_attr is None:
-                            self.validation_ctx.raise_or_warn(
-                                any_of._yaml_src_position[index],
-                                f"Any_of attribute '{attr_id}' of semantic "
-                                "convention {semconv.semconv_id} does not exist!",
-                                attr_id,
-                            )
-                        constraint_attrs.append(ref_attr)
-                    if constraint_attrs:
-                        any_of.add_attributes(constraint_attrs)
 
     def _populate_events(self):
         for semconv in self.models.values():
@@ -504,48 +459,6 @@ class SemanticConventionSet:
             child.examples = parent.examples
         child.attr_id = parent.attr_id
         return child
-
-    def resolve_include(self, semconv):
-        fixpoint_inc = True
-        for constraint in semconv.constraints:
-            if isinstance(constraint, Include):
-                include_semconv = self.models.get(constraint.semconv_id)
-                # include required attributes and constraints
-                if include_semconv is None:
-                    self.validation_ctx.raise_or_warn(
-                        semconv._position,
-                        f"Semantic Convention {semconv.semconv_id} includes "
-                        "{constraint.semconv_id} but the latter cannot be found!",
-                        semconv.semconv_id,
-                    )
-                # We resolve the parent/child relationship of the included semantic convention, if any
-                self._populate_extends_single(
-                    include_semconv, {include_semconv.semconv_id: include_semconv}
-                )
-                attr: SemanticAttribute
-                for attr in include_semconv.attributes_and_templates:
-                    if semconv.contains_attribute(attr):
-                        if self.debug:
-                            print(
-                                f"[Includes] {semconv.semconv_id} already contains attribute {attr}"
-                            )
-                        continue
-                    # There are changes
-                    fixpoint_inc = False
-                    semconv.attrs_by_name[attr.fqn] = attr.import_attribute()
-                for inc_constraint in include_semconv.constraints:
-                    if (
-                        isinstance(inc_constraint, Include)
-                        or inc_constraint in semconv.constraints
-                    ):
-                        # We do not include "include" constraint or the constraint was already imported
-                        continue
-                    # We know the type of the constraint
-                    inc_constraint: AnyOf
-                    # There are changes
-                    fixpoint_inc = False
-                    semconv.constraints += (inc_constraint.inherit_anyof(),)
-        return fixpoint_inc
 
     def _lookup_attribute(self, attr_id: str) -> Union[SemanticAttribute, None]:
         return next(

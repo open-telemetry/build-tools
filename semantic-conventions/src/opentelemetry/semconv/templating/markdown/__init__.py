@@ -20,7 +20,6 @@ import sys
 import typing
 from pathlib import PurePath
 
-from opentelemetry.semconv.model.constraints import AnyOf, Include
 from opentelemetry.semconv.model.semantic_attribute import (
     AttributeType,
     EnumAttributeType,
@@ -79,7 +78,6 @@ class MarkdownRenderer:
     valid_parameters = [
         "tag",
         "full",
-        "remove_constraints",
         "metric_table",
         "omit_requirement_level",
     ]
@@ -178,20 +176,14 @@ class MarkdownRenderer:
             required = "`Opt-In`"
         else:  # attribute.requirement_level == Required.RECOMMENDED or None
             # check if there are any notes
-            if (
-                not self.render_ctx.is_remove_constraint
-                and self.render_ctx.current_semconv.has_attribute_constraint(attribute)
-            ):
-                required = "See below"
+            if not attribute.requirement_level_msg:
+                required = "`Recommended`"
+            elif len(attribute.requirement_level_msg) < self.options.break_count:
+                required = "`Recommended` " + attribute.requirement_level_msg
             else:
-                if not attribute.requirement_level_msg:
-                    required = "`Recommended`"
-                elif len(attribute.requirement_level_msg) < self.options.break_count:
-                    required = "`Recommended` " + attribute.requirement_level_msg
-                else:
-                    # We put the condition in the notes after the table
-                    self.render_ctx.add_note(attribute.requirement_level_msg)
-                    required = f"`Recommended` [{len(self.render_ctx.notes)}]"
+                # We put the condition in the notes after the table
+                self.render_ctx.add_note(attribute.requirement_level_msg)
+                required = f"`Recommended` [{len(self.render_ctx.notes)}]"
         return required
 
     def write_table_header(self, output: io.StringIO):
@@ -256,22 +248,6 @@ class MarkdownRenderer:
             f"| `{semconv.metric_name}` | {instrument} | `{semconv.unit}` | {description} | {stability} |\n"
         )
         self.to_markdown_notes(output)
-
-    def to_markdown_anyof(self, anyof: AnyOf, output: io.StringIO):
-        """
-        This method renders anyof constraints into markdown lists
-        """
-        if anyof.inherited and not self.render_ctx.is_full:
-            return
-        output.write(
-            "\n**Additional attribute requirements:** At least one of the following sets of attributes is "
-            "required:\n\n"
-        )
-        for choice in anyof.choice_list_ids:
-            output.write("* ")
-            list_of_choice = ", ".join(self.render_attribute_id(c) for c in choice)
-            output.write(list_of_choice)
-            output.write("\n")
 
     def to_markdown_notes(self, output: io.StringIO):
         """Renders notes after a Semantic Convention Table
@@ -368,19 +344,6 @@ class MarkdownRenderer:
                 if rel_path != ".":
                     return rel_path
         return None
-
-    def to_markdown_constraint(
-        self,
-        obj: typing.Union[AnyOf, Include],
-        output: io.StringIO,
-    ):
-        """
-        Entry method to translate attributes and constraints of a semantic convention into Markdown
-        """
-        if isinstance(obj, AnyOf):
-            self.to_markdown_anyof(obj, output)
-        elif not isinstance(obj, Include):
-            raise TypeError(f"Trying to generate Markdown for a wrong type {type(obj)}")
 
     def render_md(self):
         for md_filename in self.file_names:
@@ -498,7 +461,6 @@ class MarkdownRenderer:
         output.write(MarkdownRenderer.prelude.format(header))
         self.render_ctx.clear_table_generation()
         self.render_ctx.current_semconv = semconv
-        self.render_ctx.is_remove_constraint = "remove_constraints" in parameters
         self.render_ctx.group_key = parameters.get("tag")
         self.render_ctx.is_full = "full" in parameters
         self.render_ctx.is_metric_table = "metric_table" in parameters
@@ -513,9 +475,6 @@ class MarkdownRenderer:
                 output.write(f"The event name MUST be `{semconv.name}`.\n\n")
             self.to_markdown_attribute_table(semconv, output)
 
-        if not self.render_ctx.is_remove_constraint:
-            for cnst in semconv.constraints:
-                self.to_markdown_constraint(cnst, output)
         self.to_markdown_enum(output)
 
         output.write("<!-- endsemconv -->")

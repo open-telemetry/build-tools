@@ -18,11 +18,6 @@
 
 **[4]:** If setting a `db.mssql.instance_name`, `net.peer.port` is no longer required (but still recommended if non-standard).
 
-**Additional attribute requirements:** At least one of the following sets of attributes is required:
-
-* `net.peer.name`
-* `net.peer.ip`
-
 `db.dbms` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
 
 | Value  | Description | Stability |

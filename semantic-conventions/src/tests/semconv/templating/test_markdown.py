@@ -31,9 +31,6 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testRefExtends(self):
         self.check("markdown/ref_extends/")
 
-    def testInclude(self):
-        self.check("markdown/include/")
-
     def testDeprecated(self):
         self.check("markdown/deprecated/")
 
@@ -71,9 +68,6 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testEnumInt(self):
         self.check("markdown/enum_int/")
 
-    def testExtendConstraint(self):
-        self.check("markdown/extend_constraint/")
-
     def test_extend_grandparent(self):
         self.check("markdown/extend_grandparent/")
 
@@ -102,9 +96,6 @@ class TestCorrectMarkdown(unittest.TestCase):
         self.assertEqual(
             "No attributes retained for 'db' filtering by 'wrong'", ex.args[0]
         )
-
-    def test_parameter_remove_constraint(self):
-        self.check("markdown/parameter_remove_constraint/")
 
     def test_parameter_empty(self):
         self.check("markdown/parameter_empty/")

@@ -23,6 +23,7 @@ from opentelemetry.semconv.model.semantic_convention import (
     SemanticConventionSet,
     SpanSemanticConvention,
 )
+from opentelemetry.semconv.model.utils import ValidationContext
 
 
 class TestCorrectParse(unittest.TestCase):
@@ -640,6 +641,20 @@ class TestCorrectParse(unittest.TestCase):
         self.assertEqual(attrs[3].imported, False)
         self.assertEqual(attrs[3].inherited, True)
         self.assertEqual(attrs[3].ref, None)
+
+    def test_namespace_collision_deprecated(self):
+        file = "yaml/deprecated/name_collisions_with_namespace_deprecated.yaml"
+        semconv = SemanticConventionSet(False)
+        semconv.parse(self.load_file(file), ValidationContext(file, True))
+        semconv.finish()
+        self.assertFalse(semconv.has_error())
+
+    def test_const_collision_deprecated(self):
+        file = "yaml/deprecated/name_collisions_const_deprecated.yaml"
+        semconv = SemanticConventionSet(False)
+        semconv.parse(self.load_file(file), ValidationContext(file, True))
+        semconv.finish()
+        self.assertFalse(semconv.has_error())
 
     def semantic_convention_check(self, s, expected):
         self.assertEqual(expected["prefix"], s.prefix)

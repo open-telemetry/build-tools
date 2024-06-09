@@ -370,18 +370,31 @@ class CodeRenderer:
             template = env.get_template(file_name, globals=data)
             self._write_template_to_file(template, data, output_name)
 
-    def _grouped_attribute_definitions(self, semconvset):
-        grouped_attributes = {}
+    def _filter_deprecated_collisions(self, semconvset):
+        attributes_by_const = {}
         for semconv in semconvset.models.values():
             for attr in semconv.attributes_and_templates:
                 if not is_definition(attr):  # skip references
                     continue
-                if attr.root_namespace not in grouped_attributes:
-                    grouped_attributes[attr.root_namespace] = []
-                grouped_attributes[attr.root_namespace].append(attr)
+                if attr.code_const_name not in attributes_by_const or attributes_by_const[attr.code_const_name].deprecated is not None:
+                    attributes_by_const[attr.code_const_name] = attr
+
+        attributes_by_fqn = {}
+        for attr in attributes_by_const.values():
+            attributes_by_fqn[attr.fqn] = attr
+        return attributes_by_fqn
+
+    def _grouped_attribute_definitions(self, semconvset):
+        grouped_attributes = {}
+        attributes_by_fqn = self._filter_deprecated_collisions(semconvset)
+        for attr in attributes_by_fqn.values():
+            if attr.root_namespace not in grouped_attributes:
+                grouped_attributes[attr.root_namespace] = []
+            grouped_attributes[attr.root_namespace].append(attr)
 
         for ns in grouped_attributes:
             grouped_attributes[ns] = sorted(grouped_attributes[ns], key=lambda a: a.fqn)
+
         return grouped_attributes
 
     def _grouped_metric_definitions(self, semconvset):

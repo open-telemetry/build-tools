@@ -1,0 +1,28 @@
+groups:
+  - id: namespace.collision
+    type: attribute_group
+    brief: "Namespace collision test"
+    attributes:
+      - id: foo.bar
+        type: string
+        brief: ""
+        stability: experimental
+        examples: ["foo"]
+      - id: foo.bar.baz
+        type: string
+        brief: ""
+        stability: experimental
+        examples: ["bar"]
+        deprecated: "Replaced by `foo.bar`"
+      - id: another_foo.bar
+        type: string
+        brief: ""
+        stability: experimental
+        examples: ["foo"]
+        deprecated: "Replaced by `another_foo.bar.*`"
+      - id: another_foo.bar.baz
+        type: string
+        brief: ""
+        stability: experimental
+        examples: ["bar"]
+

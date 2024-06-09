@@ -1,0 +1,17 @@
+groups:
+  - id: code_const.collision
+    type: attribute_group
+    brief: "Code constant collision test"
+    attributes:
+      - id: foo.bar
+        type: string
+        brief: ""
+        stability: experimental
+        examples: ["foo"]
+      - id: foo_bar
+        type: string
+        brief: ""
+        stability: experimental
+        examples: ["bar"]
+
+

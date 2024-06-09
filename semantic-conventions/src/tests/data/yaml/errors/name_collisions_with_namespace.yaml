@@ -1,0 +1,17 @@
+groups:
+  - id: namespace.collision
+    type: attribute_group
+    brief: "Namespace collision test"
+    attributes:
+      - id: foo.bar
+        type: string
+        brief: ""
+        stability: experimental
+        examples: ["foo"]
+      - id: foo.bar.baz
+        type: string
+        brief: ""
+        stability: experimental
+        examples: ["bar"]
+
+

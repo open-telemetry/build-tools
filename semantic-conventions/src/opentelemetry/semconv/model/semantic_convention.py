@@ -312,10 +312,47 @@ class SemanticConventionSet:
                         self.errors = True
                         print(
                             f"Attribute {attr.fqn} of Semantic convention '{model.semconv_id}'"
-                            "is already defined in {group_by_fqn.get(attr.fqn)}.",
+                            f"is already defined in {group_by_fqn.get(attr.fqn)}.",
                             file=sys.stderr,
                         )
                     group_by_fqn[attr.fqn] = model.semconv_id
+
+
+    def check_fqn_namespace_collision(self):
+        # check there are no attribute names that are namespaces for other attributes
+        # e.g. having both "foo.bar" and "foo.bar.baz" is not allowed
+
+        group_by_fqn: typing.Dict[str, SemanticAttribute] = {}
+        for model in self.models.values():
+            for attr in model.attributes_and_templates:
+                if not attr.ref and attr.deprecated is None:
+                    group_by_fqn[attr.fqn] = attr
+
+        for fqn1 in group_by_fqn.keys():
+            for fqn2 in group_by_fqn.keys():
+                if (fqn1.startswith(fqn2 + ".")):
+                    self.errors = True
+                    print(
+                        f"Attribute `{fqn2}` has a namespace which is used "
+                        f"as a name of another attribute `{fqn1}`.",
+                        file=sys.stderr,
+                    )
+
+
+    def check_unique_const_name(self):
+        group_by_const_name: typing.Dict[str, SemanticAttribute] = {}
+        for model in self.models.values():
+            for attr in model.attributes_and_templates:
+                if not attr.ref and attr.deprecated is None:
+                    if attr.code_const_name in group_by_const_name:
+                        self.errors = True
+                        print(
+                            f"Attribute {attr.fqn} of Semantic convention '{model.semconv_id}' "
+                            f"has a constant name '{attr.code_const_name}' that conflicts with "
+                            f"another attribute - {group_by_const_name[attr.code_const_name].fqn}.",
+                            file=sys.stderr,
+                        )
+                    group_by_const_name[attr.code_const_name] = attr
 
     def finish(self):
         """Resolves values referenced from other models using `ref` and `extends` attributes
@@ -324,6 +361,8 @@ class SemanticConventionSet:
         """
         # Before resolving attributes, we verify that no duplicate exists.
         self.check_unique_fqns()
+        self.check_unique_const_name()
+        self.check_fqn_namespace_collision()
         fixpoint = False
         index = 0
         tmp_debug = self.debug

@@ -6,7 +6,7 @@ class SecondGroup {
   /**
   * short description of attr_two
   */
-  public static final AttributeKey<Long> SECOND_GROUP_ATTR_TWO = longKey("second_group.attr_two");
+  public static final AttributeKey<Long> SECOND_GROUP_ATTR_TWO = longKey("second_group.attr.two");
   /**
   * second metric description
   * Experimental: True

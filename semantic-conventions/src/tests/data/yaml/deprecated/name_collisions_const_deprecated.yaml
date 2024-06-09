@@ -1,0 +1,29 @@
+groups:
+  - id: code_const.collision
+    type: attribute_group
+    brief: "Code constant collision test"
+    attributes:
+      - id: foo.bar
+        type: string
+        brief: ""
+        stability: experimental
+        examples: ["foo"]
+      - id: foo_bar
+        type: string
+        brief: ""
+        deprecated: "Replaced by `foo.bar`"
+        stability: experimental
+        examples: ["bar"]
+      - id: another_foo.bar
+        type: string
+        brief: ""
+        stability: experimental
+        deprecated: "Replaced by `another_foo_bar`"
+        examples: ["foo"]
+      - id: another_foo_bar
+        type: string
+        brief: ""
+        stability: experimental
+        examples: ["bar"]
+
+

@@ -22,6 +22,7 @@ from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 from opentelemetry.semconv.model.utils import (
     check_no_missing_keys,
+    to_code_const_name,
     validate_id,
     validate_values,
 )
@@ -59,6 +60,7 @@ class SemanticAttribute:
     note: str
     position: List[int]
     root_namespace: str
+    code_const_name: str
     inherited: bool = False
     imported: bool = False
 
@@ -231,6 +233,7 @@ class SemanticAttribute:
                 note=parsed_note,
                 position=position,
                 root_namespace=root_namespace,
+                code_const_name=to_code_const_name(fqn),
             )
             if attr.fqn in attributes:
                 position = position_data[list(attribute)[0]]

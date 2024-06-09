@@ -30,4 +30,9 @@ groups:
       - id: attr_two
         type: int
         stability: experimental
+        brief: short description of attr_two - this should not be rendered to code.
+        deprecated: "Replaced by `second_group_id.attr.two`"
+      - id: attr.two
+        type: int
+        stability: experimental
         brief: short description of attr_two

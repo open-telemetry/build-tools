@@ -51,6 +51,8 @@ def check_no_missing_keys(yaml, mandatory, validation_ctx):
         msg = f"Missing keys: {missing}"
         validation_ctx.raise_or_warn(position, msg, yaml.get("id"))
 
+def to_code_const_name(name: str) -> str:
+    return name.upper().replace(".", "_")
 
 class ValidatableYamlNode:
 

@@ -531,6 +531,20 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("multiple requirement_level values are not allowed!", msg)
         self.assertEqual(e.line, 12)
 
+    def test_namespace_collision(self):
+        file = "yaml/errors/name_collisions_with_namespace.yaml"
+        semconv = SemanticConventionSet(False)
+        semconv.parse(self.load_file(file), ValidationContext(file, True))
+        semconv.finish()
+        self.assertTrue(semconv.has_error())
+
+    def test_const_collision(self):
+        file = "yaml/errors/name_collisions_const.yaml"
+        semconv = SemanticConventionSet(False)
+        semconv.parse(self.load_file(file), ValidationContext(file, True))
+        semconv.finish()
+        self.assertTrue(semconv.has_error())
+
     def open_yaml(self, path):
         with open(self.load_file(path), encoding="utf-8") as file:
             return parse_semantic_convention_groups(file, ValidationContext(path, True))

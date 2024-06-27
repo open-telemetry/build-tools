@@ -10,9 +10,4 @@
 | [`net.peer.name`](input_general.md) | string | override brief. [1] | `example.com` | `Opt-In` | Experimental |
 
 **[1]:** override note.
-
-**Additional attribute requirements:** At least one of the following sets of attributes is required:
-
-* [`net.peer.ip`](input_general.md)
-* [`net.peer.name`](input_general.md), [`net.peer.ip`](input_general.md)
 <!-- endsemconv -->

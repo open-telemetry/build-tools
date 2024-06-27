@@ -31,9 +31,6 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testRefExtends(self):
         self.check("markdown/ref_extends/")
 
-    def testInclude(self):
-        self.check("markdown/include/")
-
     def testDeprecated(self):
         self.check("markdown/deprecated/")
 
@@ -71,9 +68,6 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testEnumInt(self):
         self.check("markdown/enum_int/")
 
-    def testExtendConstraint(self):
-        self.check("markdown/extend_constraint/")
-
     def test_extend_grandparent(self):
         self.check("markdown/extend_grandparent/")
 
@@ -103,9 +97,6 @@ class TestCorrectMarkdown(unittest.TestCase):
             "No attributes retained for 'db' filtering by 'wrong'", ex.args[0]
         )
 
-    def test_parameter_remove_constraint(self):
-        self.check("markdown/parameter_remove_constraint/")
-
     def test_parameter_empty(self):
         self.check("markdown/parameter_empty/")
 
@@ -125,9 +116,6 @@ class TestCorrectMarkdown(unittest.TestCase):
         msg = ex.args[0]
         self.assertIn("Parameter", msg)
         self.assertIn("already defined", msg)
-
-    def test_units(self):
-        self.check("markdown/metrics_unit/", extra_yaml_dirs=["yaml/metrics/"])
 
     def test_event(self):
         self.check("markdown/event/")
@@ -153,9 +141,6 @@ class TestCorrectMarkdown(unittest.TestCase):
 
     def testSamplingRelevant(self):
         self.check("markdown/sampling_relevant/")
-
-    def test_scope(self):
-        self.check("markdown/scope/")
 
     def test_attribute_group(self):
         self.check("markdown/attribute_group/")

@@ -55,5 +55,3 @@ groups:
         sampling_relevant: true
       - ref: net.peer.port
         sampling_relevant: true
-    constraints:
-      - include: network

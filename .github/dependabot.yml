@@ -4,23 +4,21 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+
   - package-ecosystem: "docker"
-    directory: "/protobuf"
+    directories:
+      - "**/*"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "docker"
-    directory: "/schemas"
-    schedule:
-      interval: "weekly"
+
   - package-ecosystem: "gomod"
-    directory: "/schemas"
+    directories:
+      - "**/*"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "docker"
-    directory: "/semantic-conventions"
-    schedule:
-      interval: "weekly"
+
   - package-ecosystem: "pip"
-    directory: "/semantic-conventions"
+    directories:
+      - "**/*"
     schedule:
       interval: "weekly"

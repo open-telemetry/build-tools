@@ -54,9 +54,7 @@
 						"span",
 						"resource",
 						"metric",
-						"metric_group",
 						"event",
-						"scope",
 						"attribute_group"
 					],
 					"description": "The (signal) type of the semantic convention"
@@ -84,51 +82,9 @@
 					},
 					"description": "list of attributes that belong to the semconv"
 				},
-				"constraints": {
-					"type": "array",
-					"items": {
-						"anyOf": [
-							{
-								"type": "object",
-								"additionalProperties": false,
-								"required": [
-									"any_of"
-								],
-								"properties": {
-									"any_of": {
-										"type": "array",
-										"description": " accepts a list of sequences. Each sequence contains a list of attribute ids that are required. any_of enforces that all attributes of at least one of the sequences are set.",
-										"items": {
-											"anyOf": [
-												{
-													"type": "array",
-													"items": {
-														"type": "string"
-													}
-												},
-												{
-													"type": "string"
-												}
-											]
-										}
-									}
-								}
-							},
-							{
-								"type": "object",
-								"additionalProperties": false,
-								"required": [
-									"include"
-								],
-								"properties": {
-									"include": {
-										"type": "string",
-										"description": "accepts a semantic conventions id. It includes as part of this semantic convention all constraints and required attributes that are not already defined in the current semantic convention."
-									}
-								}
-							}
-						]
-					}
+				"display_name": {
+					"type": "string",
+					"description": "the display name / title of the attribute group."
 				}
 			}
 		},
@@ -168,16 +124,6 @@
 				{"required": ["prefix"]},
 				{"required": ["name"]}
 			]
-		},
-		"MetricGroupSemanticConvention": {
-			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
-			"required": ["type"],
-			"properties": {
-				"type": {
-					"type": "string",
-					"const": "metric_group"
-				}
-			}
 		},
 		"MetricSemanticConvention": {
 			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],

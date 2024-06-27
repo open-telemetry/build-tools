@@ -11,11 +11,6 @@ groups:
         requirement_level: required
         brief: 'The service name, must be equal to the $service part in the span name.'
         examples: "EchoService"
-    constraints:
-      - any_of:
-        - net.peer.ip
-        - net.peer.name
-      - include: network
 
   - id: network
     type: span
@@ -56,8 +51,6 @@ groups:
         requirement_level: required
         brief: 'Name'
         examples: 'name'
-    constraints:
-      - include: http
 
   - id: http
     type: span
@@ -96,5 +89,3 @@ groups:
         requirement_level: required
         brief: 'zz attr'
         examples: 'name'
-    constraints:
-      - include: zother

@@ -93,17 +93,6 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertIn("id", msg)
         self.assertEqual(e.line, 2)
 
-    def test_top_level_keys_constraint(self):
-        with self.assertRaises(ValidationError) as ex:
-            self.open_yaml("yaml/errors/multi_value_cnstr.yaml")
-            self.fail()
-        e = ex.exception
-        msg = e.message.lower()
-        self.assertIn(
-            "invalid entry in constraint array - multiple top-level keys", msg
-        )
-        self.assertEqual(e.line, 10)
-
     def test_no_id_ref(self):
         with self.assertRaises(ValidationError) as ex:
             self.open_yaml("yaml/errors/no_attr_id_ref.yaml")
@@ -123,16 +112,6 @@ class TestCorrectErrorDetection(unittest.TestCase):
         self.assertEqual("test", e.fqn)
         self.assertIn("'test'", str(e))
         self.assertEqual(e.line, 8)
-
-    def test_invalid_key_in_constraint(self):
-        with self.assertRaises(ValidationError) as ex:
-            self.open_yaml("yaml/errors/wrong_cnstr.yaml")
-            self.fail()
-        e = ex.exception
-        msg = e.message
-        self.assertIn("Invalid key", msg)
-        self.assertIn("myNewCnst", msg)
-        self.assertEqual(e.line, 10)
 
     def test_invalid_stability(self):
         with self.assertRaises(ValidationError) as ex:
@@ -501,17 +480,6 @@ class TestCorrectErrorDetection(unittest.TestCase):
         semconv.parse(self.load_file("yaml/errors/id_clash/resource2_faas.yaml"))
         semconv.finish()
         self.assertTrue(semconv.errors)
-
-    def test_validate_anyof_attributes(self):
-        with self.assertRaises(ValidationError) as ex:
-            semconv = SemanticConventionSet(debug=False)
-            semconv.parse(self.load_file("yaml/errors/validate_anyof.yaml"))
-            semconv.finish()
-        e = ex.exception
-        msg = e.message.lower()
-        self.assertIn("any_of attribute", msg)
-        self.assertIn("does not exist", msg)
-        self.assertEqual(e.line, 16)
 
     def test_missing_event(self):
         with self.assertRaises(ValidationError) as ex:

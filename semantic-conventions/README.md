@@ -63,9 +63,8 @@ for which we want to generate the table.
 After `{semantic_convention_id}`, optional parameters enclosed in parentheses can be added to customize the output:
 
 - `tag={tag}`: prints only the attributes that have `{tag}` as a tag;
-- `full`: prints attributes and constraints inherited from the parent semantic conventions or from included ones;
+- `full`: prints attributes inherited from the parent semantic conventions or from included ones;
 - `ref`: prints attributes that are referenced from another semantic convention;
-- `remove_constraint`: does not print additional constraints of the semantic convention.
 
 By default markdown tables are rendered with stability badges (like ![Stable](https://img.shields.io/badge/-stable-lightgreen) or ![Experimental](https://img.shields.io/badge/-experimental-blue)) which can be disabled with `--md-disable-stable-badge`, `--md-disable-experimental-badge`, `--md-disable-deprecated-badge`.
 When badges are disabled, the stability column contains plain text representation of stability or deprecation status.
@@ -74,18 +73,18 @@ When badges are disabled, the stability column contains plain text representatio
 
 These examples assume that a semantic convention with the id `http.server` extends another semantic convention with the id `http`.
 
-`<!-- semconv http.server -->` will print only the attributes and constraints of the `http.server` semantic
+`<!-- semconv http.server -->` will print only the attributes of the `http.server` semantic
 convention.
 
-`<!-- semconv http.server(full) -->` will print the attributes and constraints of the `http` semantic
-convention and also the attributes and constraints of the `http.server` semantic convention.
+`<!-- semconv http.server(full) -->` will print the attributes of the `http` semantic
+convention and also the attributes of the `http.server` semantic convention.
 
 `<!-- semconv http.server() -->` is equivalent to `<!-- semconv http.server -->`.
 
-`<!-- semconv http.server(tag=network) -->` will print the constraints and attributes of the `http.server` semantic
+`<!-- semconv http.server(tag=network) -->` will print the attributes of the `http.server` semantic
 convention that have the tag `network`.
 
-`<!-- semconv http.server(tag=network, full) -->` will print the constraints and attributes of both `http` and `http.server`
+`<!-- semconv http.server(tag=network, full) -->` will print the attributes of both `http` and `http.server`
 semantic conventions that have the tag `network`.
 
 `<!-- semconv metric.http.server.active_requests(metric_table) -->` will print a table describing a single metric

@@ -258,11 +258,6 @@ groups:
         tag: connection-level
       - ref: net.peer.port
         tag: connection-level
-
-    constraints:
-      - any_of:
-        - 'net.peer.name'
-        - 'net.peer.ip'
   - id: db.cassandra
     type: span
     prefix: db.cassandra

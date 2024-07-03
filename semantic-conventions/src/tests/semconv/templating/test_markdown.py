@@ -34,7 +34,6 @@ class TestCorrectMarkdown(unittest.TestCase):
     def testRefEmbed(self):
         self.check("markdown/ref_embed/")
 
-
     def testDeprecated(self):
         self.check("markdown/deprecated/")
 

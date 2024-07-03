@@ -1,0 +1,15 @@
+groups:
+  - id: registry.server
+    prefix: server
+    type: attribute_group
+    brief: "Describes information about the server."
+    attributes:
+      - id: id
+        type: string
+        stability: experimental
+        brief: >
+          some server id
+        examples: ['123']
+      - ref: geo.lat
+        prefix: true
+        brief: My own latitude

@@ -100,6 +100,7 @@ class SemanticAttribute:
             "requirement_level",
             "sampling_relevant",
             "note",
+            "prefix",
         )
         if not yaml_attributes:
             return attributes
@@ -136,8 +137,12 @@ class SemanticAttribute:
                     validation_ctx.raise_or_warn(position, msg, ref)
                 brief = attribute.get("brief")
                 examples = attribute.get("examples")
+                ref_prefix = attribute.get("prefix", False)
                 ref = ref.strip()
-                fqn = ref
+                if ref_prefix:
+                    fqn = f"{prefix}.{ref}"
+                else:
+                    fqn = ref
 
             required_value_map = {
                 "required": RequirementLevel.REQUIRED,

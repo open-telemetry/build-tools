@@ -268,6 +268,11 @@
 				"tag": {
 					"type": "string",
 					"description": "associates a tag to the attribute"
+				},
+				"prefix": {
+					"type": "boolean",
+					"description": "specifies if it is embedded attribute from other namespace. It defaults to false.",
+					"default": false
 				}
 			}
 		},

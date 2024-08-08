@@ -40,7 +40,7 @@ All attributes are lower case.
 groups ::= semconv
        | semconv groups
 
-semconv ::= id [convtype] brief [note] [extends] stability [deprecated] attributes [specificfields]
+semconv ::= id [convtype] brief [note] [extends] stability [deprecated] [display_name] attributes [specificfields]
 
 id    ::= string
 
@@ -59,6 +59,8 @@ stability ::= "experimental"
           |   "stable"
 
 deprecated ::= <description>
+
+display_name ::= string
 
 attributes ::= (id type brief examples | ref [brief] [examples]) [tag] stability [deprecated] [required] [sampling_relevant] [note]
 

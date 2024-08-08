@@ -40,7 +40,7 @@ All attributes are lower case.
 groups ::= semconv
        | semconv groups
 
-semconv ::= id [convtype] brief [note] [prefix] [extends] [stability] [deprecated] attributes [specificfields]
+semconv ::= id [convtype] brief [note] [extends] stability [deprecated] attributes [specificfields]
 
 id    ::= string
 
@@ -53,8 +53,6 @@ convtype ::= "span" # Default if not specified
 brief ::= string
 note  ::= string
 
-prefix ::= string
-
 extends ::= string
 
 stability ::= "experimental"
@@ -62,7 +60,7 @@ stability ::= "experimental"
 
 deprecated ::= <description>
 
-attributes ::= (id type brief examples | ref [brief] [examples]) [tag] [stability] [deprecated] [required] [sampling_relevant] [note]
+attributes ::= (id type brief examples | ref [brief] [examples]) [tag] stability [deprecated] [required] [sampling_relevant] [note]
 
 # ref MUST point to an existing attribute id
 ref ::= id
@@ -82,13 +80,11 @@ simple_type ::= "string"
 
 template_type ::= "template[" simple_type "]" # As a single string
 
-enum ::= [allow_custom_values] members
-
-allow_custom_values := boolean
+enum ::= members
 
 members ::= member {member}
 
-member ::= id value [brief] [note] [stability] [deprecated]
+member ::= id value [brief] [note] stability [deprecated]
 
 requirement_level ::= "required"
          |   "conditionally_required" <condition>
@@ -98,10 +94,6 @@ requirement_level ::= "required"
 sampling_relevant ::= boolean
 
 examples ::= <example_value> {<example_value>}
-
-any_of ::= id {id}
-
-include ::= id
 
 specificfields ::= spanfields
                |   eventfields
@@ -143,12 +135,11 @@ The field `semconv` represents a semantic convention and it is made by:
 - `id`, string that uniquely identifies the semantic convention.
 - `type`, optional enum, defaults to `span` (with a warning if not present).
 - `brief`, string, a brief description of the semantic convention.
+- `stability`, required enum, either `stable` or `experimental`, specifies the stability of the attribute.
 - `note`, optional string, a more elaborate description of the semantic convention.
    It defaults to an empty string.
-- `prefix`, optional string, prefix for the attributes for this semantic convention.
-   It defaults to an empty string.
 - `extends`, optional string, reference another semantic convention `id`.
-   It inherits the prefix, and all attributes defined in the specified semantic convention.
+   It inherits all attributes defined in the specified semantic convention.
 - `deprecated`, optional, when present marks the semantic convention as deprecated.
    The string provided as `<description>` MUST specify why it's deprecated and/or what to use instead.
 - `attributes`, list of attributes that belong to the semantic convention.
@@ -165,16 +156,14 @@ The following is only valid if `type` is `span` (the default):
 
 The following is only valid if `type` is `event`:
 
-- `name`, conditionally required string. The name of the event.
-  If not specified, the `prefix` is used. If `prefix` is empty (or unspecified),
-  `name` is required.
+- `name`, required, string. The name of the event.
 
 #### Metric Group semantic convention
 
 Metric group inherits all from the base semantic convention, and does not
 add any additional fields.
 
-The metric group semconv is a group where related metric attributes
+The metric group semantic convention is a group where related metric attributes
 can be defined and then referenced from other `metric` groups using `ref`.
 
 #### Metric semantic convention
@@ -210,10 +199,10 @@ An attribute is defined by:
     * `"string[]"`: Array of strings attributes.
     * `"int[]"`: Array of integer attributes.
     * `"double[]"`: Array of double attributes.
-    * `"boolean[]"`: Array of booleans attributes.
+    * `"boolean[]"`: Array of boolean attributes.
   * _template type as string literal:_ `"template[<PRIMITIVE_OR_ARRAY_TYPE>]"` (See [below](#template-type))
   See the [specification of Attributes](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute) for the definition of the value types.
-- `stability`, enum - either `stable` or `experimental`, specifies the stability of the attribute. Required.
+- `stability`, required enum, either `stable` or `experimental`, specifies the stability of the attribute.
 - `ref`, optional string, reference an existing attribute, see [below](#ref).
 - `tag`, optional string, associates a tag ("sub-group") to the attribute.
    It carries no particular semantic meaning but can be used e.g. for filtering
@@ -321,7 +310,7 @@ fields are present in the current attribute definition, they override the inheri
 #### Type
 
 An attribute type can either be a string, int, double, boolean, array of strings, array of int, array of double,
-array of booleans, a template type or an enumeration.
+array of boolean, a template type or an enumeration.
 
 ##### Template type
 
@@ -355,8 +344,6 @@ In this example the definition will be resolved into a dictionary of attributes 
 
 If the type is an enumeration, additional fields are required:
 
-- `allow_custom_values`, optional boolean, set to false to not accept values
-     other than the specified members. It defaults to `true`.
 - `members`, list of enum entries.
 
 An enum entry has the following fields:

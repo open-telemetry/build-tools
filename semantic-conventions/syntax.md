@@ -272,20 +272,14 @@ examples:
 A single example value for an array of strings attribute:
 
 ```yaml
-examples: ['first element of first array', 'second element of first array']
+examples: [ ['first element of first array', 'second element of first array'] ]
 ```
 
 or
 
 ```yaml
 examples:
-   - ['first element of first array', 'second element of first array']
-```
-
-Attention, the following will throw a type mismatch error because an array of strings as type for the example values is expected and not a string:
-
-```yaml
-examples: 'this is an error'
+  - ['first element of first array', 'second element of first array']
 ```
 
 Multiple example values for an array of string attribute:
@@ -300,6 +294,12 @@ or
 examples:
    - ['first element of first array', 'second element of first array']
    - ['first element of second array', 'second element of second array']
+```
+
+Attention: the following will throw a type mismatch error because an array of strings as type for the example values is expected and not a string:
+
+```yaml
+examples: 'this is an error'
 ```
 
 #### Ref

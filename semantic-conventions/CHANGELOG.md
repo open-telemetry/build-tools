@@ -4,6 +4,9 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- Update json-schema version, remove properties that are not used anymore.
+  ([#344](https://github.com/open-telemetry/build-tools/pull/344))
+
 ## 0.25.0
 
 - Added display_name as an allowed property on semconv attribute groups

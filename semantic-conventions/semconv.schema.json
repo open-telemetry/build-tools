@@ -1,5 +1,5 @@
 {
-	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"type": "object",
 	"description": "YAML schema for semantic convention generator, use for example with VS Code.",
 	"additionalProperties": false,
@@ -9,27 +9,44 @@
 			"items": {
 				"anyOf": [
 					{
-						"allOf": [{"$ref": "#/definitions/SemanticConvention"}]
+						"allOf": [
+							{
+								"$ref": "#/$defs/SemanticConvention"
+							}
+						]
 					},
 					{
-						"allOf": [{"$ref": "#/definitions/SpanSemanticConvention"}]
+						"allOf": [
+							{
+								"$ref": "#/$defs/SpanSemanticConvention"
+							}
+						]
 					},
 					{
-						"allOf": [{"$ref": "#/definitions/EventSemanticConvention"}]
+						"allOf": [
+							{
+								"$ref": "#/$defs/EventSemanticConvention"
+							}
+						]
 					},
 					{
-						"allOf": [{"$ref": "#/definitions/MetricSemanticConvention"}]
+						"allOf": [
+							{
+								"$ref": "#/$defs/MetricSemanticConvention"
+							}
+						]
 					}
 				]
 			}
 		}
 	},
-	"definitions": {
+	"$defs": {
 		"SemanticConventionBase": {
 			"type": "object",
 			"required": [
 				"id",
-				"brief"
+				"brief",
+				"stability"
 			],
 			"anyOf": [
 				{
@@ -67,29 +84,40 @@
 					"type": "string",
 					"description": "a more elaborate description of the semantic convention. It defaults to an empty string"
 				},
-				"prefix": {
-					"type": "string",
-					"description": "prefix of the attribute for this semconv. It defaults to an empty string."
-				},
 				"extends": {
 					"type": "string",
-					"description": "reference another semantic convention ID. It inherits all attributes from the specified semconv."
+					"description": "reference another semantic convention ID. It inherits all attributes from the specified semantic convention."
 				},
 				"attributes": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/Attribute"
+						"$ref": "#/$defs/Attribute"
 					},
-					"description": "list of attributes that belong to the semconv"
+					"description": "list of attributes that belong to the semantic convention"
 				},
 				"display_name": {
 					"type": "string",
 					"description": "the display name / title of the attribute group."
+				},
+				"deprecated": {
+					"type": "string",
+					"description": "specifies if the attribute is deprecated. The string provided as <description> MUST specify why it's deprecated and/or what to use instead."
+				},
+				"stability": {
+					"allOf": [
+						{
+							"$ref": "#/$defs/StabilityLevel"
+						}
+					]
 				}
 			}
 		},
 		"SpanSemanticConvention": {
-			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"allOf": [
+				{
+					"$ref": "#/$defs/SemanticConventionBase"
+				}
+			],
 			"properties": {
 				"type": {
 					"type": "string",
@@ -104,12 +132,16 @@
 						"consumer",
 						"internal"
 					],
-					"description": "specifies the kind of the span. Leaf semconv nodes (in the hierarchy tree) that do not have this field set will generate a warning."
+					"description": "specifies the kind of the span. Leaf semantic convention nodes (in the hierarchy tree) that do not have this field set will generate a warning."
 				}
 			}
 		},
 		"EventSemanticConvention": {
-			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"allOf": [
+				{
+					"$ref": "#/$defs/SemanticConventionBase"
+				}
+			],
 			"properties": {
 				"type": {
 					"type": "string",
@@ -117,16 +149,23 @@
 				},
 				"name": {
 					"type": "string",
-					"description": "The name of the event. Required if no prefix is given."
+					"description": "The name of the event."
 				}
 			},
 			"anyOf": [
-				{"required": ["prefix"]},
-				{"required": ["name"]}
+				{
+					"required": [
+						"name"
+					]
+				}
 			]
 		},
 		"MetricSemanticConvention": {
-			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
+			"allOf": [
+				{
+					"$ref": "#/$defs/SemanticConventionBase"
+				}
+			],
 			"required": [
 				"type",
 				"metric_name",
@@ -159,13 +198,22 @@
 			}
 		},
 		"SemanticConvention": {
-			"allOf": [{ "$ref": "#/definitions/SemanticConventionBase" }],
-			"required": ["type"],
+			"allOf": [
+				{
+					"$ref": "#/$defs/SemanticConventionBase"
+				}
+			],
+			"required": [
+				"type"
+			],
 			"properties": {
 				"type": {
 					"type": "string",
 					"not": {
-						"enum": ["span", "event"]
+						"enum": [
+							"span",
+							"event"
+						]
 					}
 				}
 			}
@@ -174,9 +222,6 @@
 			"type": "object",
 			"additionalProperties": false,
 			"properties": {
-				"allow_custom_values": {
-					"type": "boolean"
-				},
 				"members": {
 					"type": "array",
 					"items": {
@@ -184,7 +229,8 @@
 						"additionalProperties": false,
 						"required": [
 							"id",
-							"value"
+							"value",
+							"stability"
 						],
 						"properties": {
 							"id": {
@@ -206,8 +252,16 @@
 								"type": "string",
 								"description": "longer description. It defaults to an empty string."
 							},
+							"deprecated": {
+								"type": "string",
+								"description": "specifies if the attribute is deprecated. The string provided as <description> MUST specify why it's deprecated and/or what to use instead."
+							},
 							"stability": {
-								"allOf": [{ "$ref": "#/definitions/StabilityLevel" }]
+								"allOf": [
+									{
+										"$ref": "#/$defs/StabilityLevel"
+									}
+								]
 							}
 						}
 					}
@@ -217,7 +271,8 @@
 		"AttributeFullSpec": {
 			"required": [
 				"id",
-				"type"
+				"type",
+				"stability"
 			],
 			"properties": {
 				"id": {
@@ -249,7 +304,7 @@
 							"description": "literal denoting the type"
 						},
 						{
-							"$ref": "#/definitions/AttributeEnumType"
+							"$ref": "#/$defs/AttributeEnumType"
 						}
 					]
 				}
@@ -362,30 +417,27 @@
 						},
 						"examples": {
 							"anyOf": [
-								{ "$ref": "#/definitions/ValueType" },
+								{
+									"$ref": "#/$defs/ValueType"
+								},
 								{
 									"type": "array",
-									"items": { "$ref": "#/definitions/ValueType" }
+									"items": {
+										"$ref": "#/$defs/ValueType"
+									}
 								}
 							],
 							"description": "sequence/dictionary of example values for the attribute. They are optional for boolean, int, double, and enum attributes. Example values must be of the same type of the attribute. If only a single example is provided, it can directly be reported without encapsulating it into a sequence/dictionary."
-						},
-						"deprecated": {
-							"type": "string",
-							"description": "specifies if the attribute is deprecated. The string provided as <description> MUST specify why it's deprecated and/or what to use instead."
-						},
-						"stability": {
-							"allOf": [{ "$ref": "#/definitions/StabilityLevel" }]
 						}
 					}
 				},
 				{
 					"oneOf": [
 						{
-							"$ref": "#/definitions/AttributeFullSpec"
+							"$ref": "#/$defs/AttributeFullSpec"
 						},
 						{
-							"$ref": "#/definitions/AttributeReference"
+							"$ref": "#/$defs/AttributeReference"
 						}
 					]
 				}

@@ -6,6 +6,8 @@ Please update the changelog as part of any significant pull request.
 
 - Update json-schema version, remove properties that are not used anymore.
   ([#344](https://github.com/open-telemetry/build-tools/pull/344))
+- Remove json-schema and documentation, add link to new location.
+  ([#345](https://github.com/open-telemetry/build-tools/pull/345))
 
 ## 0.25.0
 

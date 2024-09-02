@@ -2,5 +2,5 @@ black==24.8.0
 mypy==1.11.2
 pytest==8.3.2
 flake8==7.1.1
-pylint==3.2.6
+pylint==3.2.7
 isort==5.13.2

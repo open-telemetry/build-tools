@@ -4,6 +4,15 @@ Please update the changelog as part of any significant pull request.
 
 ## Unreleased
 
+- Update json-schema version, remove properties that are not used anymore.
+  ([#344](https://github.com/open-telemetry/build-tools/pull/344))
+- Remove json-schema and documentation, add link to new location.
+  ([#345](https://github.com/open-telemetry/build-tools/pull/345))
+
+## 0.25.0
+
+- Added display_name as an allowed property on semconv attribute groups
+  ([#316](https://github.com/open-telemetry/build-tools/pull/316))
 - BREAKING: Remove unused semantic convention types: `UnitSemanticConvention`, `MetricGroupSemanticConvention` and `ScopeSemanticConvention`
   ([#309](https://github.com/open-telemetry/build-tools/pull/309))
 

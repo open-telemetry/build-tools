@@ -1,19 +1,17 @@
 # gRPC core version that applies to C++, C#, Objective-C, PhP, Python, Ruby
-ARG GRPC_VERSION=1.52.0
-ARG PROTOBUF_C_VERSION=1.4.1
+ARG GRPC_VERSION=1.52.2
+ARG PROTOBUF_C_VERSION=1.5.0
 ARG GRPC_WEB_VERSION=1.3.0
 
-ARG PROTOC_GEN_GO_VERSION=1.5.2
-ARG PROTOC_GEN_GO_GRPC_VERSION=1.41.0
-ARG GRPC_JAVA_VERSION=1.51.3
-# v1.3.2, using the version directly does not work: "tar: invalid magic"
-ARG PROTOC_GEN_GOGO_VERSION=b03c65ea87cdc3521ede29f62fe3ce239267c1bc
+ARG PROTOC_GEN_GO_VERSION=1.32.0
+ARG PROTOC_GEN_GO_GRPC_VERSION=1.52.3
+ARG GRPC_JAVA_VERSION=1.52.1
+# use the lastest commit from master
+ARG PROTOC_GEN_GOGO_VERSION=f67b8970b736e53dbd7d0a27146c8f1ac52f74e5
 ARG PROTOC_GEN_LINT_VERSION=0.3.0
-ARG GRPC_GATEWAY_VERSION=2.15.0
+ARG GRPC_GATEWAY_VERSION=2.19.1
 ARG PROTOC_GEN_PARQUET_VERSION=0.4.3
-ARG UPX_VERSION=4.0.2
-
-ARG TARGETARCH=amd64
+ARG UPX_VERSION=4.2.2
 
 FROM alpine:3.18 as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
@@ -55,7 +53,7 @@ RUN mkdir -p /grpc-java && \
     -I. -I/usr/include \
     compiler/src/java_plugin/cpp/*.cpp \
     -L/usr/lib64 \
-    -lprotoc -lprotobuf -lpthread --std=c++0x -s \
+    -lprotoc -lprotobuf -lpthread -s \
     -o protoc-gen-grpc-java && \
     install -Ds protoc-gen-grpc-java /out/usr/bin/protoc-gen-grpc-java && \
     rm -Rf /grpc-java && \
@@ -68,7 +66,7 @@ RUN mkdir -p /grpc-web && \
     make install-plugin && \
     install -Ds /usr/local/bin/protoc-gen-grpc-web /out/usr/bin/protoc-gen-grpc-web
 
-FROM golang:1.18-alpine3.14 as go_builder
+FROM golang:1.22-alpine as go_builder
 RUN apk add --no-cache build-base curl git
 
 ARG PROTOC_GEN_GO_GRPC_VERSION
@@ -79,10 +77,10 @@ RUN mkdir -p ${GOPATH}/src/github.com/grpc/grpc-go && \
     install -Ds /golang-protobuf-out/protoc-gen-go-grpc /out/usr/bin/protoc-gen-go-grpc
 
 ARG PROTOC_GEN_GO_VERSION
-RUN mkdir -p ${GOPATH}/src/github.com/golang/protobuf && \
-    curl -sSL https://api.github.com/repos/golang/protobuf/tarball/v${PROTOC_GEN_GO_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/golang/protobuf &&\
-    cd ${GOPATH}/src/github.com/golang/protobuf && \
-    go build -ldflags '-w -s' -o /golang-protobuf-out/protoc-gen-go ./protoc-gen-go && \
+RUN mkdir -p ${GOPATH}/src/github.com/protocolbuffers/protobuf-go && \
+    curl -sSL https://api.github.com/repos/protocolbuffers/protobuf-go/tarball/v${PROTOC_GEN_GO_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/protocolbuffers/protobuf-go &&\
+    cd ${GOPATH}/src/github.com/protocolbuffers/protobuf-go && \
+    go build -ldflags '-w -s' -o /golang-protobuf-out/protoc-gen-go ./cmd/protoc-gen-go && \
     install -Ds /golang-protobuf-out/protoc-gen-go /out/usr/bin/protoc-gen-go
 
 ARG PROTOC_GEN_GOGO_VERSION
@@ -108,7 +106,7 @@ RUN cd / && \
     mkdir -p /protoc-gen-lint-out && \
     cd /protoc-gen-lint-out && \
     unzip -q /protoc-gen-lint_linux_${TARGETARCH}.zip && \
-    install -Ds /protoc-gen-lint-out/protoc-gen-lint /out/usr/bin/protoc-gen-lint
+    install -D /protoc-gen-lint-out/protoc-gen-lint /out/usr/bin/protoc-gen-lint
 
 ARG GRPC_GATEWAY_VERSION
 RUN mkdir -p ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \

@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.13-alpine
 LABEL maintainer="The OpenTelemetry Authors"
 ADD *.whl /semconvgen/
 WORKDIR /semconvgen

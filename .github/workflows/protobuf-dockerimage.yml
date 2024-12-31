@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build protobuf/. -t build-protobuf
+      run: docker build protobuf/. -t build-protobuf --build-context=src-gen-goshim=protoc-gen-goshim
       env:
         TARGETARCH: ${{ matrix.TARGETARCH }}
     - name: Push the Docker image

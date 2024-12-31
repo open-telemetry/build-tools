@@ -120,6 +120,10 @@ RUN mkdir -p ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
     mkdir -p /out/usr/include/protoc-gen-openapiv2/options && \
     install -D $(find ./protoc-gen-openapiv2/options -name '*.proto') -t /out/usr/include/protoc-gen-openapiv2/options
 
+COPY --from=src-gen-goshim . /src/gen-goshim
+RUN cd /src/gen-goshim && \
+    go build -ldflags '-w -s' -o /out/usr/bin/protoc-gen-goshim 
+
 FROM alpine:3.18 as packer
 RUN apk add --no-cache curl
 

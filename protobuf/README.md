@@ -15,6 +15,7 @@ Forked from <https://github.com/jaegertracing/docker-protobuf>.
 - <https://github.com/grpc/grpc>
 - <https://github.com/grpc/grpc-java>
 - <https://github.com/atoulme/protoc-gen-parquet>
+- [protobuf-gen-goshim](../protoc-gen-goshim/)
 
 ## Supported languages
 

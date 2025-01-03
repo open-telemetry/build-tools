@@ -40,12 +40,39 @@ func genShim(gen *protogen.Plugin, file *protogen.File, old string, new string) 
 	g.P("package ", file.GoPackageName)
 	g.P(`import slim "`, importPath, `"`)
 
-	g.P("type (")
 	for _, m := range file.Messages {
-		g.P(fmt.Sprintf("%[1]s = slim.%[1]s", m.GoIdent.GoName))
+		doMessage(g, m)
 	}
+
 	for _, m := range file.Enums {
-		g.P(fmt.Sprintf("%[1]s = slim.%[1]s", m.GoIdent.GoName))
+		doEnum(g, m)
+	}
+}
+
+func doMessage(g *protogen.GeneratedFile, m *protogen.Message) {
+	g.P(fmt.Sprintf("type %[1]s = slim.%[1]s", m.GoIdent.GoName))
+	for _, e := range m.Enums {
+		doEnum(g, e)
+	}
+
+	for _, o := range m.Oneofs {
+		// protobuf 3 optional like oneof
+		if !o.Desc.IsSynthetic() {
+			for _, f := range o.Fields {
+				g.P(fmt.Sprintf("type %[1]s = slim.%[1]s", f.GoIdent.GoName))
+			}
+		}
+	}
+	for _, m := range m.Messages {
+		doMessage(g, m)
+	}
+}
+
+func doEnum(g *protogen.GeneratedFile, m *protogen.Enum) {
+	g.P(fmt.Sprintf("type %[1]s = slim.%[1]s", m.GoIdent.GoName))
+	g.P("const (")
+	for _, v := range m.Values {
+		g.P(fmt.Sprintf("%[1]s = slim.%[1]s", v.GoIdent.GoName))
 	}
 	g.P(")")
 }

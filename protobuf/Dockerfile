@@ -14,7 +14,7 @@ ARG UPX_VERSION=4.0.2
 
 ARG TARGETARCH=amd64
 
-FROM alpine:3.18 as protoc_builder
+FROM alpine:3.21 as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
 
 RUN mkdir -p /out
@@ -120,7 +120,7 @@ RUN mkdir -p ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
     mkdir -p /out/usr/include/protoc-gen-openapiv2/options && \
     install -D $(find ./protoc-gen-openapiv2/options -name '*.proto') -t /out/usr/include/protoc-gen-openapiv2/options
 
-FROM alpine:3.18 as packer
+FROM alpine:3.21 as packer
 RUN apk add --no-cache curl
 
 ARG UPX_VERSION
@@ -146,7 +146,7 @@ RUN upx --lzma $(find /out/usr/bin/ \
 RUN find /out -name "*.a" -delete -or -name "*.la" -delete
 
 
-FROM alpine:3.18
+FROM alpine:3.21
 LABEL maintainer="The OpenTelemetry Authors"
 COPY --from=packer /out/ /
 RUN apk add --no-cache bash libstdc++ && \

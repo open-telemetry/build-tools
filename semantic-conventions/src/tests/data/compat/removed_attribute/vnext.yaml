@@ -1,6 +1,0 @@
-groups:
-  - id: first
-    type: attribute_group
-    brief: "First group."
-    note: "First group note."
-    prefix: "first"

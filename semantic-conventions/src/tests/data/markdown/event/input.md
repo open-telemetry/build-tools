@@ -1,5 +1,0 @@
-# Test
-
-<!-- semconv event -->
-
-<!-- endsemconv -->

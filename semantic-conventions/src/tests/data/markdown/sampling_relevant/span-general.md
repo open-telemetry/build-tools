@@ -1,5 +1,0 @@
-# General
-
-<!-- semconv network -->
-
-<!-- endsemconv -->

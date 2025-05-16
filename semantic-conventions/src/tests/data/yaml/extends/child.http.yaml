@@ -1,7 +1,0 @@
-groups:
-  - id: child.http.server
-    type: span
-    prefix: child.http
-    extends: http.server
-    span_kind: server
-    brief: 'OTel HTTP Server Semantic Convention'

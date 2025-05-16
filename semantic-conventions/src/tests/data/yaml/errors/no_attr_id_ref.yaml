@@ -1,9 +1,0 @@
-groups:
-  - id: faas.http
-    type: span
-    extends: faas
-    brief: errors
-    attributes:
-      - type: string
-        brief: asd
-        requirement_level: required

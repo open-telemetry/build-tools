@@ -1,4 +1,0 @@
-groups:
-  - id: messaging
-    type: span
-    not_existing: key

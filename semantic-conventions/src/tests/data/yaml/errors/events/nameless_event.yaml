@@ -1,9 +1,0 @@
-groups:
-  - id: eventid
-    type: event
-    brief: eventbrief
-    attributes:
-      - id: eventattr
-        stability: experimental
-        type: boolean
-        brief: eventattrbrief

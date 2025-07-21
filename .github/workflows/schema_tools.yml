@@ -9,6 +9,9 @@ on:
       - .github/workflows/schema_tools.yml
       - schemas/*
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -14,7 +14,7 @@ RUN go build -o /schemas-tool
 
 ## Run
 ##
-FROM alpine:3.22
+FROM alpine:3.23
 
 WORKDIR /
 

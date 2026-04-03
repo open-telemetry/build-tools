@@ -1,11 +1,11 @@
 module github.com/open-telemetry/build-tools/schemas
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/stretchr/testify v1.11.1
-	go.opentelemetry.io/otel/schema v0.0.14
+	go.opentelemetry.io/otel/schema v0.0.16
 )
 
 require (

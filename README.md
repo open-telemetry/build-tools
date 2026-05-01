@@ -17,3 +17,10 @@ For more information about the maintainer role, see the [community repository](h
 - [OpenTelemetry Specification Approvers](https://github.com/open-telemetry/community/blob/main/community-members.md#specifications-and-proto)
 
 For more information about the approver role, see the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#approver).
+
+### Emeritus
+
+- [Christian Neumüller](https://github.com/Oberon00), Approver
+
+For more information about the emeritus role, see the
+[community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#emeritus-maintainerapprovertriager).

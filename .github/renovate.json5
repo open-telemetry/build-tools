@@ -1,0 +1,40 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:best-practices',
+    'helpers:pinGitHubActionDigestsToSemver',
+  ],
+  packageRules: [
+    {
+      groupName: 'all patch and minor versions',
+      matchUpdateTypes: [
+        'patch',
+        'minor',
+      ],
+      schedule: [
+        '* 0-7 * * 2', // weekly, before 8am on Tuesday
+      ],
+    },
+    {
+      groupName: 'weekly update',
+      matchManagers: [
+        'github-actions',
+        'dockerfile',
+      ],
+      schedule: [
+        '* 0-7 * * 2', // weekly, before 8am on Tuesday
+      ],
+    },
+  ],
+  customManagers: [
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '^protobuf/Dockerfile$',
+      ],
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>[a-z-]+) depName=(?<depName>[^\\s]+)(?: versioning=(?<versioning>[^\\s]+))?\\nARG [A-Z0-9_]+_VERSION=(?<currentValue>.*)',
+      ],
+    },
+  ],
+}

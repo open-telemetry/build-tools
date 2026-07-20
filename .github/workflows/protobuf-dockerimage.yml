@@ -12,6 +12,8 @@ on:
 
 permissions:
   contents: read
+  id-token: write # Required for SLSA build attestations
+  attestations: write # Required for generating build provenance
 
 jobs:
   build:
@@ -23,25 +25,38 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-    - name: Build the Docker image
-      run: docker build protobuf/. -t build-protobuf
-      env:
-        TARGETARCH: ${{ matrix.TARGETARCH }}
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
 
-    - name: Push the Docker image
+    - name: Log in to Docker Hub
       if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Determine tags
+      id: meta
       run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-        function tag_and_push {
-          docker tag build-protobuf "otel/build-protobuf:${1}" && docker push "otel/build-protobuf:${1}"
-        }
+        TAGS="otel/build-protobuf:test"
         if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-          tag_and_push "latest"
+          TAGS="otel/build-protobuf:latest"
         elif [[ "${GITHUB_REF}" =~ refs/tags/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-            TAG="${GITHUB_REF#"refs/tags/v"}"
-            tag_and_push "${TAG}"
-        else
-          tag_and_push "${GITHUB_REF#"refs/tags/"}"
+          TAG="${GITHUB_REF#"refs/tags/v"}"
+          TAGS="otel/build-protobuf:${TAG},otel/build-protobuf:latest"
+        elif [[ "${GITHUB_REF}" =~ refs/tags/.* ]]; then
+          TAG="${GITHUB_REF#"refs/tags/"}"
+          TAGS="otel/build-protobuf:${TAG}"
         fi
-      env:
-        TARGETARCH: ${{ matrix.TARGETARCH }}
+        echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+
+    - name: Build and Push Docker image with Attestations
+      uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
+      with:
+        context: ./protobuf
+        platforms: linux/${{ matrix.TARGETARCH }}
+        push: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
+        load: ${{ !(github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) }}
+        tags: ${{ steps.meta.outputs.tags }}
+        provenance: true
+        sbom: true

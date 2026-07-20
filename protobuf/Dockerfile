@@ -1,26 +1,48 @@
 # gRPC core version that applies to C++, C#, Objective-C, PhP, Python, Ruby
-ARG GRPC_VERSION=1.52.0
-ARG PROTOBUF_C_VERSION=1.4.1
-ARG GRPC_WEB_VERSION=1.3.0
+ARG GRPC_VERSION=1.82.1
+ARG GRPC_COMMIT_SHA=acccf84c0df20487d64101f528e5d426541ca4e5
 
-ARG PROTOC_GEN_GO_VERSION=1.5.2
-ARG PROTOC_GEN_GO_GRPC_VERSION=1.41.0
-ARG GRPC_JAVA_VERSION=1.51.3
+ARG PROTOBUF_C_VERSION=1.5.2
+ARG PROTOBUF_C_SHA256=e2c86271873a79c92b58fef7ebf8de1aa0df4738347a8bd5d4e65a80a16d0d24
+
+ARG GRPC_WEB_VERSION=2.0.2
+ARG GRPC_WEB_SHA256=0f0c8c0c1104306d67dad678be7c14efe52a698795a58b2b72ab67a8bb100c15
+
+ARG PROTOC_GEN_GO_VERSION=v1.36.11
+ARG PROTOC_GEN_GO_SHA256=517b935001f3d43640489cd1aab531a3ed5927fb34379fa6cb1c1a514e9cb8e8
+
+ARG PROTOC_GEN_GO_GRPC_VERSION=v1.5.1
+ARG PROTOC_GEN_GO_GRPC_SHA256=54cb438abe590c9366e08251f811810fa004b1193154fe6e6a7d7c782a37332e
+
+ARG GRPC_JAVA_VERSION=1.82.2
+ARG GRPC_JAVA_SHA256=a8aa94f9df771ff5428f5cf8a5dc0fcd2ebb8fda85b29db84a4c7d8ca2153d5a
+
 # v1.3.2, using the version directly does not work: "tar: invalid magic"
 ARG PROTOC_GEN_GOGO_VERSION=b03c65ea87cdc3521ede29f62fe3ce239267c1bc
+ARG PROTOC_GEN_GOGO_SHA256=b46e8dc8d5a62d404e1a4aaa3ab6f1781fe67beb663a996281c9c10cc0c4703d
+
 ARG PROTOC_GEN_LINT_VERSION=0.3.0
-ARG GRPC_GATEWAY_VERSION=2.15.0
-ARG UPX_VERSION=4.0.2
+ARG PROTOC_GEN_LINT_AMD64_SHA256=fc501dff3d478994e0c7b540466ffd365e4fd7401d2d207de6cfb0a7e80d3337
+ARG PROTOC_GEN_LINT_ARM64_SHA256=2707dd516902071a1b70fc136382407f76f88ffe960707dac08a5e33312c2f09
+
+ARG GRPC_GATEWAY_VERSION=v2.29.0
+ARG GRPC_GATEWAY_SHA256=c067650666440981109965953c4636cb08a556d0986ad4861167fec4553d8d74
+
+ARG UPX_VERSION=5.2.0
+ARG UPX_AMD64_SHA256=3db5d3294707439db97866feab8d75d800f028f48481a40547411824da4288a1
+ARG UPX_ARM64_SHA256=55d48a61e8ffd17152db871c855376cba7f08e830b37799d0947a16dff8ec36c
 
 ARG TARGETARCH=amd64
 
-FROM alpine:3.18 as protoc_builder
-RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
+FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d AS protoc_builder
+RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja pkgconfig pkgconf abseil-cpp-dev patch
 
 RUN mkdir -p /out
 
 ARG GRPC_VERSION
+ARG GRPC_COMMIT_SHA
 RUN git clone --recursive --depth=1 -b v${GRPC_VERSION} https://github.com/grpc/grpc.git /grpc && \
+    test "$(git -C /grpc rev-parse HEAD)" = "${GRPC_COMMIT_SHA}" && \
     ln -s /grpc/third_party/protobuf /protobuf && \
     mkdir -p /grpc/cmake/build && \
     cd /grpc/cmake/build && \
@@ -31,62 +53,93 @@ RUN git clone --recursive --depth=1 -b v${GRPC_VERSION} https://github.com/grpc/
     -DCMAKE_BUILD_TYPE=Release \
     -DgRPC_INSTALL=ON \
     -DgRPC_BUILD_TESTS=OFF \
+    -DRE2_BUILD_TESTING=OFF \
+    -DCMAKE_CXX_STANDARD=17 \
+    -DCMAKE_CXX_FLAGS="-include cstdint" \
     ../.. && \
     cmake --build . --target plugins && \
     cmake --build . --target install && \
     DESTDIR=/out cmake --build . --target install
 
+COPY protobuf-c-pr797.patch /tmp/protobuf-c-pr797.patch
 ARG PROTOBUF_C_VERSION
+ARG PROTOBUF_C_SHA256
 RUN mkdir -p /protobuf-c && \
-    curl -sSL https://api.github.com/repos/protobuf-c/protobuf-c/tarball/v${PROTOBUF_C_VERSION} | tar xz --strip 1 -C /protobuf-c && \
+    curl -sSL https://github.com/protobuf-c/protobuf-c/releases/download/v${PROTOBUF_C_VERSION}/protobuf-c-${PROTOBUF_C_VERSION}.tar.gz -o /tmp/protobuf-c.tar.gz && \
+    echo "${PROTOBUF_C_SHA256}  /tmp/protobuf-c.tar.gz" | sha256sum -c - && \
+    tar xzf /tmp/protobuf-c.tar.gz --strip 1 -C /protobuf-c && \
+    rm /tmp/protobuf-c.tar.gz && \
     cd /protobuf-c && \
+    patch -p1 < /tmp/protobuf-c-pr797.patch && \
+    rm /tmp/protobuf-c-pr797.patch && \
     export LD_LIBRARY_PATH=/usr/lib:/usr/lib64 && \
-    export PKG_CONFIG_PATH=/usr/lib64/pkgconfig && \
-    ./autogen.sh && \
+    export PKG_CONFIG_PATH=/usr/lib64/pkgconfig:/usr/lib/pkgconfig && \
     ./configure --prefix=/usr && \
     make && make install DESTDIR=/out
 
 ARG GRPC_JAVA_VERSION
+ARG GRPC_JAVA_SHA256
 RUN mkdir -p /grpc-java && \
-    curl -sSL https://api.github.com/repos/grpc/grpc-java/tarball/v${GRPC_JAVA_VERSION} | tar xz --strip 1 -C /grpc-java && \
+    curl -sSL https://github.com/grpc/grpc-java/archive/refs/tags/v${GRPC_JAVA_VERSION}.tar.gz -o /tmp/grpc-java.tar.gz && \
+    echo "${GRPC_JAVA_SHA256}  /tmp/grpc-java.tar.gz" | sha256sum -c - && \
+    tar xzf /tmp/grpc-java.tar.gz --strip 1 -C /grpc-java && \
+    rm /tmp/grpc-java.tar.gz && \
     cd /grpc-java && \
     g++ \
     -I. -I/usr/include \
     compiler/src/java_plugin/cpp/*.cpp \
-    -L/usr/lib64 \
-    -lprotoc -lprotobuf -lpthread --std=c++0x -s \
+    -L/usr/lib64 -L/usr/lib \
+    -lprotoc -lprotobuf $(pkg-config --libs protobuf) -labsl_raw_hash_set -labsl_log_internal_check_op -labsl_log_internal_message -lpthread --std=c++17 -s \
     -o protoc-gen-grpc-java && \
     install -Ds protoc-gen-grpc-java /out/usr/bin/protoc-gen-grpc-java && \
     rm -Rf /grpc-java && \
     rm -Rf /grpc
 
+COPY grpc-web-protobuf35.patch /tmp/grpc-web-protobuf35.patch
 ARG GRPC_WEB_VERSION
+ARG GRPC_WEB_SHA256
 RUN mkdir -p /grpc-web && \
-    curl -sSL https://api.github.com/repos/grpc/grpc-web/tarball/${GRPC_WEB_VERSION} | tar xz --strip 1 -C /grpc-web && \
+    curl -sSL https://github.com/grpc/grpc-web/archive/refs/tags/${GRPC_WEB_VERSION}.tar.gz -o /tmp/grpc-web.tar.gz && \
+    echo "${GRPC_WEB_SHA256}  /tmp/grpc-web.tar.gz" | sha256sum -c - && \
+    tar xzf /tmp/grpc-web.tar.gz --strip 1 -C /grpc-web && \
+    rm /tmp/grpc-web.tar.gz && \
     cd /grpc-web && \
-    make install-plugin && \
-    install -Ds /usr/local/bin/protoc-gen-grpc-web /out/usr/bin/protoc-gen-grpc-web
+    patch -p1 < /tmp/grpc-web-protobuf35.patch && \
+    rm /tmp/grpc-web-protobuf35.patch && \
+    make install-plugin CXXFLAGS="-std=c++17 -I/usr/include" LDFLAGS="-L/usr/local/lib -lprotoc -lprotobuf $(pkg-config --libs protobuf) -labsl_log_internal_check_op -labsl_log_internal_message -labsl_raw_hash_set -lpthread -ldl" STATIC=no PREFIX=/out/usr
 
-FROM golang:1.18-alpine3.14 as go_builder
+FROM golang:1.25-alpine@sha256:56961d79ea8129efddcc0b8643fd8a5416b4e6228cfd477e3fd61deb2672c587 AS go_builder
 RUN apk add --no-cache build-base curl git
 
 ARG PROTOC_GEN_GO_GRPC_VERSION
+ARG PROTOC_GEN_GO_GRPC_SHA256
 RUN mkdir -p ${GOPATH}/src/github.com/grpc/grpc-go && \
-    curl -sSL https://api.github.com/repos/grpc/grpc-go/tarball/v${PROTOC_GEN_GO_GRPC_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/grpc/grpc-go &&\
+    curl -sSL https://github.com/grpc/grpc-go/archive/refs/tags/cmd/protoc-gen-go-grpc/${PROTOC_GEN_GO_GRPC_VERSION}.tar.gz -o /tmp/grpc-go.tar.gz && \
+    echo "${PROTOC_GEN_GO_GRPC_SHA256}  /tmp/grpc-go.tar.gz" | sha256sum -c - && \
+    tar xzf /tmp/grpc-go.tar.gz --strip 1 -C ${GOPATH}/src/github.com/grpc/grpc-go && \
+    rm /tmp/grpc-go.tar.gz && \
     cd ${GOPATH}/src/github.com/grpc/grpc-go/cmd/protoc-gen-go-grpc && \
     go build -ldflags '-w -s' -o /golang-protobuf-out/protoc-gen-go-grpc . && \
     install -Ds /golang-protobuf-out/protoc-gen-go-grpc /out/usr/bin/protoc-gen-go-grpc
 
 ARG PROTOC_GEN_GO_VERSION
-RUN mkdir -p ${GOPATH}/src/github.com/golang/protobuf && \
-    curl -sSL https://api.github.com/repos/golang/protobuf/tarball/v${PROTOC_GEN_GO_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/golang/protobuf &&\
-    cd ${GOPATH}/src/github.com/golang/protobuf && \
-    go build -ldflags '-w -s' -o /golang-protobuf-out/protoc-gen-go ./protoc-gen-go && \
+ARG PROTOC_GEN_GO_SHA256
+RUN mkdir -p ${GOPATH}/src/google.golang.org/protobuf && \
+    curl -sSL https://github.com/protocolbuffers/protobuf-go/archive/refs/tags/${PROTOC_GEN_GO_VERSION}.tar.gz -o /tmp/protobuf-go.tar.gz && \
+    echo "${PROTOC_GEN_GO_SHA256}  /tmp/protobuf-go.tar.gz" | sha256sum -c - && \
+    tar xzf /tmp/protobuf-go.tar.gz --strip 1 -C ${GOPATH}/src/google.golang.org/protobuf && \
+    rm /tmp/protobuf-go.tar.gz && \
+    cd ${GOPATH}/src/google.golang.org/protobuf && \
+    go build -ldflags '-w -s' -o /golang-protobuf-out/protoc-gen-go ./cmd/protoc-gen-go && \
     install -Ds /golang-protobuf-out/protoc-gen-go /out/usr/bin/protoc-gen-go
 
 ARG PROTOC_GEN_GOGO_VERSION
+ARG PROTOC_GEN_GOGO_SHA256
 RUN mkdir -p ${GOPATH}/src/github.com/gogo/protobuf && \
-    curl -sSL https://api.github.com/repos/gogo/protobuf/tarball/${PROTOC_GEN_GOGO_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/gogo/protobuf &&\
+    curl -sSL https://github.com/gogo/protobuf/archive/${PROTOC_GEN_GOGO_VERSION}.tar.gz -o /tmp/gogo.tar.gz && \
+    echo "${PROTOC_GEN_GOGO_SHA256}  /tmp/gogo.tar.gz" | sha256sum -c - && \
+    tar xzf /tmp/gogo.tar.gz --strip 1 -C ${GOPATH}/src/github.com/gogo/protobuf && \
+    rm /tmp/gogo.tar.gz && \
     cd ${GOPATH}/src/github.com/gogo/protobuf && \
     go build -ldflags '-w -s' -o /gogo-protobuf-out/protoc-gen-gofast ./protoc-gen-gofast && \
     install -Ds /gogo-protobuf-out/protoc-gen-gofast /out/usr/bin/protoc-gen-gofast && \
@@ -101,17 +154,28 @@ RUN mkdir -p ${GOPATH}/src/github.com/gogo/protobuf && \
     install -D ./gogoproto/gogo.proto /out/usr/include/github.com/gogo/protobuf/gogoproto/gogo.proto
 
 ARG PROTOC_GEN_LINT_VERSION
+ARG PROTOC_GEN_LINT_AMD64_SHA256
+ARG PROTOC_GEN_LINT_ARM64_SHA256
 ARG TARGETARCH
 RUN cd / && \
     curl -sSLO https://github.com/ckaznocha/protoc-gen-lint/releases/download/v${PROTOC_GEN_LINT_VERSION}/protoc-gen-lint_linux_${TARGETARCH}.zip && \
+    if [ "${TARGETARCH}" = "amd64" ]; then \
+        echo "${PROTOC_GEN_LINT_AMD64_SHA256}  protoc-gen-lint_linux_${TARGETARCH}.zip" | sha256sum -c -; \
+    else \
+        echo "${PROTOC_GEN_LINT_ARM64_SHA256}  protoc-gen-lint_linux_${TARGETARCH}.zip" | sha256sum -c -; \
+    fi && \
     mkdir -p /protoc-gen-lint-out && \
     cd /protoc-gen-lint-out && \
     unzip -q /protoc-gen-lint_linux_${TARGETARCH}.zip && \
     install -Ds /protoc-gen-lint-out/protoc-gen-lint /out/usr/bin/protoc-gen-lint
 
 ARG GRPC_GATEWAY_VERSION
+ARG GRPC_GATEWAY_SHA256
 RUN mkdir -p ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
-    curl -sSL https://api.github.com/repos/grpc-ecosystem/grpc-gateway/tarball/v${GRPC_GATEWAY_VERSION} | tar xz --strip 1 -C ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
+    curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/${GRPC_GATEWAY_VERSION}.tar.gz -o /tmp/grpc-gateway.tar.gz && \
+    echo "${GRPC_GATEWAY_SHA256}  /tmp/grpc-gateway.tar.gz" | sha256sum -c - && \
+    tar xzf /tmp/grpc-gateway.tar.gz --strip 1 -C ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
+    rm /tmp/grpc-gateway.tar.gz && \
     cd ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
     go build -ldflags '-w -s' -o /grpc-gateway-out/protoc-gen-grpc-gateway ./protoc-gen-grpc-gateway && \
     go build -ldflags '-w -s' -o /grpc-gateway-out/protoc-gen-openapiv2 ./protoc-gen-openapiv2 && \
@@ -120,12 +184,22 @@ RUN mkdir -p ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
     mkdir -p /out/usr/include/protoc-gen-openapiv2/options && \
     install -D $(find ./protoc-gen-openapiv2/options -name '*.proto') -t /out/usr/include/protoc-gen-openapiv2/options
 
-FROM alpine:3.18 as packer
+FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d AS packer
 RUN apk add --no-cache curl
 
 ARG UPX_VERSION
+ARG UPX_AMD64_SHA256
+ARG UPX_ARM64_SHA256
 ARG TARGETARCH
-RUN mkdir -p /upx && curl -sSL https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-${TARGETARCH}_linux.tar.xz | tar xJ --strip 1 -C /upx && \
+RUN mkdir -p /upx && \
+    curl -sSL https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-${TARGETARCH}_linux.tar.xz -o /tmp/upx.tar.xz && \
+    if [ "${TARGETARCH}" = "amd64" ]; then \
+        echo "${UPX_AMD64_SHA256}  /tmp/upx.tar.xz" | sha256sum -c -; \
+    else \
+        echo "${UPX_ARM64_SHA256}  /tmp/upx.tar.xz" | sha256sum -c -; \
+    fi && \
+    tar xJ --strip 1 -C /upx -f /tmp/upx.tar.xz && \
+    rm /tmp/upx.tar.xz && \
     install -D /upx/upx /usr/local/bin/upx
 
 # Use all output including headers and protoc from protoc_builder
@@ -134,19 +208,19 @@ COPY --from=protoc_builder /out/ /out/
 # Integrate all output from go_builder
 COPY --from=go_builder /out/ /out/
 
-RUN upx --lzma $(find /out/usr/bin/ \
-    -type f -name 'grpc_*' \
+RUN upx --lzma $(find /out/usr/bin/ -type f ! -type l \
+    \( -name 'grpc_*' \
     -not -name 'grpc_csharp_plugin' \
     -not -name 'grpc_node_plugin' \
     -not -name 'grpc_php_plugin' \
     -not -name 'grpc_ruby_plugin' \
     -not -name 'grpc_python_plugin' \
-    -or -name 'protoc-gen-*' \
+    -or -name 'protoc-gen-*' \) ! -type l \
     )
 RUN find /out -name "*.a" -delete -or -name "*.la" -delete
 
 
-FROM alpine:3.18
+FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d
 LABEL maintainer="The OpenTelemetry Authors"
 COPY --from=packer /out/ /
 RUN apk add --no-cache bash libstdc++ && \

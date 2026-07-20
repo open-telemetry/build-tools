@@ -9,7 +9,7 @@ Forked from <https://github.com/jaegertracing/docker-protobuf>.
 
 - <https://github.com/ckaznocha/protoc-gen-lint>
 - <https://github.com/gogo/protobuf>
-- <https://github.com/golang/protobuf>
+- <https://github.com/protocolbuffers/protobuf-go>
 - <https://github.com/google/protobuf>
 - <https://github.com/grpc-ecosystem/grpc-gateway>
 - <https://github.com/grpc/grpc>
@@ -88,3 +88,11 @@ Use this command to find the path to proto files included in the image:
 ```bash
 docker run --rm -it --entrypoint=/bin/sh otel/build-protobuf:latest -c "find /usr/include -name *.proto"
 ```
+
+## SLSA Compliance & Maintenance Requirements
+
+To ensure Supply chain Levels for Software Artifacts (SLSA) compliance and build reproducibility:
+
+1. **SHA256 Integrity Verification**: All downloaded source code archives (tarballs, zip files, or binary releases) MUST define an explicit SHA256 checksum argument (`ARG <TOOL>_SHA256`) and verify the digest immediately after download using `sha256sum -c -`.
+2. **Pinned Base Image Digests**: Every `FROM` base image MUST specify an immutable SHA256 digest (`@sha256:...`) rather than floating tags alone.
+3. **Build Attestations**: GitHub Actions workflows building and publishing this image MUST generate SLSA provenance and SBOM attestations (`provenance: true`, `sbom: true`).

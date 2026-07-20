@@ -1,0 +1,178 @@
+diff -ruN orig/javascript/net/grpc/web/generator/grpc_generator.cc mod/javascript/net/grpc/web/generator/grpc_generator.cc
+--- orig/javascript/net/grpc/web/generator/grpc_generator.cc	2025-09-17 11:01:35.000000000 +0000
++++ mod/javascript/net/grpc/web/generator/grpc_generator.cc	2026-07-20 17:44:33.185683863 +0000
+@@ -269,6 +269,16 @@
+ 
+ // Returns the alias we assign to the module of the given .proto filename
+ // when importing.
++
++inline string LowercaseFirstLetter(absl::string_view s) { return LowercaseFirstLetter(string(s)); }
++inline string Uppercase(absl::string_view s) { return Uppercase(string(s)); }
++inline string Lowercase(absl::string_view s) { return Lowercase(string(s)); }
++inline std::vector<string> ParseLowerUnderscore(absl::string_view s) { return ParseLowerUnderscore(string(s)); }
++inline string StripProto(absl::string_view s) { return StripProto(string(s)); }
++inline string ModuleAlias(absl::string_view s) { return ModuleAlias(string(s)); }
++inline string GetRootPath(absl::string_view from_filename, absl::string_view to_filename) { return GetRootPath(string(from_filename), string(to_filename)); }
++inline string StripPrefixString(absl::string_view str, absl::string_view prefix) { return StripPrefixString(string(str), string(prefix)); }
++
+ string ModuleAlias(const string& filename) {
+   // This scheme could technically cause problems if a file includes any 2 of:
+   //   foo/bar_baz.proto
+@@ -494,8 +504,8 @@
+     const ServiceDescriptor* service = file->service(s);
+     for (int m = 0; m < service->method_count(); ++m) {
+       const MethodDescriptor* method = service->method(m);
+-      messages[method->input_type()->full_name()] = method->input_type();
+-      messages[method->output_type()->full_name()] = method->output_type();
++      messages[string(method->input_type()->full_name())] = method->input_type();
++      messages[string(method->output_type()->full_name())] = method->output_type();
+     }
+   }
+ 
+@@ -513,14 +523,14 @@
+   std::map<string, string> vars;
+ 
+   for (int i = 0; i < file->dependency_count(); i++) {
+-    const string& name = file->dependency(i)->name();
++    string name = string(file->dependency(i)->name());
+     vars["alias"] = ModuleAlias(name);
+     vars["dep_filename"] = GetRootPath(file->name(), name) + StripProto(name);
+     // we need to give each cross-file import an alias
+     printer->Print(vars, "\nvar $alias$ = require('$dep_filename$_pb.js')\n");
+   }
+ 
+-  const string& package = file->package();
++  string package = string(file->package());
+   vars["package_name"] = package;
+ 
+   if (!package.empty()) {
+@@ -556,7 +566,7 @@
+ 
+   std::set<string> imports;
+   for (const auto& entry : GetAllMessages(file)) {
+-    const string& proto_filename = entry.second->file()->name();
++    string proto_filename = string(entry.second->file()->name());
+     string dep_filename = GetRootPath(file->name(), proto_filename) + StripProto(proto_filename);
+     if (imports.find(dep_filename) != imports.end()) {
+       continue;
+@@ -815,7 +825,7 @@
+ 
+ void PrintProtoDtsMessage(Printer* printer, const Descriptor* desc,
+                           const FileDescriptor* file) {
+-  const string& class_name = desc->name();
++  string class_name = string(desc->name());
+   std::map<string, string> vars;
+   vars["class_name"] = class_name;
+ 
+@@ -941,7 +951,7 @@
+   printer->Print("import * as jspb from 'google-protobuf'\n\n");
+ 
+   for (int i = 0; i < file->dependency_count(); i++) {
+-    const string& proto_filename = file->dependency(i)->name();
++    string proto_filename = string(file->dependency(i)->name());
+     // We need to give each cross-file import an alias.
+     printer->Print("import * as $alias$ from '$dep_filename$_pb'; // proto import: \"$proto_filename$\"\n",
+                    "alias", ModuleAlias(proto_filename),
+@@ -1259,15 +1269,15 @@
+ 
+       vars["method_name"] = method->name();
+       vars["in"] = method->input_type()->full_name();
+-      vars["in_type"] = "proto." + method->input_type()->full_name();
++      vars["in_type"] = "proto." + string(method->input_type()->full_name());
+       vars["out"] = method->output_type()->full_name();
+-      vars["out_type"] = "proto." + method->output_type()->full_name();
++      vars["out_type"] = "proto." + string(method->output_type()->full_name());
+       vars["method_type"] = method->server_streaming()
+                                 ? "grpc.web.MethodType.SERVER_STREAMING"
+                                 : "grpc.web.MethodType.UNARY";
+ 
+       PrintMethodDescriptorFile(&printer, vars);
+-      method_descriptors[service->name() + "." + method->name()] =
++      method_descriptors[string(service->name()) + "." + string(method->name())] =
+           "proto." + vars["package_dot"] + vars["class_name"] + "." +
+           vars["method_name"] + "MethodDescriptor";
+     }
+@@ -1340,9 +1350,9 @@
+       vars["in"] = input_type->full_name();
+       vars["out"] = output_type->full_name();
+       vars["method_descriptor"] =
+-          method_descriptors[service->name() + "." + method->name()];
+-      vars["in_type"] = "proto." + input_type->full_name();
+-      vars["out_type"] = "proto." + output_type->full_name();
++          method_descriptors[string(service->name()) + "." + string(method->name())];
++      vars["in_type"] = "proto." + string(input_type->full_name());
++      vars["out_type"] = "proto." + string(output_type->full_name());
+ 
+       // Client streaming is not supported yet
+       if (!method->client_streaming()) {
+@@ -1369,7 +1379,7 @@
+   for (int i = 0; i < file->service_count(); ++i) {
+     const ServiceDescriptor* service = file->service(i);
+ 
+-    string service_namespace = "proto." + package_dot + service->name();
++    string service_namespace = "proto." + package_dot + string(service->name());
+     printer->Print(
+         "import $service_name$Client_import from 'goog:$namespace$';\n",
+         "service_name", service->name(), "namespace",
+@@ -1384,7 +1394,7 @@
+ }
+ 
+ void PrintGrpcWebClosureES6File(Printer* printer, const FileDescriptor* file) {
+-  string package_dot = file->package().empty() ? "" : file->package() + ".";
++  string package_dot = file->package().empty() ? "" : string(file->package()) + ".";
+ 
+   printer->Print(
+       "/**\n"
+@@ -1405,7 +1415,7 @@
+   for (int i = 0; i < file->service_count(); ++i) {
+     const ServiceDescriptor* service = file->service(i);
+ 
+-    string service_namespace = "proto." + package_dot + service->name();
++    string service_namespace = "proto." + package_dot + string(service->name());
+     printer->Print("export const $name$Client = $name$Client_import;\n", "name",
+                    service->name());
+     printer->Print(
+@@ -1544,7 +1554,7 @@
+ 
+     std::map<string, string> vars;
+     std::map<string, string> method_descriptors;
+-    string package = file->package();
++    string package = string(file->package());
+     vars["package"] = package;
+     vars["package_dot"] = package.empty() ? "" : package + '.';
+     vars["promise"] = "Promise";
+@@ -1587,7 +1597,7 @@
+     vars["protoc_version"] = GetProtocVersion(context);
+     vars["source_file"]    = file->name();
+ 
+-    string file_name = generator_options.OutputFile(file->name());
++    string file_name = generator_options.OutputFile(string(file->name()));
+     if (generator_options.multiple_files() &&
+         ImportStyle::CLOSURE == generator_options.import_style()) {
+       PrintMultipleFilesMode(file, file_name, context, vars);
+@@ -1666,7 +1676,7 @@
+         vars["in"] = input_type->full_name();
+         vars["out"] = output_type->full_name();
+         vars["method_descriptor"] =
+-            "methodDescriptor_" + service->name() + "_" + method->name();
++            "methodDescriptor_" + string(service->name()) + "_" + string(method->name());
+ 
+         // Cross-file ref in CommonJS needs to use the module alias instead
+         // of the global name.
+@@ -1675,14 +1685,14 @@
+           vars["in_type"] = ModuleAlias(input_type->file()->name()) +
+                             GetNestedMessageName(input_type);
+         } else {
+-          vars["in_type"] = "proto." + input_type->full_name();
++          vars["in_type"] = "proto." + string(input_type->full_name());
+         }
+         if (ImportStyle::COMMONJS == generator_options.import_style() &&
+             output_type->file() != file) {
+           vars["out_type"] = ModuleAlias(output_type->file()->name()) +
+                              GetNestedMessageName(output_type);
+         } else {
+-          vars["out_type"] = "proto." + output_type->full_name();
++          vars["out_type"] = "proto." + string(output_type->full_name());
+         }
+ 
+         // Client streaming is not supported yet

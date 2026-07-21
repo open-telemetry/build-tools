@@ -44,7 +44,7 @@ ARG UPX_ARM64_SHA256=55d48a61e8ffd17152db871c855376cba7f08e830b37799d0947a16dff8
 ARG TARGETARCH=amd64
 
 FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d AS protoc_builder
-RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja pkgconfig pkgconf abseil-cpp-dev patch
+RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja pkgconf abseil-cpp-dev patch
 
 RUN mkdir -p /out
 

@@ -79,6 +79,8 @@ RUN mkdir -p /protobuf-c && \
     tar xzf /tmp/protobuf-c.tar.gz --strip 1 -C /protobuf-c && \
     rm /tmp/protobuf-c.tar.gz && \
     cd /protobuf-c && \
+    # We need to patch a few helper functions to deal with Alpine linux's `absl` library
+    # and inability to handle string_view -> string conversions.
     patch -p1 < /tmp/protobuf-c-pr797.patch && \
     rm /tmp/protobuf-c-pr797.patch && \
     export LD_LIBRARY_PATH=/usr/lib:/usr/lib64 && \
@@ -113,6 +115,8 @@ RUN mkdir -p /grpc-web && \
     tar xzf /tmp/grpc-web.tar.gz --strip 1 -C /grpc-web && \
     rm /tmp/grpc-web.tar.gz && \
     cd /grpc-web && \
+    # We need to patch a few helper functions to deal with Alpine linux's `absl` library
+    # and inability to handle string_view -> string conversions.
     patch -p1 < /tmp/grpc-web-protobuf35.patch && \
     rm /tmp/grpc-web-protobuf35.patch && \
     make install-plugin CXXFLAGS="-std=c++17 -I/usr/include" LDFLAGS="-L/usr/local/lib -lprotoc -lprotobuf $(pkg-config --libs protobuf) -labsl_log_internal_check_op -labsl_log_internal_message -labsl_raw_hash_set -lpthread -ldl" STATIC=no PREFIX=/out/usr

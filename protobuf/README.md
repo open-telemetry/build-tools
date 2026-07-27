@@ -99,4 +99,25 @@ To ensure Supply chain Levels for Software Artifacts (SLSA) compliance and build
 
 ### Verifying Build Attestations
 
-TODO(build-tools#495): This section will be written and verified after our first release including attestations.
+The Docker images published to Docker Hub (`otel/build-protobuf`) include SLSA build provenance and SBOM attestations signed by GitHub Actions.
+
+You can verify the build attestation of a published image using the official GitHub CLI (`gh` version 2.49.0 or later).
+
+#### Verifying with GitHub CLI
+
+Run the following command to verify the attestation against this repository:
+
+```bash
+gh attestation verify oci://index.docker.io/otel/build-protobuf:latest --repo open-telemetry/build-tools --bundle-from-oci
+```
+
+> [!NOTE]
+> The `--bundle-from-oci` flag tells `gh` to fetch the attestation bundle directly from the OCI container registry (Docker Hub) where it is published alongside the image. This allows verification without needing to authenticate to GitHub or query the GitHub API.
+
+#### Inspecting Attestation Details
+
+To inspect the full verification result, certificate details, and SLSA provenance statement in JSON format, append `--format json` to the command:
+
+```bash
+gh attestation verify oci://index.docker.io/otel/build-protobuf:latest --repo open-telemetry/build-tools --bundle-from-oci --format json
+```

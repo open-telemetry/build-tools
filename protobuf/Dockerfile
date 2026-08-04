@@ -43,7 +43,7 @@ ARG UPX_ARM64_SHA256=55d48a61e8ffd17152db871c855376cba7f08e830b37799d0947a16dff8
 
 ARG TARGETARCH=amd64
 
-FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d AS protoc_builder
+FROM alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b AS protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja pkgconf abseil-cpp-dev patch
 
 RUN mkdir -p /out
@@ -121,7 +121,7 @@ RUN mkdir -p /grpc-web && \
     rm /tmp/grpc-web-protobuf35.patch && \
     make install-plugin CXXFLAGS="-std=c++17 -I/usr/include" LDFLAGS="-L/usr/local/lib -lprotoc -lprotobuf $(pkg-config --libs protobuf) -labsl_log_internal_check_op -labsl_log_internal_message -labsl_raw_hash_set -lpthread -ldl" STATIC=no PREFIX=/out/usr
 
-FROM golang:1.25-alpine@sha256:56961d79ea8129efddcc0b8643fd8a5416b4e6228cfd477e3fd61deb2672c587 AS go_builder
+FROM golang:1.26-alpine@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2 AS go_builder
 RUN apk add --no-cache build-base curl git
 
 ARG PROTOC_GEN_GO_GRPC_VERSION
@@ -197,7 +197,7 @@ RUN mkdir -p ${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway && \
     mkdir -p /out/usr/include/protoc-gen-openapiv2/options && \
     install -D $(find ./protoc-gen-openapiv2/options -name '*.proto') -t /out/usr/include/protoc-gen-openapiv2/options
 
-FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d AS packer
+FROM alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b AS packer
 RUN apk add --no-cache curl
 
 ARG UPX_VERSION
@@ -233,7 +233,7 @@ RUN upx --lzma $(find /out/usr/bin/ -type f ! -type l \
 RUN find /out -name "*.a" -delete -or -name "*.la" -delete
 
 
-FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d
+FROM alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
 LABEL maintainer="The OpenTelemetry Authors"
 COPY --from=packer /out/ /
 RUN apk add --no-cache bash libstdc++ && \

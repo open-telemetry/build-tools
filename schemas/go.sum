@@ -14,6 +14,8 @@ go.opentelemetry.io/otel/schema v0.0.17 h1:SE4ABKAeeYtS+S8KVn+h8JAnJu0F7G1X77cq5
 go.opentelemetry.io/otel/schema v0.0.17/go.mod h1:Re58nHSOgeegrxyGIAxISfMGk9YV0/ki/0mJfjgxSC4=
 go.opentelemetry.io/otel/schema v0.0.18 h1:xrypeAYj3S/cz2+jI3bhl0tYTgvl1LLY/fd3bHdoPzs=
 go.opentelemetry.io/otel/schema v0.0.18/go.mod h1:Re58nHSOgeegrxyGIAxISfMGk9YV0/ki/0mJfjgxSC4=
+go.opentelemetry.io/otel/schema v0.0.19 h1:rCaTaIoxWfN77FT9ninkUyC9uvns0DinoRaKTXuGaVE=
+go.opentelemetry.io/otel/schema v0.0.19/go.mod h1:lqQZBt7phH75xi7PDAimyLCuTGb0Z8rxqDClniacGaM=
 go.yaml.in/yaml/v3 v3.0.5 h1:N6y/pJk8buWs9NY5ERU2HSMfm+IuD/OtfdAnq6kESPw=
 go.yaml.in/yaml/v3 v3.0.5/go.mod h1:HVTZu1O7/Vkt2N+BFy8Zza+lnLsABggaTM2ZpNIGuKg=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=

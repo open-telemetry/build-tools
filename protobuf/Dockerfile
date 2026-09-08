@@ -121,7 +121,7 @@ RUN mkdir -p /grpc-web && \
     rm /tmp/grpc-web-protobuf35.patch && \
     make install-plugin CXXFLAGS="-std=c++17 -I/usr/include" LDFLAGS="-L/usr/local/lib -lprotoc -lprotobuf $(pkg-config --libs protobuf) -labsl_log_internal_check_op -labsl_log_internal_message -labsl_raw_hash_set -lpthread -ldl" STATIC=no PREFIX=/out/usr
 
-FROM golang:1.27-alpine@sha256:4c9fe60190a2a3350ddc51de80d0224b8a6698d12bdfc999fee45ea9d6c46dbc AS go_builder
+FROM golang:1.27-alpine@sha256:cf6fca6641884b8433441b2b0652976f975e1d0fdd26d177eaaf8596087f3125 AS go_builder
 RUN apk add --no-cache build-base curl git
 
 ARG PROTOC_GEN_GO_GRPC_VERSION
